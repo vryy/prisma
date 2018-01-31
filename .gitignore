@@ -4,6 +4,11 @@ cmake_build*
 KratosMultiphysics
 libs
 *.sh
+*.bak
+*.orig
+*.tmp
+*.tar.gz
+*.tar.bz2
 
 # Prerequisites
 *.d
