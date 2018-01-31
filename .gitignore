@@ -1,3 +1,10 @@
+applications
+cmake_build*
+.svn
+KratosMultiphysics
+libs
+*.sh
+
 # Prerequisites
 *.d
 
