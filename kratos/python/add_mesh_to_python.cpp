@@ -538,6 +538,7 @@ void  AddMeshToPython()
                         .def(SolutionStepVariableIndexingPython<Element, VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > >()) */
     .def("Initialize", &Element::Initialize)
     //.def("CalculateLocalSystem", &Element::CalculateLocalSystem)
+    .def("Check", &Element::Check)
     .def(self_ns::str(self))
     ;
 
@@ -620,6 +621,7 @@ void  AddMeshToPython()
     .def("Initialize", &Condition::Initialize)
     //.def("CalculateLocalSystem", &Condition::CalculateLocalSystem)
     .def("Info", &Condition::Info)
+    .def("Check", &Condition::Check)
     .def(self_ns::str(self))
     ;
 
