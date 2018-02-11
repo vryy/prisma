@@ -739,6 +739,52 @@ public:
     }
 
     /**
+    * Returns the local coordinates of a given arbitrary point
+    */
+    virtual CoordinatesArrayType& PointLocalCoordinates( CoordinatesArrayType& rResult,
+            const CoordinatesArrayType& rPoint, Matrix& DeltaPosition )
+    {
+        Matrix J = ZeroMatrix( LocalSpaceDimension(), LocalSpaceDimension() );
+
+        if ( rResult.size() != LocalSpaceDimension() )
+            rResult.resize( LocalSpaceDimension(), false );
+
+        //starting with xi = 0
+        rResult = ZeroVector( LocalSpaceDimension() );
+
+        Vector DeltaXi = ZeroVector( LocalSpaceDimension() );
+
+        CoordinatesArrayType CurrentGlobalCoords( ZeroVector( 3 ) );
+
+        //Newton iteration:
+        double tol = 1.0e-8;
+
+        int maxiter = 1000;
+
+        for ( int k = 0; k < maxiter; k++ )
+        {
+            CurrentGlobalCoords = ZeroVector( 3 );
+            GlobalCoordinates( CurrentGlobalCoords, rResult, DeltaPosition );
+            noalias( CurrentGlobalCoords ) = rPoint - CurrentGlobalCoords;
+            InverseOfJacobian( J, rResult, DeltaPosition );
+            noalias( DeltaXi ) = prod( J, CurrentGlobalCoords );
+            noalias( rResult ) += DeltaXi;
+
+            if ( MathUtils<double>::Norm3( DeltaXi ) > 30 )
+            {
+                break;
+            }
+
+            if ( MathUtils<double>::Norm3( DeltaXi ) < tol )
+            {
+                break;
+            }
+        }
+
+        return( rResult );
+    }
+
+    /**
     * Returns whether given arbitrary point is inside the Geometry and the respective
         * local point for the given global point
     */
@@ -1016,6 +1062,24 @@ public:
 
         for ( IndexType i = 0 ; i < this->size() ; i++ )
             noalias( rResult ) += N[i] * (*this)[i];
+
+        return rResult;
+    }
+
+    virtual CoordinatesArrayType& GlobalCoordinates( CoordinatesArrayType& rResult, CoordinatesArrayType const& LocalCoordinates, Matrix& DeltaPosition )
+    {
+		if (rResult.size() != 3)
+			rResult.resize(3, false);
+        noalias( rResult ) = ZeroVector( 3 );
+
+        Vector N( this->size() );
+        ShapeFunctionsValues( N, LocalCoordinates );
+
+        for ( IndexType i = 0 ; i < this->size() ; i++ )
+        {
+            for(unsigned int k=0; k<this->WorkingSpaceDimension(); k++)
+                rResult(k) += N[i] * ( (( *this )[i]).Coordinates()[k]  - DeltaPosition(i,k) );
+        }
 
         return rResult;
     }
