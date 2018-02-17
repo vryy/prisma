@@ -86,7 +86,7 @@ double PointGetZ(TPointType& ThisPoint)
 
 void  AddPointsToPython()
 {
-    /*
+//    /*
     BoundedVectorPythonInterface<Point<1>, 1>::CreateInterface("Point1D")
       .def(init<double>())
       .def(init<vector_expression<vector<double> > >())
@@ -96,9 +96,9 @@ void  AddPointsToPython()
       .def(VectorVectorOperatorPython<Point<1>, unit_vector<double>, Point<1> >())
       .def(VectorVectorOperatorPython<Point<1>, scalar_vector<double>, Point<1> >())
       .def(VectorVectorOperatorPython<Point<1>, vector<double>, Point<1> >())
-      .def(VectorVectorOperatorPython<Point<1>, mapped_vector<double>, Point<1> >())
-      .def(VectorVectorOperatorPython<Point<1>, compressed_vector<double>, Point<1> >())
-      .def(VectorVectorOperatorPython<Point<1>, coordinate_vector<double>, Point<1> >())
+//      .def(VectorVectorOperatorPython<Point<1>, mapped_vector<double>, Point<1> >())
+//      .def(VectorVectorOperatorPython<Point<1>, compressed_vector<double>, Point<1> >())
+//      .def(VectorVectorOperatorPython<Point<1>, coordinate_vector<double>, Point<1> >())
        ;
 
      BoundedVectorPythonInterface<Point<2>, 2>::CreateInterface("Point2D")
@@ -112,11 +112,11 @@ void  AddPointsToPython()
        .def(VectorVectorOperatorPython<Point<2>, unit_vector<double>, Point<2> >())
        .def(VectorVectorOperatorPython<Point<2>, scalar_vector<double>, Point<2> >())
        .def(VectorVectorOperatorPython<Point<2>, vector<double>, Point<2> >())
-       .def(VectorVectorOperatorPython<Point<2>, mapped_vector<double>, Point<2> >())
-       .def(VectorVectorOperatorPython<Point<2>, compressed_vector<double>, Point<2> >())
-       .def(VectorVectorOperatorPython<Point<2>, coordinate_vector<double>, Point<2> >())
+//       .def(VectorVectorOperatorPython<Point<2>, mapped_vector<double>, Point<2> >())
+//       .def(VectorVectorOperatorPython<Point<2>, compressed_vector<double>, Point<2> >())
+//       .def(VectorVectorOperatorPython<Point<2>, coordinate_vector<double>, Point<2> >())
         ;
-    */
+//    */
     BoundedVectorPythonInterface<Point<3>, 3>::CreateInterface("Point3D")
     .def(init<double>())
     .def(init<double, double>())

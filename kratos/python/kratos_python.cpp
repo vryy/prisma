@@ -35,6 +35,7 @@
 //#include "add_mapped_vector_to_python.h"
 #include "add_matrix_to_python.h"
 #include "add_points_to_python.h"
+#include "add_integration_points_to_python.h"
 #include "add_geometries_to_python.h"
 //#include "add_quadratures_to_python.h"
 #include "add_containers_to_python.h"
@@ -103,7 +104,7 @@ BOOST_PYTHON_MODULE(Kratos)
 #endif
     AddPointsToPython();
     //  AddQuadraturesToPython();
-    //  AddIntegrationPointsToPython();
+    AddIntegrationPointsToPython();
     AddContainersToPython();
     AddProcessesToPython();
     AddIOToPython();

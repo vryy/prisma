@@ -35,6 +35,7 @@
 #include "python/bounded_vector_python_interface.h"
 #include "python/vector_scalar_operator_python.h"
 #include "python/vector_vector_operator_python.h"
+#include "python/add_integration_points_to_python.h"
 
 namespace Kratos
 {
