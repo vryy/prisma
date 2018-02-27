@@ -59,6 +59,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /* Project includes */
 #include "includes/define.h"
+#include "includes/kratos_flags.h"
 #include "includes/model_part.h"
 #include "utilities/openmp_utils.h"
 
@@ -418,13 +419,15 @@ public:
 
         for (ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
-            (it) -> InitializeSolutionStep(CurrentProcessInfo);
+            if ( (it) -> Is(ACTIVE) )
+                (it) -> InitializeSolutionStep(CurrentProcessInfo);
         }
 
         ConditionsArrayType& pConditions = r_model_part.Conditions();
         for (ConditionsArrayType::iterator it = pConditions.begin(); it != pConditions.end(); ++it)
         {
-            (it) -> InitializeSolutionStep(CurrentProcessInfo);
+            if ( (it) -> Is(ACTIVE) )
+                (it) -> InitializeSolutionStep(CurrentProcessInfo);
         }
         KRATOS_CATCH("")
     }
@@ -457,7 +460,8 @@ public:
 
             for (ElementsArrayType::iterator itElem = ElementsBegin; itElem != ElementsEnd; itElem++)
             {
-                itElem->FinalizeSolutionStep(CurrentProcessInfo);
+                if ( itElem->Is(ACTIVE) )
+                    itElem->FinalizeSolutionStep(CurrentProcessInfo);
             }
         }
 
@@ -475,7 +479,8 @@ public:
 
             for (ConditionsArrayType::iterator itCond = ConditionsBegin; itCond != ConditionsEnd; itCond++)
             {
-                itCond->FinalizeSolutionStep(CurrentProcessInfo);
+                if ( itCond->Is(ACTIVE) )
+                    itCond->FinalizeSolutionStep(CurrentProcessInfo);
             }
         }
         KRATOS_CATCH("")
@@ -549,13 +554,15 @@ public:
 
         for (ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
-            (it) -> InitializeNonLinearIteration(CurrentProcessInfo);
+            if ( (it) -> Is(ACTIVE) )
+                (it) -> InitializeNonLinearIteration(CurrentProcessInfo);
         }
 
         ConditionsArrayType& pConditions = r_model_part.Conditions();
         for (ConditionsArrayType::iterator it = pConditions.begin(); it != pConditions.end(); ++it)
         {
-            (it) -> InitializeNonLinearIteration(CurrentProcessInfo);
+            if ( (it) -> Is(ACTIVE) )
+                (it) -> InitializeNonLinearIteration(CurrentProcessInfo);
         }
         KRATOS_CATCH("")
     }
@@ -593,13 +600,15 @@ public:
 
         for (ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
-            (it) -> FinalizeNonLinearIteration(CurrentProcessInfo);
+            if ( (it) -> Is(ACTIVE) )
+                (it) -> FinalizeNonLinearIteration(CurrentProcessInfo);
         }
 
         ConditionsArrayType& pConditions = r_model_part.Conditions();
         for (ConditionsArrayType::iterator it = pConditions.begin(); it != pConditions.end(); ++it)
         {
-            (it) -> FinalizeNonLinearIteration(CurrentProcessInfo);
+            if ( (it) -> Is(ACTIVE) )
+                (it) -> FinalizeNonLinearIteration(CurrentProcessInfo);
         }
         KRATOS_CATCH("")
     }

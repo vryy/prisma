@@ -183,6 +183,7 @@ public:
                 i_dof->GetSolutionStepValue() += Dx[i_dof->EquationId()];
             }
         }
+
         KRATOS_CATCH("")
     }
 
@@ -233,10 +234,7 @@ public:
     )
     {
         KRATOS_TRY
-        //Initializing the non linear iteration for the current element
-//        (rCurrentElement)->InitializeNonLinearIteration(CurrentProcessInfo); // hbui: this shall be separately outside (i.e at NR loop)
 
-        //basic operations for the element considered
         (rCurrentElement)->CalculateLocalSystem(LHS_Contribution,RHS_Contribution,CurrentProcessInfo);
         (rCurrentElement)->EquationIdVector(EquationId,CurrentProcessInfo);
 
@@ -253,8 +251,6 @@ public:
         ProcessInfo& CurrentProcessInfo)
     {
         KRATOS_TRY
-        //Initializing the non linear iteration for the current element
-//        (rCurrentElement)->InitializeNonLinearIteration(CurrentProcessInfo); // hbui: this shall be separately outside (i.e at NR loop)
 
         (rCurrentElement)->CalculateRightHandSide(RHS_Contribution,CurrentProcessInfo);
         (rCurrentElement)->EquationIdVector(EquationId,CurrentProcessInfo);
@@ -271,8 +267,6 @@ public:
         ProcessInfo& CurrentProcessInfo)
     {
         KRATOS_TRY
-        //Initializing the non linear iteration for the current element
-//        (rCurrentElement)->InitializeNonLinearIteration(CurrentProcessInfo); // hbui: this shall be separately outside (i.e at NR loop)
 
         (rCurrentElement)->CalculateLeftHandSide(LHS_Contribution,CurrentProcessInfo);
         (rCurrentElement)->EquationIdVector(EquationId,CurrentProcessInfo);
@@ -292,10 +286,10 @@ public:
         ProcessInfo& CurrentProcessInfo)
     {
         KRATOS_TRY
-//        (rCurrentCondition)->InitializeNonLinearIteration(CurrentProcessInfo); // hbui: this shall be separately outside (i.e at NR loop)
 
         (rCurrentCondition)->CalculateLocalSystem(LHS_Contribution,RHS_Contribution,CurrentProcessInfo);
         (rCurrentCondition)->EquationIdVector(EquationId,CurrentProcessInfo);
+
         KRATOS_CATCH("")
     }
 
@@ -306,10 +300,10 @@ public:
         ProcessInfo& CurrentProcessInfo)
     {
         KRATOS_TRY
-//        (rCurrentCondition)->InitializeNonLinearIteration(CurrentProcessInfo); // hbui: this shall be separately outside (i.e at NR loop)
 
         (rCurrentCondition)->CalculateRightHandSide(RHS_Contribution,CurrentProcessInfo);
         (rCurrentCondition)->EquationIdVector(EquationId,CurrentProcessInfo);
+
         KRATOS_CATCH("")
     }
 
