@@ -180,21 +180,32 @@ public:
 
     static void Start(std::string const& IntervalName)
     {
-        msTimeTable[IntervalName].SetStartTime(GetTime());
+#ifdef _OPENMP
+#pragma omp critical
+#endif
+        {
+            msTimeTable[IntervalName].SetStartTime(GetTime());
+        }
     }
 
     static void Stop(std::string const& IntervalName)
     {
-        double stop_time = GetTime();
-        ContainerType::iterator i_time_data = msTimeTable.find(IntervalName);
+#ifdef _OPENMP
+#pragma omp critical
+#endif
+        {
+            double stop_time = GetTime();
+            ContainerType::iterator i_time_data = msTimeTable.find(IntervalName);
 
-        if(i_time_data == msTimeTable.end())
-            return;
-        /* 	  KRATOS_THROW_ERROR(std::logical_error, "Stopping a not running time interval: ", IntervalName); */
+            if(i_time_data != msTimeTable.end())
+            {
+                /* 	  KRATOS_THROW_ERROR(std::logical_error, "Stopping a not running time interval: ", IntervalName); */
 
-        i_time_data->second.Update(stop_time);
+                i_time_data->second.Update(stop_time);
 
-        PrintIntervalInformation(IntervalName, i_time_data->second.GetStartTime(), stop_time);
+                PrintIntervalInformation(IntervalName, i_time_data->second.GetStartTime(), stop_time);
+            }
+        }
     }
 
     static inline double GetTime()
