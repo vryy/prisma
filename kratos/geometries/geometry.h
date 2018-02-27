@@ -795,6 +795,17 @@ public:
         return false;
     }
 
+    /**
+    * Returns whether given arbitrary point is inside the Geometry and the respective
+        * local point for the given global point
+    */
+    virtual bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult, Matrix& DeltaPosition )
+    {
+        KRATOS_THROW_ERROR( std::logic_error,
+                            "Calling base class IsInside method instead of derived class one. Please check the definition of derived class." , *this );
+        return false;
+    }
+
     ///@}
     ///@name Inquiry
     ///@{

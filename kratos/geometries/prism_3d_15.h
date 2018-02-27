@@ -519,6 +519,22 @@ public:
         return false;
     }
 
+    /**
+     * Returns whether given arbitrary point is inside the Geometry
+     */
+    virtual bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult, Matrix& DeltaPosition )
+    {
+        this->PointLocalCoordinates( rResult, rPoint, DeltaPosition );
+
+        if ( rResult[0] >= 0.0 - 1.0e-8 && rResult[0] <= 1.0 + 1.0e-8 )
+            if ( rResult[1] >= 0.0 - 1.0e-8 && rResult[1] <= 1.0 + 1.0e-8 )
+                if ( rResult[2] >= -1.0 - 1.0e-8 && rResult[2] <= 1.0 + 1.0e-8 )
+                    if ((( 1.0 - ( rResult[0] + rResult[1] ) ) >= 0.0 - 1.0e-8 ) && (( 1.0 - ( rResult[0] + rResult[1] ) ) <= 1.0 + 1.0e-8 ) )
+                        return true;
+
+        return false;
+    }
+
 
     /**
      * Jacobian

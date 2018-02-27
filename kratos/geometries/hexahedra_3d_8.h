@@ -471,6 +471,21 @@ public:
         return false;
     }
 
+    /**
+     * Returns whether given arbitrary point is inside the Geometry
+     */
+    virtual bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult, Matrix& DeltaPosition )
+    {
+        this->PointLocalCoordinates( rResult, rPoint, DeltaPosition );
+
+        if ( fabs( rResult[0] ) < 1 + 1.0e-8 )
+            if ( fabs( rResult[1] ) < 1 + 1.0e-8 )
+                if ( fabs( rResult[2] ) < 1 + 1.0e-8 )
+                    return true;
+
+        return false;
+    }
+
 
     /** This method gives you number of all edges of this
     geometry.

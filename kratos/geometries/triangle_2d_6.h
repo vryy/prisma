@@ -471,6 +471,21 @@ public:
         return false;
     }
 
+    /**
+     * Returns whether given arbitrary point is inside the Geometry
+     */
+    virtual bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult, Matrix& DeltaPosition )
+    {
+        this->PointLocalCoordinates( rResult, rPoint, DeltaPosition );
+
+        if ( rResult[0] >= 0.0 && rResult[0] <= 1.0 )
+            if ( rResult[1] >= 0.0 && rResult[1] <= 1.0 )
+                if ( rResult[0] + rResult[1] <= 1.0 )
+                    return true;
+
+        return false;
+    }
+
 
     ///@}
     ///@name Shape Function

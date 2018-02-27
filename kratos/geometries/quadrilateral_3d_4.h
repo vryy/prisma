@@ -525,6 +525,20 @@ public:
         return false;
     }
 
+    /**
+     * Returns whether given arbitrary point is inside the Geometry
+     */
+    virtual bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult, Matrix& DeltaPosition )
+    {
+        PointLocalCoordinates( rResult, rPoint, DeltaPosition );
+
+        if ( rResult[0] >= -1.0 && rResult[0] <= 1.0 )
+            if ( rResult[1] >= -1.0 && rResult[1] <= 1.0 )
+                return true;
+
+        return false;
+    }
+
 
     virtual CoordinatesArrayType& PointLocalCoordinates( CoordinatesArrayType& rResult,
             const CoordinatesArrayType& rPoint )
@@ -555,6 +569,82 @@ public:
         {
             noalias(CurrentGlobalCoords) = ZeroVector( 3 );
             this->GlobalCoordinates( CurrentGlobalCoords, rResult );
+
+            noalias( CurrentGlobalCoords ) = rPoint - CurrentGlobalCoords;
+
+
+            //derivatives of shape functions
+            Matrix shape_functions_gradients;
+            shape_functions_gradients = ShapeFunctionsLocalGradients(shape_functions_gradients, rResult );
+            noalias(DN) = prod(X,shape_functions_gradients);
+
+            noalias(J) = prod(trans(DN),DN);
+            Vector res = prod(trans(DN),CurrentGlobalCoords);
+
+            //deteminant of Jacobian
+            double det_j = J( 0, 0 ) * J( 1, 1 ) - J( 0, 1 ) * J( 1, 0 );
+
+            //filling matrix
+            invJ( 0, 0 ) = ( J( 1, 1 ) ) / ( det_j );
+            invJ( 1, 0 ) = -( J( 1, 0 ) ) / ( det_j );
+            invJ( 0, 1 ) = -( J( 0, 1 ) ) / ( det_j );
+            invJ( 1, 1 ) = ( J( 0, 0 ) ) / ( det_j );
+
+
+            DeltaXi( 0 ) = invJ( 0, 0 ) * res[0] + invJ( 0, 1 ) * res[1];
+            DeltaXi( 1 ) = invJ( 1, 0 ) * res[0] + invJ( 1, 1 ) * res[1];
+
+            rResult[0] += DeltaXi[0];
+            rResult[1] += DeltaXi[1];
+            rResult[2] = 0.0;
+
+            if ( norm_2( DeltaXi ) > 300 )
+            {
+                res[0] = 0.0;
+                res[1] = 0.0;
+                std::cout << "detJ =" << det_j << "DeltaX = " << DeltaXi << " stopping calculation and assigning the baricenter" << std::endl;
+                break;
+                //KRATOS_THROW_ERROR(std::logic_error,"computation of local coordinates failed at iteration",k)
+            }
+
+            if ( norm_2( DeltaXi ) < tol )
+            {
+                break;
+            }
+        }
+
+        return( rResult );
+    }
+
+    virtual CoordinatesArrayType& PointLocalCoordinates( CoordinatesArrayType& rResult,
+            const CoordinatesArrayType& rPoint, Matrix& DeltaPosition )
+    {
+        boost::numeric::ublas::bounded_matrix<double,3,4> X;
+        boost::numeric::ublas::bounded_matrix<double,3,2> DN;
+        for(unsigned int i=0; i<this->size();i++)
+        {
+            X(0,i ) = this->GetPoint( i ).X() - DeltaPosition( i, 0 );
+            X(1,i ) = this->GetPoint( i ).Y() - DeltaPosition( i, 1 );
+            X(2,i ) = this->GetPoint( i ).Z() - DeltaPosition( i, 2 );
+        }
+
+        double tol = 1.0e-8;
+        int maxiter = 1000;
+
+        Matrix J = ZeroMatrix( 2, 2 );
+        Matrix invJ = ZeroMatrix( 2, 2 );
+
+        //starting with xi = 0
+        rResult = ZeroVector( 3 );
+        Vector DeltaXi = ZeroVector( 2 );
+        array_1d<double,3> CurrentGlobalCoords;
+
+
+        //Newton iteration:
+        for ( int k = 0; k < maxiter; k++ )
+        {
+            noalias(CurrentGlobalCoords) = ZeroVector( 3 );
+            this->GlobalCoordinates( CurrentGlobalCoords, rResult, DeltaPosition );
 
             noalias( CurrentGlobalCoords ) = rPoint - CurrentGlobalCoords;
 

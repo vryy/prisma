@@ -422,11 +422,25 @@ public:
     }
 
     /**
-              * Returns whether given arbitrary point is inside the Geometry
-                          */
+      * Returns whether given arbitrary point is inside the Geometry
+      */
     virtual bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult )
     {
         PointLocalCoordinates( rResult, rPoint );
+
+        if ( rResult[0] >= -1.0 && rResult[0] <= 1.0 )
+            if ( rResult[1] >= -1.0 && rResult[1] <= 1.0 )
+                return true;
+
+        return false;
+    }
+
+    /**
+      * Returns whether given arbitrary point is inside the Geometry
+      */
+    virtual bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult, Matrix& DeltaPosition )
+    {
+        PointLocalCoordinates( rResult, rPoint, DeltaPosition );
 
         if ( rResult[0] >= -1.0 && rResult[0] <= 1.0 )
             if ( rResult[1] >= -1.0 && rResult[1] <= 1.0 )
@@ -516,6 +530,134 @@ public:
             for ( unsigned int i = 0; i < this->PointsNumber(); i++ )
             {
                 Point<3> dummyPoint = this->GetPoint( i );
+                J( 0, 0 ) += ( dummyPoint[orientation[0]] ) * ( shape_functions_gradients( i, 0 ) );
+                J( 0, 1 ) += ( dummyPoint[orientation[0]] ) * ( shape_functions_gradients( i, 1 ) );
+                J( 1, 0 ) += ( dummyPoint[orientation[1]] ) * ( shape_functions_gradients( i, 0 ) );
+                J( 1, 1 ) += ( dummyPoint[orientation[1]] ) * ( shape_functions_gradients( i, 1 ) );
+            }
+
+            //deteminant of Jacobian
+            double det_j = J( 0, 0 ) * J( 1, 1 ) - J( 0, 1 ) * J( 1, 0 );
+
+            //filling matrix
+            invJ( 0, 0 ) = ( J( 1, 1 ) ) / ( det_j );
+
+            invJ( 1, 0 ) = -( J( 1, 0 ) ) / ( det_j );
+
+            invJ( 0, 1 ) = -( J( 0, 1 ) ) / ( det_j );
+
+            invJ( 1, 1 ) = ( J( 0, 0 ) ) / ( det_j );
+
+            DeltaXi( 0 ) = invJ( 0, 0 ) * CurrentGlobalCoords( orientation[0] ) + invJ( 0, 1 ) * CurrentGlobalCoords( orientation[1] );
+
+            DeltaXi( 1 ) = invJ( 1, 0 ) * CurrentGlobalCoords( orientation[0] ) + invJ( 1, 1 ) * CurrentGlobalCoords( orientation[1] );
+
+            noalias( rResult ) += DeltaXi;
+
+            if ( MathUtils<double>::Norm3( DeltaXi ) > 30 )
+            {
+                break;
+            }
+
+            if ( MathUtils<double>::Norm3( DeltaXi ) < tol )
+            {
+                if ( !( fabs( CurrentGlobalCoords( orientation[2] ) ) <= tol ) )
+                    rResult( 0 ) = 2.0;
+
+                break;
+            }
+        }
+
+        return( rResult );
+    }
+
+
+    virtual CoordinatesArrayType& PointLocalCoordinates( CoordinatesArrayType& rResult,
+            const CoordinatesArrayType& rPoint, Matrix& DeltaPosition )
+    {
+        double tol = 1.0e-8;
+        int maxiter = 1000;
+        //check orientation of surface
+        std::vector< unsigned int> orientation( 3 );
+
+        double dummy = this->GetPoint( 0 ).X() - DeltaPosition( 0, 0 );
+
+        if ( fabs( this->GetPoint( 1 ).X() - DeltaPosition( 1, 0 ) - dummy ) <= tol
+          && fabs( this->GetPoint( 2 ).X() - DeltaPosition( 2, 0 ) - dummy ) <= tol
+          && fabs( this->GetPoint( 3 ).X() - DeltaPosition( 3, 0 ) - dummy ) <= tol )
+            orientation[0] = 0;
+
+        dummy = this->GetPoint( 0 ).Y();
+
+        if ( fabs( this->GetPoint( 1 ).Y() - DeltaPosition( 1, 1 ) - dummy ) <= tol
+          && fabs( this->GetPoint( 2 ).Y() - DeltaPosition( 2, 1 ) - dummy ) <= tol
+          && fabs( this->GetPoint( 3 ).Y() - DeltaPosition( 3, 1 ) - dummy ) <= tol )
+            orientation[0] = 1;
+
+        dummy = this->GetPoint( 0 ).Z();
+
+        if ( fabs( this->GetPoint( 1 ).Z() - DeltaPosition( 1, 2 ) - dummy ) <= tol
+          && fabs( this->GetPoint( 2 ).Z() - DeltaPosition( 2, 2 ) - dummy ) <= tol
+          && fabs( this->GetPoint( 3 ).Z() - DeltaPosition( 3, 2 ) - dummy ) <= tol )
+            orientation[0] = 2;
+
+        switch ( orientation[0] )
+        {
+        case 0:
+            orientation[0] = 1;
+            orientation[1] = 2;
+            orientation[2] = 0;
+            break;
+        case 1:
+            orientation[0] = 0;
+            orientation[1] = 2;
+            orientation[2] = 1;
+            break;
+        case 2:
+            orientation[0] = 0;
+            orientation[1] = 1;
+            orientation[2] = 2;
+            break;
+        default:
+            orientation[0] = 0;
+            orientation[1] = 1;
+            orientation[2] = 2;
+        }
+
+        Matrix J = ZeroMatrix( 2, 2 );
+
+        Matrix invJ = ZeroMatrix( 2, 2 );
+
+        if ( rResult.size() != 2 )
+            rResult.resize( 2, false );
+
+        //starting with xi = 0
+        rResult = ZeroVector( 2 );
+
+        Vector DeltaXi = ZeroVector( 2 );
+
+        CoordinatesArrayType CurrentGlobalCoords( ZeroVector( 3 ) );
+
+        //Newton iteration:
+        for ( int k = 0; k < maxiter; k++ )
+        {
+            CurrentGlobalCoords = ZeroVector( 3 );
+            this->GlobalCoordinates( CurrentGlobalCoords, rResult, DeltaPosition );
+            noalias( CurrentGlobalCoords ) = rPoint - CurrentGlobalCoords;
+
+            //Caluclate Inverse of Jacobian
+            noalias(J) = ZeroMatrix( 2, 2 );
+
+            //derivatives of shape functions
+            Matrix shape_functions_gradients;
+            shape_functions_gradients = ShapeFunctionsLocalGradients(
+                                            shape_functions_gradients, rResult );
+
+            //Elements of jacobian matrix (e.g. J(1,1) = dX1/dXi1)
+            //loop over all nodes
+            for ( unsigned int i = 0; i < this->PointsNumber(); i++ )
+            {
+                Point<3> dummyPoint = this->GetPoint( i ) - row( DeltaPosition, i );
                 J( 0, 0 ) += ( dummyPoint[orientation[0]] ) * ( shape_functions_gradients( i, 0 ) );
                 J( 0, 1 ) += ( dummyPoint[orientation[0]] ) * ( shape_functions_gradients( i, 1 ) );
                 J( 1, 0 ) += ( dummyPoint[orientation[1]] ) * ( shape_functions_gradients( i, 0 ) );
