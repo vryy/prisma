@@ -316,6 +316,16 @@ void ModelPartSetElements2(ModelPart& rModelPart, ModelPart::ElementsContainerTy
     rModelPart.SetElements(pOtherElements, ThisIndex);
 }
 
+void ModelPartAddElement1(ModelPart& rModelPart, Element::Pointer newElement)
+{
+    rModelPart.AddElement( newElement );
+}
+
+void ModelPartAddElement2(ModelPart& rModelPart, Element::Pointer newElement, unsigned int ThisIndex)
+{
+    rModelPart.AddElement( newElement, ThisIndex );
+}
+
 ModelPart::ElementType::Pointer ModelPartGetElement1(ModelPart& rModelPart, ModelPart::IndexType ElementId)
 {
 	return rModelPart.pGetElement(ElementId);
@@ -627,6 +637,8 @@ void AddModelPartToPython()
 		.def("SetElements", ModelPartSetElements1)
 		.def("GetElements", ModelPartGetElements2)
 		.def("SetElements", ModelPartSetElements2)
+		.def("AddElement", ModelPartAddElement1)
+		.def("AddElement", ModelPartAddElement2)
 		.def("RemoveElement", ModelPartRemoveElement1)
 		.def("RemoveElement", ModelPartRemoveElement2)
 		.def("RemoveElement", ModelPartRemoveElement3)
