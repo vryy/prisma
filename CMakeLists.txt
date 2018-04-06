@@ -256,6 +256,16 @@ if(${MPI_NEEDED} MATCHES ON )
 #    find_package(Boost COMPONENTS mpi_python REQUIRED)
 endif(${MPI_NEEDED} MATCHES ON )
 
+##*****************************
+# ADOL-C
+if(ADOL_C_DIR)
+    add_definitions(-DKRATOS_USE_ADOL_C)
+    set(ADOLC_IS_AVAILABLE ON)
+    FIND_PACKAGE(ADOLC REQUIRED)
+    INCLUDE_DIRECTORIES(${ADOL_C_INCLUDE_DIR})
+    MESSAGE("ADOL_C_LIBRARIES:" ${ADOL_C_LIBRARIES})
+endif()
+
 
 ##echo user options
 message( " ")
@@ -279,7 +289,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     add_definitions( -fPIC )
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
-if(${ISOGEOMETRIC_APPLICATION} MATCHES ON)
+if((${ISOGEOMETRIC_APPLICATION} MATCHES ON) OR (${FINITE_CELL_APPLICATION} MATCHES ON))
 add_definitions( -DENABLE_BEZIER_GEOMETRY )
 endif()
 
