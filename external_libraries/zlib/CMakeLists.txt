@@ -6,7 +6,7 @@ set(SKIP_INSTALL_FILES 1)
 
 project(zlib C)
 
-set(VERSION "1.2.8")
+set(VERSION "1.2.11")
 
 option(ASM686 "Enable building i686 assembly implementation")
 option(AMD64 "Enable building amd64 assembly implementation")
