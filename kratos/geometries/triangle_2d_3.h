@@ -491,7 +491,7 @@ public:
      */
     virtual bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult )
     {
-        const double zero = 1E-14;
+        const double zero = 1E-8;
         this->PointLocalCoordinates( rResult, rPoint );
         if( ( rResult[0] >= (0.0-zero) ) && ( rResult[0] <= 1.0 + zero ) )
             if( ( rResult[1] >= 0.0-zero ) && (rResult[1] <= 1.0 + zero ) )
@@ -506,7 +506,7 @@ public:
      */
     virtual bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult, Matrix& DeltaPosition )
     {
-        const double zero = 1E-14;
+        const double zero = 1E-8;
         this->PointLocalCoordinates( rResult, rPoint, DeltaPosition );
         if( ( rResult[0] >= (0.0-zero) ) && ( rResult[0] <= 1.0 + zero ) )
             if( ( rResult[1] >= 0.0-zero ) && (rResult[1] <= 1.0 + zero ) )

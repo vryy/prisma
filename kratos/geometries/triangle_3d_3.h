@@ -427,11 +427,11 @@ public:
      */
     virtual bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult )
     {
-        PointLocalCoordinates( rResult, rPoint );
-
-        if ( rResult[0] >= 0.0 && rResult[0] <= 1.0 )
-            if ( rResult[1] >= 0.0 && rResult[1] <= 1.0 )
-                if ( rResult[0] + rResult[1] <= 1.0 )
+        const double zero = 1E-8;
+        this->PointLocalCoordinates( rResult, rPoint );
+        if( ( rResult[0] >= (0.0-zero) ) && ( rResult[0] <= 1.0 + zero ) )
+            if( ( rResult[1] >= 0.0-zero ) && (rResult[1] <= 1.0 + zero ) )
+                if(((1.0-(rResult[0] + rResult[1])) >= 0.0-zero) &&  ((1.0-(rResult[0] + rResult[1])) <= 1.0 + zero))
                     return true;
 
         return false;
@@ -442,11 +442,11 @@ public:
      */
     virtual bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult, Matrix& DeltaPosition )
     {
-        PointLocalCoordinates( rResult, rPoint, DeltaPosition );
-
-        if ( rResult[0] >= 0.0 && rResult[0] <= 1.0 )
-            if ( rResult[1] >= 0.0 && rResult[1] <= 1.0 )
-                if ( rResult[0] + rResult[1] <= 1.0 )
+        const double zero = 1E-8;
+        this->PointLocalCoordinates( rResult, rPoint, DeltaPosition );
+        if( ( rResult[0] >= (0.0-zero) ) && ( rResult[0] <= 1.0 + zero ) )
+            if( ( rResult[1] >= 0.0-zero ) && (rResult[1] <= 1.0 + zero ) )
+                if(((1.0-(rResult[0] + rResult[1])) >= 0.0-zero) &&  ((1.0-(rResult[0] + rResult[1])) <= 1.0 + zero))
                     return true;
 
         return false;

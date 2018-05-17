@@ -440,8 +440,8 @@ public:
     {
         this->PointLocalCoordinates( rResult, rPoint );
 
-        if ( rResult[0] >= -1.0 && rResult[0] <= 1.0 )
-            if ( rResult[1] >= -1.0 && rResult[1] <= 1.0 )
+        if ( fabs( rResult[0] ) < 1 + 1.0e-8 )
+            if ( fabs( rResult[1] ) < 1 + 1.0e-8 )
                 return true;
 
         return false;
@@ -454,8 +454,8 @@ public:
     {
         this->PointLocalCoordinates( rResult, rPoint, DeltaPosition );
 
-        if ( rResult[0] >= -1.0 && rResult[0] <= 1.0 )
-            if ( rResult[1] >= -1.0 && rResult[1] <= 1.0 )
+        if ( fabs( rResult[0] ) < 1 + 1.0e-8 )
+            if ( fabs( rResult[1] ) < 1 + 1.0e-8 )
                 return true;
 
         return false;
