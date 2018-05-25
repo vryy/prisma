@@ -104,6 +104,8 @@ public:
     typedef typename TDenseSpace::VectorType LocalSystemVectorType;
 
     typedef Scheme<TSparseSpace, TDenseSpace> TSchemeType;
+    typedef TLinearSolver TLinearSolverType;
+    typedef TSparseSpace TSparseSpaceType;
 
     typedef ModelPart::DofType TDofType;
     typedef ModelPart::DofsArrayType DofsArrayType;

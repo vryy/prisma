@@ -176,10 +176,13 @@ public:
     //typedef boost::shared_ptr< ResidualBasedEliminationBuilderAndSolverDeactivation<TSparseSpace,TDenseSpace,TLinearSolver> > Pointer;
     KRATOS_CLASS_POINTER_DEFINITION( ResidualBasedEliminationBuilderAndSolverDeactivation );
 
-
     typedef BuilderAndSolver<TSparseSpace,TDenseSpace, TLinearSolver> BaseType;
 
     typedef typename BaseType::TSchemeType TSchemeType;
+
+    typedef typename BaseType::TSparseSpaceType TSparseSpaceType;
+
+    typedef typename BaseType::TLinearSolverType TLinearSolverType;
 
     typedef typename BaseType::TDataType TDataType;
 
