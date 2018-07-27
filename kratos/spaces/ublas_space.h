@@ -208,6 +208,14 @@ public:
         rY.assign(rX);
     }
 
+    /// rY = rX^T
+
+    static void TransposeCopy(MatrixType const& rX, MatrixType& rY)
+    {
+        rY.assign(trans(rX));
+    }
+
+
     /// rY = rX
 
     static void Copy(VectorType const& rX, VectorType& rY)
