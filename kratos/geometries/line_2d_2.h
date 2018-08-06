@@ -107,12 +107,12 @@ public:
     */
     typedef typename BaseType::IntegrationPointsContainerType IntegrationPointsContainerType;
 
-    /** A third order tensor used as shape functions' values
+    /** A first order tensor used as shape functions' values
     continer.
     */
     typedef typename BaseType::ShapeFunctionsValuesContainerType ShapeFunctionsValuesContainerType;
 
-    /** A fourth order tensor used as shape functions' local
+    /** A second order tensor used as shape functions' local
     gradients container in geometry.
     */
     typedef typename BaseType::ShapeFunctionsLocalGradientsContainerType ShapeFunctionsLocalGradientsContainerType;
@@ -128,6 +128,14 @@ public:
     type as its result.
     */
     typedef typename BaseType::ShapeFunctionsGradientsType ShapeFunctionsGradientsType;
+
+    /**
+     * A third order tensor to hold shape functions' local second derivatives.
+     * ShapefunctionsLocalGradients function return this
+     * type as its result.
+     */
+    typedef typename BaseType::ShapeFunctionsSecondDerivativesType
+    ShapeFunctionsSecondDerivativesType;
 
     /** Type of the normal vector used for normal to edges in geomety.
      */
@@ -722,6 +730,31 @@ public:
         rResult( 0, 0 ) = -0.5;
         rResult( 1, 0 ) =  0.5;
         return( rResult );
+    }
+
+    /**
+     * returns the second order derivatives of all shape functions
+     * in given arbitrary pointers
+     * @param rResult a third order tensor which contains the second derivatives
+     * @param rPoint the given point the second order derivatives are calculated in
+     */
+    virtual ShapeFunctionsSecondDerivativesType& ShapeFunctionsSecondDerivatives( ShapeFunctionsSecondDerivativesType& rResult, const CoordinatesArrayType& rPoint ) const
+    {
+        if ( rResult.size() != this->PointsNumber() )
+        {
+            // KLUDGE: While there is a bug in
+            // ublas vector resize, I have to put this beside resizing!!
+            ShapeFunctionsGradientsType temp( this->PointsNumber() );
+            rResult.swap( temp );
+        }
+
+        rResult[0].resize( 1, 1 );
+        rResult[1].resize( 1, 1 );
+
+        rResult[0]( 0, 0 ) = 0.0;
+        rResult[1]( 0, 0 ) = 0.0;
+
+        return rResult;
     }
 
     /**

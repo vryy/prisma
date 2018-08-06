@@ -107,15 +107,23 @@ public:
     */
     typedef typename BaseType::IntegrationPointsContainerType IntegrationPointsContainerType;
 
-    /** A third order tensor used as shape functions' values
+    /** A first order tensor used as shape functions' values
     continer.
     */
     typedef typename BaseType::ShapeFunctionsValuesContainerType ShapeFunctionsValuesContainerType;
 
-    /** A fourth order tensor used as shape functions' local
+    /** A second order tensor used as shape functions' local
     gradients container in geometry.
     */
     typedef typename BaseType::ShapeFunctionsLocalGradientsContainerType ShapeFunctionsLocalGradientsContainerType;
+
+    /**
+     * A third order tensor to hold shape functions' local second derivatives.
+     * ShapefunctionsLocalGradients function return this
+     * type as its result.
+     */
+    typedef typename BaseType::ShapeFunctionsSecondDerivativesType
+    ShapeFunctionsSecondDerivativesType;
 
     /** A third order tensor to hold jacobian matrices evaluated at
     integration points. Jacobian and InverseOfJacobian functions
@@ -799,6 +807,33 @@ public:
         rResult( 2, 0 ) = -2.0 * rPoint[0];
         rResult( 1, 0 ) = rPoint[0] + 0.5;
         return( rResult );
+    }
+
+    /**
+     * returns the second order derivatives of all shape functions
+     * in given arbitrary pointers
+     * @param rResult a third order tensor which contains the second derivatives
+     * @param rPoint the given point the second order derivatives are calculated in
+     */
+    virtual ShapeFunctionsSecondDerivativesType& ShapeFunctionsSecondDerivatives( ShapeFunctionsSecondDerivativesType& rResult, const CoordinatesArrayType& rPoint ) const
+    {
+        if ( rResult.size() != this->PointsNumber() )
+        {
+            // KLUDGE: While there is a bug in
+            // ublas vector resize, I have to put this beside resizing!!
+            ShapeFunctionsGradientsType temp( this->PointsNumber() );
+            rResult.swap( temp );
+        }
+
+        rResult[0].resize( 1, 1 );
+        rResult[1].resize( 1, 1 );
+        rResult[2].resize( 1, 1 );
+
+        rResult[0]( 0, 0 ) = 1.0;
+        rResult[2]( 0, 0 ) = -2.0;
+        rResult[1]( 0, 0 ) = 1.0;
+
+        return rResult;
     }
 
     /**
