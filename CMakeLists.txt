@@ -308,6 +308,8 @@ endif(${INSTALL_EMBEDDED_PYTHON} MATCHES ON )
 
 if(${MPI_NEEDED} MATCHES ON )
    add_subdirectory(external_libraries/mpi_python)
+else(${MPI_NEEDED} MATCHES ON )
+    install(FILES "${CMAKE_SOURCE_DIR}/external_libraries/mpi_python/nompi.py" DESTINATION KratosMultiphysics RENAME mpi.py)
 endif(${MPI_NEEDED} MATCHES ON )
 
 #set installation directory
