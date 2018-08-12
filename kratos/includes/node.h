@@ -360,8 +360,8 @@ public:
     void SetId(IndexType NewId)
     {
         IndexedObject::SetId(NewId);
-        Node<3>::DofsContainerType& my_dofs = (this)->GetDofs();
-        for(Node<3>::DofsContainerType::iterator iii = my_dofs.begin();    iii != my_dofs.end(); iii++)
+        typename Node<TDimension>::DofsContainerType& my_dofs = (this)->GetDofs();
+        for(typename Node<TDimension>::DofsContainerType::iterator iii = my_dofs.begin();    iii != my_dofs.end(); iii++)
         {
             iii->SetId(NewId);
         }
@@ -618,7 +618,17 @@ public:
         return mSolutionStepsNodalData;
     }
 
+    const VariablesListDataValueContainer& SolutionStepData() const
+    {
+        return mSolutionStepsNodalData;
+    }
+
     DataValueContainer& Data()
+    {
+        return mData;
+    }
+
+    const DataValueContainer& Data() const
     {
         return mData;
     }
@@ -872,7 +882,7 @@ public:
         mInitialPosition.Z() = NewInitialPosition.Z();
     }
 
-    void SetInitialPosition(double X,double Y, double Z)
+    void SetInitialPosition(double X, double Y, double Z)
     {
         mInitialPosition.X() = X;
         mInitialPosition.Y() = Y;
