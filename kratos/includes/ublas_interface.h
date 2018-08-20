@@ -31,6 +31,7 @@
 
 
 // External includes
+#include <boost/version.hpp>
 #if BOOST_VERSION / 100 % 1000 > 60
 #include <boost/serialization/array_wrapper.hpp>
 #endif
