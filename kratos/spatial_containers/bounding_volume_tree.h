@@ -130,19 +130,19 @@ public:
     }
 
     /// Add a geometry (from an element/a condition) to the k-DOP
-    template<int current_configuration>
+    template<int TFrame>
     void InsertGeometry(const GeometryType& rGeometry)
     {
         for(std::size_t i = 0; i < rGeometry.size(); ++i)
         {
-            if(current_configuration == 1)
+            if(TFrame == 1)
             {
                 this->InsertPoint(rGeometry[i].X0() + rGeometry[i].GetSolutionStepValue(DISPLACEMENT_X),
                                   rGeometry[i].Y0() + rGeometry[i].GetSolutionStepValue(DISPLACEMENT_Y),
                                   rGeometry[i].Z0() + rGeometry[i].GetSolutionStepValue(DISPLACEMENT_Z));
 //                this->InsertPoint(rGeometry[i].X(), rGeometry[i].Y(), rGeometry[i].Z());
             }
-            else if(current_configuration == 0)
+            else if(TFrame == 0)
             {
                 this->InsertPoint(rGeometry[i].X0(), rGeometry[i].Y0(), rGeometry[i].Z0());
             }
@@ -353,7 +353,7 @@ private:
 /// Class Description:
 /// +   Abstract class for the spliting of nodes used for constructing the bounding volume tree in top-down approach
 /// +   The derivative of this class must implement the sub-routine Partition, where the set of elemental Ids is splitted in 2 parts.
-template<class ContainerType = ModelPart::ConditionsContainerType>
+template<int TFrame = 1, class ContainerType = ModelPart::ConditionsContainerType>
 class BoundingVolumePartitioner
 {
 public:
@@ -380,14 +380,23 @@ public:
         C[2] = 0.0;
         unsigned int n = rGeometry.size();
 
-        for(std::size_t i = 0; i < n; ++i)
+        if (TFrame == 0)
         {
-//            C[0] += rGeometry[i].X0() + rGeometry[i].GetSolutionStepValue(DISPLACEMENT_X);
-//            C[1] += rGeometry[i].Y0() + rGeometry[i].GetSolutionStepValue(DISPLACEMENT_Y);
-//            C[2] += rGeometry[i].Z0() + rGeometry[i].GetSolutionStepValue(DISPLACEMENT_Z);
-            C[0] += rGeometry[i].X();
-            C[1] += rGeometry[i].Y();
-            C[2] += rGeometry[i].Z();
+            for(std::size_t i = 0; i < n; ++i)
+            {
+                C[0] += rGeometry[i].X0();
+                C[1] += rGeometry[i].Y0();
+                C[2] += rGeometry[i].Z0();
+            }
+        }
+        else if (TFrame == 1)
+        {
+            for(std::size_t i = 0; i < n; ++i)
+            {
+                C[0] += rGeometry[i].X0() + rGeometry[i].GetSolutionStepValue(DISPLACEMENT_X);
+                C[1] += rGeometry[i].Y0() + rGeometry[i].GetSolutionStepValue(DISPLACEMENT_Y);
+                C[2] += rGeometry[i].Z0() + rGeometry[i].GetSolutionStepValue(DISPLACEMENT_Z);
+            }
         }
 
         C[0] /= n;
@@ -397,8 +406,8 @@ public:
 };
 
 
-template<class ContainerType = ModelPart::ConditionsContainerType>
-class SimpleBoundingVolumePartitioner : public BoundingVolumePartitioner<ContainerType>
+template<int TFrame = 1, class ContainerType = ModelPart::ConditionsContainerType>
+class SimpleBoundingVolumePartitioner : public BoundingVolumePartitioner<TFrame, ContainerType>
 {
 public:
     KRATOS_CLASS_POINTER_DEFINITION(SimpleBoundingVolumePartitioner);
@@ -474,8 +483,8 @@ public:
 };
 
 
-template<class ContainerType = ModelPart::ConditionsContainerType>
-class LineRegressionVolumePartitioner : public BoundingVolumePartitioner<ContainerType>
+template<int TFrame = 1, class ContainerType = ModelPart::ConditionsContainerType>
+class LineRegressionVolumePartitioner : public BoundingVolumePartitioner<TFrame, ContainerType>
 {
 public:
     KRATOS_CLASS_POINTER_DEFINITION(LineRegressionVolumePartitioner);
@@ -514,7 +523,7 @@ public:
 /// REFERENCE:
 /// +   Yang & Laursen, A contact searching algorithm including bounding volume trees applied to finite sliding mortar formulations
 /// +   Klosowski et al, Efficient collision detection using bounding volume hierarchies of k-DOPs
-template<class ContainerType = ModelPart::ConditionsContainerType>
+template<int TFrame = 1, class ContainerType = ModelPart::ConditionsContainerType>
 class BoundingVolumeTree
 {
 public:
@@ -543,7 +552,7 @@ public:
     virtual ~BoundingVolumeTree()
     {}
 
-    void BuildTreeTopDown(ContainerType& rAllConditions, BoundingVolumePartitioner<ContainerType>& rPartitioner)
+    void BuildTreeTopDown(ContainerType& rAllConditions, BoundingVolumePartitioner<TFrame, ContainerType>& rPartitioner)
     {
         mGeometryIds.clear();
         mpBV->Initialize();
@@ -590,7 +599,7 @@ public:
         {
             mpBV->Initialize();
             for(std::set<std::size_t>::iterator it = mGeometryIds.begin(); it != mGeometryIds.end(); ++it)
-                mpBV->InsertGeometry<1>(rAllConditions(*it)->GetGeometry());
+                mpBV->InsertGeometry<TFrame>(rAllConditions(*it)->GetGeometry());
         }
     }
 
@@ -598,7 +607,7 @@ public:
     {
         for(typename ContainerType::ptr_iterator it = rAllConditions.ptr_begin(); it != rAllConditions.ptr_end(); ++it)
         {
-            mpBV->InsertGeometry<1>((*it)->GetGeometry());
+            mpBV->InsertGeometry<TFrame>((*it)->GetGeometry());
             mGeometryIds.insert((*it)->Id());
         }
     }
