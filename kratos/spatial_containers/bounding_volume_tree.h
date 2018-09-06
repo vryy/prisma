@@ -66,6 +66,15 @@ public:
         std::fill(mMaxValues.begin(), mMaxValues.end(), -static_cast<double>(INT_MAX));
     }
 
+    /// Compute the normal coordinates of a point
+    std::vector<double> NormalCoordinates(const PointType& r_point) const
+    {
+        std::vector<double> coords(this->NumberOfDirections());
+        for(std::size_t i = 0; i < this->NumberOfDirections(); ++i)
+            coords[i] = NormalCoordinate(i, r_point[0], r_point[1], r_point[2]);
+        return coords;
+    }
+
     /// Check if the point is inside the bounding volume
     /// tolerance parameter is to account for proximity
     bool IsInside(const PointType& r_point, double tolerance) const
