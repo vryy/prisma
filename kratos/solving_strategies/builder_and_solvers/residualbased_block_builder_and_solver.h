@@ -887,25 +887,87 @@ public:
         std::size_t* Acol_indices = A.index2_data().begin();
 
         //detect if there is a line of all zeros and set the diagonal to a 1 if this happens
-        #pragma omp parallel for
-        for(int k = 0; k < static_cast<int>(system_size); ++k)
-        {
-            std::size_t col_begin = Arow_indices[k];
-            std::size_t col_end = Arow_indices[k+1];
-            bool empty = true;
-            for (std::size_t j = col_begin; j < col_end; ++j)
-            {
-                if(Avalues[j] != 0.0)
-                {
-                    empty = false;
-                    break;
-                }
-            }
+//        #pragma omp parallel for
+//        for(int k = 0; k < static_cast<int>(system_size); ++k)
+//        {
+//            std::size_t col_begin = Arow_indices[k];
+//            std::size_t col_end = Arow_indices[k+1];
+//            bool empty = true;
+//            for (std::size_t j = col_begin; j < col_end; ++j)
+//            {
+//                if(Avalues[j] != 0.0)
+//                {
+//                    empty = false;
+//                    break;
+//                }
+//            }
 
-            if(empty == true)
+//            if(empty == true)
+//            {
+//                std::cout << "WARNING: row " << k << " is zero and the diagonal is set to 1" << std::endl;
+//                A(k,k) = 1.0;
+//                b[k] = 0.0;
+//            }
+//        }
+
+        // iterate through all dofs to detect type of dofs in the system
+        // and compute the sum of diagonal according to each type of dofs
+        std::size_t key, row;
+        std::map<std::size_t, std::size_t> dof_numbers;
+        std::map<std::size_t, double> diag_values;
+        for (typename DofsArrayType::iterator dof_iterator = BaseType::mDofSet.begin(); dof_iterator != BaseType::mDofSet.end(); ++dof_iterator)
+        {
+            key = dof_iterator->GetVariable().Key();
+            row = dof_iterator->EquationId();
+            if (diag_values.find(key) != diag_values.end())
             {
-                A(k,k) = 1.0;
-                b[k] = 0.0;
+                ++dof_numbers[key];
+                diag_values[key] += A(row, row);
+            }
+            else
+            {
+                dof_numbers[key] = 0;
+                diag_values[key] = 0.0;
+            }
+        }
+
+        for (std::map<std::size_t, double>::iterator it = diag_values.begin(); it != diag_values.end(); ++it)
+            it->second /= dof_numbers[it->first];
+
+        // iterate through all dofs and set the respective diagonal
+        int number_of_threads = omp_get_max_threads();
+        vector<unsigned int> dofs_partition;
+        CreatePartition(number_of_threads, BaseType::mDofSet.size(), dofs_partition);
+
+        #pragma omp parallel for private(key, row) shared(diag_values)
+        for (int k = 0; k < number_of_threads; k++)
+        {
+            typename DofsArrayType::iterator dof_begin = BaseType::mDofSet.begin() + dofs_partition[k];
+            typename DofsArrayType::iterator dof_end = BaseType::mDofSet.begin() + dofs_partition[k+1];
+
+            for (typename DofsArrayType::iterator dof_iterator = dof_begin; dof_iterator != dof_end; ++dof_iterator)
+            {
+                key = dof_iterator->GetVariable().Key();
+                row = dof_iterator->EquationId();
+
+                std::size_t col_begin = Arow_indices[row];
+                std::size_t col_end = Arow_indices[row+1];
+                bool empty = true;
+                for (std::size_t j = col_begin; j < col_end; ++j)
+                {
+                    if(Avalues[j] != 0.0)
+                    {
+                        empty = false;
+                        break;
+                    }
+                }
+
+                if(empty == true)
+                {
+//                    std::cout << "WARNING: row " << row << " is zero and the diagonal is set to " << diag_values[key] << std::endl;
+                    A(row, row) = diag_values[key];
+                    b[row] = 0.0;
+                }
             }
         }
 
@@ -933,6 +995,10 @@ public:
                         Avalues[j] = 0.0;
             }
         }
+
+//        std::cout << "diagonal of the stiffness matrix:" << std::endl;
+//        for (std::size_t k = 0; k < A.size1(); ++k)
+//            std::cout << k << ": " << A(k, k) << std::endl;
     }
 
     //**************************************************************************
