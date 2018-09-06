@@ -508,46 +508,10 @@ public:
     ///@name Shape Function
     ///@{
 
-    //  virtual double ShapeFunctionValue(IndexType ShapeFunctionIndex,
-    //                                        const CoordinatesArrayType& rPoint) const
-    // {
-    //	    KRATOS_THROW_ERROR(std::logic_error,
-    //  "This method is not implemented yet!" , *this);
-    //   return 0;
-    //      }
-
-
-
-    //      virtual ShapeFunctionsGradientsType& ShapeFunctionsIntegrationPointsGradients(ShapeFunctionsGradientsType& rResult, IntegrationMethod ThisMethod) const
-    //	{
-    //		  KRATOS_THROW_ERROR(std::logic_error, "Jacobian is not square" , "");
-    //	}
-
-    /*
-
-
-         virtual void BoundingBox(Bounding_Box<TPointType>& rResult) const
-                 {
-                    this->BoundingBox(rResult.mLowPoint, rResult.mHighPoint);
-                 }
-
-
-          virtual void BoundingBox(TPointType& rLowPoint, TPointType& rHighPoint) const
-                 {
-
-                    array_1d<double,3 > point = ZeroVector(3);
-
-    		point[0] =  BaseType::GetPoint(0).X();
-    		point[1] =  BaseType::GetPoint(0).Y();
-    		point[2] =  BaseType::GetPoint(0).Z();
-
-                    /// WARNINGson oguales los high y low point
-    		rLowPoint.push_back(point);
-    		rHighPoint.push_back(point);
-
-                }
-
-    */
+    virtual double ShapeFunctionValue( IndexType ShapeFunctionIndex, const CoordinatesArrayType& rCoordinates ) const
+    {
+        return 1.0;
+    }
 
     ///@}
     ///@name Input and output
