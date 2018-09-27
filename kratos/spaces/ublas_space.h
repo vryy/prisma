@@ -187,18 +187,18 @@ public:
 
     /// rXi = rMij
 
-    static void GetColumn(unsigned int j, MatrixType& rM, VectorType& rX)
+    static void GetColumn(unsigned int j, const MatrixType& rM, VectorType& rX)
     {
-        rX = column(rM, j);
+        noalias(rX) = column(rM, j);
     }
 
 
     ///////////////////////////////// TODO: Take a close look to this method!!!!!!!!!!!!!!!!!!!!!!!!!
     /// rMij = rXi
 
-    static void SetColumn(unsigned int j, MatrixType& rM, VectorType& rX)
+    static void SetColumn(unsigned int j, MatrixType& rM, const VectorType& rX)
     {
-        rX = row(rM, j);
+        noalias(column(rM, j)) = rX;
     }
 
     /// rY = rX
