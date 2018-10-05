@@ -34,7 +34,7 @@ public:
 
     typedef IntegrationPointType::PointType PointType;
 
-    static constexpr SizeType IntegrationPointsNumber()
+    static SizeType IntegrationPointsNumber()
     {
         return 1;
     }
@@ -74,7 +74,7 @@ public:
 
     typedef IntegrationPointType::PointType PointType;
 
-    static constexpr SizeType IntegrationPointsNumber()
+    static SizeType IntegrationPointsNumber()
     {
         return 3;
     }
@@ -116,7 +116,7 @@ public:
 
     typedef IntegrationPointType::PointType PointType;
 
-    static constexpr SizeType IntegrationPointsNumber()
+    static SizeType IntegrationPointsNumber()
     {
         return 4;
     }
@@ -159,7 +159,7 @@ public:
 
     typedef IntegrationPointType::PointType PointType;
 
-    static constexpr SizeType IntegrationPointsNumber()    {  return 6; }
+    static SizeType IntegrationPointsNumber()    {  return 6; }
 
     static IntegrationPointsArrayType& IntegrationPoints()
     {
