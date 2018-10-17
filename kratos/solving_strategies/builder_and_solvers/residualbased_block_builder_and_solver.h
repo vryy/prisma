@@ -16,6 +16,9 @@
 
 /* System includes */
 #include <set>
+#include <iostream>
+#include <fstream>
+
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -31,8 +34,12 @@
 #include "includes/model_part.h"
 #include "includes/kratos_flags.h"
 
-// #include <iostream>
-// #include <fstream>
+//#define EXPORT_LHS_MATRIX
+//#define EXPORT_RHS_VECTOR
+//#define EXPORT_SOL_VECTOR
+
+//#define ENABLE_LOG
+#define QUERY_DOF_EQUATION_ID
 
 namespace Kratos
 {
@@ -146,17 +153,30 @@ public:
         typename TLinearSolver::Pointer pNewLinearSystemSolver)
         : BuilderAndSolver< TSparseSpace, TDenseSpace, TLinearSolver >(pNewLinearSystemSolver)
     {
-
-        /* 			std::cout << "using the standard builder and solver " << std::endl; */
-
+        #ifdef ENABLE_LOG
+        std::stringstream log_filename;
+        log_filename << this->LogFileName();
+        mLogFile.open(log_filename.str().c_str());
+        mLogFile.precision(15);
+        mLogFile.setf(std::ios_base::scientific, std::ios_base::floatfield);
+        #endif
+        mStepCounter = 0;
+        mLocalCounter = 0;
     }
 
     /** Destructor.
      */
     virtual ~ResidualBasedBlockBuilderAndSolver()
     {
+        #ifdef ENABLE_LOG
+        mLogFile.close();
+        #endif
     }
 
+    virtual std::string LogFileName() const
+    {
+        return "residualbased_block_builder_and_solver.log";
+    }
 
     /*@} */
     /**@name Operators
@@ -173,6 +193,13 @@ public:
         TSystemVectorType& b)
     {
         KRATOS_TRY
+
+        #ifdef ENABLE_LOG
+        std::stringstream ss;
+        ss << "residualbased_block_builder_and_solver_" << r_model_part.Name() << ".log";
+        std::rename("residualbased_block_builder_and_solver.log", ss.str().c_str());
+        #endif
+
         if (!pScheme)
             KRATOS_THROW_ERROR(std::runtime_error, "No scheme provided!", "");
 
@@ -230,9 +257,6 @@ public:
 
 #else
 
-
-
-
 //         std::size_t* Arow_indices = A.index1_data().begin();
 //         std::size_t* Acol_indices = A.index2_data().begin();
 //
@@ -263,11 +287,13 @@ public:
 
         vector<unsigned int> element_partition;
         CreatePartition(number_of_threads, pElements.size(), element_partition);
-        if( this->GetEchoLevel() > 2 && r_model_part.GetCommunicator().MyPID() == 0)
-        {
-            KRATOS_WATCH(number_of_threads);
-            KRATOS_WATCH(element_partition);
-        }
+//        if( this->GetEchoLevel() > 2 && r_model_part.GetCommunicator().MyPID() == 0)
+//        {
+//            KRATOS_WATCH(number_of_threads);
+//            KRATOS_WATCH(element_partition);
+//        }
+        KRATOS_WATCH(number_of_threads);
+        KRATOS_WATCH(element_partition);
 
 
         double start_build = OpenMPUtils::GetCurrentTime();
@@ -313,6 +339,7 @@ public:
 
         vector<unsigned int> condition_partition;
         CreatePartition(number_of_threads, ConditionsArray.size(), condition_partition);
+        KRATOS_WATCH(condition_partition);
 
         #pragma omp parallel for
         for (int k = 0; k < number_of_threads; k++)
@@ -370,6 +397,19 @@ public:
         //                        #pragma omp barrier
 #endif
 
+        #ifdef EXPORT_LHS_MATRIX
+        std::stringstream lhs_filename;
+        lhs_filename << "A_" << mStepCounter << "." << mLocalCounter << ".mm";
+        WriteMatrixMarketMatrix(lhs_filename.str().c_str(), A, false);
+        #endif
+        
+        #ifdef EXPORT_RHS_VECTOR
+        std::stringstream rhs_filename;
+        rhs_filename << "b_" << mStepCounter << "." << mLocalCounter << ".mm";
+        WriteMatrixMarketVector(rhs_filename.str().c_str(), b);
+        #endif
+
+        ++mLocalCounter;
 
         KRATOS_CATCH("")
 
@@ -516,6 +556,12 @@ public:
             std::cout << *(BaseType::mpLinearSystemSolver) << std::endl;
         }
 
+        #ifdef EXPORT_SOL_VECTOR
+        std::stringstream dx_filename;
+        dx_filename << "dx_" << mStepCounter << "." << mLocalCounter-1 << ".mm";
+        WriteMatrixMarketVector(dx_filename.str().c_str(), Dx);
+        #endif
+
         KRATOS_CATCH("")
 
     }
@@ -555,6 +601,12 @@ public:
         {
             std::cout << *(BaseType::mpLinearSystemSolver) << std::endl;
         }
+
+        #ifdef EXPORT_SOL_VECTOR
+        std::stringstream dx_filename;
+        dx_filename << "dx_" << mStepCounter << "." << mLocalCounter-1 << ".mm";
+        WriteMatrixMarketVector(dx_filename.str().c_str(), Dx);
+        #endif
 
         KRATOS_CATCH("")
 
@@ -732,7 +784,18 @@ public:
             dof_iterator->SetEquationId(free_id++);
 
         BaseType::mEquationSystemSize = BaseType::mDofSet.size();
+        KRATOS_WATCH(BaseType::mEquationSystemSize)
 
+        #if defined(ENABLE_LOG) && defined(QUERY_DOF_EQUATION_ID)
+        mLogFile << "SetUpSystem: try to probe equation id of all dofs of the current process" << std::endl;
+        mLogFile << "There are " << BaseType::mDofSet.size() << " dofs in the current process" << std::endl;
+//        mLogFile << "(* Step = " << mStepCounter << ", Substep = " << mLocalCounter << " *)" << std::endl;
+        for (typename DofsArrayType::iterator dof_iterator = BaseType::mDofSet.begin(); dof_iterator != BaseType::mDofSet.end(); ++dof_iterator)
+        {
+            mLogFile << "dof " << dof_iterator->GetVariable().Name() << ", node = " << dof_iterator->Id() << ", EquationId = " << dof_iterator->EquationId() << std::endl;
+        }
+        mLogFile << "#########################SetUpSystem completed####################" << std::endl;
+        #endif
     }
 
     //**************************************************************************
@@ -822,6 +885,8 @@ public:
         TSystemVectorType& Dx,
         TSystemVectorType& b)
     {
+        ++mStepCounter;
+        mLocalCounter = 0;
     }
 
 
@@ -1076,17 +1141,51 @@ protected:
     /**@name Protected member Variables */
     /*@{ */
 
+    #ifdef ENABLE_LOG
+    std::ofstream mLogFile;
+    #endif
+    unsigned int mLocalCounter;
+    unsigned int mStepCounter;
 
     /*@} */
     /**@name Protected Operators*/
     /*@{ */
+
+    //**************************************************************************
+
+    inline void CreatePartition(unsigned int number_of_threads, const int number_of_rows, vector<unsigned int>& partitions) const
+    {
+        partitions.resize(number_of_threads + 1);
+        int partition_size = number_of_rows / number_of_threads;
+        partitions[0] = 0;
+        partitions[number_of_threads] = number_of_rows;
+        for (unsigned int i = 1; i < number_of_threads; i++)
+            partitions[i] = partitions[i - 1] + partition_size;
+    }
+
+    //**************************************************************************
+
+    inline void AddUnique(std::vector<std::size_t>& v, const std::size_t& candidate) const
+    {
+        std::vector<std::size_t>::iterator i = v.begin();
+        std::vector<std::size_t>::iterator endit = v.end();
+        while (i != endit && (*i) != candidate)
+        {
+            i++;
+        }
+        if (i == endit)
+        {
+            v.push_back(candidate);
+        }
+    }
+
     //**************************************************************************
 
     virtual void ConstructMatrixStructure(
         TSystemMatrixType& A,
         ElementsContainerType& rElements,
         ConditionsArrayType& rConditions,
-        ProcessInfo& CurrentProcessInfo)
+        ProcessInfo& CurrentProcessInfo) const
     {
 
         std::size_t equation_size = A.size1();
@@ -1129,7 +1228,7 @@ protected:
         }
 
         //allocating the memory needed
-        int data_size = 0;
+        std::size_t data_size = 0;
         for (std::size_t i = 0; i < indices.size(); i++)
         {
             data_size += indices[i].size();
@@ -1186,7 +1285,7 @@ protected:
         TSystemMatrixType& A,
         LocalSystemMatrixType& LHS_Contribution,
         Element::EquationIdVectorType& EquationId
-    )
+    ) const
     {
         unsigned int local_size = LHS_Contribution.size1();
 
@@ -1201,10 +1300,7 @@ protected:
                 A(i_global, j_global) += LHS_Contribution(i_local, j_local);
             }
         }
-
     }
-
-
 
     //**************************************************************************
 
@@ -1212,7 +1308,7 @@ protected:
         TSystemVectorType& b,
         LocalSystemVectorType& RHS_Contribution,
         Element::EquationIdVectorType& EquationId
-    )
+    ) const
     {
         unsigned int local_size = RHS_Contribution.size();
 
@@ -1225,11 +1321,50 @@ protected:
             b[i_global] += RHS_Contribution[i_local];
 
         }
-
-
     }
 
+    //**************************************************************************
 
+#ifdef _OPENMP
+    void Assemble(
+        TSystemMatrixType& A,
+        TSystemVectorType& b,
+        const LocalSystemMatrixType& LHS_Contribution,
+        const LocalSystemVectorType& RHS_Contribution,
+        Element::EquationIdVectorType& EquationId,
+        std::vector< omp_lock_t >& lock_array
+    ) const
+    {
+        unsigned int local_size = LHS_Contribution.size1();
+
+        for (unsigned int i_local = 0; i_local < local_size; i_local++)
+        {
+            unsigned int i_global = EquationId[i_local];
+
+
+            omp_set_lock(&lock_array[i_global]);
+
+            b[i_global] += RHS_Contribution(i_local);
+
+            AssembleRowContribution(A, LHS_Contribution, i_global, i_local, EquationId);
+//                  for (unsigned int j_local = 0; j_local < local_size; j_local++)
+//                  {
+//                      unsigned int j_global = EquationId[j_local];
+//
+//                          A(i_global, j_global) += LHS_Contribution(i_local, j_local);
+//
+//
+//                  }
+            omp_unset_lock(&lock_array[i_global]);
+
+
+
+            //note that computation of reactions is not performed here!
+        }
+    }
+#endif
+
+    //**************************************************************************
 
     /*@} */
     /**@name Protected Operations*/
@@ -1262,6 +1397,7 @@ private:
     /*@} */
     /**@name Member Variables */
     /*@{ */
+
 
     /*@} */
     /**@name Private Operators*/
@@ -1296,24 +1432,8 @@ private:
         }
     }
 
-
     //******************************************************************************************
     //******************************************************************************************
-
-    inline void AddUnique(std::vector<std::size_t>& v, const std::size_t& candidate)
-    {
-        std::vector<std::size_t>::iterator i = v.begin();
-        std::vector<std::size_t>::iterator endit = v.end();
-        while (i != endit && (*i) != candidate)
-        {
-            i++;
-        }
-        if (i == endit)
-        {
-            v.push_back(candidate);
-        }
-
-    }
 
     void BuildRHSNoDirichlet(
         typename TSchemeType::Pointer pScheme,
@@ -1387,18 +1507,8 @@ private:
     //******************************************************************************************
     //******************************************************************************************
 
-    inline void CreatePartition(unsigned int number_of_threads, const int number_of_rows, vector<unsigned int>& partitions)
-    {
-        partitions.resize(number_of_threads + 1);
-        int partition_size = number_of_rows / number_of_threads;
-        partitions[0] = 0;
-        partitions[number_of_threads] = number_of_rows;
-        for (unsigned int i = 1; i < number_of_threads; i++)
-            partitions[i] = partitions[i - 1] + partition_size;
-    }
-
 #ifdef _OPENMP
-    inline void AssembleRowContribution(TSystemMatrixType& A, const Matrix& Alocal, const unsigned int i, const unsigned int i_local, Element::EquationIdVectorType& EquationId)
+    inline void AssembleRowContribution(TSystemMatrixType& A, const Matrix& Alocal, const unsigned int i, const unsigned int i_local, Element::EquationIdVectorType& EquationId) const
     {
         double* values_vector = A.value_data().begin();
         std::size_t* index1_vector = A.index1_data().begin();
@@ -1427,49 +1537,13 @@ private:
             last_pos = pos;
         }
     }
-
-    void Assemble(
-        TSystemMatrixType& A,
-        TSystemVectorType& b,
-        const LocalSystemMatrixType& LHS_Contribution,
-        const LocalSystemVectorType& RHS_Contribution,
-        Element::EquationIdVectorType& EquationId,
-        std::vector< omp_lock_t >& lock_array
-    )
-    {
-        unsigned int local_size = LHS_Contribution.size1();
-
-        for (unsigned int i_local = 0; i_local < local_size; i_local++)
-        {
-            unsigned int i_global = EquationId[i_local];
-
-
-            omp_set_lock(&lock_array[i_global]);
-
-            b[i_global] += RHS_Contribution(i_local);
-
-            AssembleRowContribution(A, LHS_Contribution, i_global, i_local, EquationId);
-//                  for (unsigned int j_local = 0; j_local < local_size; j_local++)
-//                  {
-//                      unsigned int j_global = EquationId[j_local];
-//
-//                          A(i_global, j_global) += LHS_Contribution(i_local, j_local);
-//
-//
-//                  }
-            omp_unset_lock(&lock_array[i_global]);
-
-
-
-            //note that computation of reactions is not performed here!
-        }
-    }
 #endif
 
+    //******************************************************************************************
 
     inline unsigned int ForwardFind(const unsigned int id_to_find,
                                     const unsigned int start,
-                                    const size_t* index_vector)
+                                    const size_t* index_vector) const
     {
         unsigned int pos = start;
         while(id_to_find != index_vector[pos]) pos++;
@@ -1478,7 +1552,7 @@ private:
 
     inline unsigned int BackwardFind(const unsigned int id_to_find,
                                      const unsigned int start,
-                                     const size_t* index_vector)
+                                     const size_t* index_vector) const
     {
         unsigned int pos = start;
         while(id_to_find != index_vector[pos]) pos--;
@@ -1513,5 +1587,11 @@ private:
 /*@} */
 
 } /* namespace Kratos.*/
+
+#undef ENABLE_LOG
+#undef QUERY_DOF_EQUATION_ID
+#undef EXPORT_LHS_MATRIX
+#undef EXPORT_RHS_VECTOR
+#undef EXPORT_SOL_VECTOR
 
 #endif /* KRATOS_RESIDUAL_BASED_BLOCK_BUILDER_AND_SOLVER  defined */
