@@ -70,9 +70,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 //#define BUILDER_AND_SOLVER_DEBUG_LEVEL1
 //#define BUILDER_AND_SOLVER_DEBUG_LEVEL2
-//#define EXPORT_LHS_MATRIX
-//#define EXPORT_RHS_VECTOR
-//#define EXPORT_SOL_VECTOR
+/*#define EXPORT_LHS_MATRIX*/
+/*#define EXPORT_RHS_VECTOR*/
+/*#define EXPORT_SOL_VECTOR*/
 // #define EXPORT_LHS_MATRIX_SAMPLING
 // #define EXPORT_RHS_VECTOR_SAMPLING
 // #define EXPORT_SOL_VECTOR_SAMPLING
@@ -1598,7 +1598,7 @@ protected:
         }
 
         //allocating the memory needed
-        int data_size = 0;
+        std::size_t data_size = 0;
         for(std::size_t i = 0; i < indices.size(); ++i)
             data_size += indices[i].size();
         A.reserve(data_size, false);

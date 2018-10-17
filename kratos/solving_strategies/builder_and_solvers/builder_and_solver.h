@@ -544,7 +544,7 @@ public:
         mEchoLevel = Level;
     }
 
-    int GetEchoLevel()
+    int GetEchoLevel() const
     {
         return mEchoLevel;
     }
