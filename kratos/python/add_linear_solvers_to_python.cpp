@@ -107,6 +107,7 @@ void  AddLinearSolversToPython()
     .def("Initialize",&LinearSolverType::Initialize)
     .def("Solve",pointer_to_solve)
     .def("Clear",&LinearSolverType::Clear)
+    .def("SetEchoLevel", &LinearSolverType::SetEchoLevel)
     //.def("",&LinearSolverType::)
     .def(self_ns::str(self))
     ;
