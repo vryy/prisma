@@ -355,6 +355,13 @@ private:
 
             BaseType::mResidualNorm = sqrt(roh1);
             BaseType::mIterationsNumber++;
+
+            if (this->GetEchoLevel() > 0)
+            {
+                std::cout << "CGSolver iteration #" << BaseType::mIterationsNumber
+                          << ", normr = " << sqrt(roh1) << ", tol = " << this->GetTolerance()
+                          << std::endl;
+            }
         }
         while(BaseType::IterationNeeded() && (fabs(roh0) > 1.0e-30)/*(roh0 != 0.00)*/);
 
