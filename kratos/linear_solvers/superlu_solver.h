@@ -214,42 +214,32 @@ public:
      */
     bool Solve(SparseMatrixType& rA, DenseMatrixType& rX, DenseMatrixType& rB)
     {
-        /**
-         * TODO:
-             * translate SparseMatrixType into SuperMatrix
-             * call solving routine from SuperLU
-         */
-//                 slu::gssv ( rA, rB, slu::atpla_min_degree);
+        //std::cout << "matrix size in solver: " << rA.size1() << std::endl;
+        //std::cout << "RHS size in solver: " << rB.size() << std::endl;
+        typedef boost::numeric::bindings::traits::sparse_matrix_traits<SparseMatrixType> matraits;
+        typedef typename matraits::value_type val_t;
 
-//                 std::cout<<"Matrix Test:"<<std::endl;
-//                 std::cout<<"boost matrix:"<<std::endl;
-//                 KRATOS_WATCH( rA );
-        //             const int size1 = TDenseSpaceType::Size1(rX);
-//             const int size2 = TDenseSpaceType::Size2(rX);
+        typedef ublas::compressed_matrix<double, ublas::row_major, 0,
+                ublas::unbounded_array<int>, ublas::unbounded_array<double> > cm_t;
+        typedef ublas::matrix<double, ublas::row_major> m_t;
 
-        bool is_solved = true;
+        if(IsNotConsistent(rA, rX, rB))
+            return false;
 
-//             VectorType x(size1);
-//             VectorType b(size1);
+        //manually create RHS matrix
+        m_t b( rB.size1(), rB.size2() );
+        for( int i=0; i<rB.size1(); i++ )
+            for( int j=0; j<rB.size2(); j++ )
+                b(i, j) = rB(i, j);
 
-        // define an object to store skyline matrix and factorization
-//             LUSkylineFactorization<TSparseSpaceType, TDenseSpaceType> myFactorization;
-        // copy myMatrix into skyline format
-//             myFactorization.copyFromCSRMatrix(rA);
-        // factorize it
-//             myFactorization.factorize();
+        //call solver routine
+        slu::gssv (rA, b, slu::atpla_min_degree);
 
-//             for(int i = 0 ; i < size2 ; i++)
-//             {
-//                 TDenseSpaceType::GetColumn(i,rX, x);
-//                 TDenseSpaceType::GetColumn(i,rB, b);
-
-        // and back solve
-//                 myFactorization.backForwardSolve(size1, b, x);
-
-//                 TDenseSpaceType::SetColumn(i,rX, x);
-//                 TDenseSpaceType::SetColumn(i,rB, b);
-//             }
+        //resubstitution of results
+/*        for( int i=0; i<rB.size(); i++ )*/
+/*            for( int j=0; j<rB.size2(); j++ )*/
+/*                rX(i, j) = b(i, j);*/
+        noalias(rX) = b;
 
         return is_solved;
     }
