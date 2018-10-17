@@ -129,13 +129,13 @@ public:
     ///@{
 
     /// Default constructor.
-    LinearSolver() : mpReorderer(new TReordererType()) {}
+    LinearSolver() : mpReorderer(new TReordererType()), mEchoLevel(0) {}
 
     /// Constructor with specific reorderer.
-    LinearSolver(TReordererType NewReorderer) : mpReorderer(NewReorderer) {}
+    LinearSolver(TReordererType NewReorderer) : mpReorderer(NewReorderer), mEchoLevel(0) {}
 
     /// Copy constructor.
-    LinearSolver(const LinearSolver& Other) : mpReorderer(Other.mpReorderer) {}
+    LinearSolver(const LinearSolver& Other) : mpReorderer(Other.mpReorderer), mEchoLevel(0) {}
 
     /// Destructor.
     virtual ~LinearSolver() {}
@@ -149,7 +149,7 @@ public:
     LinearSolver& operator=(const LinearSolver& Other)
     {
         mpReorderer = Other.mpReorderer;
-
+        mEchoLevel = Other.mEchoLevel;
         return *this;
     }
 
@@ -276,6 +276,16 @@ public:
     ///@}
     ///@name Access
     ///@{
+
+    virtual void SetEchoLevel(const int& EchoLevel)
+    {
+        mEchoLevel = EchoLevel;
+    }
+
+    const int& GetEchoLevel() const
+    {
+        return mEchoLevel;
+    }
 
     virtual typename TReordererType::Pointer GetReorderer(void)
     {
@@ -410,6 +420,7 @@ private:
 
     /// A counted pointer to the reorderer object.
     typename TReordererType::Pointer mpReorderer;
+    int mEchoLevel;
 
     ///@}
     ///@name Private Operators
