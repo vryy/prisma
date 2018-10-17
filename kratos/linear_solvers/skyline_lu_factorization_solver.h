@@ -502,7 +502,7 @@ public:
     //*
     //***************************************************************************************************
     /* bugfix janosch void backForwardSolve(int vector_size, Vector<double>& b, Vector<double>& x) // n, b, x*/
-    void backForwardSolve(int vector_size, const VectorType& b, VectorType& x) // n, b, x
+    void backForwardSolve(int vector_size, const VectorType& b, VectorType& x) const // n, b, x
     {
         // y = L^-1 * perm[b] ;
         // y = U^-1 * y ;
@@ -601,7 +601,7 @@ public:
         if(this->IsNotConsistent(rA, rX, rB))
             return false;
 
-        const int size = TSparseSpaceType::Size(rX);
+        const std::size_t size = TSparseSpaceType::Size(rX);
 
         // define an object to store skyline matrix and factorization
         LUSkylineFactorization<TSparseSpaceType, TDenseSpaceType> myFactorization;
@@ -627,8 +627,8 @@ public:
     */
     bool Solve(SparseMatrixType& rA, DenseMatrixType& rX, DenseMatrixType& rB)
     {
-        const int size1 = TDenseSpaceType::Size1(rX);
-        const int size2 = TDenseSpaceType::Size2(rX);
+        const std::size_t size1 = TDenseSpaceType::Size1(rX);
+        const std::size_t size2 = TDenseSpaceType::Size2(rX);
 
         bool is_solved = true;
 
