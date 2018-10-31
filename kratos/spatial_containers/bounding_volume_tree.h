@@ -627,6 +627,9 @@ public:
 
     bool CheckValidity() const
     {
+        if(mGeometryIds.size() == 0)
+            return true;
+
         if(this->IsLeaf() && mGeometryIds.size() != 1)
             return false;
         else
