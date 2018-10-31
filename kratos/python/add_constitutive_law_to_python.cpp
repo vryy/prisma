@@ -56,9 +56,11 @@ typedef Mesh<Node<3>, Properties, Element, Condition> MeshType;
 template<class TVariableType> bool ConstitutiveLawHas(ConstitutiveLaw& this_constitutive_law, TVariableType const& rThisVariable) { return this_constitutive_law.Has(rThisVariable); }
 
 //dirty trick. give back a copy instead of a reference
-template<class TDataType> const TDataType ConstitutiveLawGetValue(ConstitutiveLaw& this_constitutive_law, const Variable<TDataType >& rThisVariable, TDataType& value ) 
+//template<class TDataType> const TDataType ConstitutiveLawGetValue(ConstitutiveLaw& this_constitutive_law, const Variable<TDataType >& rThisVariable, TDataType& value ) 
+template<class TDataType> const TDataType ConstitutiveLawGetValue(ConstitutiveLaw& this_constitutive_law, const Variable<TDataType >& rThisVariable )
 { 
-    TDataType tmp = this_constitutive_law.GetValue(rThisVariable, value);
+    TDataType tmp;
+    tmp = this_constitutive_law.GetValue(rThisVariable, tmp);
     return tmp;
 }
 template<class TDataType> void ConstitutiveLawSetValue(ConstitutiveLaw& this_constitutive_law, const Variable<TDataType>& rThisVariable, const TDataType& value, const ProcessInfo& rCurrentProcessInfo)
@@ -152,16 +154,19 @@ void  AddConstitutiveLawToPython()
     .def("IsIncremental",&ConstitutiveLaw::IsIncremental)
     .def("WorkingSpaceDimension",&ConstitutiveLaw::WorkingSpaceDimension)
     .def("GetStrainSize",&ConstitutiveLaw::GetStrainSize)   
+    .def("Has", &ConstitutiveLawHas< Variable<bool> >)
     .def("Has", &ConstitutiveLawHas< Variable<int> >)
     .def("Has", &ConstitutiveLawHas< Variable<double> >)
     .def("Has", &ConstitutiveLawHas< Variable<array_1d<double,3> > >)
     .def("Has", &ConstitutiveLawHas< Variable<Vector> >)
     .def("Has", &ConstitutiveLawHas< Variable<Matrix> >)
+    .def("GetValue", &ConstitutiveLawGetValue<bool> )
     .def("GetValue", &ConstitutiveLawGetValue<int> )
     .def("GetValue", &ConstitutiveLawGetValue<double> )
     .def("GetValue", &ConstitutiveLawGetValue<array_1d<double,3>  >)
     .def("GetValue", &ConstitutiveLawGetValue<Vector >)
     .def("GetValue", &ConstitutiveLawGetValue<Matrix >)
+    .def("SetValue", &ConstitutiveLawSetValue<bool> )
     .def("SetValue", &ConstitutiveLawSetValue<int> )
     .def("SetValue", &ConstitutiveLawSetValue<double> )
     .def("SetValue", &ConstitutiveLawSetValue<array_1d<double,3>  >)
