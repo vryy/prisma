@@ -539,6 +539,10 @@ void  AddMeshToPython()
     .def("Initialize", &Element::Initialize)
     //.def("CalculateLocalSystem", &Element::CalculateLocalSystem)
     .def("Check", &Element::Check)
+    .def("InitializeSolutionStep", &Element::InitializeSolutionStep)
+    .def("InitializeNonLinearIteration", &Element::InitializeNonLinearIteration)
+    .def("FinalizeNonLinearIteration", &Element::FinalizeNonLinearIteration)
+    .def("FinalizeSolutionStep", &Element::FinalizeSolutionStep)
     .def(self_ns::str(self))
     ;
 
