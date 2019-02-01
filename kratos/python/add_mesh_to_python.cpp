@@ -114,6 +114,11 @@ boost::python::list GetNodesFromElement( Element& dummy )
     return( nodes_list );
 }
 
+Element::GeometryType::Pointer GetGeometryFromElement( Element& dummy )
+{
+    return dummy.pGetGeometry();
+}
+
 NodeType::Pointer GetNodeFromCondition( Condition& dummy, unsigned int index )
 {
     return( dummy.GetGeometry().pGetPoint(index) );
@@ -127,6 +132,11 @@ boost::python::list GetNodesFromCondition( Condition& dummy )
         nodes_list.append( dummy.GetGeometry().pGetPoint(i) );
     }
     return( nodes_list );
+}
+
+Condition::GeometryType::Pointer GetGeometryFromCondition( Condition& dummy )
+{
+    return dummy.pGetGeometry();
 }
 
 boost::python::list GetIntegrationPointsFromElement( Element& dummy )
@@ -489,10 +499,16 @@ void  AddMeshToPython()
     .def("SetValue", SetValueHelperFunction< Element, Variable< ConstitutiveLaw::Pointer > >)
     .def("GetValue", GetValueHelperFunction< Element, Variable< ConstitutiveLaw::Pointer > >)
 
+    .def("__setitem__", SetValueHelperFunction< Element, Variable< std::string > >)
+    .def("__getitem__", GetValueHelperFunction< Element, Variable< std::string > >)
+    .def("Has", HasHelperFunction< Element, Variable< std::string > >)
+    .def("SetValue", SetValueHelperFunction< Element, Variable< std::string > >)
+    .def("GetValue", GetValueHelperFunction< Element, Variable< std::string > >)
 
     .def("GetArea", GetAreaFromElement )
     .def("GetNode", GetNodeFromElement )
     .def("GetNodes", GetNodesFromElement )
+    .def("GetGeometry", GetGeometryFromElement )
     .def("GetIntegrationPoints", GetIntegrationPointsFromElement )
     .def("CalculateOnIntegrationPoints", CalculateOnIntegrationPointsVector)
     .def("GetValuesOnIntegrationPoints", GetValuesOnIntegrationPointsDouble<Element>)
@@ -594,8 +610,15 @@ void  AddMeshToPython()
     .def("SetValue", SetValueHelperFunction< Condition, Variable< bool > >)
     .def("GetValue", GetValueHelperFunction< Condition, Variable< bool > >)
 
+    .def("__setitem__", SetValueHelperFunction< Condition, Variable< std::string > >)
+    .def("__getitem__", GetValueHelperFunction< Condition, Variable< std::string > >)
+    .def("Has", HasHelperFunction< Condition, Variable< std::string > >)
+    .def("SetValue", SetValueHelperFunction< Condition, Variable< std::string > >)
+    .def("GetValue", GetValueHelperFunction< Condition, Variable< std::string > >)
+
     .def("GetNode", GetNodeFromCondition )
     .def("GetNodes", GetNodesFromCondition )
+    .def("GetGeometry", GetGeometryFromCondition )
 
     .def("GetValuesOnIntegrationPoints", GetValuesOnIntegrationPointsDouble<Condition>)
     .def("GetValuesOnIntegrationPoints", GetValuesOnIntegrationPointsArray1d<Condition>)
