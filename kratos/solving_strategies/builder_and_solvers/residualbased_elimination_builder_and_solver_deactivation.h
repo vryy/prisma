@@ -70,9 +70,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 //#define BUILDER_AND_SOLVER_DEBUG_LEVEL1
 //#define BUILDER_AND_SOLVER_DEBUG_LEVEL2
-/*#define EXPORT_LHS_MATRIX*/
-/*#define EXPORT_RHS_VECTOR*/
-/*#define EXPORT_SOL_VECTOR*/
+//#define EXPORT_LHS_MATRIX
+//#define EXPORT_RHS_VECTOR
+//#define EXPORT_LOCAL_LHS_MATRIX
+//#define EXPORT_SOL_VECTOR
 // #define EXPORT_LHS_MATRIX_SAMPLING
 // #define EXPORT_RHS_VECTOR_SAMPLING
 // #define EXPORT_SOL_VECTOR_SAMPLING
@@ -98,6 +99,29 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // #ifdef ENABLE_SYSTEM_REORDERING
 // #include "utilities/rcm_utils.h"
 // #endif
+
+#define MODIFY_INACTIVE_PART_OF_THE_MATRIX
+#define MODIFY_NEGATIVE_DIAGONAL
+
+#ifdef ENABLE_LOG
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/attributes.hpp>
+#include <boost/log/expressions.hpp>
+#include <boost/log/sinks/sync_frontend.hpp>
+#include <boost/log/sinks/text_ostream_backend.hpp>
+#include <boost/log/sources/severity_logger.hpp>
+#include <boost/log/sources/record_ostream.hpp>
+#include <boost/log/utility/setup/common_attributes.hpp>
+
+BOOST_LOG_ATTRIBUTE_KEYWORD(my_timestamp, "TimeStamp", boost::log::attributes::local_clock::value_type)
+BOOST_LOG_ATTRIBUTE_KEYWORD(my_process_id, "ProcessID", boost::log::attributes::current_process_id::value_type)
+BOOST_LOG_ATTRIBUTE_KEYWORD(my_thread_id, "ThreadID", boost::log::attributes::current_thread_id::value_type)
+
+#define MY_LOG_TRACE BOOST_LOG_SEV(m_log_level, boost::log::trivial::trace)
+
+#endif
 
 
 namespace Kratos
@@ -219,9 +243,7 @@ public:
         #ifdef ENABLE_LOG
         std::stringstream log_filename;
         log_filename << "residualbased_elimination_builder_and_solver_deactivation.log";
-        mLogFile.open(log_filename.str().c_str());
-        mLogFile.precision(15);
-        mLogFile.setf(std::ios_base::scientific, std::ios_base::floatfield);
+        this->init_logging(log_filename.str());
         #endif
         mLocalCounter = 0;
         mStepCounter = 0;
@@ -232,9 +254,6 @@ public:
     */
     virtual ~ResidualBasedEliminationBuilderAndSolverDeactivation()
     {
-        #ifdef ENABLE_LOG
-        mLogFile.close();
-        #endif
     }
 
 
@@ -242,6 +261,32 @@ public:
     /**@name Operators
     */
     /*@{ */
+
+    #ifdef ENABLE_LOG
+    void init_logging(const std::string& filename)
+    {
+        typedef boost::log::sinks::synchronous_sink<boost::log::sinks::text_ostream_backend> text_sink_t;
+        boost::shared_ptr<text_sink_t> sink = boost::make_shared<text_sink_t>();
+
+        sink->locked_backend()->add_stream(boost::make_shared<std::ofstream>(filename));
+
+        // Set the formatter
+        sink->set_formatter
+        (
+            boost::log::expressions::stream
+                #ifdef ENABLE_LOG_TIMESTAMP
+                << "[" << my_timestamp << "]"
+                #endif
+                #ifdef ENABLE_LOG_PROCESS_AND_THREAD_ID
+                << " [" my_process_id << ":" << my_thread_id << "] "
+                #endif
+                << boost::log::expressions::smessage
+        );
+
+        boost::log::core::get()->add_sink(sink);
+        boost::log::add_common_attributes();
+    }
+    #endif
 
     //**************************************************************************
     //**************************************************************************
@@ -289,10 +334,12 @@ public:
                 pScheme->CalculateSystemContributions(*it,LHS_Contribution,RHS_Contribution,EquationId,CurrentProcessInfo);
                 
                 #if defined(ENABLE_LOG) && defined(QUERY_EQUATION_ID_AT_BUILD)
-                mLogFile << "Element " << (*it)->Id() << " is accounted for Build, EquationId:";
+                std::stringstream ss;
+                ss << "Element " << (*it)->Id() << " is accounted for Build, EquationId:";
                 for(unsigned int i = 0; i < EquationId.size(); ++i)
-                    mLogFile << " " << EquationId[i];
-                mLogFile << std::endl;
+                    ss << " " << EquationId[i];
+                ss << std::endl;
+                MY_LOG_TRACE << ss.str();
                 #endif
 
                 //assemble the elemental contribution
@@ -320,10 +367,12 @@ public:
                 pScheme->Condition_CalculateSystemContributions(*it,LHS_Contribution,RHS_Contribution,EquationId,CurrentProcessInfo);
                 
                 #if defined(ENABLE_LOG) && defined(QUERY_EQUATION_ID_AT_BUILD)
-                mLogFile << "Condition " << (*it)->Id() << " is accounted for Build, EquationId:";
+                std::stringstream ss;
+                ss << "Condition " << (*it)->Id() << " is accounted for Build, EquationId:";
                 for(unsigned int i = 0; i < EquationId.size(); ++i)
-                    mLogFile << " " << EquationId[i];
-                mLogFile << std::endl;
+                    ss << " " << EquationId[i];
+                ss << std::endl;
+                MY_LOG_TRACE << ss.str();
                 #endif
 
                 //assemble the elemental contribution
@@ -336,6 +385,104 @@ public:
         }
 #else
 //        KRATOS_WATCH("in Build: openmp initial");
+
+        #ifdef MODIFY_INACTIVE_PART_OF_THE_MATRIX
+        std::set<std::size_t> ActiveIdSet;
+        std::set<std::size_t> InactiveIdSet;
+        ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
+        for (typename ElementsArrayType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
+        {
+            (*it)->EquationIdVector(EquationId, CurrentProcessInfo);
+
+            if( !(*it)->GetValue( IS_INACTIVE ) || (*it)->Is( ACTIVE ) )
+            {
+                // for active elements, the equation id set is stored
+                for(unsigned int i = 0; i < EquationId.size(); ++i)
+                {
+                    if(EquationId[i] < BaseType::mEquationSystemSize)
+                        ActiveIdSet.insert(EquationId[i]);
+                }
+            }
+            else
+            // for IS_INACTIVE elements, the EquationId is stored to modify the diagonal later on
+            {
+                (*it)->EquationIdVector(EquationId, CurrentProcessInfo);
+                for(unsigned int i = 0; i < EquationId.size(); ++i)
+                {
+                    if(EquationId[i] < BaseType::mEquationSystemSize)
+                        InactiveIdSet.insert(EquationId[i]);
+                }
+            }
+        }
+
+        for (typename ConditionsArrayType::ptr_iterator it = ConditionsArray.ptr_begin(); it != ConditionsArray.ptr_end(); ++it)
+        {
+            (*it)->EquationIdVector(EquationId, CurrentProcessInfo);
+
+            if( !(*it)->GetValue( IS_INACTIVE ) || (*it)->Is( ACTIVE ) )
+            {
+                // for active conditions, the equation id set is stored
+                for(unsigned int i = 0; i < EquationId.size(); ++i)
+                {
+                    if(EquationId[i] < BaseType::mEquationSystemSize)
+                        ActiveIdSet.insert(EquationId[i]);
+                }
+            }
+            else
+            // for IS_INACTIVE conditions, the EquationId is stored to modify the diagonal later on
+            {
+                (*it)->EquationIdVector(EquationId, CurrentProcessInfo);
+                for(unsigned int i = 0; i < EquationId.size(); ++i)
+                {
+                    if(EquationId[i] < BaseType::mEquationSystemSize)
+                        InactiveIdSet.insert(EquationId[i]);
+                }
+            }
+        }
+
+        // for debugging: to check if all the active ids & inactive ids fully cover the range of mEquationSystemSize
+        #ifdef ENABLE_LOG
+        std::set<std::size_t> AllIdSet = ActiveIdSet;
+        AllIdSet.merge(InactiveIdSet);
+        std::stringstream ss1;
+        int cnt = 0;
+        ss1 << "AllIdSet:" << std::endl;
+        for(std::set<std::size_t>::iterator it = AllIdSet.begin(); it != AllIdSet.end(); ++it)
+        {
+            ss1 << " " << (*it);
+            ++cnt;
+            if (cnt == 30)
+            {
+                ss1 << std::endl;
+                cnt = 0;
+            }
+        }
+        ss1 << std::endl;
+        MY_LOG_TRACE << ss1.str();
+        #endif
+
+        // remove the duplicated ids
+        std::vector<std::size_t> tempVector(InactiveIdSet.size());
+        std::vector<std::size_t>::iterator it
+            = std::set_difference(InactiveIdSet.begin(), InactiveIdSet.end(),
+                                 ActiveIdSet.begin(), ActiveIdSet.end(),
+                                 tempVector.begin());
+        tempVector.resize(it - tempVector.begin());
+
+        InactiveIdSet.clear();
+        for(std::vector<std::size_t>::iterator it = tempVector.begin(); it != tempVector.end(); ++it)
+            InactiveIdSet.insert(*it);
+
+        // size check
+        std::cout << "There are " << ActiveIdSet.size() << " active id's and " << InactiveIdSet.size() << " inactive id's" << std::endl;
+        if((ActiveIdSet.size() + InactiveIdSet.size()) != BaseType::mEquationSystemSize)
+        {
+            KRATOS_WATCH(ActiveIdSet.size())
+            KRATOS_WATCH(InactiveIdSet.size())
+            KRATOS_WATCH(BaseType::mEquationSystemSize)
+            KRATOS_THROW_ERROR(std::logic_error, "Error: The active set of equation id's and inactive set of equation id's do not cover whole mEquationSystemSize. Check the enumeration.", __FUNCTION__)
+        }
+        #endif
 
         std::vector< omp_lock_t > lock_array(A.size1());
 
@@ -356,12 +503,12 @@ public:
 //        KRATOS_WATCH("in Build: before thread looping for elements");
 
         double DiagonalSum = 0.0;
-        std::vector<std::set<std::size_t> > InactiveEquationIds(number_of_threads);
-        std::vector<std::set<std::size_t> > ActiveEquationIds(number_of_threads);
 
-        #pragma omp parallel for
+        #pragma omp parallel for reduction(+:DiagonalSum)
         for(int k = 0; k < number_of_threads; ++k)
         {
+//            std::cout << "thread " << k << " is spawned" << std::endl;
+
             //contributions to the system
             LocalSystemMatrixType LHS_Contribution = LocalSystemMatrixType(0, 0);
             LocalSystemVectorType RHS_Contribution = LocalSystemVectorType(0);
@@ -383,15 +530,28 @@ public:
                     
 //                    KRATOS_WATCH(LHS_Contribution);
 //                    KRATOS_WATCH(RHS_Contribution);
-                    
+                    #ifdef EXPORT_LOCAL_LHS_MATRIX
+                    std::stringstream lhs_filename;
+                    lhs_filename << "ke_" << mStepCounter << "_" << mLocalCounter << "_" << (*it)->Id() << ".mm";
+                    CompressedMatrix tmp_lhs = LHS_Contribution;
+                    WriteMatrixMarketMatrix(lhs_filename.str().c_str(), tmp_lhs, false);
+
+                    std::stringstream eqid_filename;
+                    eqid_filename << "eq_" << mStepCounter << "_" << mLocalCounter << "_" << (*it)->Id() << ".txt";
+                    std::ofstream eqfid;
+                    eqfid.open(eqid_filename.str().c_str());
+                    for (std::size_t i = 0; i < EquationId.size(); ++i)
+                        eqfid << EquationId[i] << std::endl;
+                    eqfid.close();
+                    #endif
+
                     #if defined(ENABLE_LOG) && defined(QUERY_EQUATION_ID_AT_BUILD)
-                    #pragma omp critical
-                    {
-                        mLogFile << "Element " << (*it)->Id() << " is accounted for Build, EquationId:";
-                        for(unsigned int i = 0; i < EquationId.size(); ++i)
-                            mLogFile << " " << EquationId[i];
-                        mLogFile << std::endl;
-                    }
+                    std::stringstream ss;
+                    ss << "Element " << (*it)->Id() << " is accounted for Build, EquationId:";
+                    for(unsigned int i = 0; i < EquationId.size(); ++i)
+                        ss << " " << EquationId[i];
+                    ss << std::endl;
+                    MY_LOG_TRACE << ss.str();
                     #endif
 
                     //assemble the elemental contribution
@@ -399,13 +559,6 @@ public:
                     // clean local elemental memory
                     pScheme->CleanMemory(*it);
                     
-                    // for active elements, the equation id set is stored
-                    for(unsigned int i = 0; i < EquationId.size(); ++i)
-                    {
-                        if(EquationId[i] < BaseType::mEquationSystemSize)
-                            ActiveEquationIds[k].insert(EquationId[i]);
-                    }
-                        
                     //compute sum of the diagonal
                     double LocalDiagonalSum = 0.0;
                     for(unsigned int i = 0; i < EquationId.size(); ++i)
@@ -413,23 +566,13 @@ public:
                         if(EquationId[i] < BaseType::mEquationSystemSize)
                             LocalDiagonalSum += LHS_Contribution(i, i);
                     }
-                    
+
                     //update the global diagonal sum
-                    #pragma omp atomic
                     DiagonalSum += LocalDiagonalSum;
-                }
-                else
-                // for IS_INACTIVE elements, the EquationId is stored to modify the diagonal later on
-                {
-                    (*it)->EquationIdVector(EquationId, CurrentProcessInfo);
-                    for(unsigned int i = 0; i < EquationId.size(); ++i)
-                    {
-                        if(EquationId[i] < BaseType::mEquationSystemSize)
-                            InactiveEquationIds[k].insert(EquationId[i]);
-                    }
                 }
             }
         }
+        std::cout << "Element assembly completed" << std::endl;
 
         vector<unsigned int> condition_partition;
         CreatePartition(number_of_threads, ConditionsArray.size(), condition_partition);
@@ -437,7 +580,7 @@ public:
 
 //        KRATOS_WATCH("in Build: before thread looping for conditions");
 
-        #pragma omp parallel for
+        #pragma omp parallel for reduction(+:DiagonalSum)
         for(int k = 0; k < number_of_threads; ++k)
         {
             //contributions to the system
@@ -456,30 +599,23 @@ public:
             {
                 if( !(*it)->GetValue( IS_INACTIVE ) || (*it)->Is( ACTIVE ) )
                 {
+//                    std::cout << "Condition " << (*it)->Id() << " is considerred, type: " << typeid(*(*it)).name() << std::endl;
                     //calculate elemental contribution
                     pScheme->Condition_CalculateSystemContributions(*it,LHS_Contribution,RHS_Contribution,EquationId,CurrentProcessInfo);
 
                     #if defined(ENABLE_LOG) && defined(QUERY_EQUATION_ID_AT_BUILD)
-                    #pragma omp critical
-                    {
-                        mLogFile << "Condition " << (*it)->Id() << " is accounted for Build, EquationId:";
-                        for(unsigned int i = 0; i < EquationId.size(); ++i)
-                            mLogFile << " " << EquationId[i];
-                        mLogFile << std::endl;
-                    }
+                    std::stringstream ss;
+                    ss << "Condition " << (*it)->Id() << " is accounted for Build, EquationId:";
+                    for(unsigned int i = 0; i < EquationId.size(); ++i)
+                        ss << " " << EquationId[i];
+                    ss << std::endl;
+                    MY_LOG_TRACE << ss.str();
                     #endif
 
                     //assemble the conditional contribution
                     Assemble(A,b,LHS_Contribution,RHS_Contribution,EquationId,lock_array);
                     // clean local conditional memory
 //                    pScheme->CleanMemory(*it); //not existing method
-
-                    // for active conditions, the equation id set is stored
-                    for(unsigned int i = 0; i < EquationId.size(); ++i)
-                    {
-                        if(EquationId[i] < BaseType::mEquationSystemSize)
-                            ActiveEquationIds[k].insert(EquationId[i]);
-                    }
 
                     //compute sum of the diagonal
                     double LocalDiagonalSum = 0.0;
@@ -490,75 +626,24 @@ public:
                     }
                     
                     //update the global diagonal sum
-                    #pragma omp atomic
                     DiagonalSum += LocalDiagonalSum;
-                }
-                else
-                // for IS_INACTIVE conditions, the EquationId is stored to modify the diagonal later on
-                {
-                    (*it)->EquationIdVector(EquationId, CurrentProcessInfo);
-                    for(unsigned int i = 0; i < EquationId.size(); ++i)
-                    {
-                        if(EquationId[i] < BaseType::mEquationSystemSize)
-                            InactiveEquationIds[k].insert(EquationId[i]);
-                    }
+//                    std::cout << "Condition " << (*it)->Id() << " rhs: " << RHS_Contribution << std::endl;
+//                    std::cout << "Condition " << (*it)->Id() << " is assembled" << std::endl;
                 }
             }
         }
-        
+        std::cout << "Condition assembly completed" << std::endl;
+
         double stop_prod = omp_get_wtime();
         for(int i = 0; i < A_size; ++i)
             omp_destroy_lock(&lock_array[i]);
-        
-        // extract the inactive equation ids
-        std::set<std::size_t> ActiveIdSet;
-        std::set<std::size_t> InactiveIdSet;
-        for(int k = 0; k < number_of_threads; ++k)
-        {
-            for(std::set<std::size_t>::iterator it = ActiveEquationIds[k].begin(); it != ActiveEquationIds[k].end(); ++it)
-                ActiveIdSet.insert(*it);
-        }
-        
-        
-        // for debugging: to check if all the active ids & inactive ids fully cover the range of mEquationSystemSize
-//        std::set<std::size_t> AllIdSet;
-//        for(int k = 0; k < number_of_threads; ++k)
-//        {
-//            for(std::set<std::size_t>::iterator it = ActiveEquationIds[k].begin(); it != ActiveEquationIds[k].end(); ++it)
-//                AllIdSet.insert(*it);
-//            for(std::set<std::size_t>::iterator it = InactiveEquationIds[k].begin(); it != InactiveEquationIds[k].end(); ++it)
-//                AllIdSet.insert(*it);
-//        }
-//        mLogFile << "AllIdSet:" << std::endl;
-//        for(std::set<std::size_t>::iterator it = AllIdSet.begin(); it != AllIdSet.end(); ++it)
-//            mLogFile << (*it) << std::endl;
-//        mLogFile << std::endl;
-        
-        
-        for(int k = 0; k < number_of_threads; ++k)
-        {
-            std::vector<std::size_t> tempSet(InactiveEquationIds[k].size());
-            std::vector<std::size_t>::iterator it
-                = std::set_difference(InactiveEquationIds[k].begin(), InactiveEquationIds[k].end(),
-                                     ActiveIdSet.begin(), ActiveIdSet.end(),
-                                     tempSet.begin());
-            tempSet.resize(it - tempSet.begin());
-            
-            for(std::vector<std::size_t>::iterator it = tempSet.begin(); it != tempSet.end(); ++it)
-                InactiveIdSet.insert(*it);
-        }
-        
-        std::cout << "There are " << ActiveIdSet.size() << " active id's and " << InactiveIdSet.size() << " inactive id's" << std::endl;
-        if((ActiveIdSet.size() + InactiveIdSet.size()) != BaseType::mEquationSystemSize)
-        {
-            KRATOS_WATCH(BaseType::mEquationSystemSize)
-            KRATOS_THROW_ERROR(std::logic_error, "Error: The active set of equation id's and inactive set of equation id's do not cover whole mEquationSystemSize. Check the enumeration.", __FUNCTION__)
-        }
-        
+
+        #ifdef MODIFY_INACTIVE_PART_OF_THE_MATRIX
+
         // compute the modification factor: simply average of the diagonal
         double DiagonalAverage = DiagonalSum / (BaseType::mEquationSystemSize - mFixedLength);
         KRATOS_WATCH(DiagonalAverage)
-        
+
         // modify the matrix as needed
         for(std::set<std::size_t>::iterator it = InactiveIdSet.begin(); it != InactiveIdSet.end(); ++it)
         {
@@ -575,6 +660,7 @@ public:
         }
         
         std::cout << "modification of diagonal for inactive part completed, " << InactiveIdSet.size() << " entries are modified" << std::endl;
+        #endif
         std::cout << "finished parallel building: " << stop_prod - start_prod << " s" << std::endl;
 #endif
 
@@ -612,7 +698,6 @@ public:
                 ++counter;
             }
         }
-        #endif
         
         // check the right hand side vector at inactive set
         double sum_inactive_rhs = 0.0;
@@ -627,9 +712,9 @@ public:
         }
         else
             std::cout << "Sum of inactive ids is zero, which is ok" << std::endl;
-        
+
+        #ifdef MODIFY_NEGATIVE_DIAGONAL
         // detect the negative diagonal and multiply LHS & RHS as needed
-        counter = 0;
         for(std::set<std::size_t>::iterator it = ActiveIdSet.begin(); it != ActiveIdSet.end(); ++it)
         {
             if(*it < BaseType::mEquationSystemSize)
@@ -641,6 +726,9 @@ public:
                 }
         }
         std::cout << "Modify negative diagonal completed, " << counter << " row is multiplied with -1" << std::endl;
+        #endif
+
+        #endif
 
         double building_time_stop = Timer::GetTime();
         
@@ -679,8 +767,8 @@ public:
         }
         #endif
 
-        #ifdef ENABLE_LOG        
-        mLogFile << "Build completed, mStepCounter = " << mStepCounter << ", mLocalCounter = " << mLocalCounter << std::endl;
+        #ifdef ENABLE_LOG
+        MY_LOG_TRACE << "Build completed, mStepCounter = " << mStepCounter << ", mLocalCounter = " << mLocalCounter << std::endl;
         #endif
         ++mLocalCounter;
 
@@ -1162,13 +1250,13 @@ public:
         BaseType::mDofSetIsInitialized = true;
 
         #if defined(ENABLE_LOG) && defined(QUERY_DOFSET)
-        mLogFile << "At SetUpDofSet: try to probe all dofs of the current process" << std::endl;
-        mLogFile << "There are " << BaseType::mDofSet.size() << " dofs in the problem" << std::endl;
+        MY_LOG_TRACE << "At SetUpDofSet: try to probe all dofs of the current process" << std::endl;
+        MY_LOG_TRACE << "There are " << BaseType::mDofSet.size() << " dofs in the problem" << std::endl;
         for (typename DofsArrayType::iterator dof_iterator = BaseType::mDofSet.begin(); dof_iterator != BaseType::mDofSet.end(); ++dof_iterator)
         {
-            mLogFile << "dof " << dof_iterator->GetVariable().Name() << ", node = " << dof_iterator->Id() << std::endl;
+            MY_LOG_TRACE << "dof " << dof_iterator->GetVariable().Name() << ", node = " << dof_iterator->Id() << std::endl;
         }
-        mLogFile << "#########################SetUpDofSet completed####################" << std::endl;
+        MY_LOG_TRACE << "#########################SetUpDofSet completed####################" << std::endl;
         #endif
         
         KRATOS_CATCH("")
@@ -1203,14 +1291,14 @@ public:
         KRATOS_WATCH(BaseType::mEquationSystemSize)
 
         #if defined(ENABLE_LOG) && defined(QUERY_DOF_EQUATION_ID)
-        mLogFile << "SetUpSystem: try to probe equation id of all dofs of the current process" << std::endl;
-        mLogFile << "There are " << BaseType::mDofSet.size() << " dofs in the current process" << std::endl;
-        mLogFile << "(* Step = " << mStepCounter << ", Substep = " << mLocalCounter << " *)" << std::endl;
+        MY_LOG_TRACE << "SetUpSystem: try to probe equation id of all dofs of the current process" << std::endl;
+        MY_LOG_TRACE << "There are " << BaseType::mDofSet.size() << " dofs in the current process" << std::endl;
+        MY_LOG_TRACE << "(* Step = " << mStepCounter << ", Substep = " << mLocalCounter << " *)" << std::endl;
         for (typename DofsArrayType::iterator dof_iterator = BaseType::mDofSet.begin(); dof_iterator != BaseType::mDofSet.end(); ++dof_iterator)
         {
-            mLogFile << "dof " << dof_iterator->GetVariable().Name() << ", node = " << dof_iterator->Id() << ", EquationId = " << dof_iterator->EquationId() << std::endl;
+            MY_LOG_TRACE << "dof " << dof_iterator->GetVariable().Name() << ", node = " << dof_iterator->Id() << ", EquationId = " << dof_iterator->EquationId() << std::endl;
         }
-        mLogFile << "#########################SetUpSystem completed####################" << std::endl;
+        MY_LOG_TRACE << "#########################SetUpSystem completed####################" << std::endl;
         #endif
         
     }
@@ -1223,7 +1311,7 @@ public:
     )
     {
         #ifdef ENABLE_LOG
-        mLogFile << "DOF_ENUMERATION_STRAIGHT" << std::endl;
+        MY_LOG_TRACE << "DOF_ENUMERATION_STRAIGHT" << std::endl;
         #endif
 
         int free_size = 0; //number of free d.o.fs in the partition 'rank'
@@ -1254,14 +1342,14 @@ public:
         KRATOS_WATCH(BaseType::mEquationSystemSize)
 
         #if defined(ENABLE_LOG) && defined(QUERY_DOF_EQUATION_ID)
-        mLogFile << "SetUpSystem: try to probe equation id of all dofs of the current process" << std::endl;
-        mLogFile << "There are " << BaseType::mDofSet.size() << " dofs in the current process" << std::endl;
-        mLogFile << "(* Step = " << mStepCounter << ", Substep = " << mLocalCounter << " *)" << std::endl;
+        MY_LOG_TRACE << "SetUpSystem: try to probe equation id of all dofs of the current process" << std::endl;
+        MY_LOG_TRACE << "There are " << BaseType::mDofSet.size() << " dofs in the current process" << std::endl;
+        MY_LOG_TRACE << "(* Step = " << mStepCounter << ", Substep = " << mLocalCounter << " *)" << std::endl;
         for (typename DofsArrayType::iterator dof_iterator = BaseType::mDofSet.begin(); dof_iterator != BaseType::mDofSet.end(); ++dof_iterator)
         {
-            mLogFile << "dof " << dof_iterator->GetVariable().Name() << ", node = " << dof_iterator->Id() << ", EquationId = " << dof_iterator->EquationId() << std::endl;
+            MY_LOG_TRACE << "dof " << dof_iterator->GetVariable().Name() << ", node = " << dof_iterator->Id() << ", EquationId = " << dof_iterator->EquationId() << std::endl;
         }
-        mLogFile << "#########################SetUpSystem completed####################" << std::endl;
+        MY_LOG_TRACE << "#########################SetUpSystem completed####################" << std::endl;
         #endif
 
 //        r_model_part.GetProcessInfo()[SYSTEM_SIZE] = BaseType::mEquationSystemSize;
@@ -1274,7 +1362,7 @@ public:
     )
     {
         #ifdef ENABLE_LOG
-        mLogFile << "DOF_ENUMERATION_FULL_STRAIGHT" << std::endl;
+        MY_LOG_TRACE << "DOF_ENUMERATION_FULL_STRAIGHT" << std::endl;
         #endif
 
         int free_size = 0; //number of free d.o.fs in the partition 'rank'
@@ -1305,14 +1393,14 @@ public:
         KRATOS_WATCH(BaseType::mEquationSystemSize)
 
         #if defined(ENABLE_LOG) && defined(QUERY_DOF_EQUATION_ID)
-        mLogFile << "SetUpSystem: try to probe equation id of all dofs of the current process" << std::endl;
-        mLogFile << "There are " << BaseType::mDofSet.size() << " dofs in the current process" << std::endl;
-        mLogFile << "(* Step = " << mStepCounter << ", Substep = " << mLocalCounter << " *)" << std::endl;
+        MY_LOG_TRACE << "SetUpSystem: try to probe equation id of all dofs of the current process" << std::endl;
+        MY_LOG_TRACE << "There are " << BaseType::mDofSet.size() << " dofs in the current process" << std::endl;
+        MY_LOG_TRACE << "(* Step = " << mStepCounter << ", Substep = " << mLocalCounter << " *)" << std::endl;
         for (typename DofsArrayType::iterator dof_iterator = BaseType::mDofSet.begin(); dof_iterator != BaseType::mDofSet.end(); ++dof_iterator)
         {
-            mLogFile << "dof " << dof_iterator->GetVariable().Name() << ", node = " << dof_iterator->Id() << ", EquationId = " << dof_iterator->EquationId() << std::endl;
+            MY_LOG_TRACE << "dof " << dof_iterator->GetVariable().Name() << ", node = " << dof_iterator->Id() << ", EquationId = " << dof_iterator->EquationId() << std::endl;
         }
-        mLogFile << "#########################SetUpSystem completed####################" << std::endl;
+        MY_LOG_TRACE << "#########################SetUpSystem completed####################" << std::endl;
         #endif
 
 //        r_model_part.GetProcessInfo()[SYSTEM_SIZE] = BaseType::mEquationSystemSize;
@@ -1793,13 +1881,14 @@ private:
     /**@name Member Variables */
     /*@{ */
 
-    #ifdef ENABLE_LOG
-    std::ofstream mLogFile;
-    #endif
     unsigned int mLocalCounter;
     unsigned int mStepCounter;
     unsigned int mFixedLength;
-    
+
+    #ifdef ENABLE_LOG
+    boost::log::sources::severity_logger<boost::log::trivial::severity_level> m_log_level;
+    #endif
+
     /*@} */
     /**@name Private Operators*/
     /*@{ */
@@ -1941,9 +2030,14 @@ private:
 #undef QUERY_DOFSET
 #undef QUERY_DOF_EQUATION_ID
 #undef QUERY_EQUATION_ID_AT_BUILD
+#undef MODIFY_INACTIVE_PART_OF_THE_MATRIX
 #undef ENABLE_FILTER_SMALL_ENTRIES
+#undef MODIFY_NEGATIVE_DIAGONAL
 #undef MONITOR_MATRIX_ELEMENT_16_15
 #undef MONITOR_EQUATIONID_20040
+#undef ENABLE_LOG
+#undef ENABLE_LOG_TIMESTAMP
+#undef ENABLE_LOG_PROCESS_AND_THREAD_ID
 
 #endif /* KRATOS_RESIDUAL_BASED_ELIMINATION_BUILDER_AND_SOLVER_DEACTIVATION  defined */
 
