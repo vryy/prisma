@@ -59,11 +59,12 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /* External includes */
 #include "boost/smart_ptr.hpp"
-#include "utilities/timer.h"
 
 /* Project includes */
 #include "includes/define.h"
 #include "includes/matrix_market_interface.h"
+#include "utilities/timer.h"
+#include "utilities/openmp_utils.h"
 #include "solving_strategies/builder_and_solvers/builder_and_solver.h"
 
 //#define ENABLE_LOG
@@ -494,7 +495,7 @@ public:
         int number_of_threads = omp_get_max_threads();
 
         vector<unsigned int> element_partition;
-        CreatePartition(number_of_threads, pElements.size(), element_partition);
+        OpenMPUtils::CreatePartition(number_of_threads, pElements.size(), element_partition);
         KRATOS_WATCH( number_of_threads );
         KRATOS_WATCH( element_partition );
 
@@ -575,7 +576,7 @@ public:
         std::cout << "Element assembly completed" << std::endl;
 
         vector<unsigned int> condition_partition;
-        CreatePartition(number_of_threads, ConditionsArray.size(), condition_partition);
+        OpenMPUtils::CreatePartition(number_of_threads, ConditionsArray.size(), condition_partition);
         KRATOS_WATCH( condition_partition );
 
 //        KRATOS_WATCH("in Build: before thread looping for conditions");
@@ -1155,7 +1156,7 @@ public:
         #else
             int number_of_threads = omp_get_max_threads();
             vector<unsigned int> element_partition;
-            CreatePartition(number_of_threads, pElements.size(), element_partition);
+            OpenMPUtils::CreatePartition(number_of_threads, pElements.size(), element_partition);
             KRATOS_WATCH( number_of_threads );
             
             #pragma omp parallel for
@@ -1706,7 +1707,7 @@ protected:
 #else
         int number_of_threads = omp_get_max_threads();
         vector<unsigned int> matrix_partition;
-        CreatePartition(number_of_threads, indices.size(), matrix_partition);
+        OpenMPUtils::CreatePartition(number_of_threads, indices.size(), matrix_partition);
         KRATOS_WATCH( matrix_partition );
         for(int k = 0; k < number_of_threads; ++k)
         {
@@ -1932,18 +1933,6 @@ private:
             ++i;
         if( i == endit )
             v.push_back(candidate);
-    }
-
-    //******************************************************************************************
-    //******************************************************************************************
-    inline void CreatePartition(unsigned int number_of_threads,const int number_of_rows, vector<unsigned int>& partitions)
-    {
-        partitions.resize(number_of_threads + 1);
-        int partition_size = number_of_rows / number_of_threads;
-        partitions[0] = 0;
-        partitions[number_of_threads] = number_of_rows;
-        for(unsigned int i = 1; i < number_of_threads; ++i)
-            partitions[i] = partitions[i-1] + partition_size ;
     }
 
 #ifdef _OPENMP

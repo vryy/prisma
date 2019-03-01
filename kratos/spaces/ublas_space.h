@@ -34,6 +34,7 @@
 #include "includes/define.h"
 #include "includes/ublas_interface.h"
 #include "includes/matrix_market_interface.h"
+#include "utilities/openmp_utils.h"
 
 
 namespace Kratos
@@ -241,9 +242,9 @@ public:
 #ifndef _OPENMP
         return inner_prod(rX, rY);
 #else
-        vector<unsigned int> partition;
+        std::vector<unsigned int> partition;
         int number_of_threads = omp_get_max_threads();
-        CreatePartition(number_of_threads, rX.size(), partition);
+        OpenMPUtils::CreatePartition(number_of_threads, rX.size(), partition);
 
         vector< TDataType > partial_results(number_of_threads);
 
@@ -756,10 +757,10 @@ private:
     static void ParallelProductNoAdd(const MatrixType& A, const VectorType& in, VectorType& out)
     {
         //create partition
-        vector<unsigned int> partition;
+        std::vector<unsigned int> partition;
         unsigned int number_of_threads = omp_get_max_threads();
         unsigned int number_of_initialized_rows = A.filled1() - 1;
-        CreatePartition(number_of_threads, number_of_initialized_rows, partition);
+        OpenMPUtils::CreatePartition(number_of_threads, number_of_initialized_rows, partition);
         //parallel loop
         #pragma omp parallel
         {
@@ -780,16 +781,6 @@ private:
                                    out
                                   );
         }
-    }
-
-    static void CreatePartition(unsigned int number_of_threads, const int number_of_rows, vector<unsigned int>& partitions)
-    {
-        partitions.resize(number_of_threads + 1);
-        int partition_size = number_of_rows / number_of_threads;
-        partitions[0] = 0;
-        partitions[number_of_threads] = number_of_rows;
-        for (unsigned int i = 1; i < number_of_threads; i++)
-            partitions[i] = partitions[i - 1] + partition_size;
     }
 
     template <class TIterartorType>

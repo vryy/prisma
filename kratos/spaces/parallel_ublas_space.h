@@ -175,13 +175,13 @@ public:
     /// rX * rY
     static TDataType Dot(VectorType const& rX, VectorType const& rY)
     {
-        vector<unsigned int> partition;
+        std::vector<unsigned int> partition;
 #ifdef _OPENMP
         int number_of_threads = omp_get_max_threads();
 #else
         int number_of_threads = 1;
 #endif
-        CreatePartition(number_of_threads, rX.size(), partition);
+        OpenMPUtils::CreatePartition(number_of_threads, rX.size(), partition);
 
         vector< TDataType > partial_results(number_of_threads);
 
@@ -520,9 +520,9 @@ private:
         typedef  double value_type;
 
         //create partition
-        vector<size_type> partition;
+        std::vector<size_type> partition;
         int number_of_threads = omp_get_max_threads();
-        CreatePartition(number_of_threads, A.size1(), partition);
+        OpenMPUtils::CreatePartition(number_of_threads, A.size1(), partition);
         //parallel loop
 //             size_type  processor_row_begin, processor_row_end;
 //             int proc_id = 0;
@@ -545,16 +545,6 @@ private:
                                        output_vec_begin
                                   );
         }
-    }
-
-    static void CreatePartition(unsigned int number_of_threads,const int number_of_rows, vector<unsigned int>& partitions)
-    {
-        partitions.resize(number_of_threads+1);
-        int partition_size = number_of_rows / number_of_threads;
-        partitions[0] = 0;
-        partitions[number_of_threads] = number_of_rows;
-        for(unsigned int i = 1; i<number_of_threads; i++)
-            partitions[i] = partitions[i-1] + partition_size ;
     }
 
     /**

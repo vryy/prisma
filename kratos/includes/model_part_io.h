@@ -572,8 +572,6 @@ protected:
 
     void ResetInput();
 
-    inline void CreatePartition(unsigned int number_of_threads,const int number_of_rows, vector<unsigned int>& partitions);
-
 
 
     ///@}
