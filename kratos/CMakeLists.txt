@@ -99,7 +99,8 @@ set( KRATOS_PYTHON_SOURCES
 ###############################################################
 ## define library KratosCore to be included in all of the others
 add_library(KratosCore SHARED ${KRATOS_CORE_SOURCES})
-target_link_libraries(KratosCore ${Boost_PYTHON_LIBRARIES} ${PYTHON_LIBRARIES} gidpost )
+#target_link_libraries(KratosCore ${Boost_PYTHON_LIBRARIES} ${PYTHON_LIBRARIES} gidpost )
+target_link_libraries(KratosCore ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${PYTHON_LIBRARIES} gidpost )
 
 if(${ADOLC_IS_AVAILABLE} MATCHES ON)
     target_link_libraries(KratosCore ${ADOL_C_LIBRARIES} )

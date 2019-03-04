@@ -156,9 +156,10 @@ endif(${KRATOS_EXCLUDE_OPENMP} MATCHES ON)
 set(Boost_USE_STATIC_LIBS   OFF)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_REALPATH ON)
-find_package(Boost COMPONENTS python REQUIRED)
+find_package(Boost COMPONENTS python log REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
+ADD_DEFINITIONS(-DBOOST_LOG_DYN_LINK)
 
 ##*****************************
 #finding and including PYTHON
