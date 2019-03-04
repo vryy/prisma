@@ -178,12 +178,14 @@ KRATOS_WATCH(mFinalCorrectionNorm)
 KRATOS_WATCH(mReferenceDispNorm)
             double aaa = SparseSpaceType::Size(Dx);
 
-            double AbsoluteNorm = (mFinalCorrectionNorm/sqrt(aaa));
+/*            double AbsoluteNorm = (mFinalCorrectionNorm/sqrt(aaa));*/
+            double AbsoluteNorm = TSparseSpace::TwoNorm(b);
 //KRATOS_WATCH(AbsoluteNorm)
 //KRATOS_WATCH(mAlwaysConvergedNorm)
 //KRATOS_WATCH(mRatioTolerance)
             if (this->GetEchoLevel() == 1)
-                std::cout << "DISPLACEMENT CRITERION :: [ Obtained tol = " << ratio << "; Expected ratio = " << mRatioTolerance << "; Absolute tol = " << AbsoluteNorm << "; ]" << std::endl;
+/*                std::cout << "DISPLACEMENT CRITERION :: [ Obtained tol = " << ratio << "; Expected ratio = " << mRatioTolerance << "; Absolute tol = " << AbsoluteNorm << "; ]" << std::endl;*/
+                std::cout << "DISPLACEMENT CRITERION :: [ ||Dx||/||x|| = " << ratio << "; Expected tol = " << mRatioTolerance << "; ||b|| = " << AbsoluteNorm << "; ]" << std::endl;
 
             r_model_part.GetProcessInfo()[CONVERGENCE_RATIO] = ratio;
             r_model_part.GetProcessInfo()[RESIDUAL_NORM] = AbsoluteNorm;
