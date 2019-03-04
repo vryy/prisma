@@ -30,6 +30,7 @@
 // Project includes
 #include "includes/define.h"
 #include "includes/ublas_interface.h"
+#include "containers/array_1d.h"
 #include "python/add_vector_to_python.h"
 #include "python/vector_python_interface.h"
 #include "python/vector_scalar_operator_python.h"
@@ -106,13 +107,14 @@ void  AddVectorToPython()
     VectorPythonInterface<vector<double>, UblasVectorModifier<vector<double> > >::CreateInterface("Vector")
     .def(init<vector<double>::size_type>())
     .def(init<vector_expression<vector<double> > >())
+    .def(init<array_1d<double, 3> >())
     .def(VectorScalarOperatorPython<vector<double>, double, vector<double> >())
 //       .def(VectorVectorOperatorPython<vector<double>, zero_vector<double>, vector<double> >())
 //       .def(VectorVectorOperatorPython<vector<double>, unit_vector<double>, vector<double> >())
 //       .def(VectorVectorOperatorPython<vector<double>, scalar_vector<double>, vector<double> >())
 //       .def(VectorVectorOperatorPython<vector<double>, mapped_vector<double>, vector<double> >())
    ;
-    
+
       VectorPythonInterface<vector<int>, UblasVectorModifier<vector<int> > >::CreateInterface("IntegerVector")
       .def(init<vector<int>::size_type>())
    ;
