@@ -1,0 +1,395 @@
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+#echo of user defined options
+message( " ")
+message("INCOMPRESSIBLE_FLUID_APPLICATION ... ${INCOMPRESSIBLE_FLUID_APPLICATION}")
+message("MESHING_APPLICATION ................ ${MESHING_APPLICATION}")
+message("EXTERNAL_SOLVERS_APPLICATION........ ${EXTERNAL_SOLVERS_APPLICATION}")
+message("PFEM_APPLICATION.................... ${PFEM_APPLICATION}")
+message("STRUCTURAL_APPLICATION.............. ${STRUCTURAL_APPLICATION}")
+message("STRUCTURAL_APPLICATION_REV2......... ${STRUCTURAL_APPLICATION_REV2}")
+message("CONVECTION_DIFFUSION_APPLICATION.... ${CONVECTION_DIFFUSION_APPLICATION}")
+message("SOLID_MECHANICS_APPLICATION......... ${SOLID_MECHANICS_APPLICATION}")
+message("PFEM_SOLID_MECHANICS_APPLICATION.... ${PFEM_SOLID_MECHANICS_APPLICATION}")
+message("FLUID_DYNAMICS_APPLICATION.......... ${FLUID_DYNAMICS_APPLICATION}")
+message("PFEM_FLUID_DYNAMICS_APPLICATION......${PFEM_FLUID_DYNAMICS_APPLICATION}")
+message("ALE_APPLICATION..................... ${ALE_APPLICATION}")
+message("FSI_APPLICATION..................... ${FSI_APPLICATION}")
+message("EMPIRE_APPLICATION.................. ${EMPIRE_APPLICATION}")
+message("MIXED_ELEMENT_APPLICATION........... ${MIXED_ELEMENT_APPLICATION}")
+message("DEM_APPLICATION..................... ${DEM_APPLICATION}")
+message("SWIMMING_DEM_APPLICATION............ ${SWIMMING_DEM_APPLICATION}")
+message("CONSTITUTIVE_LAWS_APPLICATION....... ${CONSTITUTIVE_LAWS_APPLICATION}")
+message("THERMO_MECHANICAL_APPLICATION....... ${THERMO_MECHANICAL_APPLICATION}")
+message("OPENCL_APPLICATION.................. ${OPENCL_APPLICATION}")
+message("MKL_SOLVERS_APPLICATION............. ${MKL_SOLVERS_APPLICATION}")
+message("MPI_SEARCH_APPLICATION.............. ${MPI_SEARCH_APPLICATION}")
+message("METIS_APPLICATION................... ${METIS_APPLICATION}")
+message("TRILINOS_APPLICATION................ ${TRILINOS_APPLICATION}")
+message("TURBULENT_FLOW_APPLICATION.......... ${TURBULENT_FLOW_APPLICATION}")
+message("BLOOD_FLOW_APPLICATION.............. ${BLOOD_FLOW_APPLICATION}")
+message("PURE_DIFFUSION_APPLICATION.......... ${PURE_DIFFUSION_APPLICATION}")
+message("MESHLESS_APPLICATION................ ${MESHLESS_APPLICATION}")
+message("WIND_TURBINE_APPLICATION ........... ${WIND_TURBINE_APPLICATION}")
+message("CLICK2CAST_APPLICATION ............. ${CLICK2CAST_APPLICATION}")
+message("MULTISCALE_APPLICATION ............. ${MULTISCALE_APPLICATION}")
+message("PFEM_FLUID_DYNAMIC_APPLICATION...... ${PFEM_FLUID_DYNAMIC_APPLICATION}")
+message("PFEM2_APPLICATION................... ${PFEM2_APPLICATION}")
+message("FREEZING_SOIL_APPLICATION........... ${FREEZING_SOIL_APPLICATION}")
+message("MULTITHREADED_SOLVERS_APPLICATION... ${MULTITHREADED_SOLVERS_APPLICATION}")
+message("DISTRIBUTED_BUILDERS_APPLICATION.... ${DISTRIBUTED_BUILDERS_APPLICATION}")
+message("TRILINOS_SOLVERS_APPLICATION........ ${TRILINOS_SOLVERS_APPLICATION}")
+message("PETSC_SOLVERS_APPLICATION........... ${PETSC_SOLVERS_APPLICATION}")
+message("ISOGEOMETRIC_APPLICATION............ ${ISOGEOMETRIC_APPLICATION}")
+message("ISOGEOMETRIC_STRUCTURAL_APPLICATION. ${ISOGEOMETRIC_STRUCTURAL_APPLICATION}")
+message("ISOGEOMETRIC_MORTAR_APPLICATION..... ${ISOGEOMETRIC_MORTAR_APPLICATION}")
+message("ISOGEOMETRIC_PHASE_FIELD_APPLICATION ${ISOGEOMETRIC_PHASE_FIELD_APPLICATION}")
+message("PHASE_FIELD_APPLICATION............. ${PHASE_FIELD_APPLICATION}")
+message("MORTAR_APPLICATION.................. ${MORTAR_APPLICATION}")
+message("EKATE_AUXILIARY_APPLICATION......... ${EKATE_AUXILIARY_APPLICATION}")
+message("LAYER_APPLICATION................... ${LAYER_APPLICATION}")
+message("SOIL_MECHANICS_APPLICATION.......... ${SOIL_MECHANICS_APPLICATION}")
+message("POLYFEM_APPLICATION................. ${POLYFEM_APPLICATION}")
+message("POLYFEM_STRUCTURAL_APPLICATION...... ${POLYFEM_STRUCTURAL_APPLICATION}")
+message("ADJOINT_FLUID_APPLICATION........... ${ADJOINT_FLUID_APPLICATION}")
+message("O2FEM_APPLICATION................... ${O2FEM_APPLICATION}")
+message("NTS_CONTACT_APPLICATION............. ${NTS_CONTACT_APPLICATION}")
+message("GPTS_CONTACT_APPLICATION............ ${GPTS_CONTACT_APPLICATION}")
+message("P4EST_APPLICATION................... ${P4EST_APPLICATION}")
+message("ERSATZ_ANWENDUNG.................... ${ERSATZ_ANWENDUNG}")
+message("FINITE_CELL_APPLICATION............. ${FINITE_CELL_APPLICATION}")
+message("EXTERNAL_CONSTITUTIVE_LAWS_APPLICATION............. ${EXTERNAL_CONSTITUTIVE_LAWS_APPLICATION}")
+message("PLATE_AND_SHELL_APPLICATION......... ${PLATE_AND_SHELL_APPLICATION}")
+message("LINING_APPLICATION.................. ${LINING_APPLICATION}")
+message("ISOGEOMETRIC_LINING_APPLICATION..... ${ISOGEOMETRIC_LINING_APPLICATION}")
+message("ISOGEOMETRIC_TUNNEL_APPLICATION..... ${ISOGEOMETRIC_TUNNEL_APPLICATION}")
+message("INTERFACE_CRACK_APPLICATION......... ${INTERFACE_CRACK_APPLICATION}")
+message("THERMAL_CHEM_APPLICATION............ ${THERMAL_CHEM_APPLICATION}")
+message("EMBEDDED_CRACK_APPLICATION.......... ${EMBEDDED_CRACK_APPLICATION}")
+message("ILU_PRECONDITIONER_APPLICATION...... ${ILU_PRECONDITIONER_APPLICATION}")
+message( " ")
+
+if(${INSTALL_PYTHON_FILES} MATCHES ON)
+  install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/applications_interface.py DESTINATION applications)
+endif(${INSTALL_PYTHON_FILES} MATCHES ON)
+
+#include subdirectories for compilation
+if(${INCOMPRESSIBLE_FLUID_APPLICATION} MATCHES ON)
+  add_subdirectory(incompressible_fluid_application)
+endif(${INCOMPRESSIBLE_FLUID_APPLICATION} MATCHES ON)
+
+if(${MESHING_APPLICATION} MATCHES ON)
+  add_subdirectory(MeshingApplication)
+endif(${MESHING_APPLICATION} MATCHES ON)
+
+if(${EXTERNAL_SOLVERS_APPLICATION} MATCHES ON)
+  add_subdirectory(ExternalSolversApplication)
+endif(${EXTERNAL_SOLVERS_APPLICATION} MATCHES ON)
+
+if(${PFEM_APPLICATION} MATCHES ON)
+  add_subdirectory(PFEMapplication)
+endif(${PFEM_APPLICATION} MATCHES ON)
+
+if(${STRUCTURAL_APPLICATION} MATCHES ON)
+  add_subdirectory(structural_application)
+endif(${STRUCTURAL_APPLICATION} MATCHES ON)
+
+if(${STRUCTURAL_APPLICATION_REV2} MATCHES ON)
+  add_subdirectory(structural_application_rev2)
+endif(${STRUCTURAL_APPLICATION_REV2} MATCHES ON)
+
+if(${CONVECTION_DIFFUSION_APPLICATION} MATCHES ON)
+  add_subdirectory(convection_diffusion_application)
+endif(${CONVECTION_DIFFUSION_APPLICATION} MATCHES ON)
+
+if(${FLUID_DYNAMICS_APPLICATION} MATCHES ON)
+  add_subdirectory(FluidDynamicsApplication)
+endif(${FLUID_DYNAMICS_APPLICATION} MATCHES ON)
+
+if(${ALE_APPLICATION} MATCHES ON)
+  add_subdirectory(ALEapplication)
+endif(${ALE_APPLICATION} MATCHES ON)
+
+if(${FSI_APPLICATION} MATCHES ON)
+  add_subdirectory(FSIapplication)
+endif(${FSI_APPLICATION} MATCHES ON)
+
+if(${EMPIRE_APPLICATION} MATCHES ON)
+  add_subdirectory(empire_application)
+endif(${EMPIRE_APPLICATION} MATCHES ON)
+
+if(${OPENCL_APPLICATION} MATCHES ON)
+  add_subdirectory(OpenCLapplication)
+endif(${OPENCL_APPLICATION} MATCHES ON)
+
+if(${MIXED_ELEMENT_APPLICATION} MATCHES ON)
+  add_subdirectory(MixedElementApplication)
+endif(${MIXED_ELEMENT_APPLICATION} MATCHES ON)
+
+if(${DEM_APPLICATION} MATCHES ON)
+  add_subdirectory(DEM_application)
+endif(${DEM_APPLICATION} MATCHES ON)
+
+if(${SWIMMING_DEM_APPLICATION} MATCHES ON)
+  add_subdirectory(swimming_DEM_application)
+endif(${SWIMMING_DEM_APPLICATION} MATCHES ON)
+
+if(${CONSTITUTIVE_LAWS_APPLICATION} MATCHES ON)
+  add_subdirectory(constitutive_laws_application)
+endif(${CONSTITUTIVE_LAWS_APPLICATION} MATCHES ON)
+
+if(${ULF_APPLICATION} MATCHES ON)
+  add_subdirectory(ULFapplication)
+endif(${ULF_APPLICATION} MATCHES ON)
+
+if(${THERMO_MECHANICAL_APPLICATION} MATCHES ON)
+  add_subdirectory(ThermoMechanicalApplication)
+endif(${THERMO_MECHANICAL_APPLICATION} MATCHES ON)
+
+if(${MKL_SOLVERS_APPLICATION} MATCHES ON)
+  add_subdirectory(mkl_solvers_application)
+endif(${MKL_SOLVERS_APPLICATION} MATCHES ON)
+
+if(${MPI_SEARCH_APPLICATION} MATCHES ON)
+  add_subdirectory(mpi_search_application)
+endif(${MPI_SEARCH_APPLICATION} MATCHES ON)
+
+if(${METIS_APPLICATION} MATCHES ON)
+  add_subdirectory(metis_application)
+endif(${METIS_APPLICATION} MATCHES ON)
+
+if(${TRILINOS_APPLICATION} MATCHES ON)
+  add_subdirectory(trilinos_application)
+endif(${TRILINOS_APPLICATION} MATCHES ON)
+
+if(${TURBULENT_FLOW_APPLICATION} MATCHES ON)
+  add_subdirectory(TurbulentFlowApplication)
+endif(${TURBULENT_FLOW_APPLICATION} MATCHES ON)
+
+if(${DEM_FEM_APPLICATION} MATCHES ON)
+  add_subdirectory(DEM_FEM_Application)
+endif(${DEM_FEM_APPLICATION} MATCHES ON)
+
+if(${BLOOD_FLOW_APPLICATION} MATCHES ON)
+  add_subdirectory(blood_flow_application)
+endif(${BLOOD_FLOW_APPLICATION} MATCHES ON)
+
+if(${SOLID_MECHANICS_APPLICATION} MATCHES ON)
+  add_subdirectory(SolidMechanicsApplication)
+endif(${SOLID_MECHANICS_APPLICATION} MATCHES ON)
+
+if(${PFEM_SOLID_MECHANICS_APPLICATION} MATCHES ON)
+  add_subdirectory(PfemSolidMechanicsApplication)
+endif(${PFEM_SOLID_MECHANICS_APPLICATION} MATCHES ON)
+
+if(${PFEM_FLUID_DYNAMICS_APPLICATION} MATCHES ON)
+  add_subdirectory(PfemFluidDynamicsApplication)
+endif(${PFEM_FLUID_DYNAMICS_APPLICATION} MATCHES ON)
+
+if(${PURE_DIFFUSION_APPLICATION} MATCHES ON)
+  add_subdirectory(pure_diffusion_application)
+endif(${PURE_DIFFUSION_APPLICATION} MATCHES ON)
+
+if(${MESHLESS_APPLICATION} MATCHES ON)
+  add_subdirectory(meshless_application)
+endif(${MESHLESS_APPLICATION} MATCHES ON)
+
+if(${WIND_TURBINE_APPLICATION} MATCHES ON)
+  add_subdirectory(wind_turbine_application)
+endif(${WIND_TURBINE_APPLICATION} MATCHES ON)
+
+if(${CLICK2CAST_APPLICATION} MATCHES ON)
+  add_subdirectory(Click2CastApplication)
+endif(${CLICK2CAST_APPLICATION} MATCHES ON)
+
+if(${MULTISCALE_APPLICATION} MATCHES ON)
+  add_subdirectory(MultiScaleApplication)
+endif(${MULTISCALE_APPLICATION} MATCHES ON)
+
+if(${ADJOINT_FLUID_APPLICATION} MATCHES ON)
+  add_subdirectory(AdjointFluidApplication)
+endif(${ADJOINT_FLUID_APPLICATION} MATCHES ON)
+
+if(${NURBS_APPLICATION} MATCHES ON)
+  add_subdirectory(nurbs_application)
+endif(${NURBS_APPLICATION} MATCHES ON)
+
+if(${PFEM_FLUID_DYNAMIC_APPLICATION} MATCHES ON)
+   add_subdirectory(pfem_fluid_dynamic_application)
+endif(${PFEM_FLUID_DYNAMIC_APPLICATION} MATCHES ON)
+
+if(${PFEM2_APPLICATION} MATCHES ON)
+  add_subdirectory(pfem_2_application)
+endif(${PFEM2_APPLICATION} MATCHES ON)
+
+if(${FREEZING_SOIL_APPLICATION} MATCHES ON)
+  add_subdirectory(freezing_soil_application)
+endif(${FREEZING_SOIL_APPLICATION} MATCHES ON)
+
+if(${MULTITHREADED_SOLVERS_APPLICATION} MATCHES ON)
+  add_subdirectory(multithreaded_solvers_application)
+endif(${MULTITHREADED_SOLVERS_APPLICATION} MATCHES ON)
+
+if(${MULTIGRID_SOLVERS_APPLICATION} MATCHES ON)
+  add_subdirectory(multigrid_solvers_application)
+endif(${MULTIGRID_SOLVERS_APPLICATION} MATCHES ON)
+
+if(${DISTRIBUTED_BUILDERS_APPLICATION} MATCHES ON)
+  add_subdirectory(distributed_builders_application)
+endif(${DISTRIBUTED_BUILDERS_APPLICATION} MATCHES ON)
+
+if(${TRILINOS_SOLVERS_APPLICATION} MATCHES ON)
+  add_subdirectory(trilinos_solvers_application)
+endif(${TRILINOS_SOLVERS_APPLICATION} MATCHES ON)
+
+if(${PETSC_SOLVERS_APPLICATION} MATCHES ON)
+  add_subdirectory(petsc_solvers_application)
+endif(${PETSC_SOLVERS_APPLICATION} MATCHES ON)
+
+if(${APPNAME_APPLICATION} MATCHES ON)
+  add_subdirectory(appname_application)
+endif(${APPNAME_APPLICATION} MATCHES ON)
+
+if(${SIMPLE_DEM_APPLICATION} MATCHES ON)
+  add_subdirectory(simple_dem_application)
+endif(${SIMPLE_DEM_APPLICATION} MATCHES ON)
+
+if(${ISOGEOMETRIC_APPLICATION} MATCHES ON)
+  add_subdirectory(isogeometric_application)
+endif(${ISOGEOMETRIC_APPLICATION} MATCHES ON)
+
+if(${ISOGEOMETRIC_STRUCTURAL_APPLICATION} MATCHES ON)
+  add_subdirectory(isogeometric_structural_application)
+endif(${ISOGEOMETRIC_STRUCTURAL_APPLICATION} MATCHES ON)
+
+if(${ISOGEOMETRIC_MORTAR_APPLICATION} MATCHES ON)
+  add_subdirectory(isogeometric_mortar_application)
+endif(${ISOGEOMETRIC_MORTAR_APPLICATION} MATCHES ON)
+
+if(${ISOGEOMETRIC_PHASE_FIELD_APPLICATION} MATCHES ON)
+  add_subdirectory(isogeometric_phase_field_application)
+endif(${ISOGEOMETRIC_PHASE_FIELD_APPLICATION} MATCHES ON)
+
+if(${PHASE_FIELD_APPLICATION} MATCHES ON)
+  add_subdirectory(phase_field_application)
+endif(${PHASE_FIELD_APPLICATION} MATCHES ON)
+
+if(${MORTAR_APPLICATION} MATCHES ON)
+  add_subdirectory(mortar_application)
+endif(${MORTAR_APPLICATION} MATCHES ON)
+
+if(${EKATE_AUXILIARY_APPLICATION} MATCHES ON)
+  add_subdirectory(ekate_auxiliary_application)
+endif(${EKATE_AUXILIARY_APPLICATION} MATCHES ON)
+
+if(${LAYER_APPLICATION} MATCHES ON)
+  add_subdirectory(layer_application)
+endif(${LAYER_APPLICATION} MATCHES ON)
+
+if(${SOIL_MECHANICS_APPLICATION} MATCHES ON)
+  add_subdirectory(soil_mechanics_application)
+endif(${SOIL_MECHANICS_APPLICATION} MATCHES ON)
+
+if(${POLYFEM_APPLICATION} MATCHES ON)
+  add_subdirectory(polyfem_application)
+endif(${POLYFEM_APPLICATION} MATCHES ON)
+
+if(${POLYFEM_STRUCTURAL_APPLICATION} MATCHES ON)
+  add_subdirectory(polyfem_structural_application)
+endif(${POLYFEM_STRUCTURAL_APPLICATION} MATCHES ON)
+
+if(${POLYFEM_PHASE_FIELD_APPLICATION} MATCHES ON)
+  add_subdirectory(polyfem_phase_field_application)
+endif(${POLYFEM_PHASE_FIELD_APPLICATION} MATCHES ON)
+
+if(${O2FEM_APPLICATION} MATCHES ON)
+  add_subdirectory(hoan_applications/o2fem_application)
+endif(${O2FEM_APPLICATION} MATCHES ON)
+
+if(${NTS_CONTACT_APPLICATION} MATCHES ON)
+  add_subdirectory(nts_contact_application)
+endif(${NTS_CONTACT_APPLICATION} MATCHES ON)
+
+if(${GPTS_CONTACT_APPLICATION} MATCHES ON)
+  add_subdirectory(gpts_contact_application)
+endif(${GPTS_CONTACT_APPLICATION} MATCHES ON)
+
+if(${P4EST_APPLICATION} MATCHES ON)
+  add_subdirectory(p4est_application)
+endif(${P4EST_APPLICATION} MATCHES ON)
+
+if(${TOPOPT_APPLICATION} MATCHES ON)
+  add_subdirectory(topopt_application)
+endif(${TOPOPT_APPLICATION} MATCHES ON)
+
+if(${EXTERNAL_CONSTITUTIVE_LAWS_APPLICATION} MATCHES ON)
+  add_subdirectory(ExternalConstitutiveLawsApplication)
+endif(${EXTERNAL_CONSTITUTIVE_LAWS_APPLICATION} MATCHES ON)
+
+if(${STOKES_APPLICATION} MATCHES ON)
+  add_subdirectory(stokes_application)
+endif(${STOKES_APPLICATION} MATCHES ON)
+
+if(${PERIDYNAMICS_APPLICATION} MATCHES ON)
+  add_subdirectory(peridynamics_application)
+endif(${PERIDYNAMICS_APPLICATION} MATCHES ON)
+
+if(${ERSATZ_ANWENDUNG} MATCHES ON)
+  add_subdirectory(ersatz_anwendung)
+endif(${ERSATZ_ANWENDUNG} MATCHES ON)
+
+if(${PLATE_AND_SHELL_APPLICATION} MATCHES ON)
+  add_subdirectory(plate_and_shell_application)
+endif(${PLATE_AND_SHELL_APPLICATION} MATCHES ON)
+
+if(${FINITE_CELL_APPLICATION} MATCHES ON)
+  add_subdirectory(finite_cell_application)
+endif(${FINITE_CELL_APPLICATION} MATCHES ON)
+
+if(${FINITE_CELL_STRUCTURAL_APPLICATION} MATCHES ON)
+  add_subdirectory(finite_cell_structural_application)
+endif(${FINITE_CELL_STRUCTURAL_APPLICATION} MATCHES ON)
+
+if(${FINITE_CELL_SOIL_MECHANICS_APPLICATION} MATCHES ON)
+  add_subdirectory(finite_cell_soil_mechanics_application)
+endif(${FINITE_CELL_SOIL_MECHANICS_APPLICATION} MATCHES ON)
+
+if(${FINITE_CELL_ISOGEOMETRIC_STRUCTURAL_APPLICATION} MATCHES ON)
+  add_subdirectory(finite_cell_isogeometric_structural_application)
+endif(${FINITE_CELL_ISOGEOMETRIC_STRUCTURAL_APPLICATION} MATCHES ON)
+
+if(${LINING_APPLICATION} MATCHES ON)
+  add_subdirectory(lining_application)
+endif(${LINING_APPLICATION} MATCHES ON)
+
+if(${ISOGEOMETRIC_LINING_APPLICATION} MATCHES ON)
+  add_subdirectory(isogeometric_lining_application)
+endif(${ISOGEOMETRIC_LINING_APPLICATION} MATCHES ON)
+
+if(${ISOGEOMETRIC_TUNNEL_APPLICATION} MATCHES ON)
+  add_subdirectory(isogeometric_tunnel_application)
+endif(${ISOGEOMETRIC_TUNNEL_APPLICATION} MATCHES ON)
+
+if(${INTERFACE_CRACK_APPLICATION} MATCHES ON)
+  add_subdirectory(interface_crack_application)
+endif(${INTERFACE_CRACK_APPLICATION} MATCHES ON)
+
+if(${THERMAL_CHEM_APPLICATION} MATCHES ON)
+  add_subdirectory(thermal_chem_application)
+endif(${THERMAL_CHEM_APPLICATION} MATCHES ON)
+
+if(${EMBEDDED_CRACK_APPLICATION} MATCHES ON)
+  add_subdirectory(embedded_crack_application)
+endif(${EMBEDDED_CRACK_APPLICATION} MATCHES ON)
+
+if(${ILU_PRECONDITIONER_APPLICATION} MATCHES ON)
+  add_subdirectory(ilu_preconditioner_application)
+endif(${ILU_PRECONDITIONER_APPLICATION} MATCHES ON)
+
+if(${ISOGEOMETRIC_THERMAL_CHEM_APPLICATION} MATCHES ON)
+  add_subdirectory(isogeometric_thermal_chem_application)
+endif(${ISOGEOMETRIC_THERMAL_CHEM_APPLICATION} MATCHES ON)
+
+# get_property(inc_dirs DIRECTORY PROPERTY INCLUDE_DIRECTORIES)
+# message("applications subdir inc_dirs = ${inc_dirs}")
+
