@@ -134,8 +134,7 @@ public:
      * ShapefunctionsLocalGradients function return this
      * type as its result.
      */
-    typedef typename BaseType::ShapeFunctionsSecondDerivativesType
-    ShapeFunctionsSecondDerivativesType;
+    typedef typename BaseType::ShapeFunctionsSecondDerivativesType ShapeFunctionsSecondDerivativesType;
 
     /** Type of the normal vector used for normal to edges in geomety.
      */
@@ -313,9 +312,9 @@ public:
         const TPointType& point1 = BaseType::GetPoint(1);
         const double lx = point0.X() - point1.X();
         const double ly = point0.Y() - point1.Y();
-        
+
         const double length = lx * lx + ly * ly;
-        
+
         return sqrt( length );
     }
 
@@ -352,9 +351,9 @@ public:
         const TPointType& point1 = BaseType::GetPoint(1);
         const double lx = point0.X() - point1.X();
         const double ly = point0.Y() - point1.Y();
-        
+
         const double length = lx * lx + ly * ly;
-        
+
         return sqrt( length );
     }
 
@@ -420,7 +419,7 @@ public:
     point index of given integration method.
 
     @param DeltaPosition Matrix with the nodes position increment which describes
-    the configuration where the jacobian has to be calculated.     
+    the configuration where the jacobian has to be calculated.
 
     @see DeterminantOfJacobian
     @see InverseOfJacobian
@@ -1038,7 +1037,7 @@ const GeometryData Line2D2<TPointType>::msGeometryData( 2,
 
 }  // namespace Kratos.
 
-#endif // KRATOS_LINE_2D_H_INCLUDED  defined 
+#endif // KRATOS_LINE_2D_H_INCLUDED  defined
 
 
 

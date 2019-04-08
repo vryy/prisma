@@ -309,9 +309,9 @@ public:
         const TPointType& point1 = BaseType::GetPoint(2);
         const double lx = point0.X() - point1.X();
         const double ly = point0.Y() - point1.Y();
-        
+
         const double length = lx * lx + ly * ly;
-        
+
         return sqrt( length );
     }
 
@@ -348,9 +348,9 @@ public:
         const TPointType& point1 = BaseType::GetPoint(2);
         const double lx = point0.X() - point1.X();
         const double ly = point0.Y() - point1.Y();
-        
+
         const double length = lx * lx + ly * ly;
-        
+
         return sqrt( length );
     }
 
@@ -414,15 +414,15 @@ public:
                 jacobian( 0, 0 ) += ( this->GetPoint( i ).X() ) * ( shape_functions_gradients[pnt]( i, 0 ) );
                 jacobian( 1, 0 ) += ( this->GetPoint( i ).Y() ) * ( shape_functions_gradients[pnt]( i, 0 ) );
 
-		
+
             }
 
             rResult[pnt] = jacobian;
 
-	    
+
         }//end of loop over all integration points
 
-	
+
 
         return rResult;
     }
@@ -1114,5 +1114,5 @@ const GeometryData Line2D3<TPointType>::msGeometryData( 2,
 
 }  // namespace Kratos.
 
-#endif // KRATOS_LINE_2D_3_H_INCLUDED  defined 
+#endif // KRATOS_LINE_2D_3_H_INCLUDED  defined
 

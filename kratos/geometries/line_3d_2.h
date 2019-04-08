@@ -130,6 +130,13 @@ public:
     */
     typedef typename BaseType::ShapeFunctionsGradientsType ShapeFunctionsGradientsType;
 
+    /**
+     * A third order tensor to hold shape functions' local second derivatives.
+     * ShapefunctionsLocalGradients function return this
+     * type as its result.
+     */
+    typedef typename BaseType::ShapeFunctionsSecondDerivativesType ShapeFunctionsSecondDerivativesType;
+
     /** Type of the normal vector used for normal to edges in geomety.
      */
     typedef typename BaseType::NormalType NormalType;
@@ -306,9 +313,9 @@ public:
         const double lx = point0.X() - point1.X();
         const double ly = point0.Y() - point1.Y();
         const double lz = point0.Z() - point1.Z();
-        
+
         const double length = lx * lx + ly * ly + lz * lz;
-        
+
         return sqrt( length );
     }
 
@@ -346,9 +353,9 @@ public:
         const double lx = point0.X() - point1.X();
         const double ly = point0.Y() - point1.Y();
         const double lz = point0.Z() - point1.Z();
-        
+
         const double length = lx * lx + ly * ly + lz * lz;
-        
+
         return sqrt( length );
     }
 
@@ -401,9 +408,9 @@ public:
     @return JacobiansType a Vector of jacobian
     matrices \f$ J_i \f$ where \f$ i=1,2,...,n \f$ is the integration
     point index of given integration method.
-    
+
     @param DeltaPosition Matrix with the nodes position increment which describes
-    the configuration where the jacobian has to be calculated.     
+    the configuration where the jacobian has to be calculated.
 
     @see DeterminantOfJacobian
     @see InverseOfJacobian
@@ -640,19 +647,41 @@ public:
     virtual Matrix& ShapeFunctionsLocalGradients( Matrix& rResult,
             const CoordinatesArrayType& rPoint ) const
     {
-        rResult = ZeroMatrix( 2, 1 ); 
+        rResult = ZeroMatrix( 2, 1 );
         rResult( 0, 0 ) = -0.5;
-        rResult( 1, 0 ) =  0.5; 
-        return( rResult ); 
+        rResult( 1, 0 ) =  0.5;
+        return( rResult );
     }
-
-
 
     virtual ShapeFunctionsGradientsType& ShapeFunctionsIntegrationPointsGradients( ShapeFunctionsGradientsType& rResult, IntegrationMethod ThisMethod ) const
     {
         KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square" , "" );
     }
 
+    /**
+     * returns the second order derivatives of all shape functions
+     * in given arbitrary pointers
+     * @param rResult a third order tensor which contains the second derivatives
+     * @param rPoint the given point the second order derivatives are calculated in
+     */
+    virtual ShapeFunctionsSecondDerivativesType& ShapeFunctionsSecondDerivatives( ShapeFunctionsSecondDerivativesType& rResult, const CoordinatesArrayType& rPoint ) const
+    {
+        if ( rResult.size() != this->PointsNumber() )
+        {
+            // KLUDGE: While there is a bug in
+            // ublas vector resize, I have to put this beside resizing!!
+            ShapeFunctionsGradientsType temp( this->PointsNumber() );
+            rResult.swap( temp );
+        }
+
+        rResult[0].resize( 1, 1 );
+        rResult[1].resize( 1, 1 );
+
+        rResult[0]( 0, 0 ) = 0.0;
+        rResult[1]( 0, 0 ) = 0.0;
+
+        return rResult;
+    }
 
     /** Turn back information as a string.
 
@@ -916,5 +945,5 @@ const GeometryData Line3D2<TPointType>::msGeometryData( 3,
 
 }  // namespace Kratos.
 
-#endif // KRATOS_LINE_3D_2_H_INCLUDED  defined 
+#endif // KRATOS_LINE_3D_2_H_INCLUDED  defined
 

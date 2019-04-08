@@ -129,6 +129,13 @@ public:
     */
     typedef typename BaseType::ShapeFunctionsGradientsType ShapeFunctionsGradientsType;
 
+    /**
+     * A third order tensor to hold shape functions' local second derivatives.
+     * ShapefunctionsLocalGradients function return this
+     * type as its result.
+     */
+    typedef typename BaseType::ShapeFunctionsSecondDerivativesType ShapeFunctionsSecondDerivativesType;
+
     /** Type of the normal vector used for normal to edges in geomety.
      */
     typedef typename BaseType::NormalType NormalType;
@@ -302,9 +309,9 @@ public:
         const double lx = point0.X() - point1.X();
         const double ly = point0.Y() - point1.Y();
         const double lz = point0.Z() - point1.Z();
-        
+
         const double length = lx * lx + ly * ly + lz * lz;
-        
+
         return sqrt( length );
     }
 
@@ -342,9 +349,9 @@ public:
         const double lx = point0.X() - point1.X();
         const double ly = point0.Y() - point1.Y();
         const double lz = point0.Z() - point1.Z();
-        
+
         const double length = lx * lx + ly * ly + lz * lz;
-        
+
         return sqrt( length );
     }
 
@@ -689,8 +696,8 @@ public:
         case 1:
             return( 0.5*( rPoint[0] + 1.0 )*rPoint[0] );
         case 2:
-	    return( 1.0 -rPoint[0]*rPoint[0] );
-            
+    	    return( 1.0 -rPoint[0]*rPoint[0] );
+
         default:
             KRATOS_THROW_ERROR( std::logic_error,
                           "Wrong index of shape function!" ,
@@ -812,6 +819,31 @@ public:
         rResult( 2, 0 ) = -2.0 * rPoint[0];
         rResult( 1, 0 ) = rPoint[0] + 0.5;
         return( rResult );
+    }
+
+    /**
+     * returns the second order derivatives of all shape functions
+     * in given arbitrary pointers
+     * @param rResult a third order tensor which contains the second derivatives
+     * @param rPoint the given point the second order derivatives are calculated in
+     */
+    virtual ShapeFunctionsSecondDerivativesType& ShapeFunctionsSecondDerivatives( ShapeFunctionsSecondDerivativesType& rResult, const CoordinatesArrayType& rPoint ) const
+    {
+        if ( rResult.size() != this->PointsNumber() )
+        {
+            // KLUDGE: While there is a bug in
+            // ublas vector resize, I have to put this beside resizing!!
+            ShapeFunctionsGradientsType temp( this->PointsNumber() );
+            rResult.swap( temp );
+        }
+
+        rResult[0].resize( 1, 1 );
+        rResult[1].resize( 1, 1 );
+
+        rResult[0]( 0, 0 ) = 0.0;
+        rResult[1]( 0, 0 ) = 0.0;
+
+        return rResult;
     }
 
     /**
@@ -1091,5 +1123,5 @@ const GeometryData Line3D3<TPointType>::msGeometryData( 3,
 
 }  // namespace Kratos.
 
-#endif // KRATOS_LINE_3D_3_H_INCLUDED  defined 
+#endif // KRATOS_LINE_3D_3_H_INCLUDED  defined
 
