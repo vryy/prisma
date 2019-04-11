@@ -1,0 +1,3 @@
+[submodule "applications/isogeometric_application"]
+	path = applications/isogeometric_application
+	url = https://github.com/vryy/isogeometric_application.git
