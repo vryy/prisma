@@ -1,10 +1,10 @@
-//    |  /           | 
-//    ' /   __| _` | __|  _ \   __| 
+//    |  /           |
+//    ' /   __| _` | __|  _ \   __|
 //    . \  |   (   | |   (   |\__ `
-//   _|\_\_|  \__,_|\__|\___/ ____/ 
-//                   Multi-Physics  
+//   _|\_\_|  \__,_|\__|\___/ ____/
+//                   Multi-Physics
 //
-//  License:		 BSD License 
+//  License:		 BSD License
 //					 Kratos default license: kratos/license.txt
 //
 //  Main authors:    Pooyan Dadvand
@@ -30,6 +30,7 @@
 #include "includes/condition.h"
 #include "includes/constitutive_law.h"
 #include "includes/geometrical_object.h"
+#include "includes/master_slave_constraint.h"
 
 #include "geometries/line_2d.h"
 #include "geometries/line_2d_2.h"
@@ -408,7 +409,7 @@ namespace Kratos
   KRATOS_CREATE_VARIABLE( double, YIELD_STRESS )
   KRATOS_CREATE_VARIABLE( double, MU )
   KRATOS_CREATE_VARIABLE( double, TAU )
-  
+
   KRATOS_CREATE_VARIABLE( double, SEARCH_RADIUS )
 
   //for Vulcan application
@@ -465,9 +466,9 @@ namespace Kratos
 //   KRATOS_CREATE_VARIABLE( double, MOULD_AVERAGE_TEMPERATURE )
 
 
-  //------------------------------------------------------------------------------//
-  //------------------------------------------------------------------------------//
-  //------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------//
 
   KratosApplication::KratosApplication() :
     mCondition3D( 0, Element::GeometryType::Pointer( new Triangle3D3<Node<3> >( Element::GeometryType::PointsArrayType( 3, Node<3>() ) ) ) ),
@@ -488,7 +489,12 @@ namespace Kratos
     mpElements( KratosComponents<Element>::pGetComponents() ),
     mpConditions( KratosComponents<Condition>::pGetComponents() ),
     mpRegisteredObjects( &( Serializer::GetRegisteredObjects() ) ),
-    mpRegisteredObjectsName( &( Serializer::GetRegisteredObjectsName() ) )
+    mpRegisteredObjectsName( &( Serializer::GetRegisteredObjectsName() ) ),
+
+    // Master-Slave Constraint
+    mMasterSlaveConstraint(),
+    mLinearMasterSlaveConstraint()
+
   {}
 
   void KratosApplication::RegisterVariables()
@@ -511,7 +517,7 @@ namespace Kratos
 
       //--------------- GENERAL VARIABLES FOR MULTIPLE APPLICATIONS -------------------//
       KRATOS_REGISTER_VARIABLE( DOMAIN_SIZE )
-      
+
       //STRATEGIES
       KRATOS_REGISTER_VARIABLE( LOAD_RESTART )
 
@@ -869,7 +875,7 @@ namespace Kratos
 //       KRATOS_REGISTER_VARIABLE( MATERIAL )
 
       KRATOS_REGISTER_VARIABLE( ENRICHED_PRESSURES )
-              
+
       KRATOS_REGISTER_VARIABLE( SEARCH_RADIUS )
 
 //       KRATOS_REGISTER_VARIABLE( LAST_AIR )
@@ -930,12 +936,18 @@ namespace Kratos
       Serializer::Register( "Node3D", Node<3>() );
       Serializer::Register( "DofDouble", Dof<double>() );
 
+    Serializer::Register("MasterSlaveConstraint", MasterSlaveConstraint());
+
       //Register specific conditions ( must be completed : conditions defined in kratos_appliction.h)
       KRATOS_REGISTER_CONDITION( "Condition3D", mCondition3D )
       KRATOS_REGISTER_CONDITION( "Condition2D", mCondition2D )
       KRATOS_REGISTER_CONDITION( "PeriodicCondition", mPeriodicCondition )
       KRATOS_REGISTER_CONDITION( "PeriodicConditionEdge", mPeriodicConditionEdge )
       KRATOS_REGISTER_CONDITION( "PeriodicConditionCorner", mPeriodicConditionCorner )
+
+    //master-slave constraints
+    KRATOS_REGISTER_CONSTRAINT("MasterSlaveConstraint",mMasterSlaveConstraint)
+    KRATOS_REGISTER_CONSTRAINT("LinearMasterSlaveConstraint",mLinearMasterSlaveConstraint)
 
       //Register specific elements ( must be completed : elements defined in kratos_appliction.h)
       KRATOS_REGISTER_ELEMENT( "Element3D4N", mElement3D4N )
@@ -1074,4 +1086,3 @@ namespace Kratos
 
 // This define must be HERE
 #undef DKRATOS_EXPORT_INTERFACE_2
-
