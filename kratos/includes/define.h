@@ -2,12 +2,12 @@
 //    ' /   __| _` | __|  _ \   __|
 //    . \  |   (   | |   (   |\__ `
 //   _|\_\_|  \__,_|\__|\___/ ____/
-//                   Multi-Physics 
+//                   Multi-Physics
 //
-//  License:		 BSD License 
+//  License:		 BSD License
 //					 Kratos default license: kratos/license.txt
 //
-//  Main authors:    Pooyan Dadvand 
+//  Main authors:    Pooyan Dadvand
 //
 
 #if !defined(KRATOS_DEFINE_H_INCLUDED )
@@ -28,6 +28,7 @@
 #include "includes/kratos_config.h"
 #include "includes/kratos_export_api.h"
 #include "includes/kratos_exception.h"
+
 
 
 
@@ -341,8 +342,12 @@ catch(...) { Block KRATOS_THROW_ERROR(std::runtime_error, "Unknown error", MoreI
     KratosComponents<Condition >::Add(name, reference); \
     Serializer::Register(name, reference);
 
-
-
+#ifdef KRATOS_REGISTER_CONSTRAINT
+#undef KRATOS_REGISTER_CONSTRAINT
+#endif
+#define KRATOS_REGISTER_CONSTRAINT(name, reference) \
+    KratosComponents<MasterSlaveConstraint >::Add(name, reference); \
+    Serializer::Register(name, reference);
 
 
 #ifdef KRATOS_REGISTER_IN_PYTHON_VARIABLE

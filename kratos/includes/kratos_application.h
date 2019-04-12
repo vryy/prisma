@@ -34,6 +34,8 @@
 #include "includes/element.h"
 #include "includes/condition.h"
 #include "includes/periodic_condition.h"
+#include "includes/master_slave_constraint.h"
+#include "includes/linear_master_slave_constraint.h"
 
 namespace Kratos
 {
@@ -75,9 +77,8 @@ public:
         mpMatrixVariables(rOther.mpMatrixVariables),
         mpArray1DVariableComponents(rOther.mpArray1DVariableComponents),
         mpElements(rOther.mpElements),
-        mpConditions(rOther.mpConditions) {}
-
-
+        mpConditions(rOther.mpConditions),
+          mpMasterSlaveConstraints(rOther.mpMasterSlaveConstraints) {}
 
     /// Destructor.
     virtual ~KratosApplication() {}
@@ -177,6 +178,9 @@ public:
         return *mpConditions;
     }
 
+    KratosComponents<MasterSlaveConstraint>::ComponentsContainerType& GetMasterSlaveConstraints() {
+        return *mpMasterSlaveConstraints;
+    }
     void SetComponents(KratosComponents<VariableData>::ComponentsContainerType const& VariableDataComponents)
 
     {
@@ -226,7 +230,12 @@ public:
 
     }
 
+    void SetComponents(KratosComponents<MasterSlaveConstraint>::ComponentsContainerType const&
+            MasterSlaveConstraintComponents)
 
+    {
+        mpMasterSlaveConstraints->insert(MasterSlaveConstraintComponents.begin(), MasterSlaveConstraintComponents.end());
+    }
 
     void SetComponents(KratosComponents<Condition>::ComponentsContainerType const& ConditionComponents)
 
@@ -312,11 +321,12 @@ public:
 
         KratosComponents<Condition>().PrintData(rOStream);
 
+        rOStream << std::endl;
+
+        rOStream << "MasterSlaveConstraints:" << std::endl;
+
+        KratosComponents<MasterSlaveConstraint>().PrintData(rOStream);
     }
-
-
-
-
 
     ///@}
 
@@ -351,7 +361,11 @@ protected:
     const Condition  mCondition3D;
     const Condition  mCondition2D;
 
-    // Periodic Condition 
+    // Master-Slave base constraint
+    const MasterSlaveConstraint mMasterSlaveConstraint;
+    const LinearMasterSlaveConstraint mLinearMasterSlaveConstraint;
+
+    // Periodic Condition
     const PeriodicCondition mPeriodicCondition;
     const PeriodicCondition mPeriodicConditionEdge;
     const PeriodicCondition mPeriodicConditionCorner;
@@ -382,6 +396,9 @@ protected:
 
     KratosComponents<Condition>::ComponentsContainerType* mpConditions;
 
+    KratosComponents<MasterSlaveConstraint>::ComponentsContainerType* mpMasterSlaveConstraints;
+
+    // Serialization
     Serializer::RegisteredObjectsContainerType* mpRegisteredObjects;
 
     Serializer::RegisteredObjectsNameContainerType* mpRegisteredObjectsName;
