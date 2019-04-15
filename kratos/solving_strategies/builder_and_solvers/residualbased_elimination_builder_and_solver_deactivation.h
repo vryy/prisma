@@ -298,9 +298,9 @@ public:
         TSystemVectorType& b)
     {
         KRATOS_TRY
-        
+
         double building_time_start = Timer::GetTime();
-        
+
         if(!pScheme)
             KRATOS_THROW_ERROR(std::runtime_error, "No scheme provided!", "");
 
@@ -333,7 +333,7 @@ public:
             {
                 //calculate elemental contribution
                 pScheme->CalculateSystemContributions(*it,LHS_Contribution,RHS_Contribution,EquationId,CurrentProcessInfo);
-                
+
                 #if defined(ENABLE_LOG) && defined(QUERY_EQUATION_ID_AT_BUILD)
                 std::stringstream ss;
                 ss << "Element " << (*it)->Id() << " is accounted for Build, EquationId:";
@@ -366,7 +366,7 @@ public:
             {
                 //calculate elemental contribution
                 pScheme->Condition_CalculateSystemContributions(*it,LHS_Contribution,RHS_Contribution,EquationId,CurrentProcessInfo);
-                
+
                 #if defined(ENABLE_LOG) && defined(QUERY_EQUATION_ID_AT_BUILD)
                 std::stringstream ss;
                 ss << "Condition " << (*it)->Id() << " is accounted for Build, EquationId:";
@@ -379,7 +379,7 @@ public:
                 //assemble the elemental contribution
                 AssembleLHS(A,LHS_Contribution,EquationId);
                 AssembleRHS(b,RHS_Contribution,EquationId);
-                
+
                 // clean local conditional memory
 //                pScheme->CleanMemory(*it); //not existing method
             }
@@ -528,7 +528,7 @@ public:
                 {
                     //calculate elemental contribution
                     pScheme->CalculateSystemContributions(*it,LHS_Contribution,RHS_Contribution,EquationId,CurrentProcessInfo);
-                    
+
 //                    KRATOS_WATCH(LHS_Contribution);
 //                    KRATOS_WATCH(RHS_Contribution);
                     #ifdef EXPORT_LOCAL_LHS_MATRIX
@@ -559,7 +559,7 @@ public:
                     Assemble(A,b,LHS_Contribution,RHS_Contribution,EquationId,lock_array);
                     // clean local elemental memory
                     pScheme->CleanMemory(*it);
-                    
+
                     //compute sum of the diagonal
                     double LocalDiagonalSum = 0.0;
                     for(unsigned int i = 0; i < EquationId.size(); ++i)
@@ -625,7 +625,7 @@ public:
                         if(EquationId[i] < BaseType::mEquationSystemSize)
                             LocalDiagonalSum += LHS_Contribution(i, i);
                     }
-                    
+
                     //update the global diagonal sum
                     DiagonalSum += LocalDiagonalSum;
 //                    std::cout << "Condition " << (*it)->Id() << " rhs: " << RHS_Contribution << std::endl;
@@ -659,7 +659,7 @@ public:
             A(j, j) = DiagonalAverage;
             b(j)    = 0.0;
         }
-        
+
         std::cout << "modification of diagonal for inactive part completed, " << InactiveIdSet.size() << " entries are modified" << std::endl;
         #endif
         std::cout << "finished parallel building: " << stop_prod - start_prod << " s" << std::endl;
@@ -667,7 +667,7 @@ public:
 
         //finalize the build of compressed matrix
         A.complete_index1_data();
-        
+
         unsigned int counter = 0;
         #ifdef ENABLE_FILTER_SMALL_ENTRIES
         //remove the small entries to improve the condition of the matrix
@@ -678,7 +678,7 @@ public:
             for(unsigned int j = 0; j < nonzeros; ++j)
             {
                 unsigned int col = A.index2_data()[counter];
-                
+
                 //make a check for base of indice. Here we assume that A(0,0) is nonzero
                 if(counter == 0)
                 {
@@ -687,19 +687,19 @@ public:
                         KRATOS_THROW_ERROR(std::logic_error, "Base indice for CSR must be 0", "")
                     }
                 }
-                
+
                 double val = A.value_data()[counter];
-                
+
                 if( ( fabs(val) < drop_tol ) && ( row != col ) )
                 {
                     A(row, col) = 0;
                     //A.erase_element(row, col);
                 }
-                
+
                 ++counter;
             }
         }
-        
+
         // check the right hand side vector at inactive set
         double sum_inactive_rhs = 0.0;
         for(std::set<std::size_t>::iterator it = InactiveIdSet.begin(); it != InactiveIdSet.end(); ++it)
@@ -732,18 +732,18 @@ public:
         #endif
 
         double building_time_stop = Timer::GetTime();
-        
+
         if(this->GetEchoLevel()>0)
         {
             std::cout << "Building Time : " << (building_time_stop - building_time_start) << std::endl;
         }
-        
+
         #ifdef EXPORT_LHS_MATRIX
         std::stringstream lhs_filename;
         lhs_filename << "A_" << mStepCounter << "." << mLocalCounter << ".mm";
         WriteMatrixMarketMatrix(lhs_filename.str().c_str(), A, false);
         #endif
-        
+
         #ifdef EXPORT_LHS_MATRIX_SAMPLING
         if(mLocalCounter == 0 && mStepCounter == 0)
         {
@@ -758,7 +758,7 @@ public:
         rhs_filename << "b_" << mStepCounter << "." << mLocalCounter << ".mm";
         WriteMatrixMarketVector(rhs_filename.str().c_str(), b);
         #endif
-        
+
         #ifdef EXPORT_RHS_VECTOR_SAMPLING
         if(mLocalCounter == 0 && mStepCounter == 0)
         {
@@ -911,7 +911,7 @@ public:
         KRATOS_TRY
 
         double solve_time_start = Timer::GetTime();
-        
+
         double norm_b;
         if( TSparseSpace::Size(b) != 0)
             norm_b = TSparseSpace::TwoNorm(b);
@@ -930,12 +930,12 @@ public:
         }
 
         double solve_time_stop = Timer::GetTime();
-        
+
         if(this->GetEchoLevel()>0)
         {
             std::cout << "System Solve Time : " << (solve_time_stop - solve_time_start) << std::endl;
         }
-        
+
         #ifdef EXPORT_SOL_VECTOR_SAMPLING
         if(mLocalCounter == 1 && mStepCounter == 0)
         {
@@ -944,7 +944,7 @@ public:
             WriteMatrixMarketVector(dx_filename.str().c_str(), Dx);
         }
         #endif
-        
+
         #ifdef EXPORT_SOL_VECTOR
         std::stringstream dx_filename;
         dx_filename << "dx_" << mStepCounter << "." << mLocalCounter-1 << ".mm";
@@ -1002,8 +1002,8 @@ public:
 
         #ifdef QUERY_RESIDUAL_NORM
         TSystemVectorType b_0 = b;
-        #endif        
-        
+        #endif
+
         #ifdef QUERY_DIAGONAL
         for(int i = 0; i < BaseType::mEquationSystemSize; ++i)
         {
@@ -1011,7 +1011,7 @@ public:
                 std::cout << "Warning: the diagonal is negative at (" << i << ", " << i << "): " << A(i, i) << std::endl;
         }
         #endif
-        
+
         //provide additional data to the solver/preconditioner
         BaseType::mpLinearSystemSolver->ProvideAdditionalData(A, Dx, b, BaseType::mDofSet, r_model_part);
 
@@ -1036,7 +1036,7 @@ public:
         std::cout << "||r||_2: " << norm_r << std::endl;
         std::cout << "||b||_2: " << norm_b << std::endl;
         #endif
-        
+
         KRATOS_CATCH("")
     }
 
@@ -1111,7 +1111,7 @@ public:
         KRATOS_CATCH("")
 
     }
-    
+
     //**************************************************************************
     //**************************************************************************
     void BuildRHSreactions(
@@ -1158,7 +1158,7 @@ public:
             vector<unsigned int> element_partition;
             OpenMPUtils::CreatePartition(number_of_threads, pElements.size(), element_partition);
             KRATOS_WATCH( number_of_threads );
-            
+
             #pragma omp parallel for
             for(unsigned int k = 0; k < number_of_threads; ++k)
             {
@@ -1171,7 +1171,7 @@ public:
                 ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
                 typename ElementsArrayType::ptr_iterator it_begin = pElements.ptr_begin() + element_partition[k];
                 typename ElementsArrayType::ptr_iterator it_end = pElements.ptr_begin() + element_partition[k + 1];
-                
+
                 for (typename ElementsArrayType::ptr_iterator it = it_begin; it != it_end; ++it)
                 {
                     if( !(*it)->GetValue( IS_INACTIVE ) || (*it)->Is( ACTIVE ) )
@@ -1185,12 +1185,12 @@ public:
                 }
             }
         #endif
-        
+
         //conditions shall not be accounted when calculating reactions
-        
+
         KRATOS_CATCH("")
     }
-    
+
     //**************************************************************************
     //**************************************************************************
     void SetUpDofSet(
@@ -1237,9 +1237,9 @@ public:
             }
         }
         KRATOS_WATCH(pConditions.size());
-        
+
         Doftemp.Unique();
-        
+
         BaseType::mDofSet = Doftemp;
 
         KRATOS_WATCH(BaseType::mDofSet.size())
@@ -1259,7 +1259,7 @@ public:
         }
         MY_LOG_TRACE << "#########################SetUpDofSet completed####################" << std::endl;
         #endif
-        
+
         KRATOS_CATCH("")
     }
 
@@ -1288,7 +1288,7 @@ public:
 
         BaseType::mEquationSystemSize = fix_id;
         mFixedLength = 0;
-        
+
         KRATOS_WATCH(BaseType::mEquationSystemSize)
 
         #if defined(ENABLE_LOG) && defined(QUERY_DOF_EQUATION_ID)
@@ -1301,10 +1301,10 @@ public:
         }
         MY_LOG_TRACE << "#########################SetUpSystem completed####################" << std::endl;
         #endif
-        
+
     }
     #endif
-    
+
     //a different enumeration strategy to compare with parallel enumeration strategy
     #ifdef DOF_ENUMERATION_STRAIGHT
     void SetUpSystem(
@@ -1331,7 +1331,7 @@ public:
         mFixedLength = 0;
         int fixed_offset = BaseType::mEquationSystemSize;
         int free_offset = 0;
-        
+
         for (typename DofsArrayType::iterator dof_iterator = BaseType::mDofSet.begin(); dof_iterator != BaseType::mDofSet.end(); ++dof_iterator)
         {
             if (dof_iterator->IsFixed())
@@ -1339,7 +1339,7 @@ public:
             else
                 dof_iterator->SetEquationId(free_offset++);
         }
-        
+
         KRATOS_WATCH(BaseType::mEquationSystemSize)
 
         #if defined(ENABLE_LOG) && defined(QUERY_DOF_EQUATION_ID)
@@ -1356,7 +1356,7 @@ public:
 //        r_model_part.GetProcessInfo()[SYSTEM_SIZE] = BaseType::mEquationSystemSize;
     }
     #endif
-    
+
     #ifdef DOF_ENUMERATION_FULL_STRAIGHT
     void SetUpSystem(
         ModelPart& r_model_part
@@ -1382,7 +1382,7 @@ public:
         mFixedLength = fixed_size;
         int fixed_offset = free_size;
         int free_offset = 0;
-        
+
         for (typename DofsArrayType::iterator dof_iterator = BaseType::mDofSet.begin(); dof_iterator != BaseType::mDofSet.end(); ++dof_iterator)
         {
             if (dof_iterator->IsFixed())
@@ -1407,7 +1407,7 @@ public:
 //        r_model_part.GetProcessInfo()[SYSTEM_SIZE] = BaseType::mEquationSystemSize;
     }
     #endif
-    
+
     //**************************************************************************
     //**************************************************************************
     void ResizeAndInitializeVectors(
@@ -1472,7 +1472,7 @@ public:
             if(BaseType::mpReactionsVector->size() != ReactionsVectorSize)
                 BaseType::mpReactionsVector->resize(ReactionsVectorSize,false);
         }
-        
+
         KRATOS_CATCH("")
 
     }
@@ -1525,7 +1525,7 @@ public:
         for (it2=BaseType::mDofSet.ptr_begin(); it2 != BaseType::mDofSet.ptr_end(); ++it2)
         {
             i = (*it2)->EquationId();
-            
+
             if(i >= systemsize)
             {
                 i -= systemsize;
@@ -1537,7 +1537,7 @@ public:
             }
         }
     }
-    
+
     //**************************************************************************
     //**************************************************************************
     void ApplyDirichletConditions(
@@ -1621,7 +1621,7 @@ protected:
     {
         std::cout << "Warning: ConstructMatrixStructure is called." << std::endl;
         double start_time = OpenMPUtils::GetCurrentTime();
-        
+
         std::size_t equation_size = A.size1();
         Element::EquationIdVectorType ids;
 
@@ -1727,7 +1727,7 @@ protected:
         }
 #endif
         Timer::Stop("MatrixStructure");
-        
+
         double end_time = OpenMPUtils::GetCurrentTime();
         std::cout << "ConstructMatrixStructure completed: " << end_time - start_time << " s" << std::endl;
     }
@@ -1950,7 +1950,7 @@ private:
         for (unsigned int i_local = 0; i_local < local_size; ++i_local)
         {
             unsigned int i_global = EquationId[i_local];
-            
+
             if ( i_global < BaseType::mEquationSystemSize )
             {
                 omp_set_lock(&lock_array[i_global]);
