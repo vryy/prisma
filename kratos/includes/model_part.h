@@ -572,11 +572,9 @@ public:
             else //if it does exist verify it is the same node
             {
                 if(&(*it_found) != &(*it)) //check if the pointee coincides
-								//yaman
 								{
 										KRATOS_THROW_ERROR(std::logic_error, "attempting to add a new master-slave constraint with Id :xxx , unfortunately a (different) master-slave constraint with the same Id already exists ", it_found->Id());
 								}
-									//yaman_KRATOS_ERROR << "attempting to add a new master-slave constraint with Id :" << it_found->Id() << ", unfortunately a (different) master-slave constraint with the same Id already exists" << std::endl;
                 else
                     aux.push_back( *(it.base()) );
             }
