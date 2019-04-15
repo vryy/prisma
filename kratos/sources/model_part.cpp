@@ -707,11 +707,8 @@ void ModelPart::AddMasterSlaveConstraint(ModelPart::MasterSlaveConstraintType::P
         }
         else //master-slave constraint did exist already
         {
-					 //yaman
 					 if(&(*existing_constraint_it) != (pNewMasterSlaveConstraint.get()))
 					 		KRATOS_THROW_ERROR(std::logic_error, "attempting to add Master-Slave constraint with Id :xxx , unfortunately a (different) condition with the same Id already exists", pNewMasterSlaveConstraint->Id())
-            //yamanKRATOS_ERROR_IF(&(*existing_constraint_it) != (pNewMasterSlaveConstraint.get()))//check if the pointee coincides
-            //yaman   << "attempting to add Master-Slave constraint with Id :" << pNewMasterSlaveConstraint->Id() << ", unfortunately a (different) condition with the same Id already exists" << std::endl;
         }
     }
 }
@@ -733,10 +730,7 @@ void ModelPart::AddMasterSlaveConstraints(std::vector<IndexType> const& MasterSl
             if(it!=root_model_part->MasterSlaveConstraintsEnd())
                 aux.push_back(*(it.base()));
             else
-								//yaman
 								KRATOS_THROW_ERROR(std::logic_error, "the master-slave constraint with Id :xxx , does not exist in the root model part", MasterSlaveConstraintIds[i])
-
-                //yamanKRATOS_ERROR << "the master-slave constraint with Id " << MasterSlaveConstraintIds[i] << " does not exist in the root model part";
         }
 
         ModelPart* current_part = this;
@@ -779,12 +773,8 @@ ModelPart::MasterSlaveConstraintType::Pointer ModelPart::CreateNewMasterSlaveCon
     }
 
     auto existing_constraint_iterator = GetMesh(ThisIndex).MasterSlaveConstraints().find(Id);
-		//yaman
 		if(existing_constraint_iterator != GetMesh(ThisIndex).MasterSlaveConstraintsEnd() )
 				KRATOS_THROW_ERROR(std::logic_error, "trying to construct an master-slave constraint with ID:xxx ,however a constraint with the same Id already exists", Id)
-    //yamanKRATOS_ERROR_IF(existing_constraint_iterator != GetMesh(ThisIndex).MasterSlaveConstraintsEnd() )
-    //yaman    << "trying to construct an master-slave constraint with ID " << Id << " however a constraint with the same Id already exists";
-
 
     //create the new element
     ModelPart::MasterSlaveConstraintType const& r_clone_constraint = KratosComponents<MasterSlaveConstraintType>::Get(ConstraintName);
@@ -829,13 +819,8 @@ ModelPart::MasterSlaveConstraintType::Pointer ModelPart::CreateNewMasterSlaveCon
                 GetMesh(ThisIndex).MasterSlaveConstraints().Unique();
                 return p_new_constraint;
         }
-				//yaman
 				if(GetMesh(ThisIndex).HasMasterSlaveConstraint(Id))
 				KRATOS_THROW_ERROR(std::logic_error, "trying to construct an master-slave constraint with ID :xxx ,however a constraint with the same Id already exists", Id)
-
-        //yamanKRATOS_ERROR_IF(GetMesh(ThisIndex).HasMasterSlaveConstraint(Id))
-        //yaman    << "trying to construct an master-slave constraint with ID " << Id << " however a constraint with the same Id already exists";
-
 
             //create the new element
         ModelPart::MasterSlaveConstraintType const& r_clone_constraint = KratosComponents<MasterSlaveConstraintType>::Get(ConstraintName);
@@ -851,9 +836,7 @@ ModelPart::MasterSlaveConstraintType::Pointer ModelPart::CreateNewMasterSlaveCon
         return p_new_constraint;
     } else
     {
-			//yaman
 				KRATOS_THROW_ERROR(std::logic_error, "Master or Slave node does not have requested DOF", "")
-        //yamanKRATOS_ERROR << "Master or Slave node does not have requested DOF " <<std::endl;
     }
 
     KRATOS_CATCH("")
@@ -890,12 +873,8 @@ ModelPart::MasterSlaveConstraintType::Pointer ModelPart::CreateNewMasterSlaveCon
         }
 
         auto existing_constraint_iterator = GetMesh(ThisIndex).MasterSlaveConstraints().find(Id);
-				//yaman
 				if(existing_constraint_iterator != GetMesh(ThisIndex).MasterSlaveConstraintsEnd() )
 						KRATOS_THROW_ERROR(std::logic_error, "trying to construct an master-slave constraint with ID:xxx ,however a constraint with the same Id already exists",Id)
-        //yamanKRATOS_ERROR_IF(existing_constraint_iterator != GetMesh(ThisIndex).MasterSlaveConstraintsEnd() )
-        //yaman    << "trying to construct an master-slave constraint with ID " << Id << " however a constraint with the same Id already exists";
-
 
             //create the new element
         ModelPart::MasterSlaveConstraintType const& r_clone_constraint = KratosComponents<MasterSlaveConstraintType>::Get(ConstraintName);
@@ -911,9 +890,7 @@ ModelPart::MasterSlaveConstraintType::Pointer ModelPart::CreateNewMasterSlaveCon
         return p_new_constraint;
     } else
     {
-			//yaman
 				KRATOS_THROW_ERROR(std::logic_error, "Master or Slave node does not have requested DOF ","")
-        //yamanKRATOS_ERROR << "Master or Slave node does not have requested DOF " <<std::endl;
     }
 
     KRATOS_CATCH("")
@@ -1164,9 +1141,7 @@ const ModelPart::MasterSlaveConstraintType& ModelPart::GetMasterSlaveConstraint(
 	{
 		if (mSubModelParts.find(rThisSubModelPart.Name()) != mSubModelParts.end())
 			// Here a warning would be enough. To be disscussed. Pooyan.
-//yaman
 			KRATOS_THROW_ERROR(std::logic_error, "There is an already existing sub model part with name ", rThisSubModelPart.Name())
-			//yamanKRATOS_ERROR << "There is an already existing sub model part with name \"" << rThisSubModelPart.Name() << "\" in model part: \"" << Name() << "\"" << std::endl;
 
 		if (IsSubModelPart())
 		{
