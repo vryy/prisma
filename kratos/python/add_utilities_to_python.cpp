@@ -34,6 +34,7 @@
 #include "utilities/iso_printer.h"
 #include "utilities/activation_utilities.h"
 #include "utilities/convect_particles_utilities.h"
+#include "utilities/constraint_utilities.h"
 
 
 // #include "utilities/signed_distance_calculator_bin_based.h"
@@ -305,6 +306,10 @@ namespace Kratos
             class_<ConnectivityPreserveModeler, boost::noncopyable > ("ConnectivityPreserveModeler", init< >())
                     .def("GenerateModelPart", GenerateModelPart)
     ;
+
+            class_< ConstraintUtilities, boost::noncopyable > ("ConstraintUtilities", init< >())
+                    ;
+
         }
 
     } // namespace Python.
