@@ -31,7 +31,6 @@
 #include "utilities/openmp_utils.h"
 #include "includes/kratos_flags.h"
 #include "includes/lock_object.h"
-#include "utilities/sparse_matrix_multiplication_utility.h"
 
 
 namespace Kratos
@@ -528,7 +527,7 @@ public:
 
         unsigned int nthreads = OpenMPUtils::GetNumThreads();
 
-        typedef std::unordered_set < NodeType::DofType::Pointer, DofPointerHasher>  set_type;
+        typedef std::unordered_set < DofType::Pointer, DofPointerHasher>  set_type;
 
         //KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", ( this->GetEchoLevel() > 2)) << "Number of threads" << nthreads << "\n" << std::endl;
 
@@ -600,7 +599,7 @@ public:
         Doftemp.reserve(dof_global_set.size());
         for (auto it= dof_global_set.begin(); it!= dof_global_set.end(); it++)
         {
-            Doftemp.push_back( it->get() );
+            Doftemp.push_back( *it );
         }
         Doftemp.Sort();
 
@@ -1160,7 +1159,7 @@ protected:
 
             // We compute the transposed matrix of the global relation matrix
             TSystemMatrixType T_transpose_matrix(mT.size2(), mT.size1());
-            SparseMatrixMultiplicationUtility::TransposeMatrix<TSystemMatrixType, TSystemMatrixType>(T_transpose_matrix, mT, 1.0);
+            noalias(T_transpose_matrix) = trans(mT);
 
             TSystemVectorType b_modified(rb.size());
             TSparseSpace::Mult(T_transpose_matrix, rb, b_modified);
@@ -1168,10 +1167,10 @@ protected:
             b_modified.resize(0, false); //free memory
 
             TSystemMatrixType auxiliar_A_matrix(mT.size2(), rA.size2());
-            SparseMatrixMultiplicationUtility::MatrixMultiplication(T_transpose_matrix, rA, auxiliar_A_matrix); //auxiliar = T_transpose * rA
+            noalias(auxiliar_A_matrix) = prod(T_transpose_matrix, rA); //auxiliar = T_transpose * rA
             T_transpose_matrix.resize(0, 0, false);                                                             //free memory
 
-            SparseMatrixMultiplicationUtility::MatrixMultiplication(auxiliar_A_matrix, mT, rA); //A = auxilar * T   NOTE: here we are overwriting the old A matrix!
+            noalias(rA) = prod(auxiliar_A_matrix, mT); //A = auxilar * T   NOTE: here we are overwriting the old A matrix!
             auxiliar_A_matrix.resize(0, 0, false);                                              //free memory
 
             double max_diag = 0.0;
