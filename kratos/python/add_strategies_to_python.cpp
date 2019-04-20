@@ -21,13 +21,13 @@
 
 
 
-// System includes 
+// System includes
 
 
-// External includes 
+// External includes
 #include <boost/python.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
-#include <boost/timer.hpp> 
+#include <boost/timer.hpp>
 
 
 // Project includes
@@ -62,6 +62,8 @@
 #include "solving_strategies/builder_and_solvers/builder_and_solver.h"
 #include "solving_strategies/builder_and_solvers/residualbased_elimination_builder_and_solver_deactivation.h"
 #include "solving_strategies/builder_and_solvers/residualbased_block_builder_and_solver.h"
+#include "solving_strategies/builder_and_solvers/residualbased_block_builder_and_solver_with_constraints.h"
+
 
 
 //linear solvers
@@ -282,7 +284,7 @@ namespace Kratos
 
             typedef ConvergenceCriteria< SparseSpaceType, LocalSpaceType > TConvergenceCriteriaType;
             typedef BuilderAndSolver< SparseSpaceType, LocalSpaceType, LinearSolverType > BuilderAndSolverType;
-            
+
             class_< ResidualBasedLinearStrategy< SparseSpaceType, LocalSpaceType, LinearSolverType >, bases< BaseSolvingStrategyType >, boost::noncopyable >
                     ("ResidualBasedLinearStrategy",init < ModelPart&, BaseSchemeType::Pointer, LinearSolverType::Pointer, bool, bool, bool, bool >())
                     .def(init < ModelPart& ,  BaseSchemeType::Pointer, LinearSolverType::Pointer, BuilderAndSolverType::Pointer, bool, bool, bool,  bool  >())
@@ -305,10 +307,10 @@ namespace Kratos
                     init < ModelPart&, BaseSchemeType::Pointer, LinearSolverType::Pointer, TConvergenceCriteriaType::Pointer, int, int, bool, bool, bool, double, double, int
                     >())
                     ;
-                    
-            class_< ExplicitStrategy< SparseSpaceType, LocalSpaceType, LinearSolverType >,	
+
+            class_< ExplicitStrategy< SparseSpaceType, LocalSpaceType, LinearSolverType >,
                     bases< BaseSolvingStrategyType >,  boost::noncopyable >
-                    ("Explicit_Strategy", 
+                    ("Explicit_Strategy",
                     init<ModelPart&, int, bool >() )
                     //AssembleLoop loops the elements calling AddExplicitContribution. Using processinfo the element is the one who "decides" which variable to modify.
                     .def("AssembleLoop",&ExplicitStrategy< SparseSpaceType, LocalSpaceType, LinearSolverType >::AssembleLoop)
@@ -318,7 +320,7 @@ namespace Kratos
                     .def("ExplicitUpdateLoop",&ExplicitStrategy< SparseSpaceType, LocalSpaceType, LinearSolverType >::ExplicitUpdateLoop)
                     //initialize and finalize.
                     .def("InitializeSolutionStep",&ExplicitStrategy< SparseSpaceType, LocalSpaceType, LinearSolverType >::InitializeSolutionStep)
-                    .def("FinalizeSolutionStep",&ExplicitStrategy< SparseSpaceType, LocalSpaceType, LinearSolverType >::FinalizeSolutionStep)	
+                    .def("FinalizeSolutionStep",&ExplicitStrategy< SparseSpaceType, LocalSpaceType, LinearSolverType >::FinalizeSolutionStep)
                     ;
 
             //********************************************************************
@@ -377,7 +379,7 @@ namespace Kratos
                     boost::noncopyable >
                     ("DisplacementCriteria", init< double, double>())
                     .def("SetEchoLevel", &DisplacementCriteria<SparseSpaceType, LocalSpaceType >::SetEchoLevel);
-		    
+
 	    class_< IncrementalDisplacementCriteria<SparseSpaceType, LocalSpaceType >,
                     bases<ConvergenceCriteria< SparseSpaceType, LocalSpaceType > >,
                     boost::noncopyable >
@@ -392,7 +394,7 @@ namespace Kratos
                                              bases<ConvergenceCriteria< SparseSpaceType > >,
                                              boost::noncopyable >
                                             ("ResidualCriteria", init<Model::Pointer, double >() );
-			
+
                                     class_< AndCriteria< SparseSpaceType >,
                                              bases<ConvergenceCriteria< SparseSpaceType > >,
                                              boost::noncopyable >
@@ -456,7 +458,17 @@ namespace Kratos
 
             class_< ResidualBasedEliminationBuilderAndSolverDeactivationType, bases<BuilderAndSolverType>, boost::noncopyable > ("ResidualBasedEliminationBuilderAndSolverDeactivation", init< LinearSolverType::Pointer > ());
 
-
+            typedef ResidualBasedBlockBuilderAndSolverWithConstraints< SparseSpaceType, LocalSpaceType, LinearSolverType > ResidualBasedBlockBuilderAndSolverWithConstraintsType;
+            //yaman
+            // class_< ResidualBasedBlockBuilderAndSolverWithConstraintsType, bases<BuilderAndSolverType>, boost::noncopyable > ("ResidualBasedBlockBuilderAndSolverWithConstraints", init< LinearSolverType::Pointer > ());
+            // class_< ResidualBasedBlockBuilderAndSolverWithConstraintsType,
+            //             ResidualBasedBlockBuilderAndSolverWithConstraintsType::Pointer,
+            //             BuilderAndSolverType>
+            //             ("ResidualBasedBlockBuilderAndSolverWithConstraints").def(init< LinearSolverType::Pointer > ());
+            // py::class_< ResidualBasedBlockBuilderAndSolverWithConstraintsType,
+            //             ResidualBasedBlockBuilderAndSolverWithConstraintsType::Pointer,
+            //             BuilderAndSolverType>
+            //             (m,"ResidualBasedBlockBuilderAndSolverWithConstraints").def(py::init< LinearSolverType::Pointer > ());
             //********************************************************************
             //********************************************************************
 
@@ -490,4 +502,3 @@ namespace Kratos
     } // namespace Python.
 
 } // Namespace Kratos
-
