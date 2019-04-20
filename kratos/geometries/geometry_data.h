@@ -69,6 +69,7 @@ public:
     */
     enum IntegrationMethod {GI_GAUSS_1, GI_GAUSS_2, GI_GAUSS_3, GI_GAUSS_4, GI_GAUSS_5,
 //                            GI_GAUSS_6, GI_GAUSS_7, GI_GAUSS_8, GI_GAUSS_9, GI_GAUSS_10,
+                            GI_EXTENDED_GAUSS_1, GI_EXTENDED_GAUSS_2, GI_EXTENDED_GAUSS_3, GI_EXTENDED_GAUSS_4, GI_EXTENDED_GAUSS_5,
                             NumberOfIntegrationMethods
                            };
 
