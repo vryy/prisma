@@ -459,16 +459,13 @@ namespace Kratos
             class_< ResidualBasedEliminationBuilderAndSolverDeactivationType, bases<BuilderAndSolverType>, boost::noncopyable > ("ResidualBasedEliminationBuilderAndSolverDeactivation", init< LinearSolverType::Pointer > ());
 
             typedef ResidualBasedBlockBuilderAndSolverWithConstraints< SparseSpaceType, LocalSpaceType, LinearSolverType > ResidualBasedBlockBuilderAndSolverWithConstraintsType;
-            //yaman
-            // class_< ResidualBasedBlockBuilderAndSolverWithConstraintsType, bases<BuilderAndSolverType>, boost::noncopyable > ("ResidualBasedBlockBuilderAndSolverWithConstraints", init< LinearSolverType::Pointer > ());
+            // class_< ResidualBasedBlockBuilderAndSolverWithConstraintsType, bases<BuilderAndSolverType>, boost::noncopyable >
+            // ("ResidualBasedBlockBuilderAndSolverWithConstraints", init< LinearSolverType::Pointer > ());
+            //
             // class_< ResidualBasedBlockBuilderAndSolverWithConstraintsType,
             //             ResidualBasedBlockBuilderAndSolverWithConstraintsType::Pointer,
             //             BuilderAndSolverType>
-            //             ("ResidualBasedBlockBuilderAndSolverWithConstraints").def(init< LinearSolverType::Pointer > ());
-            // py::class_< ResidualBasedBlockBuilderAndSolverWithConstraintsType,
-            //             ResidualBasedBlockBuilderAndSolverWithConstraintsType::Pointer,
-            //             BuilderAndSolverType>
-            //             (m,"ResidualBasedBlockBuilderAndSolverWithConstraints").def(py::init< LinearSolverType::Pointer > ());
+            //             (m,"ResidualBasedBlockBuilderAndSolverWithConstraints").def(init< LinearSolverType::Pointer > ());
             //********************************************************************
             //********************************************************************
 

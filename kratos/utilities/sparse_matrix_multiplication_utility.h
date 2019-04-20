@@ -636,7 +636,10 @@ public:
 
         #pragma omp parallel for
         for (int i = 0; i < static_cast<int>(nonzero_values); i++) {
-            KRATOS_DEBUG_ERROR_IF(AuxIndex2C[i] > static_cast<IndexType>(NCols)) << "Index " << AuxIndex2C[i] <<" is greater than the number of columns " << NCols << std::endl;
+            if(AuxIndex2C[i] > static_cast<IndexType>(NCols))
+            {
+                KRATOS_THROW_ERROR(std::logic_error, "Index:xxx is greater than the number of columns ", AuxIndex2C[i]);
+            }
             index2_c[i] = AuxIndex2C[i];
             values_c[i] = AuxValC[i];
         }
@@ -675,7 +678,10 @@ public:
                     SignedIndexType i = j - 1;
 
                     while(i >= 0 && Columns[i + row_beg] > c) {
-                        KRATOS_DEBUG_ERROR_IF(Columns[i + row_beg] > static_cast<Col>(NCols)) << " Index for column: " << i + row_beg << ". Index " << Columns[i + row_beg] <<" is greater than the number of columns " << NCols << std::endl;
+                        if(Columns[i + row_beg] > static_cast<Col>(NCols))
+                        {
+                            KRATOS_THROW_ERROR(std::logic_error, " An Index for column: xxx is greater than the number of columns", i + row_beg);
+                        }
                         Columns[i + 1 + row_beg] = Columns[i + row_beg];
                         Values[i + 1 + row_beg] = Values[i + row_beg];
                         i--;

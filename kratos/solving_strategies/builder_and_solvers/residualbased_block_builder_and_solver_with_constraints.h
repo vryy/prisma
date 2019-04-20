@@ -144,7 +144,7 @@ public:
 
     /** Destructor.
      */
-    ~ResidualBasedBlockBuilderAndSolverWithConstraints() override
+    ~ResidualBasedBlockBuilderAndSolverWithConstraints() //override
     {
     }
 
@@ -168,7 +168,7 @@ public:
         typename TSchemeType::Pointer pScheme,
         ModelPart& rModelPart,
         TSystemMatrixType& A,
-        TSystemVectorType& b) override
+        TSystemVectorType& b) //override
     {
         KRATOS_TRY
         if(!pScheme)
@@ -249,9 +249,9 @@ public:
         }
 
         const double stop_build = OpenMPUtils::GetCurrentTime();
-        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", (this->GetEchoLevel() >= 1 && rModelPart.GetCommunicator().MyPID() == 0)) << "Build time: " << stop_build - start_build << std::endl;
+        //KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", (this->GetEchoLevel() >= 1 && rModelPart.GetCommunicator().MyPID() == 0)) << "Build time: " << stop_build - start_build << std::endl;
 
-        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", (this->GetEchoLevel() > 2 && rModelPart.GetCommunicator().MyPID() == 0)) << "Finished parallel building" << std::endl;
+        //KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", (this->GetEchoLevel() > 2 && rModelPart.GetCommunicator().MyPID() == 0)) << "Finished parallel building" << std::endl;
 
         KRATOS_CATCH("")
     }
@@ -267,7 +267,7 @@ public:
     void BuildLHS(
         typename TSchemeType::Pointer pScheme,
         ModelPart& rModelPart,
-        TSystemMatrixType& A) override
+        TSystemMatrixType& A) //override
     {
         KRATOS_TRY
 
@@ -289,7 +289,7 @@ public:
     void BuildLHS_CompleteOnFreeRows(
         typename TSchemeType::Pointer pScheme,
         ModelPart& rModelPart,
-        TSystemMatrixType& A) override
+        TSystemMatrixType& A) //override
     {
         KRATOS_TRY
 
@@ -309,7 +309,7 @@ public:
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
         TSystemVectorType& b
-    ) override
+    ) //override
     {
         KRATOS_TRY
         double norm_b;
@@ -335,7 +335,7 @@ public:
         }
 
         //prints informations about the current time
-        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", this->GetEchoLevel() > 1) << *(BaseType::mpLinearSystemSolver) << std::endl;
+        //KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", this->GetEchoLevel() > 1) << *(BaseType::mpLinearSystemSolver) << std::endl;
 
         KRATOS_CATCH("")
     }
@@ -395,7 +395,7 @@ public:
         }
 
         // Prints informations about the current time
-        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", this->GetEchoLevel() > 1) << *(BaseType::mpLinearSystemSolver) << std::endl;
+        //KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", this->GetEchoLevel() > 1) << *(BaseType::mpLinearSystemSolver) << std::endl;
 
         KRATOS_CATCH("")
     }
@@ -415,7 +415,7 @@ public:
         ModelPart& rModelPart,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
-        TSystemVectorType& b) override
+        TSystemVectorType& b) //override
     {
         KRATOS_TRY
 
@@ -433,7 +433,7 @@ public:
 
         ApplyDirichletConditions(pScheme, rModelPart, A, Dx, b);
 
-        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", ( this->GetEchoLevel() == 3)) << "Before the solution of the system" << "\nSystem Matrix = " << A << "\nUnknowns vector = " << Dx << "\nRHS vector = " << b << std::endl;
+        //KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", ( this->GetEchoLevel() == 3)) << "Before the solution of the system" << "\nSystem Matrix = " << A << "\nUnknowns vector = " << Dx << "\nRHS vector = " << b << std::endl;
 
         const double start_solve = OpenMPUtils::GetCurrentTime();
         Timer::Start("Solve");
@@ -442,9 +442,9 @@ public:
 
         Timer::Stop("Solve");
         const double stop_solve = OpenMPUtils::GetCurrentTime();
-        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", (this->GetEchoLevel() >=1 && rModelPart.GetCommunicator().MyPID() == 0)) << "System solve time: " << stop_solve - start_solve << std::endl;
+        //KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", (this->GetEchoLevel() >=1 && rModelPart.GetCommunicator().MyPID() == 0)) << "System solve time: " << stop_solve - start_solve << std::endl;
 
-        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", ( this->GetEchoLevel() == 3)) << "After the solution of the system" << "\nSystem Matrix = " << A << "\nUnknowns vector = " << Dx << "\nRHS vector = " << b << std::endl;
+        //KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", ( this->GetEchoLevel() == 3)) << "After the solution of the system" << "\nSystem Matrix = " << A << "\nUnknowns vector = " << Dx << "\nRHS vector = " << b << std::endl;
 
         KRATOS_CATCH("")
     }
@@ -462,7 +462,7 @@ public:
         ModelPart& rModelPart,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
-        TSystemVectorType& b) override
+        TSystemVectorType& b) //override
     {
         KRATOS_TRY
 
@@ -481,7 +481,7 @@ public:
     void BuildRHS(
         typename TSchemeType::Pointer pScheme,
         ModelPart& rModelPart,
-        TSystemVectorType& b) override
+        TSystemVectorType& b) //override
     {
         KRATOS_TRY
 
@@ -514,11 +514,11 @@ public:
     void SetUpDofSet(
         typename TSchemeType::Pointer pScheme,
         ModelPart& rModelPart
-    ) override
+    ) //override
     {
         KRATOS_TRY;
 
-        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", ( this->GetEchoLevel() > 1 && rModelPart.GetCommunicator().MyPID() == 0)) << "Setting up the dofs" << std::endl;
+        //KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", ( this->GetEchoLevel() > 1 && rModelPart.GetCommunicator().MyPID() == 0)) << "Setting up the dofs" << std::endl;
 
         //Gets the array of elements from the modeler
         ElementsArrayType& r_elements_array = rModelPart.Elements();
@@ -530,9 +530,9 @@ public:
 
         typedef std::unordered_set < NodeType::DofType::Pointer, DofPointerHasher>  set_type;
 
-        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", ( this->GetEchoLevel() > 2)) << "Number of threads" << nthreads << "\n" << std::endl;
+        //KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", ( this->GetEchoLevel() > 2)) << "Number of threads" << nthreads << "\n" << std::endl;
 
-        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", ( this->GetEchoLevel() > 2)) << "Initializing element loop" << std::endl;
+        //KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", ( this->GetEchoLevel() > 2)) << "Initializing element loop" << std::endl;
 
         /**
          * Here we declare three sets.
@@ -592,7 +592,7 @@ public:
             }
         }
 
-        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", ( this->GetEchoLevel() > 2)) << "Initializing ordered array filling\n" << std::endl;
+        //KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", ( this->GetEchoLevel() > 2)) << "Initializing ordered array filling\n" << std::endl;
 
         DofsArrayType Doftemp;
         BaseType::mDofSet = DofsArrayType();
@@ -611,13 +611,13 @@ public:
         {
             KRATOS_THROW_ERROR(std::logic_error, "No degrees of freedom!", "");
         }
-        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", ( this->GetEchoLevel() > 2)) << "Number of degrees of freedom:" << BaseType::mDofSet.size() << std::endl;
+        //KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", ( this->GetEchoLevel() > 2)) << "Number of degrees of freedom:" << BaseType::mDofSet.size() << std::endl;
 
         BaseType::mDofSetIsInitialized = true;
 
-        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", ( this->GetEchoLevel() > 2 && rModelPart.GetCommunicator().MyPID() == 0)) << "Finished setting up the dofs" << std::endl;
+        //KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", ( this->GetEchoLevel() > 2 && rModelPart.GetCommunicator().MyPID() == 0)) << "Finished setting up the dofs" << std::endl;
 
-        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", ( this->GetEchoLevel() > 2)) << "End of setup dof set\n" << std::endl;
+        //KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", ( this->GetEchoLevel() > 2)) << "End of setup dof set\n" << std::endl;
 
 
 #ifdef KRATOS_DEBUG
@@ -642,7 +642,7 @@ public:
      */
     void SetUpSystem(
         ModelPart& rModelPart
-    ) override
+    ) //override
     {
         //int free_id = 0;
         BaseType::mEquationSystemSize = BaseType::mDofSet.size();
@@ -665,7 +665,7 @@ public:
         TSystemVectorPointerType& pDx,
         TSystemVectorPointerType& pb,
         ModelPart& rModelPart
-    ) override
+    ) ////override
     {
         KRATOS_TRY
         if (pA == NULL) //if the pointer is not initialized initialize it to an empty matrix
@@ -720,7 +720,7 @@ public:
         ModelPart& rModelPart,
         TSystemMatrixType& rA,
         TSystemVectorType& rDx,
-        TSystemVectorType& rb) override
+        TSystemVectorType& rb) //override
     {
         KRATOS_TRY
 
@@ -748,7 +748,7 @@ public:
         ModelPart& rModelPart,
         TSystemMatrixType& rA,
         TSystemVectorType& rDx,
-        TSystemVectorType& rb) override
+        TSystemVectorType& rb) //override
     {
         BaseType::FinalizeSolutionStep(rModelPart, rA, rDx, rb);
 
@@ -773,7 +773,7 @@ public:
         ModelPart& rModelPart,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
-        TSystemVectorType& b) override
+        TSystemVectorType& b) //override
     {
         TSparseSpace::SetToZero(b);
 
@@ -808,7 +808,7 @@ public:
         ModelPart& rModelPart,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
-        TSystemVectorType& b) override
+        TSystemVectorType& b) //override
     {
         std::size_t system_size = A.size1();
         std::vector<double> scaling_factors (system_size, 0.0);
@@ -881,7 +881,7 @@ public:
     /**
      * @brief This function is intended to be called at the end of the solution step to clean up memory storage not needed
      */
-    void Clear() override
+    void Clear() //override
     {
         BaseType::Clear();
 
@@ -899,7 +899,7 @@ public:
      * @param rModelPart The model part of the problem to solve
      * @return 0 all ok
      */
-    int Check(ModelPart& rModelPart) override
+    int Check(ModelPart& rModelPart) //override
     {
         KRATOS_TRY
 
@@ -920,19 +920,19 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    std::string Info() const override
+    std::string Info() const //override
     {
         return "ResidualBasedBlockBuilderAndSolverWithConstraints";
     }
 
     /// Print information about this object.
-    void PrintInfo(std::ostream& rOStream) const override
+    void PrintInfo(std::ostream& rOStream) const //override
     {
         rOStream << Info();
     }
 
     /// Print object's data.
-    void PrintData(std::ostream& rOStream) const override
+    void PrintData(std::ostream& rOStream) const //override
     {
         rOStream << Info();
     }
