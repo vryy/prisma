@@ -63,6 +63,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 /* Project includes */
 #include "includes/define.h"
 #include "includes/matrix_market_interface.h"
+#include "includes/kratos_flags.h"
 #include "utilities/timer.h"
 #include "utilities/openmp_utils.h"
 #include "solving_strategies/builder_and_solvers/builder_and_solver.h"
@@ -1212,31 +1213,37 @@ public:
         //mDofSet.clear();
 
         ElementsArrayType& pElements = r_model_part.Elements();
+        std::size_t num_active_elements = 0;
         for (typename ElementsArrayType::ptr_iterator it=pElements.ptr_begin(); it!=pElements.ptr_end(); ++it)
         {
-            if( !(*it)->GetValue( IS_INACTIVE ) || (*it)->Is( ACTIVE ) )
-            {
+            // if( !(*it)->GetValue( IS_INACTIVE ) || (*it)->Is( ACTIVE ) )
+            // {
                 // gets list of Dof involved on every element
                 pScheme->GetElementalDofList(*it,DofList,CurrentProcessInfo);
                 for(typename Element::DofsVectorType::iterator i = DofList.begin() ; i != DofList.end() ; ++i)
                     Doftemp.push_back(*i);
-            }
+                ++num_active_elements;
+            // }
         }
         KRATOS_WATCH(pElements.size());
+        KRATOS_WATCH(num_active_elements);
 
         //taking in account conditions
         ConditionsArrayType& pConditions = r_model_part.Conditions();
+        std::size_t num_active_conditions = 0;
         for (typename ConditionsArrayType::ptr_iterator it=pConditions.ptr_begin(); it!=pConditions.ptr_end(); ++it)
         {
-            if( !(*it)->GetValue( IS_INACTIVE ) || (*it)->Is( ACTIVE ) )
-            {
+            // if( !(*it)->GetValue( IS_INACTIVE ) || (*it)->Is( ACTIVE ) )
+            // {
                 // gets list of Dof involved on every condition
                 pScheme->GetConditionDofList(*it,DofList,CurrentProcessInfo);
                 for(typename Element::DofsVectorType::iterator i = DofList.begin() ; i != DofList.end() ; ++i)
                     Doftemp.push_back(*i);
-            }
+                ++num_active_conditions;
+            // }
         }
         KRATOS_WATCH(pConditions.size());
+        KRATOS_WATCH(num_active_conditions)
 
         Doftemp.Unique();
 
