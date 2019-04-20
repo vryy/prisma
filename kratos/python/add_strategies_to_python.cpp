@@ -459,8 +459,8 @@ namespace Kratos
             class_< ResidualBasedEliminationBuilderAndSolverDeactivationType, bases<BuilderAndSolverType>, boost::noncopyable > ("ResidualBasedEliminationBuilderAndSolverDeactivation", init< LinearSolverType::Pointer > ());
 
             typedef ResidualBasedBlockBuilderAndSolverWithConstraints< SparseSpaceType, LocalSpaceType, LinearSolverType > ResidualBasedBlockBuilderAndSolverWithConstraintsType;
-            // class_< ResidualBasedBlockBuilderAndSolverWithConstraintsType, bases<BuilderAndSolverType>, boost::noncopyable >
-            // ("ResidualBasedBlockBuilderAndSolverWithConstraints", init< LinearSolverType::Pointer > ());
+            class_< ResidualBasedBlockBuilderAndSolverWithConstraintsType, bases<BuilderAndSolverType>, boost::noncopyable >
+            ("ResidualBasedBlockBuilderAndSolverWithConstraints", init< LinearSolverType::Pointer > ());
             //
             // class_< ResidualBasedBlockBuilderAndSolverWithConstraintsType,
             //             ResidualBasedBlockBuilderAndSolverWithConstraintsType::Pointer,
