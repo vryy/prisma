@@ -129,7 +129,7 @@ void ConstraintUtilities::PreComputeExplicitConstraintConstribution(
             components_variable_map.insert(std::pair<std::size_t, VariableComponentType>(r_check_dof_y.Key(), r_residual_dof_y));
             components_variable_map.insert(std::pair<std::size_t, VariableComponentType>(r_check_dof_z.Key(), r_residual_dof_z));
         } else {
-            KRATOS_ERROR << "Variable is not an array or a double" << std::endl;
+            KRATOS_THROW_ERROR(std::logic_error, "Variable is not an array or a double", "");
         }
 
         ++counter;
