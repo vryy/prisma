@@ -91,6 +91,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define QUERY_EQUATION_ID_AT_BUILD
 //#define QUERY_DIAGONAL
 
+#define DETECT_NAN_AT_BUILD // to enable this, must enable -fno-finite-math-only after -ffast-math in the compile flags
+// REF: https://stackoverflow.com/questions/22931147/stdisinf-does-not-work-with-ffast-math-how-to-check-for-infinity
+
 //#define ENABLE_FILTER_SMALL_ENTRIES
 
 // #define ENABLE_SYSTEM_REORDERING
@@ -530,6 +533,19 @@ public:
                     //calculate elemental contribution
                     pScheme->CalculateSystemContributions(*it,LHS_Contribution,RHS_Contribution,EquationId,CurrentProcessInfo);
 
+                    #ifdef DETECT_NAN_AT_BUILD
+                    double norm_elem_k = norm_frobenius(LHS_Contribution);
+                    double norm_elem_r = norm_2(RHS_Contribution);
+
+                    if (std::isnan(norm_elem_k) || std::isnan(norm_elem_r))
+                    {
+                        KRATOS_WATCH(norm_elem_k)
+                        KRATOS_WATCH(norm_elem_r)
+                        std::cout << "type of element: " << typeid(*(*it)).name() << std::endl;
+                        KRATOS_THROW_ERROR(std::logic_error, "NaN is detected at element", (*it)->Id())
+                    }
+                    #endif
+
 //                    KRATOS_WATCH(LHS_Contribution);
 //                    KRATOS_WATCH(RHS_Contribution);
                     #ifdef EXPORT_LOCAL_LHS_MATRIX
@@ -604,6 +620,19 @@ public:
 //                    std::cout << "Condition " << (*it)->Id() << " is considerred, type: " << typeid(*(*it)).name() << std::endl;
                     //calculate elemental contribution
                     pScheme->Condition_CalculateSystemContributions(*it,LHS_Contribution,RHS_Contribution,EquationId,CurrentProcessInfo);
+
+                    #ifdef DETECT_NAN_AT_BUILD
+                    double norm_cond_k = norm_frobenius(LHS_Contribution);
+                    double norm_cond_r = norm_2(RHS_Contribution);
+
+                    if (std::isnan(norm_cond_k) || std::isnan(norm_cond_r))
+                    {
+                        KRATOS_WATCH(norm_cond_k)
+                        KRATOS_WATCH(norm_cond_r)
+                        std::cout << "type of condition: " << typeid(*(*it)).name() << std::endl;
+                        KRATOS_THROW_ERROR(std::logic_error, "NaN is detected at condition", (*it)->Id())
+                    }
+                    #endif
 
                     #if defined(ENABLE_LOG) && defined(QUERY_EQUATION_ID_AT_BUILD)
                     std::stringstream ss;
