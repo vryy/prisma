@@ -474,6 +474,15 @@ public:
     {
     }
 
+    virtual void ResizeAndInitializeVectors(
+        TSystemMatrixPointerType& pA,
+        TSystemVectorPointerType& pDx,
+        TSystemVectorPointerType& pb,
+        ModelPart& rModelPart
+    )
+    {
+    }
+
     virtual void InitializeSolutionStep(
         ModelPart& r_model_part,
         TSystemMatrixType& A,

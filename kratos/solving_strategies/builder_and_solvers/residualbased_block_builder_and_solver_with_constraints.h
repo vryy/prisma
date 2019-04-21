@@ -26,11 +26,9 @@
 #include "includes/define.h"
 #include "solving_strategies/builder_and_solvers/builder_and_solver.h"
 #include "includes/model_part.h"
-#include "includes/key_hash.h"
 #include "utilities/timer.h"
 #include "utilities/openmp_utils.h"
 #include "includes/kratos_flags.h"
-#include "includes/lock_object.h"
 
 
 namespace Kratos
@@ -527,7 +525,7 @@ public:
 
         unsigned int nthreads = OpenMPUtils::GetNumThreads();
 
-        typedef std::unordered_set < DofType::Pointer, DofPointerHasher>  set_type;
+        typedef std::set < DofType::Pointer >  set_type;
 
         //KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", ( this->GetEchoLevel() > 2)) << "Number of threads" << nthreads << "\n" << std::endl;
 
@@ -539,15 +537,13 @@ public:
          * - The slave set: The DoF that are not going to be solved, due to MPC formulation
          */
         set_type dof_global_set;
-        dof_global_set.reserve(number_of_elements*20);
 
         #pragma omp parallel firstprivate(dof_list, second_dof_list)
         {
             ProcessInfo& r_current_process_info = rModelPart.GetProcessInfo();
 
-            // We cleate the temporal set and we reserve some space on them
+            // We cleate the temporal set
             set_type dofs_tmp_set;
-            dofs_tmp_set.reserve(20000);
 
             // Gets the array of elements from the modeler
             #pragma omp for schedule(guided, 512) nowait
@@ -659,7 +655,6 @@ public:
     //**************************************************************************
 
     void ResizeAndInitializeVectors(
-        typename TSchemeType::Pointer pScheme,
         TSystemMatrixPointerType& pA,
         TSystemVectorPointerType& pDx,
         TSystemVectorPointerType& pb,
@@ -691,7 +686,7 @@ public:
         if (A.size1() == 0 || BaseType::GetReshapeMatrixFlag() == true) //if the matrix is not initialized
         {
             A.resize(BaseType::mEquationSystemSize, BaseType::mEquationSystemSize, false);
-            ConstructMatrixStructure(pScheme, A, rModelPart);
+            ConstructMatrixStructure(A, rModelPart);
         }
         else
         {
@@ -699,7 +694,7 @@ public:
             {
                 KRATOS_THROW_ERROR(std::logic_error, "The equation system size has changed during the simulation. This is not permited.", "");
                 A.resize(BaseType::mEquationSystemSize, BaseType::mEquationSystemSize, true);
-                ConstructMatrixStructure(pScheme, A, rModelPart);
+                ConstructMatrixStructure(A, rModelPart);
             }
         }
         if (Dx.size() != BaseType::mEquationSystemSize)
@@ -976,7 +971,10 @@ protected:
             const auto it_const_begin = rModelPart.MasterSlaveConstraints().begin();
             std::vector<std::unordered_set<IndexType>> indices(BaseType::mDofSet.size());
 
-            std::vector<LockObject> lock_array(indices.size());
+            std::vector<omp_lock_t> lock_array(indices.size());
+
+            for(std::size_t i = 0; i < indices.size(); ++i)
+                omp_init_lock(&lock_array[i]);
 
             #pragma omp parallel firstprivate(slave_dof_list, master_dof_list)
             {
@@ -1007,11 +1005,14 @@ protected:
 
                 // Merging all the temporal indexes
                 for (int i = 0; i < static_cast<int>(temp_indices.size()); ++i) {
-                    lock_array[i].SetLock();
+                    omp_set_lock(&lock_array[i]);
                     indices[i].insert(temp_indices[i].begin(), temp_indices[i].end());
-                    lock_array[i].UnSetLock();
+                    omp_unset_lock(&lock_array[i]);
                 }
             }
+
+            for(std::size_t i = 0; i < indices.size(); ++i)
+                omp_destroy_lock(&lock_array[i]);
 
             mSlaveIds.clear();
             mMasterIds.clear();
@@ -1193,7 +1194,6 @@ protected:
     }
 
     virtual void ConstructMatrixStructure(
-        typename TSchemeType::Pointer pScheme,
         TSystemMatrixType& A,
         ModelPart& rModelPart)
     {
@@ -1212,7 +1212,10 @@ protected:
 
         const std::size_t equation_size = BaseType::mEquationSystemSize;
 
-        std::vector< LockObject > lock_array(equation_size);
+        std::vector< omp_lock_t > lock_array(equation_size);
+
+        for(std::size_t i = 0; i < equation_size; ++i)
+            omp_init_lock(&lock_array[i]);
 
         std::vector<std::unordered_set<std::size_t> > indices(equation_size);
         #pragma omp parallel for firstprivate(equation_size)
@@ -1225,29 +1228,30 @@ protected:
         #pragma omp parallel for firstprivate(nelements, ids)
         for (int iii=0; iii<nelements; iii++) {
             typename ElementsContainerType::iterator i_element = el_begin + iii;
-            pScheme->EquationId( *(i_element.base()) , ids, CurrentProcessInfo);
+            i_element->EquationIdVector(ids, CurrentProcessInfo);
             for (std::size_t i = 0; i < ids.size(); i++) {
-                lock_array[ids[i]].SetLock();
+                omp_set_lock(&lock_array[i]);
                 auto& row_indices = indices[ids[i]];
                 row_indices.insert(ids.begin(), ids.end());
-                lock_array[ids[i]].UnSetLock();
+                omp_unset_lock(&lock_array[i]);
             }
         }
 
         #pragma omp parallel for firstprivate(nconditions, ids)
         for (int iii = 0; iii<nconditions; iii++) {
             typename ConditionsArrayType::iterator i_condition = cond_begin + iii;
-            pScheme->Condition_EquationId( *(i_condition.base()), ids, CurrentProcessInfo);
+            i_condition->EquationIdVector(ids, CurrentProcessInfo);
             for (std::size_t i = 0; i < ids.size(); i++) {
-                lock_array[ids[i]].SetLock();
+                omp_set_lock(&lock_array[i]);
                 auto& row_indices = indices[ids[i]];
                 row_indices.insert(ids.begin(), ids.end());
-                lock_array[ids[i]].UnSetLock();
+                omp_unset_lock(&lock_array[i]);
             }
         }
 
         //destroy locks
-        lock_array = std::vector< LockObject >();
+        for(std::size_t i = 0; i < equation_size; ++i)
+            omp_destroy_lock(&lock_array[i]);
 
         //count the row sizes
         unsigned int nnz = 0;

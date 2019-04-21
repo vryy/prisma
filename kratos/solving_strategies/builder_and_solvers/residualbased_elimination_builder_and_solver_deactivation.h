@@ -1515,6 +1515,18 @@ public:
 
     //**************************************************************************
     //**************************************************************************
+    void ResizeAndInitializeVectors(
+        TSystemMatrixPointerType& pA,
+        TSystemVectorPointerType& pDx,
+        TSystemVectorPointerType& pb,
+        ModelPart& rModelPart
+    )
+    {
+        ResizeAndInitializeVectors(pA, pDx, pb, rModelPart.Elements(), rModelPart.Conditions(), rModelPart.GetProcessInfo());
+    }
+
+    //**************************************************************************
+    //**************************************************************************
     void InitializeSolutionStep(
         ModelPart& r_model_part,
         TSystemMatrixType& A,
