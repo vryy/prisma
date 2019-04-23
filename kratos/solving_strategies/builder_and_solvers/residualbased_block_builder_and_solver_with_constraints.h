@@ -29,6 +29,7 @@
 #include "utilities/timer.h"
 #include "utilities/openmp_utils.h"
 #include "includes/kratos_flags.h"
+#include "utilities/sparse_matrix_multiplication_utility.h"
 
 
 namespace Kratos
@@ -677,6 +678,11 @@ public:
             TSystemVectorPointerType pNewb = TSystemVectorPointerType(new TSystemVectorType(0));
             pb.swap(pNewb);
         }
+        if (BaseType::mpReactionsVector == NULL) //if the pointer is not initialized initialize it to an empty matrix
+        {
+            TSystemVectorPointerType pNewReactionsVector = TSystemVectorPointerType(new TSystemVectorType(0) );
+            BaseType::mpReactionsVector.swap(pNewReactionsVector);
+        }
 
         TSystemMatrixType& A = *pA;
         TSystemVectorType& Dx = *pDx;
@@ -701,6 +707,14 @@ public:
             Dx.resize(BaseType::mEquationSystemSize, false);
         if (b.size() != BaseType::mEquationSystemSize)
             b.resize(BaseType::mEquationSystemSize, false);
+
+        //if needed resize the vector for the calculation of reactions
+        if(BaseType::mCalculateReactionsFlag == true)
+        {
+            unsigned int ReactionsVectorSize = BaseType::mDofSet.size()-BaseType::mEquationSystemSize;
+            if(BaseType::mpReactionsVector->size() != ReactionsVectorSize)
+                BaseType::mpReactionsVector->resize(ReactionsVectorSize,false);
+        }
 
         ConstructMasterSlaveConstraintsStructure(rModelPart);
 
@@ -878,12 +892,18 @@ public:
     void Clear() //override
     {
         BaseType::Clear();
+        this->mpLinearSystemSolver->Clear();
 
         mSlaveIds.clear();
         mMasterIds.clear();
         mInactiveSlaveDofs.clear();
         mT.resize(0,0,false);
         mConstantVector.resize(0,false);
+
+        if (this->GetEchoLevel() > 0)
+        {
+            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraints Clear Function called" << std::endl;
+        }
     }
 
     /**
@@ -1160,7 +1180,7 @@ protected:
 
             // We compute the transposed matrix of the global relation matrix
             TSystemMatrixType T_transpose_matrix(mT.size2(), mT.size1());
-            noalias(T_transpose_matrix) = trans(mT);
+            SparseMatrixMultiplicationUtility::TransposeMatrix<TSystemMatrixType, TSystemMatrixType>(T_transpose_matrix, mT, 1.0);
 
             TSystemVectorType b_modified(rb.size());
             TSparseSpace::Mult(T_transpose_matrix, rb, b_modified);
@@ -1168,10 +1188,10 @@ protected:
             b_modified.resize(0, false); //free memory
 
             TSystemMatrixType auxiliar_A_matrix(mT.size2(), rA.size2());
-            noalias(auxiliar_A_matrix) = prod(T_transpose_matrix, rA); //auxiliar = T_transpose * rA
+            SparseMatrixMultiplicationUtility::MatrixMultiplication(T_transpose_matrix, rA, auxiliar_A_matrix); //auxiliar = T_transpose * rA
             T_transpose_matrix.resize(0, 0, false);                                                             //free memory
 
-            noalias(rA) = prod(auxiliar_A_matrix, mT); //A = auxilar * T   NOTE: here we are overwriting the old A matrix!
+            SparseMatrixMultiplicationUtility::MatrixMultiplication(auxiliar_A_matrix, mT, rA); //A = auxilar * T   NOTE: here we are overwriting the old A matrix!
             auxiliar_A_matrix.resize(0, 0, false);                                              //free memory
 
             double max_diag = 0.0;
