@@ -35,6 +35,7 @@
 
 // Project includes
 #include "includes/define.h"
+#include "includes/model_part.h"
 
 
 namespace Kratos
@@ -42,6 +43,28 @@ namespace Kratos
 
 namespace Python
 {
+
+template< class TBuilderAndSolverType >
+void BuilderAndSolver_ResizeAndInitializeVectors1(TBuilderAndSolverType& rDummy,
+    typename TBuilderAndSolverType::TSystemMatrixPointerType& pA,
+    typename TBuilderAndSolverType::TSystemVectorPointerType& pDx,
+    typename TBuilderAndSolverType::TSystemVectorPointerType& pb,
+    typename TBuilderAndSolverType::ElementsArrayType& rElements,
+    typename TBuilderAndSolverType::ConditionsArrayType& rConditions,
+    ProcessInfo& CurrentProcessInfo)
+{
+    rDummy.ResizeAndInitializeVectors(pA, pDx, pb, rElements, rConditions, CurrentProcessInfo);
+}
+
+template< class TBuilderAndSolverType >
+void BuilderAndSolver_ResizeAndInitializeVectors2(TBuilderAndSolverType& rDummy,
+    typename TBuilderAndSolverType::TSystemMatrixPointerType& pA,
+    typename TBuilderAndSolverType::TSystemVectorPointerType& pDx,
+    typename TBuilderAndSolverType::TSystemVectorPointerType& pb,
+    ModelPart& r_model_part)
+{
+    rDummy.ResizeAndInitializeVectors(pA, pDx, pb, r_model_part);
+}
 
 void  AddStrategiesToPython();
 

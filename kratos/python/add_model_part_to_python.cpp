@@ -48,7 +48,11 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // System includes
 
 // External includes
+#include <boost/foreach.hpp>
 #include <boost/python.hpp>
+#include <boost/python/stl_iterator.hpp>
+#include <boost/python/operators.hpp>
+
 
 
 // Project includes
@@ -56,6 +60,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "includes/model_part.h"
 #include "python/add_model_part_to_python.h"
 #include "includes/process_info.h"
+#include "utilities/constraint_utilities.h"
 
 namespace Kratos
 {
@@ -466,12 +471,12 @@ void ModelPartRemoveConditionFromAllLevels4(ModelPart& rModelPart, ModelPart::Co
 //
 // ModelPart::MasterSlaveConstraintType::Pointer
 void CreateNewMasterSlaveConstraint1(ModelPart& rModelPart,
-                                                                              std::string ConstraintName,
-                                                                              ModelPart::IndexType Id,
-                                                                              ModelPart::DofsVectorType& rMasterDofsVector,
-                                                                              ModelPart::DofsVectorType& rSlaveDofsVector,
-                                                                              ModelPart::MatrixType RelationMatrix,
-                                                                              ModelPart::VectorType ConstantVector)
+	std::string ConstraintName,
+	ModelPart::IndexType Id,
+	ModelPart::DofsVectorType& rMasterDofsVector,
+	ModelPart::DofsVectorType& rSlaveDofsVector,
+	ModelPart::MatrixType RelationMatrix,
+	ModelPart::VectorType ConstantVector)
 {
     //return
     rModelPart.CreateNewMasterSlaveConstraint(ConstraintName, Id, rMasterDofsVector, rSlaveDofsVector, RelationMatrix, ConstantVector);
@@ -480,28 +485,28 @@ void CreateNewMasterSlaveConstraint1(ModelPart& rModelPart,
 
 
 void CreateNewMasterSlaveConstraint2(ModelPart& rModelPart,
-                                                                              std::string ConstraintName,
-                                                                              ModelPart::IndexType Id,
-                                                                              ModelPart::NodeType& rMasterNode,
-                                                                              ModelPart::DoubleVariableType& rMasterVariable,
-                                                                              ModelPart::NodeType& rSlaveNode,
-                                                                              ModelPart::DoubleVariableType& rSlaveVariable,
-                                                                              double Weight,
-                                                                              double Constant)
+	std::string ConstraintName,
+	ModelPart::IndexType Id,
+	ModelPart::NodeType& rMasterNode,
+	ModelPart::DoubleVariableType& rMasterVariable,
+	ModelPart::NodeType& rSlaveNode,
+	ModelPart::DoubleVariableType& rSlaveVariable,
+	double Weight,
+	double Constant)
 {
     // return
     rModelPart.CreateNewMasterSlaveConstraint(ConstraintName, Id, rMasterNode, rMasterVariable, rSlaveNode, rSlaveVariable, Weight, Constant);
 }
 
 void CreateNewMasterSlaveConstraint3(ModelPart& rModelPart,
-                                                                              std::string ConstraintName,
-                                                                              ModelPart::IndexType Id,
-                                                                              ModelPart::NodeType& rMasterNode,
-                                                                              ModelPart::VariableComponentType& rMasterVariable,
-                                                                              ModelPart::NodeType& rSlaveNode,
-                                                                              ModelPart::VariableComponentType& rSlaveVariable,
-                                                                              double Weight,
-                                                                              double Constant)
+	std::string ConstraintName,
+	ModelPart::IndexType Id,
+	ModelPart::NodeType& rMasterNode,
+	ModelPart::VariableComponentType& rMasterVariable,
+	ModelPart::NodeType& rSlaveNode,
+	ModelPart::VariableComponentType& rSlaveVariable,
+	double Weight,
+	double Constant)
 {
     // return
     rModelPart.CreateNewMasterSlaveConstraint(ConstraintName, Id, rMasterNode, rMasterVariable, rSlaveNode, rSlaveVariable, Weight, Constant);
@@ -517,6 +522,25 @@ void AddMasterSlaveConstraintsByIds(ModelPart& rModelPart, std::vector< ModelPar
     rModelPart.AddMasterSlaveConstraints(ConstraintIds);
 }
 
+void CreateNewLinearMasterSlaveConstraint(ModelPart& rModelPart,
+	std::string ConstraintName,
+	ModelPart::IndexType Id,
+	ModelPart::NodeType::Pointer pSlaveNode,
+	boost::python::list py_master_nodes,
+	ModelPart::VariableComponentType& rVariable,
+	ModelPart::MatrixType RelationMatrix,
+	ModelPart::VectorType ConstantVector)
+{
+	std::vector<ModelPart::NodeType::Pointer> pMasterNodes;
+
+    typedef boost::python::stl_input_iterator<ModelPart::NodeType::Pointer> iterator_value_type;
+    BOOST_FOREACH(const typename iterator_value_type::value_type& p_node, std::make_pair(iterator_value_type(py_master_nodes), iterator_value_type() ) )
+    {
+    	pMasterNodes.push_back(p_node);
+    }
+
+    ConstraintUtilities::CreateLinearConstraint(rModelPart, ConstraintName, Id, pSlaveNode, pMasterNodes, rVariable, RelationMatrix, ConstantVector);
+}
 
 // const ModelPart::MasterSlaveConstraintContainerType& ModelPartGetMasterSlaveConstraints1(ModelPart& rModelPart)
 // {
@@ -680,8 +704,8 @@ void AddModelPartToPython()
 		.def("NumberOfElements", &ModelPart::NumberOfElements)
 		.def("NumberOfConditions", ModelPartNumberOfConditions1)
 		.def("NumberOfConditions", &ModelPart::NumberOfConditions)
-    .def("NumberOfMasterSlaveConstraints", ModelPartNumberOfMasterSlaveConstraints1)
-    .def("NumberOfMasterSlaveConstraints", &ModelPart::NumberOfMasterSlaveConstraints)
+        .def("NumberOfMasterSlaveConstraints", ModelPartNumberOfMasterSlaveConstraints1)
+        .def("NumberOfMasterSlaveConstraints", &ModelPart::NumberOfMasterSlaveConstraints)
 		.def("NumberOfMeshes", &ModelPart::NumberOfMeshes)
 		.def("NumberOfProperties", &ModelPart::NumberOfProperties)
 		.def("NumberOfProperties", ModelPartNumberOfProperties1)
@@ -794,6 +818,7 @@ void AddModelPartToPython()
     .def("CreateNewMasterSlaveConstraint",CreateNewMasterSlaveConstraint1)
     .def("CreateNewMasterSlaveConstraint",CreateNewMasterSlaveConstraint2)
     .def("CreateNewMasterSlaveConstraint",CreateNewMasterSlaveConstraint3)
+    .def("CreateNewLinearMasterSlaveConstraint",CreateNewLinearMasterSlaveConstraint)
     //yaman return_internal_reference<>()
 		//.def("",&ModelPart::)
 		.def(self_ns::str(self))

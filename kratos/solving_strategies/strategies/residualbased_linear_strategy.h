@@ -2,13 +2,13 @@
 //    ' /   __| _` | __|  _ \   __|
 //    . \  |   (   | |   (   |\__ `
 //   _|\_\_|  \__,_|\__|\___/ ____/
-//                   Multi-Physics 
+//                   Multi-Physics
 //
-//  License:		 BSD License 
+//  License:		 BSD License
 //					 Kratos default license: kratos/license.txt
 //
 //  Main authors:    Riccardo Rossi
-//                    
+//
 //
 
 #if !defined(KRATOS_RESIDUALBASED_LINEAR_STRATEGY )
@@ -410,7 +410,7 @@ public:
             std::stringstream matrix_market_name;
             matrix_market_name << "A_" << BaseType::GetModelPart().GetProcessInfo()[TIME] <<  ".mm";
             TSparseSpace::WriteMatrixMarketMatrix((char*) (matrix_market_name.str()).c_str(), mA, false);
-            
+
             std::stringstream matrix_market_vectname;
             matrix_market_vectname << "b_" << BaseType::GetModelPart().GetProcessInfo()[TIME] << ".mm.rhs";
             TSparseSpace::WriteMatrixMarketVector((char*) (matrix_market_vectname.str()).c_str(), mb);
@@ -642,7 +642,7 @@ private:
         if (pScheme->ElementsAreInitialized() == false)
             pScheme->InitializeElements(BaseType::GetModelPart());
 
-        //Initialize The Conditions - OPERATIONS TO BE DONE ONCE                                                          
+        //Initialize The Conditions - OPERATIONS TO BE DONE ONCE
         if (pScheme->ConditionsAreInitialized() == false)
 	  pScheme->InitializeConditions(BaseType::GetModelPart());
 
@@ -689,7 +689,7 @@ private:
 
             //setting up the Vectors involved to the correct size
             boost::timer system_matrix_resize_time;
-            pBuilderAndSolver->ResizeAndInitializeVectors(mpA, mpDx, mpb, BaseType::GetModelPart().Elements(), BaseType::GetModelPart().Conditions(), BaseType::GetModelPart().GetProcessInfo());
+            pBuilderAndSolver->ResizeAndInitializeVectors(mpA, mpDx, mpb, BaseType::GetModelPart());
             if (BaseType::GetEchoLevel() > 0 && rank == 0)
                 std::cout << "system_matrix_resize_time : " << system_matrix_resize_time.elapsed() << std::endl;
         }
@@ -804,4 +804,3 @@ private:
 } /* namespace Kratos.*/
 
 #endif /* KRATOS_RESIDUALBASED_LINEAR_STRATEGY  defined */
-

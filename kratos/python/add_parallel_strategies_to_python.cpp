@@ -28,6 +28,7 @@
 #include <boost/python.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include <boost/timer.hpp>
+#include "python/add_strategies_to_python.h"
 #include "python/add_parallel_strategies_to_python.h"
 #include <cstring>
 
@@ -271,7 +272,8 @@ void  AddParallelStrategiesToPython()
     .def("SetUpDofSet", &ParallelBuilderAndSolverType::SetUpDofSet )
     .def("GetDofSet", &ParallelBuilderAndSolverType::GetDofSet, return_internal_reference<>() )
     .def("SetUpSystem", &ParallelBuilderAndSolverType::SetUpSystem )
-    .def("ResizeAndInitializeVectors", &ParallelBuilderAndSolverType::ResizeAndInitializeVectors )
+    .def("ResizeAndInitializeVectors", &BuilderAndSolver_ResizeAndInitializeVectors1<ParallelBuilderAndSolverType>)
+    .def("ResizeAndInitializeVectors", &BuilderAndSolver_ResizeAndInitializeVectors2<ParallelBuilderAndSolverType>)
     .def("InitializeSolutionStep", &ParallelBuilderAndSolverType::InitializeSolutionStep )
     .def("FinalizeSolutionStep", &ParallelBuilderAndSolverType::FinalizeSolutionStep )
     .def("CalculateReactions", &ParallelBuilderAndSolverType::CalculateReactions )

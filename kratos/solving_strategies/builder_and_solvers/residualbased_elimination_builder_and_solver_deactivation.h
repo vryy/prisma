@@ -63,6 +63,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 /* Project includes */
 #include "includes/define.h"
 #include "includes/matrix_market_interface.h"
+#include "includes/kratos_flags.h"
 #include "utilities/timer.h"
 #include "utilities/openmp_utils.h"
 #include "solving_strategies/builder_and_solvers/builder_and_solver.h"
@@ -89,6 +90,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define QUERY_DOF_EQUATION_ID
 #define QUERY_EQUATION_ID_AT_BUILD
 //#define QUERY_DIAGONAL
+
+#define DETECT_NAN_AT_BUILD // to enable this, must enable -fno-finite-math-only after -ffast-math in the compile flags
+// REF: https://stackoverflow.com/questions/22931147/stdisinf-does-not-work-with-ffast-math-how-to-check-for-infinity
 
 //#define ENABLE_FILTER_SMALL_ENTRIES
 
@@ -529,6 +533,19 @@ public:
                     //calculate elemental contribution
                     pScheme->CalculateSystemContributions(*it,LHS_Contribution,RHS_Contribution,EquationId,CurrentProcessInfo);
 
+                    #ifdef DETECT_NAN_AT_BUILD
+                    double norm_elem_k = norm_frobenius(LHS_Contribution);
+                    double norm_elem_r = norm_2(RHS_Contribution);
+
+                    if (std::isnan(norm_elem_k) || std::isnan(norm_elem_r))
+                    {
+                        KRATOS_WATCH(norm_elem_k)
+                        KRATOS_WATCH(norm_elem_r)
+                        std::cout << "type of element: " << typeid(*(*it)).name() << std::endl;
+                        KRATOS_THROW_ERROR(std::logic_error, "NaN is detected at element", (*it)->Id())
+                    }
+                    #endif
+
 //                    KRATOS_WATCH(LHS_Contribution);
 //                    KRATOS_WATCH(RHS_Contribution);
                     #ifdef EXPORT_LOCAL_LHS_MATRIX
@@ -603,6 +620,19 @@ public:
 //                    std::cout << "Condition " << (*it)->Id() << " is considerred, type: " << typeid(*(*it)).name() << std::endl;
                     //calculate elemental contribution
                     pScheme->Condition_CalculateSystemContributions(*it,LHS_Contribution,RHS_Contribution,EquationId,CurrentProcessInfo);
+
+                    #ifdef DETECT_NAN_AT_BUILD
+                    double norm_cond_k = norm_frobenius(LHS_Contribution);
+                    double norm_cond_r = norm_2(RHS_Contribution);
+
+                    if (std::isnan(norm_cond_k) || std::isnan(norm_cond_r))
+                    {
+                        KRATOS_WATCH(norm_cond_k)
+                        KRATOS_WATCH(norm_cond_r)
+                        std::cout << "type of condition: " << typeid(*(*it)).name() << std::endl;
+                        KRATOS_THROW_ERROR(std::logic_error, "NaN is detected at condition", (*it)->Id())
+                    }
+                    #endif
 
                     #if defined(ENABLE_LOG) && defined(QUERY_EQUATION_ID_AT_BUILD)
                     std::stringstream ss;
@@ -1212,31 +1242,37 @@ public:
         //mDofSet.clear();
 
         ElementsArrayType& pElements = r_model_part.Elements();
+        std::size_t num_active_elements = 0;
         for (typename ElementsArrayType::ptr_iterator it=pElements.ptr_begin(); it!=pElements.ptr_end(); ++it)
         {
-            if( !(*it)->GetValue( IS_INACTIVE ) || (*it)->Is( ACTIVE ) )
-            {
+            // if( !(*it)->GetValue( IS_INACTIVE ) || (*it)->Is( ACTIVE ) )
+            // {
                 // gets list of Dof involved on every element
                 pScheme->GetElementalDofList(*it,DofList,CurrentProcessInfo);
                 for(typename Element::DofsVectorType::iterator i = DofList.begin() ; i != DofList.end() ; ++i)
                     Doftemp.push_back(*i);
-            }
+                ++num_active_elements;
+            // }
         }
         KRATOS_WATCH(pElements.size());
+        KRATOS_WATCH(num_active_elements);
 
         //taking in account conditions
         ConditionsArrayType& pConditions = r_model_part.Conditions();
+        std::size_t num_active_conditions = 0;
         for (typename ConditionsArrayType::ptr_iterator it=pConditions.ptr_begin(); it!=pConditions.ptr_end(); ++it)
         {
-            if( !(*it)->GetValue( IS_INACTIVE ) || (*it)->Is( ACTIVE ) )
-            {
+            // if( !(*it)->GetValue( IS_INACTIVE ) || (*it)->Is( ACTIVE ) )
+            // {
                 // gets list of Dof involved on every condition
                 pScheme->GetConditionDofList(*it,DofList,CurrentProcessInfo);
                 for(typename Element::DofsVectorType::iterator i = DofList.begin() ; i != DofList.end() ; ++i)
                     Doftemp.push_back(*i);
-            }
+                ++num_active_conditions;
+            // }
         }
         KRATOS_WATCH(pConditions.size());
+        KRATOS_WATCH(num_active_conditions)
 
         Doftemp.Unique();
 
@@ -1475,6 +1511,18 @@ public:
 
         KRATOS_CATCH("")
 
+    }
+
+    //**************************************************************************
+    //**************************************************************************
+    void ResizeAndInitializeVectors(
+        TSystemMatrixPointerType& pA,
+        TSystemVectorPointerType& pDx,
+        TSystemVectorPointerType& pb,
+        ModelPart& rModelPart
+    )
+    {
+        ResizeAndInitializeVectors(pA, pDx, pb, rModelPart.Elements(), rModelPart.Conditions(), rModelPart.GetProcessInfo());
     }
 
     //**************************************************************************

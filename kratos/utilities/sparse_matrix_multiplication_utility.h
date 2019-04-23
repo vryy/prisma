@@ -402,14 +402,9 @@ public:
         // Exiting just in case of empty matrix
         if ((nrows == 0) || (ncols == 0))
             return void();
-        if(!(nrows == B.size1()))
-        {
-            KRATOS_THROW_ERROR(std::logic_error, "The second matrix has a wrong number of rows", "");
-        }
-        if(!(ncols == B.size2()))
-        {
-            KRATOS_THROW_ERROR(std::logic_error, "The second matrix has a wrong number of columns", "");
-        }
+
+        // KRATOS_ERROR_IF_NOT(nrows == B.size1()) << "The second matrix has a wrong number of rows" << std::endl;
+        // KRATOS_ERROR_IF_NOT(ncols == B.size2()) << "The second matrix has a wrong number of columns" << std::endl;
 
         // Get access to A and B data
         const IndexType* index1_a = A.index1_data().begin();
@@ -636,10 +631,7 @@ public:
 
         #pragma omp parallel for
         for (int i = 0; i < static_cast<int>(nonzero_values); i++) {
-            if(AuxIndex2C[i] > static_cast<IndexType>(NCols))
-            {
-                KRATOS_THROW_ERROR(std::logic_error, "Index:xxx is greater than the number of columns ", AuxIndex2C[i]);
-            }
+            // KRATOS_DEBUG_ERROR_IF(AuxIndex2C[i] > static_cast<IndexType>(NCols)) << "Index " << AuxIndex2C[i] <<" is greater than the number of columns " << NCols << std::endl;
             index2_c[i] = AuxIndex2C[i];
             values_c[i] = AuxValC[i];
         }
@@ -678,10 +670,7 @@ public:
                     SignedIndexType i = j - 1;
 
                     while(i >= 0 && Columns[i + row_beg] > c) {
-                        if(Columns[i + row_beg] > static_cast<Col>(NCols))
-                        {
-                            KRATOS_THROW_ERROR(std::logic_error, " An Index for column: xxx is greater than the number of columns", i + row_beg);
-                        }
+                        // KRATOS_DEBUG_ERROR_IF(Columns[i + row_beg] > static_cast<Col>(NCols)) << " Index for column: " << i + row_beg << ". Index " << Columns[i + row_beg] <<" is greater than the number of columns " << NCols << std::endl;
                         Columns[i + 1 + row_beg] = Columns[i + row_beg];
                         Values[i + 1 + row_beg] = Values[i + row_beg];
                         i--;

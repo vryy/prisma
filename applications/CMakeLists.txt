@@ -290,6 +290,10 @@ if(${SOIL_MECHANICS_APPLICATION} MATCHES ON)
   add_subdirectory(soil_mechanics_application)
 endif(${SOIL_MECHANICS_APPLICATION} MATCHES ON)
 
+if(${ISOGEOMETRIC_SOIL_MECHANICS_APPLICATION} MATCHES ON)
+  add_subdirectory(isogeometric_soil_mechanics_application)
+endif(${ISOGEOMETRIC_SOIL_MECHANICS_APPLICATION} MATCHES ON)
+
 if(${POLYFEM_APPLICATION} MATCHES ON)
   add_subdirectory(polyfem_application)
 endif(${POLYFEM_APPLICATION} MATCHES ON)

@@ -554,7 +554,7 @@ public:
 
 			//setting up the Vectors involved to the correct size
 			boost::timer system_matrix_resize_time;
-			pBuilderAndSolver->ResizeAndInitializeVectors(mpA, mpDx, mpb, BaseType::GetModelPart().Elements(), BaseType::GetModelPart().Conditions(), BaseType::GetModelPart().GetProcessInfo());
+			pBuilderAndSolver->ResizeAndInitializeVectors(mpA, mpDx, mpb, BaseType::GetModelPart());
 			if (this->GetEchoLevel() > 0 && rank == 0)
 				std::cout << rank << ": system_matrix_resize_time : " << system_matrix_resize_time.elapsed() << std::endl;
 
@@ -667,7 +667,7 @@ public:
             std::stringstream matrix_market_name;
             matrix_market_name << "A_" << BaseType::GetModelPart().GetProcessInfo()[TIME] << "_" << iteration_number << ".mm";
             TSparseSpace::WriteMatrixMarketMatrix((char*) (matrix_market_name.str()).c_str(), mA, false);
-	    
+
             std::stringstream matrix_market_vectname;
             matrix_market_vectname << "b_" << BaseType::GetModelPart().GetProcessInfo()[TIME] << "_" << iteration_number << ".mm.rhs";
             TSparseSpace::WriteMatrixMarketVector((char*) (matrix_market_vectname.str()).c_str(), mb);
@@ -782,14 +782,14 @@ public:
         //recalculate residual if needed
         //(note that some convergence criteria need it to be recalculated)
         if (ResidualIsUpdated == false)
-        {   
+        {
 	    // NOTE:
 		// The following part will be commented because it is time consuming
 		// and there is no obvious reason to be here. If someone need this
 		// part please notify the community via mailing list before uncommenting it.
 		// Pooyan.
 
-  	//    TSparseSpace::SetToZero(mb);	
+  	//    TSparseSpace::SetToZero(mb);
 	//    pBuilderAndSolver->BuildRHS(pScheme, BaseType::GetModelPart(), mb);
         }
 
@@ -1020,4 +1020,3 @@ protected:
 } /* namespace Kratos.*/
 
 #endif /* KRATOS_RESIDUALBASED_NEWTON_RAPHSON_STRATEGY  defined */
-
