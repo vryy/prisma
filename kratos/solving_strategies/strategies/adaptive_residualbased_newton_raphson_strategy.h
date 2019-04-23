@@ -941,7 +941,7 @@ protected:
 
 
         //setting up the Vectors involved to the correct size
-        pBuilderAndSolver->ResizeAndInitializeVectors(mpA,mpDx,mpb,BaseType::GetModelPart().Elements(),BaseType::GetModelPart().Conditions(),BaseType::GetModelPart().GetProcessInfo());
+        pBuilderAndSolver->ResizeAndInitializeVectors(mpA,mpDx,mpb,BaseType::GetModelPart());
 
         TSystemMatrixType& mA = *mpA;
         TSystemVectorType& mDx = *mpDx;
@@ -1040,4 +1040,3 @@ protected:
 }  /* namespace Kratos.*/
 
 #endif /* KRATOS_RESIDUALBASED_NEWTON_RAPHSON_STRATEGY  defined */
-
