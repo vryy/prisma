@@ -346,8 +346,8 @@ public:
 
             //the following is needed since we need to eventually compute time derivatives after applying
             //Master slave relations
-            TSparseSpace::SetToZero(rDx);
-            this->GetScheme()->Update(BaseType::GetModelPart(), r_dof_set, rA, rDx, rb);
+            TSparseSpace::SetToZero(mDx);
+            this->GetScheme()->Update(BaseType::GetModelPart(), rDofSet, mA, mDx, mb);
         }
 
         KRATOS_CATCH("")
