@@ -1,20 +1,20 @@
 //
-//    |  /           | 
-//    ' /   __| _` | __|  _ \   __| 
-//    . \  |   (   | |   (   |\__ `  
-//   _|\_\_|  \__,_|\__|\___/ ____/ 
-//                   Multi-Physics  
+//    |  /           |
+//    ' /   __| _` | __|  _ \   __|
+//    . \  |   (   | |   (   |\__ `
+//   _|\_\_|  \__,_|\__|\___/ ____/
+//                   Multi-Physics
 //
-//  License:		 BSD License 
-//					 Kratos default license: kratos/license.txt
+//  License:         BSD License
+//                     Kratos default license: kratos/license.txt
 //
 //  Main authors:    Riccardo Rossi
 //
 
 
-// System includes 
+// System includes
 
-// External includes 
+// External includes
 #include <boost/python.hpp>
 
 
@@ -22,7 +22,7 @@
 #include "includes/define.h"
 #include "processes/process.h"
 #include "python/add_utilities_to_python.h"
-#include "utilities/variable_utils.h" 
+#include "utilities/variable_utils.h"
 #include "utilities/normal_calculation_utils.h"
 #include "utilities/body_normal_calculation_utils.h"
 #include "utilities/body_distance_calculation_utils.h"
@@ -60,7 +60,7 @@ namespace Kratos
             public:
                 PythonGenericFunctionUtility( Variable<double>& rVariable, ModelPart::NodesContainerType& rNodes, PyObject* obj): mrVariable(rVariable), mrNodes(rNodes), mpy_obj(obj)
                 {}
-                
+
                 void ApplyFunction(const double t)
                 {
                     //WARNING: do NOT put this loop in parallel, the python GIL does not allow you to do it!!
@@ -71,48 +71,51 @@ namespace Kratos
                         i->FastGetSolutionStepValue(mrVariable) = value;
                     }
                 }
-            
 
-            
+
+
             private:
                 Variable<double> mrVariable;
                 ModelPart::NodesContainerType& mrNodes;
                 PyObject* mpy_obj;
-                
-                
+
+
                 double CallFunction(const double x, const double y, const double z, const double t)
                 {
                     return boost::python::call_method<double>(mpy_obj, "f", x,y,z,t);
                 }
         };
-        
+
         void GenerateModelPart(ConnectivityPreserveModeler& GM, ModelPart& origin_model_part, ModelPart& destination_model_part, const char* ElementName, const char* ConditionName)
-{
-    if( !KratosComponents< Element >::Has( ElementName ) )
-        KRATOS_THROW_ERROR(std::invalid_argument, "Element name not found in KratosComponents< Element > -- name is ", ElementName);
-    if( !KratosComponents< Condition >::Has( ConditionName ) )
-        KRATOS_THROW_ERROR(std::invalid_argument, "Condition name not found in KratosComponents< Condition > -- name is ", ConditionName);
+        {
+            if( !KratosComponents< Element >::Has( ElementName ) )
+                KRATOS_THROW_ERROR(std::invalid_argument, "Element name not found in KratosComponents< Element > -- name is ", ElementName);
+            if( !KratosComponents< Condition >::Has( ConditionName ) )
+                KRATOS_THROW_ERROR(std::invalid_argument, "Condition name not found in KratosComponents< Condition > -- name is ", ConditionName);
 
-    GM.GenerateModelPart(origin_model_part, destination_model_part,
-                         KratosComponents<Element>::Get(ElementName),
-                         KratosComponents<Condition>::Get(ConditionName));
+            GM.GenerateModelPart(origin_model_part, destination_model_part,
+                                 KratosComponents<Element>::Get(ElementName),
+                                 KratosComponents<Condition>::Get(ConditionName));
 
-}
+        }
+
+        void ConstraintUtilities_PrintConstraint(ConstraintUtilities& rDummy, const MasterSlaveConstraint& rConstraint)
+        {
+            rDummy.PrintConstraint(rConstraint);
+        }
 
         void AddUtilitiesToPython()
         {
             using namespace boost::python;
-            
+
             class_<PythonGenericFunctionUtility>("PythonGenericFunctionUtility", init<Variable<double>& , ModelPart::NodesContainerType& , PyObject*>() )
                 .def("ApplyFunction", &PythonGenericFunctionUtility::ApplyFunction)
                 ;
-        
-
-	    class_<DeflationUtils>("DeflationUtils", init<>())
-		.def("VisualizeAggregates",&DeflationUtils::VisualizeAggregates)
-		;
 
 
+        class_<DeflationUtils>("DeflationUtils", init<>())
+        .def("VisualizeAggregates",&DeflationUtils::VisualizeAggregates)
+        ;
             class_<VariableUtils > ("VariableUtils", init<>())
                     .def("SetVectorVar", &VariableUtils::SetVectorVar)
                     .def("SetScalarVar", &VariableUtils::SetScalarVar)
@@ -144,14 +147,14 @@ namespace Kratos
             CalcOnSimplexMPType CalcOnSimplex_ModelPart = &NormalCalculationUtils::CalculateOnSimplex;
             CalcOnSimplexWithDoubleVarType CalcOnSimplexWithDoubleVar = &NormalCalculationUtils::CalculateOnSimplex;
             CalcOnSimplexWithIntVarType CalcOnSimplexWithIntVar = &NormalCalculationUtils::CalculateOnSimplex;
-             CalcOnSimplexWithDoubleVarAlphaType CalcOnSimplexWithDoubleVarAlpha = &NormalCalculationUtils::CalculateOnSimplex;	    
+             CalcOnSimplexWithDoubleVarAlphaType CalcOnSimplexWithDoubleVarAlpha = &NormalCalculationUtils::CalculateOnSimplex;
 
             class_<NormalCalculationUtils > ("NormalCalculationUtils", init<>())
                     .def("CalculateOnSimplex", CalcOnSimplex_Cond)
                     .def("CalculateOnSimplex", CalcOnSimplex_ModelPart)
                     .def("CalculateOnSimplex", CalcOnSimplexWithDoubleVar)
                     .def("CalculateOnSimplex", CalcOnSimplexWithIntVar)
-                    .def("CalculateOnSimplex", CalcOnSimplexWithDoubleVarAlpha)   
+                    .def("CalculateOnSimplex", CalcOnSimplexWithDoubleVarAlpha)
                     .def("SwapNormals", &NormalCalculationUtils::SwapNormals)
 //                    .def("CalculateOnSimplex", CalcOnSimplexWithArrayVar)
                     ;
@@ -207,31 +210,29 @@ namespace Kratos
             class_<ParticleConvectUtily<3> > ("ParticleConvectUtily3D", init< BinBasedFastPointLocator < 3 >::Pointer >())
                     .def("MoveParticles_Substepping", &ParticleConvectUtily<3>::MoveParticles_Substepping)
                     .def("MoveParticles_RK4", &ParticleConvectUtily<3>::MoveParticles_RK4)
-                    ;                    
-                    
+                    ;
 
-                    
-           class_<IsosurfacePrinterApplication, boost::noncopyable >
-                    ("IsosurfacePrinterApplication",
-                     init<ModelPart& >() )
+
+
+           class_<IsosurfacePrinterApplication, boost::noncopyable >("IsosurfacePrinterApplication", init<ModelPart& >() )
                     .def("AddScalarVarIsosurface", &IsosurfacePrinterApplication::AddScalarVarIsosurface)
-		    .def("AddScalarVarIsosurfaceAndLower", &IsosurfacePrinterApplication::AddScalarVarIsosurfaceAndLower)
-		    .def("AddScalarVarIsosurfaceAndHigher", &IsosurfacePrinterApplication::AddScalarVarIsosurfaceAndHigher)
+                    .def("AddScalarVarIsosurfaceAndLower", &IsosurfacePrinterApplication::AddScalarVarIsosurfaceAndLower)
+                    .def("AddScalarVarIsosurfaceAndHigher", &IsosurfacePrinterApplication::AddScalarVarIsosurfaceAndHigher)
                     .def("ClearData", &IsosurfacePrinterApplication::ClearData)
-		    .def("AddSkinConditions", &IsosurfacePrinterApplication::AddSkinConditions)
+                    .def("AddSkinConditions", &IsosurfacePrinterApplication::AddSkinConditions)
                     .def("CreateNodesArray", &IsosurfacePrinterApplication::CreateNodesArray)
-		    ;
+                    ;
 
 
-            // 	  class_<SignedDistanceCalculationBinBased<2> >("SignedDistanceCalculationBinBased2D", init<>())
-            // 			  .def("CalculateDistances",&SignedDistanceCalculationBinBased<2>::CalculateDistances )
+            //       class_<SignedDistanceCalculationBinBased<2> >("SignedDistanceCalculationBinBased2D", init<>())
+            //               .def("CalculateDistances",&SignedDistanceCalculationBinBased<2>::CalculateDistances )
             //                           .def("FindMaximumEdgeSize",&SignedDistanceCalculationBinBased<2>::FindMaximumEdgeSize )
-            // 			  ;
+            //               ;
             //
-            // 	  class_<SignedDistanceCalculationBinBased<3> >("SignedDistanceCalculationBinBased3D", init<>())
-            // 			  .def("CalculateDistances",&SignedDistanceCalculationBinBased<3>::CalculateDistances )
+            //       class_<SignedDistanceCalculationBinBased<3> >("SignedDistanceCalculationBinBased3D", init<>())
+            //               .def("CalculateDistances",&SignedDistanceCalculationBinBased<3>::CalculateDistances )
             //                           .def("FindMaximumEdgeSize",&SignedDistanceCalculationBinBased<3>::FindMaximumEdgeSize )
-            // 			  ;
+            //               ;
 
             class_<DivideElemUtils > ("DivideElemUtils", init<>())
                     .def("DivideElement_2D", &DivideElemUtils::DivideElement_2D)
@@ -243,7 +244,7 @@ namespace Kratos
                     .def("Stop", &Timer::Stop)
                     .staticmethod("Start")
                     .staticmethod("Stop")
-                    // 	    .def("PrintTimingInformation",Timer::PrintTimingInformation)
+                    //         .def("PrintTimingInformation",Timer::PrintTimingInformation)
                     .def(self_ns::str(self))
                     ;
 
@@ -261,13 +262,13 @@ namespace Kratos
             //                     ;
 
 
-            // 	  def("PrintTimingInformation",Timer::PrintTimingInformation);
+            //       def("PrintTimingInformation",Timer::PrintTimingInformation);
 
             class_<OpenMPUtils > ("OpenMPUtils", init<>())
                     .def("SetNumThreads", &OpenMPUtils::SetNumThreads)
-	            .staticmethod("SetNumThreads")
-	            .def("PrintOMPInfo", &OpenMPUtils::PrintOMPInfo)
-  	            .staticmethod("PrintOMPInfo")
+                .staticmethod("SetNumThreads")
+                .def("PrintOMPInfo", &OpenMPUtils::PrintOMPInfo)
+                  .staticmethod("PrintOMPInfo")
                     ;
 
             class_< BinBasedFastPointLocator < 2 > > ("BinBasedFastPointLocator2D", init<ModelPart& >())
@@ -294,20 +295,21 @@ namespace Kratos
                     .def("FindNodesInElement", &BinBasedNodesInElementLocator < 3 > ::FindNodesInElement)
                     .def("UpdateSearchDatabaseAssignedSize", &BinBasedNodesInElementLocator < 3 > ::UpdateSearchDatabaseAssignedSize)
                     ;
-                    
+
             class_< ActivationUtilities > ("ActivationUtilities", init< >())
                     .def("ActivateElementsAndConditions", &ActivationUtilities::ActivateElementsAndConditions)
                     ;
 
             class_< GeometryTesterUtility, boost::noncopyable> ("GeometryTesterUtility", init< >())
                     .def("RunTest", &GeometryTesterUtility::RunTest)
-                    ;    
-                    
+                    ;
+
             class_<ConnectivityPreserveModeler, boost::noncopyable > ("ConnectivityPreserveModeler", init< >())
                     .def("GenerateModelPart", GenerateModelPart)
-    ;
+                    ;
 
             class_< ConstraintUtilities, boost::noncopyable > ("ConstraintUtilities", init< >())
+                    .def("PrintConstraint", &ConstraintUtilities_PrintConstraint)
                     ;
 
         }
