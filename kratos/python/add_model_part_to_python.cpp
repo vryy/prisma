@@ -59,6 +59,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "includes/define.h"
 #include "includes/model_part.h"
 #include "python/add_model_part_to_python.h"
+#include "python/pointer_vector_set_python_interface.h"
 #include "includes/process_info.h"
 #include "utilities/constraint_utilities.h"
 
@@ -522,12 +523,13 @@ void AddMasterSlaveConstraintsByIds(ModelPart& rModelPart, std::vector< ModelPar
     rModelPart.AddMasterSlaveConstraints(ConstraintIds);
 }
 
+template<typename TVariableType>
 void CreateNewLinearMasterSlaveConstraint(ModelPart& rModelPart,
 	std::string ConstraintName,
 	ModelPart::IndexType Id,
 	ModelPart::NodeType::Pointer pSlaveNode,
 	boost::python::list py_master_nodes,
-	ModelPart::VariableComponentType& rVariable,
+	const TVariableType& rVariable,
 	ModelPart::MatrixType RelationMatrix,
 	ModelPart::VectorType ConstantVector)
 {
@@ -542,10 +544,10 @@ void CreateNewLinearMasterSlaveConstraint(ModelPart& rModelPart,
     ConstraintUtilities::CreateLinearConstraint(rModelPart, ConstraintName, Id, pSlaveNode, pMasterNodes, rVariable, RelationMatrix, ConstantVector);
 }
 
-// const ModelPart::MasterSlaveConstraintContainerType& ModelPartGetMasterSlaveConstraints1(ModelPart& rModelPart)
-// {
-//     return rModelPart.MasterSlaveConstraints();
-// }
+ModelPart::MasterSlaveConstraintContainerType::Pointer ModelPartGetMasterSlaveConstraints1(ModelPart& rModelPart)
+{
+    return rModelPart.pMasterSlaveConstraints();
+}
 
 ModelPart::SizeType ModelPartNumberOfMasterSlaveConstraints1(ModelPart& rModelPart)
 {
@@ -681,7 +683,7 @@ void AddModelPartToPython()
     .def("AssembleNonHistoricalData", CommunicatorAssembleNonHistoricalData<Matrix> )
     ;
 
-  // PointerVectorSetPythonInterface<ModelPart::MasterSlaveConstraintContainerType>().CreateInterface(m,"MasterSlaveConstraintsArray");
+    PointerVectorSetPythonInterface<ModelPart::MasterSlaveConstraintContainerType>::CreateInterface("MasterSlaveConstraintsArray");
 
 	class_<ModelPart, bases<DataValueContainer, Flags> >("ModelPart")
 		.def(init<std::string const&>())
@@ -804,7 +806,7 @@ void AddModelPartToPython()
 		.def("Check", &ModelPart::Check)
 		.def("IsSubModelPart", &ModelPart::IsSubModelPart)
 
-    // .add_property("MasterSlaveConstraints", ModelPartGetMasterSlaveConstraints1)
+    .add_property("MasterSlaveConstraints", ModelPartGetMasterSlaveConstraints1)
     // .def("GetMasterSlaveConstraint", ModelPartGetMasterSlaveConstraint1)
     // .def("GetMasterSlaveConstraints", ModelPartGetMasterSlaveConstraints1)
     .def("RemoveMasterSlaveConstraint", ModelPartRemoveMasterSlaveConstraint1)
@@ -818,7 +820,8 @@ void AddModelPartToPython()
     .def("CreateNewMasterSlaveConstraint",CreateNewMasterSlaveConstraint1)
     .def("CreateNewMasterSlaveConstraint",CreateNewMasterSlaveConstraint2)
     .def("CreateNewMasterSlaveConstraint",CreateNewMasterSlaveConstraint3)
-    .def("CreateNewLinearMasterSlaveConstraint",CreateNewLinearMasterSlaveConstraint)
+    .def("CreateNewLinearMasterSlaveConstraint",CreateNewLinearMasterSlaveConstraint<ModelPart::VariableComponentType>)
+    .def("CreateNewLinearMasterSlaveConstraint",CreateNewLinearMasterSlaveConstraint<ModelPart::DoubleVariableType>)
     //yaman return_internal_reference<>()
 		//.def("",&ModelPart::)
 		.def(self_ns::str(self))

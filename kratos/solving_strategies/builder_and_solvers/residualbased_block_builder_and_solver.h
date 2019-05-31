@@ -34,9 +34,9 @@
 #include "includes/model_part.h"
 #include "includes/kratos_flags.h"
 
-//#define EXPORT_LHS_MATRIX
-//#define EXPORT_RHS_VECTOR
-//#define EXPORT_SOL_VECTOR
+// #define EXPORT_LHS_MATRIX
+// #define EXPORT_RHS_VECTOR
+// #define EXPORT_SOL_VECTOR
 
 //#define ENABLE_LOG
 #define QUERY_DOF_EQUATION_ID

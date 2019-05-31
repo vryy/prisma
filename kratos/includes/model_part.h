@@ -523,6 +523,11 @@ public:
         return GetMesh(ThisIndex).MasterSlaveConstraints();
     }
 
+    MasterSlaveConstraintContainerType::Pointer pMasterSlaveConstraints(IndexType ThisIndex = 0)
+    {
+        return GetMesh(ThisIndex).pMasterSlaveConstraints();
+    }
+
     MasterSlaveConstraintConstantIteratorType  MasterSlaveConstraintsBegin(IndexType ThisIndex = 0) const
     {
         return GetMesh(ThisIndex).MasterSlaveConstraintsBegin();
@@ -605,32 +610,18 @@ public:
      * @todo Replace these 3 functions by one that perfectly forwards arguments, then just define these 3 interfaces on the pybind side
      */
     MasterSlaveConstraint::Pointer CreateNewMasterSlaveConstraint(const std::string& ConstraintName,
-                                                                                    IndexType Id,
-                                                                                    DofsVectorType& rMasterDofsVector,
-                                                                                    DofsVectorType& rSlaveDofsVector,
-                                                                                    const MatrixType& RelationMatrix,
-                                                                                    const VectorType& ConstantVector,
-                                                                                    IndexType ThisIndex = 0);
+        const IndexType& Id, DofsVectorType& rMasterDofsVector, DofsVectorType& rSlaveDofsVector,
+        const MatrixType& RelationMatrix, const VectorType& ConstantVector, const IndexType& ThisIndex = 0);
 
     MasterSlaveConstraint::Pointer CreateNewMasterSlaveConstraint(const std::string& ConstraintName,
-                                                                                    IndexType Id,
-                                                                                    NodeType& rMasterNode,
-                                                                                    const DoubleVariableType& rMasterVariable,
-                                                                                    NodeType& rSlaveNode,
-                                                                                    const DoubleVariableType& rSlaveVariable,
-                                                                                    const double Weight,
-                                                                                    const double Constant,
-                                                                                    IndexType ThisIndex = 0);
+        const IndexType& Id, NodeType& rMasterNode, const DoubleVariableType& rMasterVariable,
+        NodeType& rSlaveNode, const DoubleVariableType& rSlaveVariable,
+        const double& Weight, const double& Constant, const IndexType& ThisIndex = 0);
 
     MasterSlaveConstraint::Pointer CreateNewMasterSlaveConstraint(const std::string& ConstraintName,
-                                                                                    IndexType Id,
-                                                                                    NodeType& rMasterNode,
-                                                                                    const VariableComponentType& rMasterVariable,
-                                                                                    NodeType& rSlaveNode,
-                                                                                    const VariableComponentType& rSlaveVariable,
-                                                                                    double Weight,
-                                                                                    double Constant,
-                                                                                    IndexType ThisIndex = 0);
+        const IndexType& Id, NodeType& rMasterNode, const VariableComponentType& rMasterVariable,
+        NodeType& rSlaveNode, const VariableComponentType& rSlaveVariable,
+        const double& Weight, const double& Constant, const IndexType& ThisIndex = 0);
 
     /**
      * @brief Remove the master-slave constraint with given Id from mesh with ThisIndex in this modelpart and all its subs.
