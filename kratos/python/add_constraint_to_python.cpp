@@ -111,6 +111,9 @@ void AddConstraintToPython()
     .def("SetValue", SetValueHelperFunctionMasterSlaveConstraint< Variable< std::string > >)
     .def("GetValue", GetValueHelperFunctionMasterSlaveConstraint< Variable< std::string > >)
 
+    .def("ResetSlaveDofs", &MasterSlaveConstraint::ResetSlaveDofs)
+    .def("Apply", &MasterSlaveConstraint::Apply)
+
     .def(self_ns::str(self))
     ;
 }
