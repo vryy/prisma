@@ -180,7 +180,6 @@ endif(${INSTALL_EMBEDDED_PYTHON} MATCHES ON )
 
 ##*****************************
 #finding blas and lapack if needed
-set(BLAS_INCLUDE_NEEDED OFF)
 if(${EXTERNAL_SOLVERS_APPLICATION} MATCHES ON )
     set(BLAS_INCLUDE_NEEDED ON)
 
