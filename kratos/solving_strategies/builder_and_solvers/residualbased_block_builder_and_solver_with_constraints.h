@@ -1250,10 +1250,10 @@ protected:
             typename ElementsContainerType::iterator i_element = el_begin + iii;
             i_element->EquationIdVector(ids, CurrentProcessInfo);
             for (std::size_t i = 0; i < ids.size(); i++) {
-                omp_set_lock(&lock_array[i]);
+                omp_set_lock(&lock_array[ids[i]]);
                 auto& row_indices = indices[ids[i]];
                 row_indices.insert(ids.begin(), ids.end());
-                omp_unset_lock(&lock_array[i]);
+                omp_unset_lock(&lock_array[ids[i]]);
             }
         }
 
@@ -1262,10 +1262,10 @@ protected:
             typename ConditionsArrayType::iterator i_condition = cond_begin + iii;
             i_condition->EquationIdVector(ids, CurrentProcessInfo);
             for (std::size_t i = 0; i < ids.size(); i++) {
-                omp_set_lock(&lock_array[i]);
+                omp_set_lock(&lock_array[ids[i]]);
                 auto& row_indices = indices[ids[i]];
                 row_indices.insert(ids.begin(), ids.end());
-                omp_unset_lock(&lock_array[i]);
+                omp_unset_lock(&lock_array[ids[i]]);
             }
         }
 
