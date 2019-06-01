@@ -991,18 +991,18 @@ protected:
             const auto it_const_begin = rModelPart.MasterSlaveConstraints().begin();
             std::vector<std::unordered_set<IndexType>> indices(BaseType::mDofSet.size());
 
-            // std::vector<omp_lock_t> lock_array(indices.size());
+            std::vector<omp_lock_t> lock_array(indices.size());
 
             for(std::size_t i = 0; i < indices.size(); ++i)
-                // omp_init_lock(&lock_array[i]);
+                omp_init_lock(&lock_array[i]);
 
-            // #pragma omp parallel firstprivate(slave_dof_list, master_dof_list)
+            #pragma omp parallel firstprivate(slave_dof_list, master_dof_list)
             {
                 Element::EquationIdVectorType slave_ids(3);
                 Element::EquationIdVectorType master_ids(3);
                 std::unordered_map<IndexType, std::unordered_set<IndexType>> temp_indices;
 
-                // #pragma omp for schedule(guided, 512) nowait
+                #pragma omp for schedule(guided, 512) nowait
                 for (int i_const = 0; i_const < static_cast<int>(rModelPart.MasterSlaveConstraints().size()); ++i_const) {
                     auto it_const = it_const_begin + i_const;
 
@@ -1025,14 +1025,14 @@ protected:
 
                 // Merging all the temporal indexes
                 for (int i = 0; i < static_cast<int>(temp_indices.size()); ++i) {
-                    // omp_set_lock(&lock_array[i]);
+                    omp_set_lock(&lock_array[i]);
                     indices[i].insert(temp_indices[i].begin(), temp_indices[i].end());
-                    // omp_unset_lock(&lock_array[i]);
+                    omp_unset_lock(&lock_array[i]);
                 }
             }
 
-            // for(std::size_t i = 0; i < indices.size(); ++i)
-                // omp_destroy_lock(&lock_array[i]);
+            for(std::size_t i = 0; i < indices.size(); ++i)
+                omp_destroy_lock(&lock_array[i]);
 
             mSlaveIds.clear();
             mMasterIds.clear();
@@ -1232,46 +1232,46 @@ protected:
 
         const std::size_t equation_size = BaseType::mEquationSystemSize;
 
-        // std::vector< omp_lock_t > lock_array(equation_size);
+        std::vector< omp_lock_t > lock_array(equation_size);
 
-        // for(std::size_t i = 0; i < equation_size; ++i)
-        //     omp_init_lock(&lock_array[i]);
+        for(std::size_t i = 0; i < equation_size; ++i)
+            omp_init_lock(&lock_array[i]);
 
         std::vector<std::unordered_set<std::size_t> > indices(equation_size);
-        // #pragma omp parallel for firstprivate(equation_size)
+        #pragma omp parallel for firstprivate(equation_size)
         for (int iii = 0; iii < static_cast<int>(equation_size); iii++) {
             indices[iii].reserve(40);
         }
 
         Element::EquationIdVectorType ids(3, 0);
 
-        // #pragma omp parallel for firstprivate(nelements, ids)
+        #pragma omp parallel for firstprivate(nelements, ids)
         for (int iii=0; iii<nelements; iii++) {
             typename ElementsContainerType::iterator i_element = el_begin + iii;
             i_element->EquationIdVector(ids, CurrentProcessInfo);
             for (std::size_t i = 0; i < ids.size(); i++) {
-                // omp_set_lock(&lock_array[i]);
+                omp_set_lock(&lock_array[ids[i]]);
                 auto& row_indices = indices[ids[i]];
                 row_indices.insert(ids.begin(), ids.end());
-                // omp_unset_lock(&lock_array[i]);
+                omp_unset_lock(&lock_array[ids[i]]);
             }
         }
 
-        // #pragma omp parallel for firstprivate(nconditions, ids)
+        #pragma omp parallel for firstprivate(nconditions, ids)
         for (int iii = 0; iii<nconditions; iii++) {
             typename ConditionsArrayType::iterator i_condition = cond_begin + iii;
             i_condition->EquationIdVector(ids, CurrentProcessInfo);
             for (std::size_t i = 0; i < ids.size(); i++) {
-                // omp_set_lock(&lock_array[i]);
+                omp_set_lock(&lock_array[ids[i]]);
                 auto& row_indices = indices[ids[i]];
                 row_indices.insert(ids.begin(), ids.end());
-                // omp_unset_lock(&lock_array[i]);
+                omp_unset_lock(&lock_array[ids[i]]);
             }
         }
 
         //destroy locks
-        // for(std::size_t i = 0; i < equation_size; ++i)
-        //     omp_destroy_lock(&lock_array[i]);
+        for(std::size_t i = 0; i < equation_size; ++i)
+            omp_destroy_lock(&lock_array[i]);
 
         //count the row sizes
         unsigned int nnz = 0;
