@@ -2,13 +2,13 @@
 //    ' /   __| _` | __|  _ \   __|
 //    . \  |   (   | |   (   |\__ `
 //   _|\_\_|  \__,_|\__|\___/ ____/
-//                   Multi-Physics 
+//                   Multi-Physics
 //
-//  License:		 BSD License 
+//  License:		 BSD License
 //					 Kratos default license: kratos/license.txt
 //
 //  Main authors:    Riccardo Rossi
-//                    
+//
 //
 #if !defined(KRATOS_PARALLEL_RESIDUAL_BASED_ELIMINATION_BUILDER_AND_SOLVER )
 #define  KRATOS_PARALLEL_RESIDUAL_BASED_ELIMINATION_BUILDER_AND_SOLVER
@@ -169,6 +169,10 @@ public:
         if (!pScheme)
             KRATOS_THROW_ERROR(std::runtime_error, "No scheme provided!", "");
 
+        if(r_model_part.MasterSlaveConstraints().size() != 0) {
+            KRATOS_THROW_ERROR(std::logic_error, "This builder and solver does not support constraints!", "");
+        }
+        
         //getting the elements from the model
         ElementsArrayType& pElements = r_model_part.Elements();
 
@@ -1166,4 +1170,3 @@ private:
 } /* namespace Kratos.*/
 
 #endif /* KRATOS_PARALLEL_RESIDUAL_BASED_ELIMINATION_BUILDER_AND_SOLVER  defined */
-

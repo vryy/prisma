@@ -308,6 +308,10 @@ public:
         if(!pScheme)
             KRATOS_THROW_ERROR(std::runtime_error, "No scheme provided!", "");
 
+        if(r_model_part.MasterSlaveConstraints().size() != 0) {
+            KRATOS_THROW_ERROR(std::logic_error, "This builder and solver does not support constraints!", "");
+        }
+
         //getting the elements from the model
         ElementsArrayType& pElements = r_model_part.Elements();
 
@@ -2077,4 +2081,3 @@ private:
 #undef ENABLE_LOG_PROCESS_AND_THREAD_ID
 
 #endif /* KRATOS_RESIDUAL_BASED_ELIMINATION_BUILDER_AND_SOLVER_DEACTIVATION  defined */
-
