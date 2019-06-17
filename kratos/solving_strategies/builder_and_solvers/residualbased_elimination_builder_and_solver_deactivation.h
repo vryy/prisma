@@ -107,6 +107,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #define MODIFY_INACTIVE_PART_OF_THE_MATRIX
 #define MODIFY_NEGATIVE_DIAGONAL
+// #define INCLUDE_INACTIVE_ELEMENTS_IN_SETUP_DOFSET
 
 #ifdef ENABLE_LOG
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -1245,14 +1246,18 @@ public:
         std::size_t num_active_elements = 0;
         for (typename ElementsArrayType::ptr_iterator it=pElements.ptr_begin(); it!=pElements.ptr_end(); ++it)
         {
-            // if( !(*it)->GetValue( IS_INACTIVE ) || (*it)->Is( ACTIVE ) )
-            // {
+            #ifndef INCLUDE_INACTIVE_ELEMENTS_IN_SETUP_DOFSET
+            if( !(*it)->GetValue( IS_INACTIVE ) || (*it)->Is( ACTIVE ) )
+            {
+            #endif
                 // gets list of Dof involved on every element
                 pScheme->GetElementalDofList(*it,DofList,CurrentProcessInfo);
                 for(typename Element::DofsVectorType::iterator i = DofList.begin() ; i != DofList.end() ; ++i)
                     Doftemp.push_back(*i);
                 ++num_active_elements;
-            // }
+            #ifndef INCLUDE_INACTIVE_ELEMENTS_IN_SETUP_DOFSET
+            }
+            #endif
         }
         KRATOS_WATCH(pElements.size());
         KRATOS_WATCH(num_active_elements);
@@ -1262,14 +1267,18 @@ public:
         std::size_t num_active_conditions = 0;
         for (typename ConditionsArrayType::ptr_iterator it=pConditions.ptr_begin(); it!=pConditions.ptr_end(); ++it)
         {
-            // if( !(*it)->GetValue( IS_INACTIVE ) || (*it)->Is( ACTIVE ) )
-            // {
+            #ifndef INCLUDE_INACTIVE_ELEMENTS_IN_SETUP_DOFSET
+            if( !(*it)->GetValue( IS_INACTIVE ) || (*it)->Is( ACTIVE ) )
+            {
+            #endif
                 // gets list of Dof involved on every condition
                 pScheme->GetConditionDofList(*it,DofList,CurrentProcessInfo);
                 for(typename Element::DofsVectorType::iterator i = DofList.begin() ; i != DofList.end() ; ++i)
                     Doftemp.push_back(*i);
                 ++num_active_conditions;
-            // }
+            #ifndef INCLUDE_INACTIVE_ELEMENTS_IN_SETUP_DOFSET
+            }
+            #endif
         }
         KRATOS_WATCH(pConditions.size());
         KRATOS_WATCH(num_active_conditions)
@@ -2068,6 +2077,7 @@ private:
 #undef QUERY_DOF_EQUATION_ID
 #undef QUERY_EQUATION_ID_AT_BUILD
 #undef MODIFY_INACTIVE_PART_OF_THE_MATRIX
+#undef INCLUDE_INACTIVE_ELEMENTS_IN_SETUP_DOFSET
 #undef ENABLE_FILTER_SMALL_ENTRIES
 #undef MODIFY_NEGATIVE_DIAGONAL
 #undef MONITOR_MATRIX_ELEMENT_16_15
