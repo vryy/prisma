@@ -2,13 +2,13 @@
 //    ' /   __| _` | __|  _ \   __|
 //    . \  |   (   | |   (   |\__ `
 //   _|\_\_|  \__,_|\__|\___/ ____/
-//                   Multi-Physics 
+//                   Multi-Physics
 //
-//  License:		 BSD License 
+//  License:		 BSD License
 //					 Kratos default license: kratos/license.txt
 //
 //  Main authors:    Riccardo Rossi
-//                    
+//
 //
 #if !defined(KRATOS_RESIDUAL_BASED_BLOCK_BUILDER_AND_SOLVER )
 #define  KRATOS_RESIDUAL_BASED_BLOCK_BUILDER_AND_SOLVER
@@ -203,6 +203,10 @@ public:
         if (!pScheme)
             KRATOS_THROW_ERROR(std::runtime_error, "No scheme provided!", "");
 
+        if(r_model_part.MasterSlaveConstraints().size() != 0) {
+            KRATOS_THROW_ERROR(std::logic_error, "This builder and solver does not support constraints!", "");
+        }
+        
         //getting the elements from the model
         ElementsArrayType& pElements = r_model_part.Elements();
 
@@ -402,7 +406,7 @@ public:
         lhs_filename << "A_" << mStepCounter << "." << mLocalCounter << ".mm";
         WriteMatrixMarketMatrix(lhs_filename.str().c_str(), A, false);
         #endif
-        
+
         #ifdef EXPORT_RHS_VECTOR
         std::stringstream rhs_filename;
         rhs_filename << "b_" << mStepCounter << "." << mLocalCounter << ".mm";
@@ -629,7 +633,6 @@ public:
         Build(pScheme, r_model_part, A, b);
 
         Timer::Stop("Build");
-
 
         ApplyDirichletConditions(pScheme, r_model_part, A, Dx, b);
 
