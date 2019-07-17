@@ -247,7 +247,8 @@ public:
         }
 
         const double stop_build = OpenMPUtils::GetCurrentTime();
-        //KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", (this->GetEchoLevel() >= 1 && rModelPart.GetCommunicator().MyPID() == 0)) << "Build time: " << stop_build - start_build << std::endl;
+        if (this->GetEchoLevel() >= 1 && rModelPart.GetCommunicator().MyPID() == 0)
+            std::cout << "Build time :" << stop_build - start_build << std::endl;
 
         //KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", (this->GetEchoLevel() > 2 && rModelPart.GetCommunicator().MyPID() == 0)) << "Finished parallel building" << std::endl;
 
@@ -440,7 +441,8 @@ public:
 
         Timer::Stop("Solve");
         const double stop_solve = OpenMPUtils::GetCurrentTime();
-        //KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", (this->GetEchoLevel() >=1 && rModelPart.GetCommunicator().MyPID() == 0)) << "System solve time: " << stop_solve - start_solve << std::endl;
+        if (this->GetEchoLevel() >= 1 && rModelPart.GetCommunicator().MyPID() == 0)
+            std::cout << "System solve time: " << stop_solve - start_solve << std::endl;
 
         //KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", ( this->GetEchoLevel() == 3)) << "After the solution of the system" << "\nSystem Matrix = " << A << "\nUnknowns vector = " << Dx << "\nRHS vector = " << b << std::endl;
 
@@ -528,7 +530,8 @@ public:
 
         typedef std::set < DofType::Pointer >  set_type;
 
-        //KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", ( this->GetEchoLevel() > 2)) << "Number of threads" << nthreads << "\n" << std::endl;
+        if (this->GetEchoLevel() >= 2)
+            std::cout << "Number of threads " << nthreads << std::endl;
 
         //KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", ( this->GetEchoLevel() > 2)) << "Initializing element loop" << std::endl;
 
