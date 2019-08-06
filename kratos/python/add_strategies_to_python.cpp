@@ -63,6 +63,7 @@
 #include "solving_strategies/builder_and_solvers/residualbased_elimination_builder_and_solver_deactivation.h"
 #include "solving_strategies/builder_and_solvers/residualbased_block_builder_and_solver.h"
 #include "solving_strategies/builder_and_solvers/residualbased_block_builder_and_solver_with_constraints.h"
+#include "solving_strategies/builder_and_solvers/residualbased_block_builder_and_solver_with_constraints_elementwise.h"
 
 
 
@@ -456,12 +457,14 @@ namespace Kratos
 
 
             typedef ResidualBasedEliminationBuilderAndSolverDeactivation< SparseSpaceType, LocalSpaceType, LinearSolverType > ResidualBasedEliminationBuilderAndSolverDeactivationType;
-
             class_< ResidualBasedEliminationBuilderAndSolverDeactivationType, bases<BuilderAndSolverType>, boost::noncopyable > ("ResidualBasedEliminationBuilderAndSolverDeactivation", init< LinearSolverType::Pointer > ());
 
             typedef ResidualBasedBlockBuilderAndSolverWithConstraints< SparseSpaceType, LocalSpaceType, LinearSolverType > ResidualBasedBlockBuilderAndSolverWithConstraintsType;
-            class_< ResidualBasedBlockBuilderAndSolverWithConstraintsType, bases<BuilderAndSolverType>, boost::noncopyable >
-            ("ResidualBasedBlockBuilderAndSolverWithConstraints", init< LinearSolverType::Pointer > ());
+            class_< ResidualBasedBlockBuilderAndSolverWithConstraintsType, bases<BuilderAndSolverType>, boost::noncopyable > ("ResidualBasedBlockBuilderAndSolverWithConstraints", init< LinearSolverType::Pointer > ());
+
+            typedef ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise< SparseSpaceType, LocalSpaceType, LinearSolverType > ResidualBasedBlockBuilderAndSolverWithConstraintsElementWiseType;
+            class_< ResidualBasedBlockBuilderAndSolverWithConstraintsElementWiseType, bases<ResidualBasedBlockBuilderAndSolverWithConstraintsType>, boost::noncopyable > ("ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise", init< LinearSolverType::Pointer > ());
+
             //
             // class_< ResidualBasedBlockBuilderAndSolverWithConstraintsType,
             //             ResidualBasedBlockBuilderAndSolverWithConstraintsType::Pointer,
