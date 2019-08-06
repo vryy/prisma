@@ -194,19 +194,6 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise
 
         BaseType::InitializeSolutionStep(rModelPart, A, Dx, b);
 
-	    // Getting process info
-	    const ProcessInfo& r_process_info = rModelPart.GetProcessInfo();
-
-	    // Computing constraints
-        const int n_constraints = static_cast<int>(rModelPart.MasterSlaveConstraints().size());
-        auto constraints_begin = rModelPart.MasterSlaveConstraintsBegin();
-#pragma omp parallel for schedule(guided, 512) firstprivate(n_constraints, constraints_begin)
-        for (int k = 0; k < n_constraints; k++)
-        {
-            auto it = constraints_begin + k;
-            it->InitializeSolutionStep(r_process_info); // Here each constraint constructs and stores its T and C matrices. Also its equation ids.
-        }
-
         KRATOS_CATCH("ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise failed to initialize solution step.")
     }
 
@@ -460,6 +447,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise
         }
 
         const double start_solve = OpenMPUtils::GetCurrentTime();
+
         Timer::Start("Solve");
         this->SystemSolveWithPhysics(A, Dx, b, rModelPart);
         Timer::Stop("Solve");
@@ -503,6 +491,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise
 
         if (!pScheme)
         	KRATOS_THROW_ERROR(std::logic_error, "No scheme provided!", "");
+
         ConstraintImposerType constraint_imposer(mGlobalMasterSlaveConstraints);
 
         // Getting the elements from the model
@@ -599,6 +588,16 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise
         }
 
         KRATOS_CATCH("")
+    }
+
+    void SystemSolveWithPhysics(
+        TSystemMatrixType& A,
+        TSystemVectorType& Dx,
+        TSystemVectorType& b,
+        ModelPart& rModelPart
+    )
+    {
+        BaseType::InternalSystemSolveWithPhysics(A, Dx, b, rModelPart);
     }
 
     /**
