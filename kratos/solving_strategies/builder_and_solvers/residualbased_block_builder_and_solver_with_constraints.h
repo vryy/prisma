@@ -179,6 +179,11 @@ public:
         // Getting the array of the conditions
         const int nconditions = static_cast<int>(rModelPart.Conditions().size());
 
+        std::cout << "Total number of elements in assembly: " << nelements << std::endl;
+        std::cout << "Total number of conditions in assembly: " << nconditions << std::endl;
+        std::cout << "Total number of constraints in assembly: " << rModelPart.NumberOfMasterSlaveConstraints() << std::endl;
+        std::cout << "Number of threads: " << OpenMPUtils::GetNumThreads() << std::endl;
+
         ProcessInfo& CurrentProcessInfo = rModelPart.GetProcessInfo();
         ModelPart::ElementsContainerType::iterator el_begin = rModelPart.ElementsBegin();
         ModelPart::ConditionsContainerType::iterator cond_begin = rModelPart.ConditionsBegin();
@@ -218,7 +223,6 @@ public:
                     // clean local elemental memory
                     pScheme->CleanMemory(*(it.base()));
                 }
-
             }
 
             #pragma omp for  schedule(guided, 512)
@@ -247,9 +251,17 @@ public:
         }
 
         const double stop_build = OpenMPUtils::GetCurrentTime();
-        //KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", (this->GetEchoLevel() >= 1 && rModelPart.GetCommunicator().MyPID() == 0)) << "Build time: " << stop_build - start_build << std::endl;
+        if (this->GetEchoLevel() >= 1 && rModelPart.GetCommunicator().MyPID() == 0)
+        {
+            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraints: " << "Build time: " << stop_build - start_build << std::endl;
+        }
 
-        //KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", (this->GetEchoLevel() > 2 && rModelPart.GetCommunicator().MyPID() == 0)) << "Finished parallel building" << std::endl;
+        if (this->GetEchoLevel() > 2 && rModelPart.GetCommunicator().MyPID() == 0)
+        {
+            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraints: " << "Finished parallel building" << std::endl;
+        }
+
+        std::cout << "Build time: " << stop_build - start_build << "s" << std::endl;
 
         KRATOS_CATCH("")
     }
@@ -310,6 +322,9 @@ public:
     ) //override
     {
         KRATOS_TRY
+
+        double start_solve = OpenMPUtils::GetCurrentTime();
+
         double norm_b;
         if (TSparseSpace::Size(b) != 0)
             norm_b = TSparseSpace::TwoNorm(b);
@@ -332,8 +347,14 @@ public:
             TSparseSpace::Mult(mT, Dxmodified, Dx);
         }
 
+        double stop_solve = OpenMPUtils::GetCurrentTime();
+        std::cout << "System Solve time: " << stop_solve - start_solve << "s" << std::endl;
+
         //prints informations about the current time
-        //KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", this->GetEchoLevel() > 1) << *(BaseType::mpLinearSystemSolver) << std::endl;
+        if (this->GetEchoLevel() > 1)
+        {
+            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraints: " << *(BaseType::mpLinearSystemSolver) << std::endl;
+        }
 
         KRATOS_CATCH("")
     }
@@ -351,7 +372,10 @@ public:
             InternalSystemSolveWithPhysics(A, Dxmodified, b, rModelPart);
 
             //recover solution of the original problem
+            double start_recover = OpenMPUtils::GetCurrentTime();
             TSparseSpace::Mult(mT, Dxmodified, Dx);
+            double stop_recover = OpenMPUtils::GetCurrentTime();
+            std::cout << "Recover back the system time: " << stop_recover - start_recover << "s" << std::endl;
         } else {
             InternalSystemSolveWithPhysics(A, Dx, b, rModelPart);
         }
@@ -373,6 +397,9 @@ public:
     {
         KRATOS_TRY
 
+        double start_solve = OpenMPUtils::GetCurrentTime();
+        std::cout << "Begin Internal-System-Solve-With-Physics" << std::endl;
+
         double norm_b;
         if (TSparseSpace::Size(b) != 0)
             norm_b = TSparseSpace::TwoNorm(b);
@@ -392,8 +419,14 @@ public:
             // KRATOS_WARNING("ResidualBasedBlockBuilderAndSolverWithConstraints") << "ATTENTION! setting the RHS to zero!" << std::endl;
         }
 
+        double stop_solve = OpenMPUtils::GetCurrentTime();
+        std::cout << "Internal-System-Solve-With-Physics time: " << stop_solve - start_solve << "s" << std::endl;
+
         // Prints informations about the current time
-        //KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", this->GetEchoLevel() > 1) << *(BaseType::mpLinearSystemSolver) << std::endl;
+        if (this->GetEchoLevel() > 1)
+        {
+            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraints: " << *(BaseType::mpLinearSystemSolver) << std::endl;
+        }
 
         KRATOS_CATCH("")
     }
@@ -431,7 +464,10 @@ public:
 
         ApplyDirichletConditions(pScheme, rModelPart, A, Dx, b);
 
-        //KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", ( this->GetEchoLevel() == 3)) << "Before the solution of the system" << "\nSystem Matrix = " << A << "\nUnknowns vector = " << Dx << "\nRHS vector = " << b << std::endl;
+        if ( this->GetEchoLevel() == 3)
+        {
+            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraints: " << "Before the solution of the system" << "\nSystem Matrix = " << A << "\nUnknowns vector = " << Dx << "\nRHS vector = " << b << std::endl;
+        }
 
         const double start_solve = OpenMPUtils::GetCurrentTime();
         Timer::Start("Solve");
@@ -440,9 +476,16 @@ public:
 
         Timer::Stop("Solve");
         const double stop_solve = OpenMPUtils::GetCurrentTime();
-        //KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", (this->GetEchoLevel() >=1 && rModelPart.GetCommunicator().MyPID() == 0)) << "System solve time: " << stop_solve - start_solve << std::endl;
 
-        //KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", ( this->GetEchoLevel() == 3)) << "After the solution of the system" << "\nSystem Matrix = " << A << "\nUnknowns vector = " << Dx << "\nRHS vector = " << b << std::endl;
+        if (this->GetEchoLevel() >=1 && rModelPart.GetCommunicator().MyPID() == 0)
+        {
+            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraints: " << "System solve time: " << stop_solve - start_solve << std::endl;
+        }
+
+        if ( this->GetEchoLevel() == 3)
+        {
+            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraints: " << "After the solution of the system" << "\nSystem Matrix = " << A << "\nUnknowns vector = " << Dx << "\nRHS vector = " << b << std::endl;
+        }
 
         KRATOS_CATCH("")
     }
@@ -516,7 +559,10 @@ public:
     {
         KRATOS_TRY;
 
-        //KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", ( this->GetEchoLevel() > 1 && rModelPart.GetCommunicator().MyPID() == 0)) << "Setting up the dofs" << std::endl;
+        if ( this->GetEchoLevel() > 1 && rModelPart.GetCommunicator().MyPID() == 0)
+        {
+            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraints: " << "Setting up the dofs" << std::endl;
+        }
 
         //Gets the array of elements from the modeler
         ElementsArrayType& r_elements_array = rModelPart.Elements();
@@ -528,9 +574,15 @@ public:
 
         typedef std::set < DofType::Pointer >  set_type;
 
-        //KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", ( this->GetEchoLevel() > 2)) << "Number of threads" << nthreads << "\n" << std::endl;
+        if ( this->GetEchoLevel() > 2)
+        {
+            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraints: " << "Number of threads" << nthreads << "\n" << std::endl;
+        }
 
-        //KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", ( this->GetEchoLevel() > 2)) << "Initializing element loop" << std::endl;
+        if ( this->GetEchoLevel() > 2)
+        {
+            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraints: " << "Initializing element loop" << std::endl;
+        }
 
         /**
          * Here we declare three sets.
@@ -543,7 +595,7 @@ public:
         {
             ProcessInfo& r_current_process_info = rModelPart.GetProcessInfo();
 
-            // We cleate the temporal set
+            // We create the temporal set
             set_type dofs_tmp_set;
 
             // Gets the array of elements from the modeler
@@ -588,7 +640,10 @@ public:
             }
         }
 
-        //KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", ( this->GetEchoLevel() > 2)) << "Initializing ordered array filling\n" << std::endl;
+        if ( this->GetEchoLevel() > 2)
+        {
+            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraints: " << "Initializing ordered array filling\n" << std::endl;
+        }
 
         DofsArrayType Doftemp;
         BaseType::mDofSet = DofsArrayType();
@@ -607,13 +662,23 @@ public:
         {
             KRATOS_THROW_ERROR(std::logic_error, "No degrees of freedom!", "");
         }
-        //KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", ( this->GetEchoLevel() > 2)) << "Number of degrees of freedom:" << BaseType::mDofSet.size() << std::endl;
+
+        if ( this->GetEchoLevel() > 2)
+        {
+            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraints: " << "Number of degrees of freedom:" << BaseType::mDofSet.size() << std::endl;
+        }
 
         BaseType::mDofSetIsInitialized = true;
 
-        //KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", ( this->GetEchoLevel() > 2 && rModelPart.GetCommunicator().MyPID() == 0)) << "Finished setting up the dofs" << std::endl;
+        if ( this->GetEchoLevel() > 2 && rModelPart.GetCommunicator().MyPID() == 0)
+        {
+            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraints: " << "Finished setting up the dofs" << std::endl;
+        }
 
-        //KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", ( this->GetEchoLevel() > 2)) << "End of setup dof set\n" << std::endl;
+        if ( this->GetEchoLevel() > 2)
+        {
+            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraints: " << "End of setup dof set\n" << std::endl;
+        }
 
 
 #ifdef KRATOS_DEBUG
