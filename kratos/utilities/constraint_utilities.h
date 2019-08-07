@@ -111,6 +111,8 @@ public:
         const TMatrixType& r_relation_matrix,
         const TVectorType& r_constant_vector)
     {
+        pSlaveNode->Set(SLAVE);
+
         typedef typename TNodePointerType::element_type::DofType DofType;
 
         std::vector<typename DofType::Pointer> slave_dofs(1);
