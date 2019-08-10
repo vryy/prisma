@@ -1,10 +1,10 @@
-//    |  /           | 
-//    ' /   __| _` | __|  _ \   __| 
+//    |  /           |
+//    ' /   __| _` | __|  _ \   __|
 //    . \  |   (   | |   (   |\__ \.
-//   _|\_\_|  \__,_|\__|\___/ ____/ 
-//                   Multi-Physics  
+//   _|\_\_|  \__,_|\__|\___/ ____/
+//                   Multi-Physics
 //
-//  License:		 BSD License 
+//  License:		 BSD License
 //					 Kratos default license: kratos/license.txt
 //
 //  Main authors:    Riccardo Rossi
@@ -228,7 +228,7 @@ public:
         //case Linear with 1 gauss point
         mGidGaussPointContainers.push_back( TGaussPointContainer( "lin1_element_gp",
                                             GeometryData::Kratos_Linear, GiD_Linear, 1, gp_indices ) );
-        
+
 	//case Point with 1 gauss point //Gid does not accept this kind of gauss point (october 18th 2014)
         //mGidGaussPointContainers.push_back( TGaussPointContainer( "point1_element_gp",
         //                                    GeometryData::Kratos_Point, GiD_Point, 1, gp_indices ) );
@@ -487,7 +487,7 @@ public:
             file_name << mResultFileName << std::setprecision(12) << "_" << name << ".post.res";
             mResultFile = GiD_fOpenPostResultFile((char*)(file_name.str()).c_str(), mMode);
             mResultFileOpen = true;
-            
+
         }
         //initializing gauss points containers
         if ( mWriteConditions != WriteConditionsOnly )
@@ -495,16 +495,16 @@ public:
             int i=0;
             for ( MeshType::ElementIterator element_iterator = rThisMesh.ElementsBegin();
                     element_iterator != rThisMesh.ElementsEnd(); ++element_iterator )
-            {            
+            {
                 for ( typename std::vector<TGaussPointContainer>::iterator it =
                             mGidGaussPointContainers.begin();
                         it != mGidGaussPointContainers.end(); it++ )
-                {                      
+                {
                     i++;
                     if ( it->AddElement( element_iterator ) )
                         break;
                 }
-                
+
             }
         }
 
@@ -516,7 +516,7 @@ public:
                 for ( typename std::vector<TGaussPointContainer>::iterator it =
                             mGidGaussPointContainers.begin();
                         it != mGidGaussPointContainers.end(); it++ )
-                {                      
+                {
 
                     if ( it->AddCondition( conditions_iterator ) )
                         break;
@@ -1064,7 +1064,7 @@ public:
             GiD_fWriteSphereMat(mMeshFile, node_iterator->Id(), nodes_id[0], node_iterator->FastGetSolutionStepValue(RADIUS), node_iterator->FastGetSolutionStepValue(PARTICLE_MATERIAL));
 //             mNodeList.push_back(*node_iterator);
         }*/
-        
+
         for ( MeshType::ElementIterator element_iterator = rThisMesh.ElementsBegin();
                 element_iterator != rThisMesh.ElementsEnd();
                 ++element_iterator)
@@ -1114,7 +1114,7 @@ void WriteCircleMesh( MeshType& rThisMesh )
         {
             nodes_id[0] = node_iterator->Id();
             GiD_fWriteCircleMat(mMeshFile, node_iterator->Id(), nodes_id[0], node_iterator->FastGetSolutionStepValue(RADIUS), nx, ny, nz, node_iterator->FastGetSolutionStepValue(PARTICLE_MATERIAL));
-        }       
+        }
         GiD_fEndElements( mMeshFile );
         GiD_fEndMesh( mMeshFile);
         Timer::Stop("Writing Mesh");
@@ -1138,7 +1138,7 @@ void WriteCircleMesh( MeshType& rThisMesh )
         KRATOS_TRY
 
         Timer::Start("Writing Mesh");
-        
+
         if ( mWriteConditions != WriteConditionsOnly )
         {
             for ( MeshType::ElementIterator element_iterator = rThisMesh.ElementsBegin();
@@ -1183,13 +1183,36 @@ void WriteCircleMesh( MeshType& rThisMesh )
 
 //         mNodeList.Unique();
 
-
-
         Timer::Stop("Writing Mesh");
 
         KRATOS_CATCH("")
     }//WriteMesh
 
+
+    ///functions for printing results on gauss points
+    /**
+     * Prints variables of type double on gauss points of the complete mesh
+     * @param rVariable the given variable name
+     * @param r_model_part the current model part
+     */
+    virtual void PrintOnGaussPoints( const Variable<int>& rVariable, ModelPart& r_model_part,
+                                     double SolutionTag, int value_index = 0 )
+    {
+        KRATOS_TRY;
+
+        Timer::Start("Writing Results");
+
+        for ( typename std::vector<TGaussPointContainer>::iterator it =
+                    mGidGaussPointContainers.begin();
+                it != mGidGaussPointContainers.end(); it++ )
+        {
+            it->PrintResults( mResultFile, rVariable, r_model_part, SolutionTag, value_index );
+        }
+
+        Timer::Stop("Writing Results");
+
+        KRATOS_CATCH("");
+    }
 
     ///functions for printing results on gauss points
     /**
@@ -1208,7 +1231,6 @@ void WriteCircleMesh( MeshType& rThisMesh )
                     mGidGaussPointContainers.begin();
                 it != mGidGaussPointContainers.end(); it++ )
         {
-
             it->PrintResults( mResultFile, rVariable, r_model_part, SolutionTag, value_index );
         }
 
@@ -1256,7 +1278,6 @@ void WriteCircleMesh( MeshType& rThisMesh )
                 it != mGidGaussPointContainers.end(); it++ )
         {
             it->PrintResults(  mResultFile, rVariable, r_model_part, SolutionTag, value_index );
-
         }
 
         Timer::Stop("Writing Results");
@@ -1278,7 +1299,6 @@ void WriteCircleMesh( MeshType& rThisMesh )
                     mGidGaussPointContainers.begin();
                 it != mGidGaussPointContainers.end(); it++ )
         {
-         
             it->PrintResults(  mResultFile, rVariable, r_model_part, SolutionTag, value_index );
         }
 
@@ -1293,7 +1313,7 @@ protected:
      */
     std::string mResultFileName;
     std::string mMeshFileName;
-    
+
     GiD_FILE mMeshFile;
     GiD_FILE mResultFile;
 
@@ -1391,5 +1411,5 @@ inline std::ostream& operator << (std::ostream& rOStream, const GidIO<>& rThis)
 #undef KRATOS_CONDITIONS_TEMPORARY_VARIABLES
 #undef KRATOS_CONDITIONS_FIX_PARSER
 
-#endif // KRATOS_GID_IO_BASE_H_INCLUDED  defined 
+#endif // KRATOS_GID_IO_BASE_H_INCLUDED  defined
 

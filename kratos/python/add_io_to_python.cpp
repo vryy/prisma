@@ -76,6 +76,11 @@ void WriteMesh( GidIO<>& dummy, GidIO<>::MeshType& rThisMesh )
     dummy.WriteMesh( rThisMesh );
 }
 
+void IntPrintOnGaussPoints( GidIO<>& dummy, const Variable<int>& rVariable,
+                               ModelPart& r_model_part, double SolutionTag )
+{
+    dummy.PrintOnGaussPoints( rVariable, r_model_part, SolutionTag );
+}
 
 void DoublePrintOnGaussPoints( GidIO<>& dummy, const Variable<double>& rVariable,
                                ModelPart& r_model_part, double SolutionTag )
@@ -122,18 +127,18 @@ void (GidIO<>::*local_axes_write_nodal_results)( Variable<array_1d<double, 3> > 
 /////////////////////////////////////////////////////////////
 /// NON-HISTORICAL DATABASE                               ///
 ////////////////////////////////////////////////////////////
-void (GidIO<>::*pointer_to_bool_write_nodal_results_NH)( Variable<bool> const& rVariable, GidIO<>::NodesContainerType& rNodes, double SolutionTag) 
+void (GidIO<>::*pointer_to_bool_write_nodal_results_NH)( Variable<bool> const& rVariable, GidIO<>::NodesContainerType& rNodes, double SolutionTag)
 	= &GidIO<>::WriteNodalResultsNonHistorical;
 
-void (GidIO<>::*pointer_to_double_write_nodal_results_NH)( Variable<double> const& rVariable,  GidIO<>::NodesContainerType& rNodes, double SolutionTag) 
+void (GidIO<>::*pointer_to_double_write_nodal_results_NH)( Variable<double> const& rVariable,  GidIO<>::NodesContainerType& rNodes, double SolutionTag)
 	= &GidIO<>::WriteNodalResultsNonHistorical;
-void (GidIO<>::*pointer_to_array1d_write_nodal_results_NH)(Variable<array_1d<double, 3> > const& rVariable, GidIO<>::NodesContainerType& rNodes, double SolutionTag) 
-	= &GidIO<>::WriteNodalResultsNonHistorical;
-
-void (GidIO<>::*pointer_to_matrix_write_nodal_results_NH)(Variable<Matrix > const& rVariable, GidIO<>::NodesContainerType& rNodes, double SolutionTag) 
+void (GidIO<>::*pointer_to_array1d_write_nodal_results_NH)(Variable<array_1d<double, 3> > const& rVariable, GidIO<>::NodesContainerType& rNodes, double SolutionTag)
 	= &GidIO<>::WriteNodalResultsNonHistorical;
 
-void (GidIO<>::*local_axes_write_nodal_results_NH)( Variable<array_1d<double, 3> > const& rVariable, GidIO<>::NodesContainerType& rNodes, double SolutionTag) 
+void (GidIO<>::*pointer_to_matrix_write_nodal_results_NH)(Variable<Matrix > const& rVariable, GidIO<>::NodesContainerType& rNodes, double SolutionTag)
+	= &GidIO<>::WriteNodalResultsNonHistorical;
+
+void (GidIO<>::*local_axes_write_nodal_results_NH)( Variable<array_1d<double, 3> > const& rVariable, GidIO<>::NodesContainerType& rNodes, double SolutionTag)
 	= &GidIO<>::WriteLocalAxesOnNodesNonHistorical;
 
 
@@ -153,8 +158,8 @@ void ReadInitialValues1(IO& IO, IO::NodesContainerType& rThisNodes, IO::Elements
 void ReadInitialValues2(IO& IO, ModelPart& rThisModelPart){ IO.ReadInitialValues(rThisModelPart);}
 
 
-        
-        
+
+
 void  AddIOToPython()
 {
     using namespace boost::python;
@@ -177,15 +182,15 @@ void  AddIOToPython()
 	io_python_interface.attr("WRITE") =IO::WRITE;
 	io_python_interface.attr("APPEND") = IO::APPEND;
 	io_python_interface.attr("IGNORE_VARIABLES_ERROR" ) = IO::IGNORE_VARIABLES_ERROR;
- 
 
-    
+
+
     class_<ModelPartIO, ModelPartIO::Pointer, bases<IO>,  boost::noncopyable>(
         "ModelPartIO",init<std::string const&>())
         .def(init<std::string const&, const Flags>())
     ;
 
-    
+
     class_<ReorderConsecutiveModelPartIO, ReorderConsecutiveModelPartIO::Pointer, bases<ModelPartIO>,  boost::noncopyable>(
         "ReorderConsecutiveModelPartIO",init<std::string const&>())
         .def(init<std::string const&, const Flags>())
@@ -196,7 +201,7 @@ void  AddIOToPython()
         .def(init<std::string const&, const Flags>())
     ;
 #endif
-    
+
     /*
     class_<ModelPartIO, ModelPartIO::Pointer, bases<IO>,  boost::noncopyable>(
         "ModelPartIOWithSkipReadFlag",init<std::string const&, bool const>())
@@ -235,6 +240,7 @@ void  AddIOToPython()
     .def("WriteLocalAxesOnNodesNonHistorical",local_axes_write_nodal_results_NH)
 
 //                     .def("PrintOnGaussPoints", pointer_to_double_print_on_gauss_points)
+    .def("PrintOnGaussPoints", IntPrintOnGaussPoints)
     .def("PrintOnGaussPoints", DoublePrintOnGaussPoints)
     .def("PrintOnGaussPoints", Array1DPrintOnGaussPoints)
     .def("PrintOnGaussPoints", VectorPrintOnGaussPoints)
