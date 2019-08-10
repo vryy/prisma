@@ -579,6 +579,48 @@ void ModelPartRemoveMasterSlaveConstraintFromAllLevels2(ModelPart& rModelPart, M
     rModelPart.RemoveMasterSlaveConstraintFromAllLevels(rMasterSlaveConstraint);
 }
 
+int CommunicatorSumAllInt(Communicator& rCommunicator, const int& value)
+{
+    int temp = value;
+    rCommunicator.SumAll(temp);
+    return temp;
+}
+
+double CommunicatorSumAllDouble(Communicator& rCommunicator, const double& value)
+{
+    double temp = value;
+    rCommunicator.SumAll(temp);
+    return temp;
+}
+
+int CommunicatorMinAllInt(Communicator& rCommunicator, const int& value)
+{
+    int temp = value;
+    rCommunicator.MinAll(temp);
+    return temp;
+}
+
+double CommunicatorMinAllDouble(Communicator& rCommunicator, const double& value)
+{
+    double temp = value;
+    rCommunicator.MinAll(temp);
+    return temp;
+}
+
+int CommunicatorMaxAllInt(Communicator& rCommunicator, const int& value)
+{
+    int temp = value;
+    rCommunicator.MaxAll(temp);
+    return temp;
+}
+
+double CommunicatorMaxAllDouble(Communicator& rCommunicator, const double& value)
+{
+    double temp = value;
+    rCommunicator.MaxAll(temp);
+    return temp;
+}
+
 ModelPart::MeshType& CommunicatorGetLocalMesh(Communicator& rCommunicator)
 {
     return rCommunicator.LocalMesh();
@@ -665,6 +707,12 @@ void AddModelPartToPython()
     .def("NeighbourIndices", NeighbourIndicesConst, return_internal_reference<>())
     .def("SynchronizeNodalSolutionStepsData", &Communicator::SynchronizeNodalSolutionStepsData)
     .def("SynchronizeDofs", &Communicator::SynchronizeDofs)
+    .def("SumAll", CommunicatorSumAllInt )
+    .def("SumAll", CommunicatorSumAllDouble )
+    .def("MinAll", CommunicatorMinAllInt )
+    .def("MinAll", CommunicatorMinAllDouble )
+    .def("MaxAll", CommunicatorMaxAllInt )
+    .def("MaxAll", CommunicatorMaxAllDouble )
     .def("LocalMesh", CommunicatorGetLocalMesh, return_internal_reference<>() )
     .def("LocalMesh", CommunicatorGetLocalMeshWithIndex, return_internal_reference<>() )
     .def("GhostMesh", CommunicatorGetGhostMesh, return_internal_reference<>() )
