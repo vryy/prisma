@@ -294,10 +294,10 @@ public:
     {
         return mNeighbourIndices;
     }
-    
+
     // Set the local mesh pointer to the given mesh
-    void SetLocalMesh(MeshType::Pointer pGivenMesh) 
-    {   
+    void SetLocalMesh(MeshType::Pointer pGivenMesh)
+    {
         mpLocalMesh = pGivenMesh;
     }
 
@@ -533,7 +533,7 @@ public:
         // #endif
         return true;
     }
-    
+
     virtual bool SynchronizeElementalIds()
     {
         // #if defined(KRATOS_USING_MPI )
@@ -559,7 +559,7 @@ public:
         return true;
 
     }
-    
+
     virtual bool SynchronizeVariable(Variable<int> const& ThisVariable)
     {
         // #if defined(KRATOS_USING_MPI )
@@ -567,7 +567,7 @@ public:
         // #endif
         return true;
     }
-    
+
     virtual bool SynchronizeVariable(Variable<double> const& ThisVariable)
     {
         // #if defined(KRATOS_USING_MPI )
@@ -575,7 +575,7 @@ public:
         // #endif
         return true;
     }
-    
+
     virtual bool SynchronizeVariable(Variable<array_1d<double, 3 > > const& ThisVariable)
     {
         // #if defined(KRATOS_USING_MPI )
@@ -583,7 +583,7 @@ public:
         // #endif
         return true;
     }
-    
+
     virtual bool SynchronizeVariable(Variable<Vector> const& ThisVariable)
     {
         // #if defined(KRATOS_USING_MPI )
@@ -591,7 +591,7 @@ public:
         // #endif
         return true;
     }
-    
+
     virtual bool SynchronizeVariable(Variable<Matrix> const& ThisVariable)
     {
         // #if defined(KRATOS_USING_MPI )
@@ -681,8 +681,8 @@ public:
         return true;
 
     }
-    
-    
+
+
     virtual bool AssembleNonHistoricalData(Variable<vector<array_1d<double,3> > > const& ThisVariable)
     {
         // #if defined(KRATOS_USING_MPI )
@@ -691,7 +691,7 @@ public:
         return true;
 
     }
-    
+
     virtual bool AssembleNonHistoricalData(Variable<Vector> const& ThisVariable)
     {
         // #if defined(KRATOS_USING_MPI )
@@ -709,7 +709,7 @@ public:
         return true;
 
     }
-    
+
     virtual bool SynchronizeElementalNonHistoricalVariable(Variable<int> const& ThisVariable)
     {
         /*#if defined(KRATOS_USING_MPI )
@@ -733,7 +733,7 @@ public:
         #endif*/
         return true;
     }
-    
+
     virtual bool SynchronizeElementalNonHistoricalVariable(Variable<vector<array_1d<double,3> > > const& ThisVariable)
     {
         /*#if defined(KRATOS_USING_MPI )
@@ -757,55 +757,55 @@ public:
         #endif*/
         return true;
     }
-    
-    virtual bool TransferObjects(std::vector<NodesContainerType>& SendObjects, std::vector<NodesContainerType>& RecvObjects) 
+
+    virtual bool TransferObjects(std::vector<NodesContainerType>& SendObjects, std::vector<NodesContainerType>& RecvObjects)
     {
         /*#if defined(KRATOS_USING_MPI )
                 std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;
         #endif*/
         return true;
     }
-    
-    virtual bool TransferObjects(std::vector<ElementsContainerType>& SendObjects, std::vector<ElementsContainerType>& RecvObjects) 
+
+    virtual bool TransferObjects(std::vector<ElementsContainerType>& SendObjects, std::vector<ElementsContainerType>& RecvObjects)
     {
         /*#if defined(KRATOS_USING_MPI )
                 std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;
         #endif*/
         return true;
     }
-    
-    virtual bool TransferObjects(std::vector<ConditionsContainerType>& SendObjects, std::vector<ConditionsContainerType>& RecvObjects) 
+
+    virtual bool TransferObjects(std::vector<ConditionsContainerType>& SendObjects, std::vector<ConditionsContainerType>& RecvObjects)
     {
         /*#if defined(KRATOS_USING_MPI )
                 std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;
         #endif*/
         return true;
     }
-    
-    virtual bool TransferObjects(std::vector<NodesContainerType>& SendObjects, std::vector<NodesContainerType>& RecvObjects,Kratos::Serializer& particleSerializer) 
+
+    virtual bool TransferObjects(std::vector<NodesContainerType>& SendObjects, std::vector<NodesContainerType>& RecvObjects,Kratos::Serializer& particleSerializer)
     {
         /*#if defined(KRATOS_USING_MPI )
                 std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;
         #endif*/
         return true;
     }
-    
-    virtual bool TransferObjects(std::vector<ElementsContainerType>& SendObjects, std::vector<ElementsContainerType>& RecvObjects,Kratos::Serializer& particleSerializer) 
+
+    virtual bool TransferObjects(std::vector<ElementsContainerType>& SendObjects, std::vector<ElementsContainerType>& RecvObjects,Kratos::Serializer& particleSerializer)
     {
         /*#if defined(KRATOS_USING_MPI )
                 std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;
         #endif*/
         return true;
     }
-    
-    virtual bool TransferObjects(std::vector<ConditionsContainerType>& SendObjects, std::vector<ConditionsContainerType>& RecvObjects,Kratos::Serializer& particleSerializer) 
+
+    virtual bool TransferObjects(std::vector<ConditionsContainerType>& SendObjects, std::vector<ConditionsContainerType>& RecvObjects,Kratos::Serializer& particleSerializer)
     {
         /*#if defined(KRATOS_USING_MPI )
                 std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;
         #endif*/
         return true;
     }
-    
+
     ///@}
     ///@name Access
     ///@{
@@ -1000,6 +1000,6 @@ inline std::ostream & operator <<(std::ostream& rOStream,
 
 } // namespace Kratos.
 
-#endif // KRATOS_COMMUNICATOR_H_INCLUDED  defined 
+#endif // KRATOS_COMMUNICATOR_H_INCLUDED  defined
 
 
