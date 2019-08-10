@@ -60,7 +60,7 @@ typedef std::vector<IndexType> VectorIndexType;
  * @brief this method checks if any of the nodes of the given rGeometry is marked SLAVE.
  * @param rGeometry The geometry to check for.
  */
-bool HasSlaveNode(GeometryType& rGeometry)
+inline bool HasSlaveNode(GeometryType& rGeometry)
 {
     for(auto& node : rGeometry)
         if (node.IsDefined(SLAVE))
@@ -76,7 +76,7 @@ bool HasSlaveNode(GeometryType& rGeometry)
  * @param   rVector vector to be resized
  * @param   FinalSize the final size of the resized quantities.
  */
-void ResizeAndInitializeLocalMatrices(MatrixType& rMatrix, VectorType& rVector,
+inline void ResizeAndInitializeLocalMatrices(MatrixType& rMatrix, VectorType& rVector,
                                         IndexType FinalSize)
 {
     KRATOS_TRY
@@ -171,6 +171,15 @@ public:
     ///@}
     ///@name Operations
     ///@{
+
+    /**
+     * @brief Helper function to create a new pointer of the constraint
+     * @param Constant the value of the constant to be assigned.
+     */
+    static Pointer Create(IndexType SlaveEquationId = 0)
+    {
+        return Pointer(new AuxiliaryGlobalMasterSlaveConstraint(SlaveEquationId));
+    }
 
     /**
      * @brief Function to get the slave equation Id corresponding to this constraint.

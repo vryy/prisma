@@ -862,7 +862,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise
             auto global_constraint = mGlobalMasterSlaveConstraints.find(slave_equation_id);
             if (global_constraint == mGlobalMasterSlaveConstraints.end())
             {
-                mGlobalMasterSlaveConstraints.push_back(boost::make_shared<AuxiliaryGlobalMasterSlaveConstraintType>(slave_equation_id));
+                mGlobalMasterSlaveConstraints.push_back(AuxiliaryGlobalMasterSlaveConstraintType::Create(slave_equation_id));
             }
 
             global_constraint = mGlobalMasterSlaveConstraints.find(slave_equation_id);
