@@ -192,20 +192,22 @@ public:
     ///@{
 
     /// Default constructor.
+    MPICommunicator(VariablesList* Variables_list) : BaseType(), mpVariables_list(Variables_list), mComm(MPI_COMM_WORLD)
+    {
+    }
 
-    MPICommunicator(VariablesList* Variables_list) : BaseType(), mpVariables_list(Variables_list)
+    /// Constructor with communicator
+    MPICommunicator(VariablesList* Variables_list, MPI_Comm Comm) : BaseType(), mpVariables_list(Variables_list), mComm(Comm)
     {
     }
 
     /// Copy constructor.
-
     MPICommunicator(MPICommunicator const& rOther) : BaseType(rOther)
     {
     }
 
 
     /// Destructor.
-
     virtual ~MPICommunicator()
     {
     }
@@ -225,7 +227,6 @@ public:
     ///@{
 
     /// Assignment operator.
-
     MPICommunicator & operator=(MPICommunicator const& rOther)
     {
         BaseType::operator=(rOther);
@@ -235,14 +236,14 @@ public:
     int MyPID()
     {
         int rank;
-        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+        MPI_Comm_rank(mComm, &rank);
         return rank;
     }
 
     int TotalProcesses()
     {
         int nproc;
-        MPI_Comm_size(MPI_COMM_WORLD, &nproc);
+        MPI_Comm_size(mComm, &nproc);
         return nproc;
 
     }
@@ -258,55 +259,55 @@ public:
 
     void Barrier()
     {
-        MPI_Barrier(MPI_COMM_WORLD);
+        MPI_Barrier(mComm);
     }
 
     virtual bool SumAll(int& rValue)
     {
         int local_value = rValue;
-        MPI_Allreduce(&local_value, &rValue, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+        MPI_Allreduce(&local_value, &rValue, 1, MPI_INT, MPI_SUM, mComm);
         return true;
     }
 
     virtual bool SumAll(double& rValue)
     {
         double local_value = rValue;
-        MPI_Allreduce(&local_value, &rValue, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+        MPI_Allreduce(&local_value, &rValue, 1, MPI_DOUBLE, MPI_SUM, mComm);
         return true;
     }
 
     virtual bool MinAll(int& rValue)
     {
         int local_value = rValue;
-        MPI_Allreduce(&local_value, &rValue, 1, MPI_INT, MPI_MIN, MPI_COMM_WORLD);
+        MPI_Allreduce(&local_value, &rValue, 1, MPI_INT, MPI_MIN, mComm);
         return true;
     }
 
     virtual bool MinAll(double& rValue)
     {
         double local_value = rValue;
-        MPI_Allreduce(&local_value, &rValue, 1, MPI_DOUBLE, MPI_MIN, MPI_COMM_WORLD);
+        MPI_Allreduce(&local_value, &rValue, 1, MPI_DOUBLE, MPI_MIN, mComm);
         return true;
     }
 
     virtual bool MaxAll(int& rValue)
     {
         int local_value = rValue;
-        MPI_Allreduce(&local_value, &rValue, 1, MPI_INT, MPI_MAX, MPI_COMM_WORLD);
+        MPI_Allreduce(&local_value, &rValue, 1, MPI_INT, MPI_MAX, mComm);
         return true;
     }
 
     virtual bool MaxAll(double& rValue)
     {
         double local_value = rValue;
-        MPI_Allreduce(&local_value, &rValue, 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
+        MPI_Allreduce(&local_value, &rValue, 1, MPI_DOUBLE, MPI_MAX, mComm);
         return true;
     }
 
     virtual bool SynchronizeElementalIds()
     {
         int rank;
-        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+        MPI_Comm_rank(mComm, &rank);
 
         int destination = 0;
 
@@ -344,7 +345,7 @@ public:
                 int receive_tag = i_color;
 
                 MPI_Sendrecv(send_buffer, send_buffer_size, MPI_INT, destination, send_tag, receive_buffer, receive_buffer_size, MPI_INT, destination, receive_tag,
-                             MPI_COMM_WORLD, &status);
+                             mComm, &status);
 
                 position = 0;
                 for (ModelPart::ElementIterator i_element = r_ghost_elements.begin(); i_element != r_ghost_elements.end(); ++i_element)
@@ -366,7 +367,7 @@ public:
     virtual bool SynchronizeNodalSolutionStepsData()
     {
         int rank;
-        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+        MPI_Comm_rank(mComm, &rank);
 
         int destination = 0;
 
@@ -426,7 +427,7 @@ public:
 
 
                 MPI_Sendrecv(send_buffer, send_buffer_size, MPI_DOUBLE, destination, send_tag, receive_buffer, receive_buffer_size, MPI_DOUBLE, destination, receive_tag,
-                             MPI_COMM_WORLD, &status);
+                             mComm, &status);
 
                 // Updating nodes
                 position = 0;
@@ -450,7 +451,7 @@ public:
     virtual bool SynchronizeDofs()
     {
         int rank;
-        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+        MPI_Comm_rank(mComm, &rank);
 
         int destination = 0;
 
@@ -495,7 +496,7 @@ public:
                 int receive_tag = i_color;
 
                 MPI_Sendrecv(send_buffer, send_buffer_size, MPI_INT, destination, send_tag, receive_buffer, receive_buffer_size, MPI_INT, destination, receive_tag,
-                             MPI_COMM_WORLD, &status);
+                             mComm, &status);
 
                 // Updating nodes
                 position = 0;
@@ -826,27 +827,7 @@ private:
     ///@name Member Variables
     ///@{
 
-    //      SizeType mNumberOfColors;
-
-    //      NeighbourIndicesContainerType mNeighbourIndices;
-    //
-    //      // To store all local entities
-    //      MeshType::Pointer mpLocalMesh;
-    //
-    //      // To store all ghost entities
-    //      MeshType::Pointer mpGhostMesh;
-    //
-    //      // To store all interface entities
-    //      MeshType::Pointer mpInterfaceMesh;
-    //
-    //      // To store interfaces local entities
-    //      MeshesContainerType mLocalMeshes;
-
-    //      // To store interfaces ghost entities
-    //      MeshesContainerType mGhostMeshes;
-    //
-    //      // To store interfaces ghost+local entities
-    //      MeshesContainerType mInterfaceMeshes;
+    MPI_Comm mComm;
 
     VariablesList* mpVariables_list;
 
@@ -864,11 +845,11 @@ private:
         NeighbourIndicesContainerType& neighbours_indices = NeighbourIndices();
 
         int nproc;
-        MPI_Comm_size(MPI_COMM_WORLD, &nproc);
+        MPI_Comm_size(mComm, &nproc);
         int rank;
-        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+        MPI_Comm_rank(mComm, &rank);
 
-        MPI_Barrier(MPI_COMM_WORLD);
+        MPI_Barrier(mComm);
         for (int proc_id = 0; proc_id < nproc; proc_id++)
         {
             if (proc_id == rank)
@@ -890,7 +871,7 @@ private:
                     }
                 }
             }
-            MPI_Barrier(MPI_COMM_WORLD);
+            MPI_Barrier(mComm);
         }
     }
 
@@ -898,7 +879,7 @@ private:
     void PrintNodesId(TNodesArrayType& rNodes, std::string Tag, int color)
     {
         int rank;
-        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+        MPI_Comm_rank(mComm, &rank);
         std::cout << Tag << rank << " with color " << color << ":";
         for (typename TNodesArrayType::iterator i_node = rNodes.begin(); i_node != rNodes.end(); i_node++)
             std::cout << i_node->Id() << ", ";
@@ -913,7 +894,7 @@ private:
         /*	KRATOS_WATCH("AssembleThisVariable")
                 KRATOS_WATCH(ThisVariable)*/
         int rank;
-        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+        MPI_Comm_rank(mComm, &rank);
 
         int destination = 0;
 
@@ -963,7 +944,7 @@ private:
 
                 MPI_Sendrecv(send_buffer, send_buffer_size, ThisMPI_Datatype, destination, send_tag,
                              receive_buffer[i_color], receive_buffer_size[i_color], ThisMPI_Datatype, destination, receive_tag,
-                             MPI_COMM_WORLD, &status);
+                             mComm, &status);
 
                 delete [] send_buffer;
             }
@@ -988,7 +969,7 @@ private:
                 delete [] receive_buffer[i_color];
             }
 
-        //MPI_Barrier(MPI_COMM_WORLD);
+        //MPI_Barrier(mComm);
 
 
         //SynchronizeNodalSolutionStepsData();
@@ -1008,7 +989,7 @@ private:
         /*	KRATOS_WATCH("AssembleThisVariable")
                 KRATOS_WATCH(ThisVariable)*/
         int rank;
-        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+        MPI_Comm_rank(mComm, &rank);
 
         int destination = 0;
 
@@ -1058,7 +1039,7 @@ private:
 
                 MPI_Sendrecv(send_buffer, send_buffer_size, ThisMPI_Datatype, destination, send_tag,
                              receive_buffer[i_color], receive_buffer_size[i_color], ThisMPI_Datatype, destination, receive_tag,
-                             MPI_COMM_WORLD, &status);
+                             mComm, &status);
 
                 delete [] send_buffer;
             }
@@ -1084,7 +1065,7 @@ private:
                 delete [] receive_buffer[i_color];
             }
 
-        //MPI_Barrier(MPI_COMM_WORLD);
+        //MPI_Barrier(mComm);
 
 
         //SynchronizeNodalSolutionStepsData();
@@ -1100,7 +1081,7 @@ private:
     bool SynchronizeVariable(Variable<TDataType> const& ThisVariable)
     {
         int rank;
-        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+        MPI_Comm_rank(mComm, &rank);
 
         int destination = 0;
 
@@ -1141,7 +1122,7 @@ private:
                 int receive_tag = i_color;
 
                 MPI_Sendrecv(send_buffer, send_buffer_size, ThisMPI_Datatype, destination, send_tag, receive_buffer, receive_buffer_size, ThisMPI_Datatype, destination, receive_tag,
-                             MPI_COMM_WORLD, &status);
+                             mComm, &status);
 
                 position = 0;
                 for (ModelPart::NodeIterator i_node = r_ghost_nodes.begin(); i_node != r_ghost_nodes.end(); ++i_node)
@@ -1169,7 +1150,7 @@ private:
         /*	KRATOS_WATCH("AssembleThisVariable")
                 KRATOS_WATCH(ThisVariable)*/
         int rank;
-        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+        MPI_Comm_rank(mComm, &rank);
 
         int destination = 0;
 
@@ -1219,7 +1200,7 @@ private:
 
                 MPI_Sendrecv(send_buffer, send_buffer_size, ThisMPI_Datatype, destination, send_tag,
                              receive_buffer[i_color], receive_buffer_size[i_color], ThisMPI_Datatype, destination, receive_tag,
-                             MPI_COMM_WORLD, &status);
+                             mComm, &status);
 
                 delete [] send_buffer;
             }
@@ -1256,7 +1237,7 @@ private:
     bool SynchronizeNonHistoricalVariable(Variable<TDataType> const& ThisVariable)
     {
         int rank;
-        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+        MPI_Comm_rank(mComm, &rank);
 
         int destination = 0;
 
@@ -1297,7 +1278,7 @@ private:
                 int receive_tag = i_color;
 
                 MPI_Sendrecv(send_buffer, send_buffer_size, ThisMPI_Datatype, destination, send_tag, receive_buffer, receive_buffer_size, ThisMPI_Datatype, destination, receive_tag,
-                             MPI_COMM_WORLD, &status);
+                             mComm, &status);
 
                 position = 0;
                 for (ModelPart::NodeIterator i_node = r_ghost_nodes.begin(); i_node != r_ghost_nodes.end(); ++i_node)
@@ -1320,7 +1301,7 @@ private:
     bool SynchronizeElementalNonHistoricalVariable(Variable<TDataType> const& ThisVariable)
     {
         int rank;
-        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+        MPI_Comm_rank(mComm, &rank);
 
         int destination = 0;
 
@@ -1362,7 +1343,7 @@ private:
                 int receive_tag = i_color;
 
                 MPI_Sendrecv(send_buffer, send_buffer_size, ThisMPI_Datatype, destination, send_tag, receive_buffer, receive_buffer_size, ThisMPI_Datatype, destination, receive_tag,
-                             MPI_COMM_WORLD, &status);
+                             mComm, &status);
 
                 position = 0;
                 for (ModelPart::ElementIterator i_element = r_ghost_elements.begin(); i_element != r_ghost_elements.end(); ++i_element)
@@ -1387,8 +1368,8 @@ private:
         int mpi_rank;
         int mpi_size;
 
-        MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
-        MPI_Comm_size(MPI_COMM_WORLD, &mpi_size);
+        MPI_Comm_rank(mComm, &mpi_rank);
+        MPI_Comm_size(mComm, &mpi_size);
 
         int * msgSendSize = new int[mpi_size];
         int * msgRecvSize = new int[mpi_size];
@@ -1421,7 +1402,7 @@ private:
             }
         }
 
-        MPI_Alltoall(msgSendSize,1,MPI_INT,msgRecvSize,1,MPI_INT,MPI_COMM_WORLD);
+        MPI_Alltoall(msgSendSize,1,MPI_INT,msgRecvSize,1,MPI_INT,mComm);
 
         int NumberOfCommunicationEvents      = 0;
         int NumberOfCommunicationEventsIndex = 0;
@@ -1442,12 +1423,12 @@ private:
             {
                 message[i] = (char *)malloc(sizeof(char) * msgRecvSize[i]);
 
-                MPI_Irecv(message[i],msgRecvSize[i],MPI_CHAR,i,0,MPI_COMM_WORLD,&reqs[NumberOfCommunicationEventsIndex++]);
+                MPI_Irecv(message[i],msgRecvSize[i],MPI_CHAR,i,0,mComm,&reqs[NumberOfCommunicationEventsIndex++]);
             }
 
             if(i != mpi_rank && msgSendSize[i])
             {
-                MPI_Isend(mpi_send_buffer[i],msgSendSize[i],MPI_CHAR,i,0,MPI_COMM_WORLD,&reqs[NumberOfCommunicationEventsIndex++]);
+                MPI_Isend(mpi_send_buffer[i],msgSendSize[i],MPI_CHAR,i,0,mComm,&reqs[NumberOfCommunicationEventsIndex++]);
             }
         }
 
@@ -1457,7 +1438,7 @@ private:
         if(err != MPI_SUCCESS)
             KRATOS_THROW_ERROR(std::runtime_error,"Error in mpi_communicator","")
 
-        MPI_Barrier(MPI_COMM_WORLD);
+        MPI_Barrier(mComm);
 
         for(int i = 0; i < mpi_size; i++)
         {
@@ -1480,7 +1461,7 @@ private:
                 particleSerializer.load("ObjectList",RecvObjects[i].GetContainer());
             }
 
-            MPI_Barrier(MPI_COMM_WORLD);
+            MPI_Barrier(mComm);
         }
 
         // Free buffers
