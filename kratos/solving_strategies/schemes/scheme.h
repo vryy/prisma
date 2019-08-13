@@ -346,6 +346,7 @@ public:
         int NumThreads = OpenMPUtils::GetNumThreads();
         OpenMPUtils::PartitionVector ElementPartition;
         OpenMPUtils::DivideInPartitions(rModelPart.Elements().size(), NumThreads, ElementPartition);
+        ProcessInfo& CurrentProcessInfo = rModelPart.GetProcessInfo();
 
         #pragma omp parallel
         {
@@ -355,7 +356,7 @@ public:
 
             for (ElementsArrayType::iterator itElem = ElemBegin; itElem != ElemEnd; itElem++)
             {
-                itElem->Initialize(); //function to initialize the element
+                itElem->Initialize(CurrentProcessInfo); //function to initialize the element
             }
 
         }
@@ -376,11 +377,12 @@ public:
         KRATOS_TRY
 
         if(mElementsAreInitialized==false)
-	    KRATOS_THROW_ERROR(std::logic_error, "Before initilizing Conditions, initialize Elements FIRST","")
+            KRATOS_THROW_ERROR(std::logic_error, "Before initilizing Conditions, initialize Elements FIRST","")
 
         int NumThreads = OpenMPUtils::GetNumThreads();
         OpenMPUtils::PartitionVector ConditionPartition;
         OpenMPUtils::DivideInPartitions(rModelPart.Conditions().size(), NumThreads, ConditionPartition);
+        ProcessInfo& CurrentProcessInfo = rModelPart.GetProcessInfo();
 
         #pragma omp parallel
         {
@@ -390,7 +392,7 @@ public:
 
             for (ConditionsArrayType::iterator itCond = CondBegin; itCond != CondEnd; itCond++)
             {
-                itCond->Initialize(); //function to initialize the condition
+                itCond->Initialize(CurrentProcessInfo); //function to initialize the condition
             }
 
         }

@@ -397,26 +397,7 @@ public:
      * @brief This method directly applies the master/slave relationship
      * @param rCurrentProcessInfo the current process info instance
      */
-    void Apply(const ProcessInfo& rCurrentProcessInfo) override
-    {
-        // Saving the master dofs values
-        Vector master_dofs_values(mMasterDofsVector.size());
-
-        for (IndexType i = 0; i < mMasterDofsVector.size(); ++i) {
-            master_dofs_values[i] = mMasterDofsVector[i]->GetSolutionStepValue();
-        }
-
-        // Apply the constraint to the slave dofs
-        for (IndexType i = 0; i < mRelationMatrix.size1(); ++i) {
-            double aux = mConstantVector[i];
-            for(IndexType j = 0; j < mRelationMatrix.size2(); ++j) {
-                aux += mRelationMatrix(i,j) * master_dofs_values[j];
-            }
-
-            #pragma omp atomic
-            mSlaveDofsVector[i]->GetSolutionStepValue() += aux;
-        }
-    }
+    void Apply(const ProcessInfo& rCurrentProcessInfo) override;
 
     /**
      * @brief This is called during the assembling process in order
