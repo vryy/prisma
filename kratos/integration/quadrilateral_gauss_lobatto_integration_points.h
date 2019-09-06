@@ -32,19 +32,18 @@ public:
 
     typedef IntegrationPoint<2> IntegrationPointType;
 
-    typedef boost::array<IntegrationPointType, 2> IntegrationPointsArrayType;
+    typedef boost::array<IntegrationPointType, 1> IntegrationPointsArrayType;
 
     typedef IntegrationPointType::PointType PointType;
 
     static SizeType IntegrationPointsNumber()
     {
-        return 2;
+        return 1;
     }
 
     static IntegrationPointsArrayType& IntegrationPoints()
     {
-        msIntegrationPoints[0] = IntegrationPointType( -1.00 , 0.00, 1.00 );
-        msIntegrationPoints[1] = IntegrationPointType(  1.00 , 0.00, 1.00 );
+        msIntegrationPoints[0] = IntegrationPointType( 0.00 , 0.00, 4.00 );
         return msIntegrationPoints;
     }
 
@@ -84,10 +83,10 @@ public:
     static IntegrationPointsArrayType& IntegrationPoints()
     {
         // This is added to solve the problem of static initialization. Pooyan.
-        msIntegrationPoints[0] = IntegrationPointType( -1.00 , -1.00, 0.50 );
-        msIntegrationPoints[1] = IntegrationPointType(  1.00 , -1.00, 0.50 );
-        msIntegrationPoints[2] = IntegrationPointType(  1.00 ,  1.00, 0.50 );
-        msIntegrationPoints[3] = IntegrationPointType( -1.00 ,  1.00, 0.50 );
+        msIntegrationPoints[0] = IntegrationPointType( -1.00 , -1.00, 1.00 );
+        msIntegrationPoints[1] = IntegrationPointType(  1.00 , -1.00, 1.00 );
+        msIntegrationPoints[2] = IntegrationPointType(  1.00 ,  1.00, 1.00 );
+        msIntegrationPoints[3] = IntegrationPointType( -1.00 ,  1.00, 1.00 );
         return msIntegrationPoints;
     }
 
@@ -104,7 +103,106 @@ private:
     static IntegrationPointsArrayType msIntegrationPoints;
 }; // Class QuadrilateralGaussLobattoIntegrationPoints2
 
+class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLobattoIntegrationPoints3
+{
+public:
+    KRATOS_CLASS_POINTER_DEFINITION(QuadrilateralGaussLobattoIntegrationPoints3);
+    typedef std::size_t SizeType;
 
+    static const unsigned int Dimension = 2;
+
+    typedef IntegrationPoint<2> IntegrationPointType;
+
+    typedef boost::array<IntegrationPointType, 9> IntegrationPointsArrayType;
+
+    typedef IntegrationPointType::PointType PointType;
+
+    static SizeType IntegrationPointsNumber()
+    {
+        return 9;
+    }
+
+    static IntegrationPointsArrayType& IntegrationPoints()
+    {
+        // This is added to solve the problem of static initialization. Pooyan.
+        msIntegrationPoints[0] = IntegrationPointType( -1.00 , -1.00, 1.00 / 9.00 );
+        msIntegrationPoints[1] = IntegrationPointType( -1.00 , 0.00, 4.00 / 9.00 );
+        msIntegrationPoints[2] = IntegrationPointType( -1.00 , 1.00, 1.00 / 9.00 );
+        msIntegrationPoints[3] = IntegrationPointType( 0.00 , -1.00, 4.00 / 9.00 );
+        msIntegrationPoints[4] = IntegrationPointType( 0.00 , 0.00, 16.00 / 9.00 );
+        msIntegrationPoints[5] = IntegrationPointType( 0.00 , 1.00, 4.00 / 9.00 );
+        msIntegrationPoints[6] = IntegrationPointType( 1.00 , -1.00, 1.00 / 9.00 );
+        msIntegrationPoints[7] = IntegrationPointType( 1.00 , 0.00, 4.00 / 9.00 );
+        msIntegrationPoints[8] = IntegrationPointType( 1.00 , 1.00, 1.00 / 9.00 );
+        return msIntegrationPoints;
+    }
+
+    std::string Info() const
+    {
+        std::stringstream buffer;
+        buffer << "Quadrilateral Gauss-Lobatto integration 3 ";
+        return buffer.str();
+    }
+protected:
+
+private:
+
+    static IntegrationPointsArrayType msIntegrationPoints;
+}; // Class QuadrilateralGaussLobattoIntegrationPoints3
+
+class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLobattoIntegrationPoints4
+{
+public:
+    KRATOS_CLASS_POINTER_DEFINITION(QuadrilateralGaussLobattoIntegrationPoints4);
+    typedef std::size_t SizeType;
+
+    static const unsigned int Dimension = 2;
+
+    typedef IntegrationPoint<2> IntegrationPointType;
+
+    typedef boost::array<IntegrationPointType, 16> IntegrationPointsArrayType;
+
+    typedef IntegrationPointType::PointType PointType;
+
+    static SizeType IntegrationPointsNumber()
+    {
+        return 16;
+    }
+
+    static IntegrationPointsArrayType& IntegrationPoints()
+    {
+        // This is added to solve the problem of static initialization. Pooyan.
+        msIntegrationPoints[0] = IntegrationPointType(-1.00, -1.00, 1.00 / 36.00);
+        msIntegrationPoints[1] = IntegrationPointType(-std::sqrt(5.00) / 5.00, -1.00, 5.00 / 36.00);
+        msIntegrationPoints[2] = IntegrationPointType( std::sqrt(5.00) / 5.00, -1.00, 5.00 / 36.00);
+        msIntegrationPoints[3] = IntegrationPointType( 1.00, -1.00, 1.00 / 36.00);
+        msIntegrationPoints[4] = IntegrationPointType(-1.00, -std::sqrt(5.00) / 5.00, 5.00 / 36.00);
+        msIntegrationPoints[5] = IntegrationPointType(-std::sqrt(5.00) / 5.00, -std::sqrt(5.00) / 5.00, 25.00 / 36.00);
+        msIntegrationPoints[6] = IntegrationPointType( std::sqrt(5.00) / 5.00, -std::sqrt(5.00) / 5.00, 25.00 / 36.00);
+        msIntegrationPoints[7] = IntegrationPointType( 1.00, -std::sqrt(5.00) / 5.00, 5.00 / 36.00);
+        msIntegrationPoints[8] = IntegrationPointType(-1.00, std::sqrt(5.00) / 5.00, 5.00 / 36.00);
+        msIntegrationPoints[9] = IntegrationPointType(-std::sqrt(5.00) / 5.00, std::sqrt(5.00) / 5.00, 25.00 / 36.00);
+        msIntegrationPoints[10] = IntegrationPointType( std::sqrt(5.00) / 5.00, std::sqrt(5.00) / 5.00, 25.00 / 36.00);
+        msIntegrationPoints[11] = IntegrationPointType( 1.00, std::sqrt(5.00) / 5.00, 5.00 / 36.00);
+        msIntegrationPoints[12] = IntegrationPointType(-1.00, 1.00, 1.00 / 36.00);
+        msIntegrationPoints[13] = IntegrationPointType(-std::sqrt(5.00) / 5.00, 1.00, 5.00 / 36.00);
+        msIntegrationPoints[14] = IntegrationPointType( std::sqrt(5.00) / 5.00, 1.00, 5.00 / 36.00);
+        msIntegrationPoints[15] = IntegrationPointType( 1.00, 1.00, 1.00 / 36.00);
+        return msIntegrationPoints;
+    }
+
+    std::string Info() const
+    {
+        std::stringstream buffer;
+        buffer << "Quadrilateral Gauss-Lobatto integration 4 ";
+        return buffer.str();
+    }
+protected:
+
+private:
+
+    static IntegrationPointsArrayType msIntegrationPoints;
+}; // Class QuadrilateralGaussLobattoIntegrationPoints4
 
 }
 

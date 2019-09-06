@@ -870,8 +870,7 @@ QuadrilateralGaussLobattoIntegrationPoints1::IntegrationPointsArrayType
 QuadrilateralGaussLobattoIntegrationPoints1::msIntegrationPoints =
 {
 	{
-		IntegrationPointType( -1.00 , 0.00, 1.00 ),
-		IntegrationPointType(  1.00 , 0.00, 1.00 )
+		IntegrationPointType( 0.00 , 0.00, 4.00 ),
 	}
 };
 
@@ -879,11 +878,50 @@ QuadrilateralGaussLobattoIntegrationPoints2::IntegrationPointsArrayType
 QuadrilateralGaussLobattoIntegrationPoints2::msIntegrationPoints =
 {
 	{
-		IntegrationPointType( -1.00 , -1.00, 0.50 ),
-		IntegrationPointType(  1.00 , -1.00, 0.50 ),
-		IntegrationPointType(  1.00 ,  1.00, 0.50 ),
-		IntegrationPointType( -1.00 ,  1.00, 0.50 )
+		IntegrationPointType( -1.00 , -1.00, 1.00 ),
+		IntegrationPointType(  1.00 , -1.00, 1.00 ),
+		IntegrationPointType(  1.00 ,  1.00, 1.00 ),
+		IntegrationPointType( -1.00 ,  1.00, 1.00 )
 	}
+};
+
+QuadrilateralGaussLobattoIntegrationPoints3::IntegrationPointsArrayType
+QuadrilateralGaussLobattoIntegrationPoints3::msIntegrationPoints =
+{
+    {
+        IntegrationPointType( -1.00 , -1.00, 1.00 / 9.0 ),
+        IntegrationPointType( -1.00 , 0.00, 4.00 / 9.0 ),
+        IntegrationPointType( -1.00 , 1.00, 1.00 / 9.0 ),
+        IntegrationPointType( 0.00 , -1.00, 4.00 / 9.0 ),
+        IntegrationPointType( 0.00 , 0.00, 16.00 / 9.0 ),
+        IntegrationPointType( 0.00 , 1.00, 4.00 / 9.0 ),
+        IntegrationPointType( 1.00 , -1.00, 1.00 / 9.0 ),
+        IntegrationPointType( 1.00 , 0.00, 4.00 / 9.0 ),
+        IntegrationPointType( 1.00 , 1.00, 1.00 / 9.0 )
+    }
+};
+
+QuadrilateralGaussLobattoIntegrationPoints4::IntegrationPointsArrayType
+QuadrilateralGaussLobattoIntegrationPoints4::msIntegrationPoints =
+{
+    {
+        IntegrationPointType(-1.00, -1.00, 1.00 / 36.00),
+        IntegrationPointType(-std::sqrt(5.00) / 5.00, -1.00, 5.00 / 36.00),
+        IntegrationPointType( std::sqrt(5.00) / 5.00, -1.00, 5.00 / 36.00),
+        IntegrationPointType( 1.00, -1.00, 1.00 / 36.00),
+        IntegrationPointType(-1.00, -std::sqrt(5.00) / 5.00, 5.00 / 36.00),
+        IntegrationPointType(-std::sqrt(5.00) / 5.00, -std::sqrt(5.00) / 5.00, 25.00 / 36.00),
+        IntegrationPointType( std::sqrt(5.00) / 5.00, -std::sqrt(5.00) / 5.00, 25.00 / 36.00),
+        IntegrationPointType( 1.00, -std::sqrt(5.00) / 5.00, 5.00 / 36.00),
+        IntegrationPointType(-1.00, std::sqrt(5.00) / 5.00, 5.00 / 36.00),
+        IntegrationPointType(-std::sqrt(5.00) / 5.00, std::sqrt(5.00) / 5.00, 25.00 / 36.00),
+        IntegrationPointType( std::sqrt(5.00) / 5.00, std::sqrt(5.00) / 5.00, 25.00 / 36.00),
+        IntegrationPointType( 1.00, std::sqrt(5.00) / 5.00, 5.00 / 36.00),
+        IntegrationPointType(-1.00, 1.00, 1.00 / 36.00),
+        IntegrationPointType(-std::sqrt(5.00) / 5.00, 1.00, 5.00 / 36.00),
+        IntegrationPointType( std::sqrt(5.00) / 5.00, 1.00, 5.00 / 36.00),
+        IntegrationPointType( 1.00, 1.00, 1.00 / 36.00)
+    }
 };
 
 //TETRAHEDRON:
