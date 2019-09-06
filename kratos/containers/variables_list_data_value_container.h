@@ -759,41 +759,9 @@ public:
 //		mpData = pThisData;
 //	    }
 
-    void CloneFront()
-    {
-        if(mQueueSize == 0)
-        {
-            Resize(1);
-            return;
-        }
+    void CloneFront();
 
-        if(mQueueSize == 1)
-            return;
-
-        SizeType size = mpVariablesList->DataSize();
-        BlockType* position = (mpCurrentPosition == mpData) ? mpData + TotalSize() - size :  mpCurrentPosition - size;
-        AssignData(mpCurrentPosition, position);
-        mpCurrentPosition = position;
-
-    }
-
-    void PushFront()
-    {
-        if(mQueueSize == 0)
-        {
-            Resize(1);
-            return;
-        }
-
-        if(mQueueSize == 1)
-            return;
-
-        SizeType size = mpVariablesList->DataSize();
-        mpCurrentPosition = (mpCurrentPosition == mpData) ? mpData + TotalSize() - size :  mpCurrentPosition - size;
-        AssignZero();
-
-    }
-
+    void PushFront();
 
     void AssignZero()
     {
