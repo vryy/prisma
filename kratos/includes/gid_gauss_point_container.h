@@ -72,6 +72,8 @@ public:
         mGidElementFamily(gid_element_type), mSize(number_of_integration_points),
         mIndexContainer(index_container) {}
 
+    const char* GPTitle() const {return mGPTitle;}
+
     std::size_t NumberOfElements() const {return mMeshElements.size();}
 
     std::size_t NumberOfConditions() const {return mMeshConditions.size();}
@@ -83,8 +85,15 @@ public:
                 && pElemIt->GetGeometry().IntegrationPoints(
                     pElemIt->GetIntegrationMethod() ).size() == mSize )
         {
-            mMeshElements.push_back( *(pElemIt.base() ) );
-            return true;
+            bool element_is_active = true;
+            if( pElemIt->IsDefined( ACTIVE ) )
+                element_is_active = pElemIt->Is(ACTIVE);
+
+            if (element_is_active)
+            {
+                mMeshElements.push_back( *(pElemIt.base() ) );
+                return true;
+            }
         }
         else return false;
         KRATOS_CATCH("")
@@ -96,8 +105,15 @@ public:
         if( pCondIt->GetGeometry().GetGeometryFamily() == mKratosElementFamily &&
             pCondIt->GetGeometry().IntegrationPoints(pCondIt->GetIntegrationMethod()).size() == mSize )
         {
-            mMeshConditions.push_back( *(pCondIt.base() ) );
-            return true;
+            bool condition_is_active = true;
+            if( pCondIt->IsDefined( ACTIVE ) )
+                condition_is_active = pCondIt->Is(ACTIVE);
+
+            if (condition_is_active)
+            {
+                mMeshConditions.push_back( *(pCondIt.base() ) );
+                return true;
+            }
         }
         else return false;
         KRATOS_CATCH("")
