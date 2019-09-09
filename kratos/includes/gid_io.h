@@ -492,7 +492,6 @@ public:
         //initializing gauss points containers
         if ( mWriteConditions != WriteConditionsOnly )
         {
-            int i=0;
             for ( MeshType::ElementIterator element_iterator = rThisMesh.ElementsBegin();
                     element_iterator != rThisMesh.ElementsEnd(); ++element_iterator )
             {
@@ -500,7 +499,6 @@ public:
                             mGidGaussPointContainers.begin();
                         it != mGidGaussPointContainers.end(); it++ )
                 {
-                    i++;
                     if ( it->AddElement( element_iterator ) )
                         break;
                 }
