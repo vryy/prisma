@@ -261,8 +261,6 @@ public:
             std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraints: " << "Finished parallel building" << std::endl;
         }
 
-        std::cout << "Build time: " << stop_build - start_build << "s" << std::endl;
-
         KRATOS_CATCH("")
     }
 
@@ -591,15 +589,19 @@ public:
          */
         set_type dof_global_set;
 
+        #ifdef ENABLE_PARALLEL_SETUP_DOFSET
         #pragma omp parallel firstprivate(dof_list, second_dof_list)
         {
+        #endif
             ProcessInfo& r_current_process_info = rModelPart.GetProcessInfo();
 
             // We create the temporal set
             set_type dofs_tmp_set;
 
             // Gets the array of elements from the modeler
+            #ifdef ENABLE_PARALLEL_SETUP_DOFSET
             #pragma omp for schedule(guided, 512) nowait
+            #endif
             for (int i = 0; i < number_of_elements; ++i) {
                 auto it_elem = r_elements_array.begin() + i;
 
@@ -611,7 +613,9 @@ public:
             // Gets the array of conditions from the modeler
             ConditionsArrayType& r_conditions_array = rModelPart.Conditions();
             const int number_of_conditions = static_cast<int>(r_conditions_array.size());
+            #ifdef ENABLE_PARALLEL_SETUP_DOFSET
             #pragma omp for  schedule(guided, 512) nowait
+            #endif
             for (int i = 0; i < number_of_conditions; ++i) {
                 auto it_cond = r_conditions_array.begin() + i;
 
@@ -623,7 +627,9 @@ public:
             // Gets the array of constraints from the modeler
             auto& r_constraints_array = rModelPart.MasterSlaveConstraints();
             const int number_of_constraints = static_cast<int>(r_constraints_array.size());
+            #ifdef ENABLE_PARALLEL_SETUP_DOFSET
             #pragma omp for  schedule(guided, 512) nowait
+            #endif
             for (int i = 0; i < number_of_constraints; ++i) {
                 auto it_const = r_constraints_array.begin() + i;
 
@@ -634,11 +640,17 @@ public:
             }
 
             // We merge all the sets in one thread
+            #ifdef ENABLE_PARALLEL_SETUP_DOFSET
             #pragma omp critical
             {
+            #endif
                 dof_global_set.insert(dofs_tmp_set.begin(), dofs_tmp_set.end());
+            #ifdef ENABLE_PARALLEL_SETUP_DOFSET
             }
+            #endif
+        #ifdef ENABLE_PARALLEL_SETUP_DOFSET
         }
+        #endif
 
         if ( this->GetEchoLevel() > 2)
         {
@@ -883,6 +895,8 @@ public:
         TSystemVectorType& Dx,
         TSystemVectorType& b) //override
     {
+        const double start_apply = OpenMPUtils::GetCurrentTime();
+
         std::size_t system_size = A.size1();
         std::vector<double> scaling_factors (system_size, 0.0);
 
@@ -948,6 +962,13 @@ public:
                     if(scaling_factors[ Acol_indices[j] ] == 0 )
                         Avalues[j] = 0.0;
             }
+        }
+
+        const double stop_apply = OpenMPUtils::GetCurrentTime();
+
+        if (this->GetEchoLevel() >= 1 && rModelPart.GetCommunicator().MyPID() == 0)
+        {
+            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraints: " << "Apply Dirichlet time: " << stop_apply - start_apply << std::endl;
         }
     }
 
@@ -1241,6 +1262,8 @@ protected:
         KRATOS_TRY
 
         if (rModelPart.MasterSlaveConstraints().size() != 0) {
+            const double start_apply = OpenMPUtils::GetCurrentTime();
+
             BuildMasterSlaveConstraints(rModelPart);
 
             // We compute the transposed matrix of the global relation matrix
@@ -1265,13 +1288,20 @@ protected:
             }
 
             // Apply diagonal values on slaves
-            #pragma omp parallel for
+            // #pragma omp parallel for
             for (int i = 0; i < static_cast<int>(mSlaveIds.size()); ++i) {
                 const IndexType slave_equation_id = mSlaveIds[i];
                 if (mInactiveSlaveDofs.find(slave_equation_id) == mInactiveSlaveDofs.end()) {
                     rA(slave_equation_id, slave_equation_id) = max_diag;
                     rb[slave_equation_id] = 0.0;
                 }
+            }
+
+            const double stop_apply = OpenMPUtils::GetCurrentTime();
+
+            if (this->GetEchoLevel() >= 1 && rModelPart.GetCommunicator().MyPID() == 0)
+            {
+                std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraints: " << "Apply Constraints time: " << stop_apply - start_apply << std::endl;
             }
         }
 
@@ -1644,5 +1674,7 @@ private:
 ///@}
 
 } /* namespace Kratos.*/
+
+#undef ENABLE_PARALLEL_SETUP_DOFSET
 
 #endif /* KRATOS_RESIDUAL_BASED_BLOCK_BUILDER_AND_SOLVER_WITH_CONSTRAINTS  defined */
