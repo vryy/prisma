@@ -41,7 +41,7 @@ public:
     /// Returns the process' rank.
     /** @return Identifier for the MPI process, larger or equal than 0 and smaller than the total number of processes.
      */
-    int rank()
+    int rank() const
     {
         int rank;
         MPI_Comm_rank(mComm, &rank);
@@ -51,7 +51,7 @@ public:
     /// Returns the MPI size.
     /** @return Total number of MPI processes
      */
-    int size()
+    int size() const
     {
         int size;
         MPI_Comm_size(mComm, &size);
