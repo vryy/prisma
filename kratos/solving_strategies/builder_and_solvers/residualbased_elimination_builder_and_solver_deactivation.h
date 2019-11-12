@@ -68,14 +68,14 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "utilities/openmp_utils.h"
 #include "solving_strategies/builder_and_solvers/builder_and_solver.h"
 
-//#define ENABLE_LOG
+// #define ENABLE_LOG
 
 //#define BUILDER_AND_SOLVER_DEBUG_LEVEL1
 //#define BUILDER_AND_SOLVER_DEBUG_LEVEL2
-//#define EXPORT_LHS_MATRIX
-//#define EXPORT_RHS_VECTOR
+// #define EXPORT_LHS_MATRIX
+// #define EXPORT_RHS_VECTOR
 //#define EXPORT_LOCAL_LHS_MATRIX
-//#define EXPORT_SOL_VECTOR
+// #define EXPORT_SOL_VECTOR
 // #define EXPORT_LHS_MATRIX_SAMPLING
 // #define EXPORT_RHS_VECTOR_SAMPLING
 // #define EXPORT_SOL_VECTOR_SAMPLING
@@ -108,6 +108,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define MODIFY_INACTIVE_PART_OF_THE_MATRIX
 #define MODIFY_NEGATIVE_DIAGONAL
 // #define INCLUDE_INACTIVE_ELEMENTS_IN_SETUP_DOFSET
+
+// #define MEASURE_TIME_CUT_CELL
 
 #ifdef ENABLE_LOG
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -305,6 +307,13 @@ public:
         KRATOS_TRY
 
         double building_time_start = Timer::GetTime();
+        Timer::Start("Build");
+
+        #ifdef MEASURE_TIME_CUT_CELL
+        // if (!KratosComponents<VariableData>::Has("CUT_STATUS"))
+        //     KRATOS_THROW_ERROR(std::logic_error, "The CUT_STATUS variable is not registerred in Kratos database. Please import FiniteCellApplication.", "")
+        Variable<int>& CUT_STATUS_var = static_cast<Variable<int>&>(KratosComponents<VariableData>::Get("CUT_STATUS"));
+        #endif
 
         if(!pScheme)
             KRATOS_THROW_ERROR(std::runtime_error, "No scheme provided!", "");
@@ -453,7 +462,9 @@ public:
         // for debugging: to check if all the active ids & inactive ids fully cover the range of mEquationSystemSize
         #ifdef ENABLE_LOG
         std::set<std::size_t> AllIdSet = ActiveIdSet;
-        AllIdSet.merge(InactiveIdSet);
+        // AllIdSet.merge(InactiveIdSet);
+        for(std::set<std::size_t>::iterator it = InactiveIdSet.begin(); it != InactiveIdSet.end(); ++it)
+            AllIdSet.insert(*it);
         std::stringstream ss1;
         int cnt = 0;
         ss1 << "AllIdSet:" << std::endl;
@@ -533,6 +544,11 @@ public:
             // assemble all elements
             for (typename ElementsArrayType::ptr_iterator it = it_begin; it != it_end; ++it)
             {
+                #ifdef MEASURE_TIME_CUT_CELL
+                if((*it)->GetValue(CUT_STATUS_var) == -1)
+                    Timer::Start("Build_Cut_Element");
+                #endif
+
                 if( !(*it)->GetValue( IS_INACTIVE ) || (*it)->Is( ACTIVE ) )
                 {
                     //calculate elemental contribution
@@ -546,6 +562,8 @@ public:
                     {
                         KRATOS_WATCH(norm_elem_k)
                         KRATOS_WATCH(norm_elem_r)
+                        KRATOS_WATCH(LHS_Contribution)
+                        KRATOS_WATCH(RHS_Contribution)
                         std::cout << "type of element: " << typeid(*(*it)).name() << std::endl;
                         KRATOS_THROW_ERROR(std::logic_error, "NaN is detected at element", (*it)->Id())
                     }
@@ -593,6 +611,11 @@ public:
                     //update the global diagonal sum
                     DiagonalSum += LocalDiagonalSum;
                 }
+
+                #ifdef MEASURE_TIME_CUT_CELL
+                if((*it)->GetValue(CUT_STATUS_var) == -1)
+                    Timer::Stop("Build_Cut_Element");
+                #endif
             }
         }
         std::cout << "Element assembly completed" << std::endl;
@@ -766,6 +789,7 @@ public:
 
         #endif
 
+        Timer::Stop("Build");
         double building_time_stop = Timer::GetTime();
 
         if(this->GetEchoLevel()>0)
@@ -1243,19 +1267,25 @@ public:
         ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
 
         DofsArrayType Doftemp;
-        BaseType::mDofSet = DofsArrayType();
+        // BaseType::mDofSet = DofsArrayType();
         //mDofSet.clear();
+
+        mAllDofs.clear();
 
         ElementsArrayType& pElements = r_model_part.Elements();
         std::size_t num_active_elements = 0;
         for (typename ElementsArrayType::ptr_iterator it=pElements.ptr_begin(); it!=pElements.ptr_end(); ++it)
         {
+            // gets list of Dof involved on every element
+            pScheme->GetElementalDofList(*it,DofList,CurrentProcessInfo);
+
+            for(typename Element::DofsVectorType::iterator i = DofList.begin() ; i != DofList.end() ; ++i)
+                mAllDofs.push_back(*i);
+
             #ifndef INCLUDE_INACTIVE_ELEMENTS_IN_SETUP_DOFSET
             if( !(*it)->GetValue( IS_INACTIVE ) || (*it)->Is( ACTIVE ) )
             {
             #endif
-                // gets list of Dof involved on every element
-                pScheme->GetElementalDofList(*it,DofList,CurrentProcessInfo);
                 for(typename Element::DofsVectorType::iterator i = DofList.begin() ; i != DofList.end() ; ++i)
                     Doftemp.push_back(*i);
                 ++num_active_elements;
@@ -1271,12 +1301,16 @@ public:
         std::size_t num_active_conditions = 0;
         for (typename ConditionsArrayType::ptr_iterator it=pConditions.ptr_begin(); it!=pConditions.ptr_end(); ++it)
         {
+            // gets list of Dof involved on every condition
+            pScheme->GetConditionDofList(*it,DofList,CurrentProcessInfo);
+
+            for(typename Element::DofsVectorType::iterator i = DofList.begin() ; i != DofList.end() ; ++i)
+                mAllDofs.push_back(*i);
+
             #ifndef INCLUDE_INACTIVE_ELEMENTS_IN_SETUP_DOFSET
             if( !(*it)->GetValue( IS_INACTIVE ) || (*it)->Is( ACTIVE ) )
             {
             #endif
-                // gets list of Dof involved on every condition
-                pScheme->GetConditionDofList(*it,DofList,CurrentProcessInfo);
                 for(typename Element::DofsVectorType::iterator i = DofList.begin() ; i != DofList.end() ; ++i)
                     Doftemp.push_back(*i);
                 ++num_active_conditions;
@@ -1291,6 +1325,7 @@ public:
 
         BaseType::mDofSet = Doftemp;
 
+        KRATOS_WATCH(mAllDofs.size())
         KRATOS_WATCH(BaseType::mDofSet.size())
 
         //throws an execption if there are no Degrees of freedom involved in the analysis
@@ -1319,6 +1354,12 @@ public:
         ModelPart& r_model_part
     )
     {
+        // initialize the equation id for every dofs in the system. This is to avoid any untouched dofs when the elements are deactivated.
+        for (typename DofsArrayType::iterator dof_iterator = mAllDofs.begin(); dof_iterator != mAllDofs.end(); ++dof_iterator)
+        {
+            dof_iterator->SetEquationId(-1);
+        }
+
         // Set equation id for degrees of freedom
         // the free degrees of freedom are positioned at the beginning of the system,
         // while the fixed one are at the end (in opposite order).
@@ -1344,10 +1385,9 @@ public:
         MY_LOG_TRACE << "SetUpSystem: try to probe equation id of all dofs of the current process" << std::endl;
         MY_LOG_TRACE << "There are " << BaseType::mDofSet.size() << " dofs in the current process" << std::endl;
         MY_LOG_TRACE << "(* Step = " << mStepCounter << ", Substep = " << mLocalCounter << " *)" << std::endl;
+        MY_LOG_TRACE << "dof\tnode\tEquationId" << std::endl;
         for (typename DofsArrayType::iterator dof_iterator = BaseType::mDofSet.begin(); dof_iterator != BaseType::mDofSet.end(); ++dof_iterator)
-        {
-            MY_LOG_TRACE << "dof " << dof_iterator->GetVariable().Name() << ", node = " << dof_iterator->Id() << ", EquationId = " << dof_iterator->EquationId() << std::endl;
-        }
+            MY_LOG_TRACE << dof_iterator->GetVariable().Name() << '\t' << dof_iterator->Id() << '\t' << dof_iterator->EquationId() << std::endl;
         MY_LOG_TRACE << "#########################SetUpSystem completed####################" << std::endl;
         #endif
 
@@ -1363,6 +1403,12 @@ public:
         #ifdef ENABLE_LOG
         MY_LOG_TRACE << "DOF_ENUMERATION_STRAIGHT" << std::endl;
         #endif
+
+        // initialize the equation id for every dofs in the system. This is to avoid any untouched dofs when the elements are deactivated.
+        for (typename DofsArrayType::iterator dof_iterator = mAllDofs.begin(); dof_iterator != mAllDofs.end(); ++dof_iterator)
+        {
+            dof_iterator->SetEquationId(-1);
+        }
 
         int free_size = 0; //number of free d.o.fs in the partition 'rank'
         int fixed_size = 0; //number of fixed d.o.fs in the partition 'rank'
@@ -1395,10 +1441,9 @@ public:
         MY_LOG_TRACE << "SetUpSystem: try to probe equation id of all dofs of the current process" << std::endl;
         MY_LOG_TRACE << "There are " << BaseType::mDofSet.size() << " dofs in the current process" << std::endl;
         MY_LOG_TRACE << "(* Step = " << mStepCounter << ", Substep = " << mLocalCounter << " *)" << std::endl;
+        MY_LOG_TRACE << "dof\tnode\tEquationId" << std::endl;
         for (typename DofsArrayType::iterator dof_iterator = BaseType::mDofSet.begin(); dof_iterator != BaseType::mDofSet.end(); ++dof_iterator)
-        {
-            MY_LOG_TRACE << "dof " << dof_iterator->GetVariable().Name() << ", node = " << dof_iterator->Id() << ", EquationId = " << dof_iterator->EquationId() << std::endl;
-        }
+            MY_LOG_TRACE << dof_iterator->GetVariable().Name() << '\t' << dof_iterator->Id() << '\t' << dof_iterator->EquationId() << std::endl;
         MY_LOG_TRACE << "#########################SetUpSystem completed####################" << std::endl;
         #endif
 
@@ -1414,6 +1459,12 @@ public:
         #ifdef ENABLE_LOG
         MY_LOG_TRACE << "DOF_ENUMERATION_FULL_STRAIGHT" << std::endl;
         #endif
+
+        // initialize the equation id for every dofs in the system. This is to avoid any untouched dofs when the elements are deactivated.
+        for (typename DofsArrayType::iterator dof_iterator = mAllDofs.begin(); dof_iterator != mAllDofs.end(); ++dof_iterator)
+        {
+            dof_iterator->SetEquationId(-1);
+        }
 
         int free_size = 0; //number of free d.o.fs in the partition 'rank'
         int fixed_size = 0; //number of fixed d.o.fs in the partition 'rank'
@@ -1446,10 +1497,9 @@ public:
         MY_LOG_TRACE << "SetUpSystem: try to probe equation id of all dofs of the current process" << std::endl;
         MY_LOG_TRACE << "There are " << BaseType::mDofSet.size() << " dofs in the current process" << std::endl;
         MY_LOG_TRACE << "(* Step = " << mStepCounter << ", Substep = " << mLocalCounter << " *)" << std::endl;
+        MY_LOG_TRACE << "dof\tnode\tEquationId" << std::endl;
         for (typename DofsArrayType::iterator dof_iterator = BaseType::mDofSet.begin(); dof_iterator != BaseType::mDofSet.end(); ++dof_iterator)
-        {
-            MY_LOG_TRACE << "dof " << dof_iterator->GetVariable().Name() << ", node = " << dof_iterator->Id() << ", EquationId = " << dof_iterator->EquationId() << std::endl;
-        }
+            MY_LOG_TRACE << dof_iterator->GetVariable().Name() << '\t' << dof_iterator->Id() << '\t' << dof_iterator->EquationId() << std::endl;
         MY_LOG_TRACE << "#########################SetUpSystem completed####################" << std::endl;
         #endif
 
@@ -1947,6 +1997,8 @@ private:
     unsigned int mStepCounter;
     unsigned int mFixedLength;
 
+    DofsArrayType mAllDofs; // carry all possible dofs in the mesh
+
     #ifdef ENABLE_LOG
     boost::log::sources::severity_logger<boost::log::trivial::severity_level> m_log_level;
     #endif
@@ -2089,5 +2141,6 @@ private:
 #undef ENABLE_LOG
 #undef ENABLE_LOG_TIMESTAMP
 #undef ENABLE_LOG_PROCESS_AND_THREAD_ID
+#undef MEASURE_TIME_CUT_CELL
 
 #endif /* KRATOS_RESIDUAL_BASED_ELIMINATION_BUILDER_AND_SOLVER_DEACTIVATION  defined */
