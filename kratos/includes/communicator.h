@@ -89,10 +89,6 @@ public:
     /// Pointer definition of Communicator
     KRATOS_CLASS_POINTER_DEFINITION(Communicator);
 
-    typedef unsigned int IndexType;
-
-    typedef unsigned int SizeType;
-
     typedef Node < 3 > NodeType;
 
     typedef Properties PropertiesType;
@@ -104,6 +100,10 @@ public:
     typedef vector<int> NeighbourIndicesContainerType;
 
     typedef Mesh<NodeType, PropertiesType, ElementType, ConditionType> MeshType;
+
+    typedef MeshType::IndexType IndexType;
+
+    typedef MeshType::SizeType SizeType;
 
     typedef PointerVector<MeshType> MeshesContainerType;
 
@@ -278,6 +278,22 @@ public:
         mInterfaceMeshes.clear();
 
         for (IndexType i = 0; i < mNumberOfColors; i++)
+        {
+            mLocalMeshes.push_back(mesh.Clone());
+            mGhostMeshes.push_back(mesh.Clone());
+            mInterfaceMeshes.push_back(mesh.Clone());
+        }
+    }
+
+    void AddColors(SizeType NumberOfAddedColors)
+    {
+        if (NumberOfAddedColors < 1)
+            return;
+
+        mNumberOfColors += NumberOfAddedColors;
+        MeshType mesh;
+
+        for (IndexType i = 0; i < NumberOfAddedColors; i++)
         {
             mLocalMeshes.push_back(mesh.Clone());
             mGhostMeshes.push_back(mesh.Clone());
@@ -475,6 +491,60 @@ public:
         return mInterfaceMeshes;
     }
 
+    std::size_t GetLastNodeId()
+    {
+        return GetLastNodeId(this->LocalMesh());
+    }
+
+    virtual std::size_t GetLastNodeId(MeshType& rMesh)
+    {
+        std::size_t lastNodeId = 0;
+        for(typename NodesContainerType::iterator it = rMesh.Nodes().begin();
+                it != rMesh.Nodes().end(); ++it)
+        {
+            if(it->Id() > lastNodeId)
+                lastNodeId = it->Id();
+        }
+
+        return lastNodeId;
+    }
+
+    std::size_t GetLastElementId()
+    {
+        return GetLastElementId(this->LocalMesh());
+    }
+
+    virtual std::size_t GetLastElementId(MeshType& rMesh)
+    {
+        std::size_t lastElementId = 0;
+        for(typename ElementsContainerType::ptr_iterator it = rMesh.Elements().ptr_begin();
+                it != rMesh.Elements().ptr_end(); ++it)
+        {
+            if((*it)->Id() > lastElementId)
+                lastElementId = (*it)->Id();
+        }
+
+        return lastElementId;
+    }
+
+    std::size_t GetLastConditionId()
+    {
+        return GetLastConditionId(this->LocalMesh());
+    }
+
+    virtual std::size_t GetLastConditionId(MeshType& rMesh)
+    {
+        std::size_t lastCondId = 0;
+        for(typename ConditionsContainerType::ptr_iterator it = rMesh.Conditions().ptr_begin();
+                it != rMesh.Conditions().ptr_end(); ++it)
+        {
+            if((*it)->Id() > lastCondId)
+                lastCondId = (*it)->Id();
+        }
+
+        return lastCondId;
+    }
+
     ///@}
     ///@name Operations
     ///@{
@@ -519,6 +589,14 @@ public:
     }
 
     virtual bool MaxAll(int& rValue)
+    {
+        /*#if defined(KRATOS_USING_MPI )
+                std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;
+        #endif*/
+        return true;
+    }
+
+    virtual bool MaxAll(unsigned long& rValue)
     {
         /*#if defined(KRATOS_USING_MPI )
                 std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;
