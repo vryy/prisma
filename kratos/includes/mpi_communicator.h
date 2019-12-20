@@ -248,6 +248,37 @@ public:
 
     }
 
+    virtual std::size_t GetLastNodeId(MeshType& rMesh)
+    {
+        std::size_t lastNodeId = BaseType::GetLastNodeId(rMesh);
+
+        unsigned long tmp = static_cast<unsigned long>(lastNodeId);
+        this->MaxAll(tmp);
+
+        return static_cast<std::size_t>(tmp);
+    }
+
+    virtual std::size_t GetLastElementId(MeshType& rMesh)
+    {
+        std::size_t lastElementId = BaseType::GetLastElementId(rMesh);
+
+        unsigned long tmp = static_cast<unsigned long>(lastElementId);
+        this->MaxAll(tmp);
+
+        return static_cast<std::size_t>(tmp);
+    }
+
+
+    virtual std::size_t GetLastConditionId(MeshType& rMesh)
+    {
+        std::size_t lastCondId = BaseType::GetLastConditionId(rMesh);
+
+        unsigned long tmp = static_cast<unsigned long>(lastCondId);
+        this->MaxAll(tmp);
+
+        return static_cast<std::size_t>(tmp);
+    }
+
     ///@}
     ///@name Access
     ///@{
@@ -294,6 +325,13 @@ public:
     {
         int local_value = rValue;
         MPI_Allreduce(&local_value, &rValue, 1, MPI_INT, MPI_MAX, mComm);
+        return true;
+    }
+
+    virtual bool MaxAll(unsigned long& rValue)
+    {
+        unsigned long local_value = rValue;
+        MPI_Allreduce(&local_value, &rValue, 1, MPI_UNSIGNED_LONG, MPI_MAX, mComm);
         return true;
     }
 
