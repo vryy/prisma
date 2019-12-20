@@ -1305,6 +1305,24 @@ void WriteCircleMesh( MeshType& rThisMesh )
         KRATOS_CATCH("");
     }
 
+    /// Reset the internal data
+    void Reset()
+    {
+        // resetting mesh containers
+        for ( typename std::vector<TMeshContainer>::iterator it = mGidMeshContainers.begin();
+                it != mGidMeshContainers.end(); ++it )
+        {
+            it->Reset();
+        }
+
+        // resetting gauss point containers
+        for ( typename std::vector<TGaussPointContainer>::iterator it = mGidGaussPointContainers.begin();
+                it != mGidGaussPointContainers.end(); ++it )
+        {
+            it->Reset();
+        }
+    }
+
 protected:
     /**
      * File names
