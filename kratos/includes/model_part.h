@@ -99,10 +99,6 @@ public:
     /// Pointer definition of ModelPart
     KRATOS_CLASS_POINTER_DEFINITION(ModelPart);
 
-    typedef unsigned int IndexType;
-
-    typedef unsigned int SizeType;
-
     typedef Dof<double> DofType;
     typedef std::vector< DofType::Pointer > DofsVectorType;
     typedef Kratos::Variable<double> DoubleVariableType;
@@ -117,6 +113,10 @@ public:
     typedef Condition ConditionType;
 
     typedef Mesh<NodeType, PropertiesType, ElementType, ConditionType> MeshType;
+
+    typedef MeshType::IndexType IndexType;
+
+    typedef MeshType::SizeType SizeType;
 
     typedef PointerVector<MeshType> MeshesContainerType;
 
