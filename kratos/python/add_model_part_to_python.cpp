@@ -656,6 +656,21 @@ Communicator::NeighbourIndicesContainerType const&  NeighbourIndicesConst(Commun
     return rCommunicator.NeighbourIndices();
 }
 
+std::size_t CommunicatorGetLastNodeId(Communicator& rCommunicator)
+{
+    return rCommunicator.GetLastNodeId();
+}
+
+std::size_t CommunicatorGetLastElementId(Communicator& rCommunicator)
+{
+    return rCommunicator.GetLastElementId();
+}
+
+std::size_t CommunicatorGetLastConditionId(Communicator& rCommunicator)
+{
+    return rCommunicator.GetLastConditionId();
+}
+
 Communicator&  ModelPartGetCommunicator(ModelPart& rModelPart)
 {
     return rModelPart.GetCommunicator();
@@ -719,6 +734,9 @@ void AddModelPartToPython()
     .def("GhostMesh", CommunicatorGetGhostMeshWithIndex, return_internal_reference<>() )
     .def("InterfaceMesh", CommunicatorGetInterfaceMesh, return_internal_reference<>() )
     .def("InterfaceMesh", CommunicatorGetInterfaceMeshWithIndex, return_internal_reference<>() )
+    .def("GetLastNodeId", CommunicatorGetLastNodeId )
+    .def("GetLastElementId", CommunicatorGetLastElementId )
+    .def("GetLastConditionId", CommunicatorGetLastConditionId )
     .def("AssembleCurrentData", CommunicatorAssembleCurrentData<int> )
     .def("AssembleCurrentData", CommunicatorAssembleCurrentData<double> )
     .def("AssembleCurrentData", CommunicatorAssembleCurrentData<array_1d<double,3> > )
