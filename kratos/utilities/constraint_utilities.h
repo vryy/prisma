@@ -102,7 +102,7 @@ public:
      * @param r_constant_vector the constant vector of size 1
      */
     template<typename TNodePointerType, typename TVariableType, typename TMatrixType, typename TVectorType>
-    static void CreateLinearConstraint(ModelPart& rModelPart,
+    static MasterSlaveConstraint::Pointer CreateLinearConstraint(ModelPart& rModelPart,
         const std::string& r_constraint_name,
         const std::size_t& r_constraint_id,
         TNodePointerType pSlaveNode,
@@ -122,7 +122,7 @@ public:
         for (std::size_t i = 0; i < pMasterNodes.size(); ++i)
             master_dofs[i] = pMasterNodes[i]->pGetDof(rVariable);
 
-        rModelPart.CreateNewMasterSlaveConstraint(r_constraint_name, r_constraint_id, master_dofs, slave_dofs, r_relation_matrix, r_constant_vector);
+        return rModelPart.CreateNewMasterSlaveConstraint(r_constraint_name, r_constraint_id, master_dofs, slave_dofs, r_relation_matrix, r_constant_vector);
     }
 
     /**
