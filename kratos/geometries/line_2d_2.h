@@ -359,6 +359,16 @@ public:
     }
 
 
+    /**
+     * Returns whether given local point is inside the Geometry
+     */
+    virtual bool IsInside( const CoordinatesArrayType& rPoint )
+    {
+        if ( fabs( rPoint[0] ) < 1 + 1.0e-8 )
+            return true;
+
+        return false;
+    }
 
 
 //      virtual void Bounding_Box(BoundingBox<TPointType, BaseType>& rResult) const

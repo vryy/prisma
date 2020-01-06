@@ -357,13 +357,11 @@ public:
     }
 
     /**
-     * Returns whether given arbitrary point is inside the Geometry
+     * Returns whether given local point is inside the Geometry
      */
-    virtual bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult )
+    virtual bool IsInside( const CoordinatesArrayType& rPoint )
     {
-        this->PointLocalCoordinates( rResult, rPoint );
-
-        if ( fabs( rResult[0] ) < 1 + 1.0e-8 )
+        if ( fabs( rPoint[0] ) < 1 + 1.0e-8 )
             return true;
 
         return false;

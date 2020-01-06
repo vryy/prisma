@@ -422,33 +422,16 @@ public:
     }
 
     /**
-      * Returns whether given arbitrary point is inside the Geometry
-      */
-    virtual bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult )
+     * Returns whether given local point is inside the Geometry
+     */
+    virtual bool IsInside( const CoordinatesArrayType& rPoint )
     {
-        PointLocalCoordinates( rResult, rPoint );
-
-        if ( fabs( rResult[0] ) < 1 + 1.0e-8 )
-            if ( fabs( rResult[1] ) < 1 + 1.0e-8 )
+        if ( fabs( rPoint[0] ) < 1 + 1.0e-8 )
+            if ( fabs( rPoint[1] ) < 1 + 1.0e-8 )
                 return true;
 
         return false;
     }
-
-    /**
-      * Returns whether given arbitrary point is inside the Geometry
-      */
-    virtual bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult, Matrix& DeltaPosition )
-    {
-        PointLocalCoordinates( rResult, rPoint, DeltaPosition );
-
-        if ( fabs( rResult[0] ) < 1 + 1.0e-8 )
-            if ( fabs( rResult[1] ) < 1 + 1.0e-8 )
-                return true;
-
-        return false;
-    }
-
 
     virtual CoordinatesArrayType& PointLocalCoordinates( CoordinatesArrayType& rResult,
             const CoordinatesArrayType& rPoint )

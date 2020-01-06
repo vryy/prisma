@@ -785,10 +785,9 @@ public:
     }
 
     /**
-    * Returns whether given arbitrary point is inside the Geometry and the respective
-        * local point for the given global point
+     * Returns whether given local point is inside the Geometry
     */
-    virtual bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult )
+    virtual bool IsInside( const CoordinatesArrayType& rPoint )
     {
         KRATOS_THROW_ERROR( std::logic_error,
                             "Calling base class IsInside method instead of derived class one. Please check the definition of derived class." , *this );
@@ -796,14 +795,25 @@ public:
     }
 
     /**
-    * Returns whether given arbitrary point is inside the Geometry and the respective
-        * local point for the given global point
+     * Returns whether given arbitrary point is inside the Geometry and the respective
+     * local point for the given global point
+    */
+    virtual bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult )
+    {
+        this->PointLocalCoordinates( rResult, rPoint );
+
+        return this->IsInside(rResult);
+    }
+
+    /**
+     * Returns whether given arbitrary point is inside the Geometry and the respective
+     * local point for the given global point
     */
     virtual bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult, Matrix& DeltaPosition )
     {
-        KRATOS_THROW_ERROR( std::logic_error,
-                            "Calling base class IsInside method instead of derived class one. Please check the definition of derived class." , *this );
-        return false;
+        this->PointLocalCoordinates( rResult, rPoint, DeltaPosition );
+
+        return this->IsInside(rResult);
     }
 
     ///@}

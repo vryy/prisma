@@ -433,33 +433,17 @@ public:
     }
 
     /**
-     * Returns whether given arbitrary point is inside the Geometry
+     * Returns whether local arbitrary point is inside the Geometry
      */
-    virtual bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult )
+    virtual bool IsInside( const CoordinatesArrayType& rPoint )
     {
-        this->PointLocalCoordinates( rResult, rPoint );
-        if( rResult[0] >= 0.0-1.0e-8 && rResult[0] <= 1.0+1.0e-8 )
-            if( rResult[1] >= 0.0-1.0e-8 && rResult[1] <= 1.0 +1.0e-8)
-                if( rResult[2] >= 0.0-1.0e-8 && rResult[2] <= 1.0+1.0e-8 )
-                    if( ((1.0-(rResult[0] + rResult[1] + rResult[2])) >= 0.0-1.0e-8)&&((1.0-(rResult[0] + rResult[1] + rResult[2])) <= 1.0+1.0e-8) )
+        if( rPoint[0] >= 0.0-1.0e-8 && rPoint[0] <= 1.0+1.0e-8 )
+            if( rPoint[1] >= 0.0-1.0e-8 && rPoint[1] <= 1.0 +1.0e-8)
+                if( rPoint[2] >= 0.0-1.0e-8 && rPoint[2] <= 1.0+1.0e-8 )
+                    if( ((1.0-(rPoint[0] + rPoint[1] + rPoint[2])) >= 0.0-1.0e-8)&&((1.0-(rPoint[0] + rPoint[1] + rPoint[2])) <= 1.0+1.0e-8) )
                         return true;
         return false;
     }
-
-    /**
-     * Returns whether given arbitrary point is inside the Geometry
-     */
-    virtual bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult, Matrix& DeltaPosition )
-    {
-        this->PointLocalCoordinates( rResult, rPoint, DeltaPosition );
-        if( rResult[0] >= 0.0-1.0e-8 && rResult[0] <= 1.0+1.0e-8 )
-            if( rResult[1] >= 0.0-1.0e-8 && rResult[1] <= 1.0 +1.0e-8)
-                if( rResult[2] >= 0.0-1.0e-8 && rResult[2] <= 1.0+1.0e-8 )
-                    if( ((1.0-(rResult[0] + rResult[1] + rResult[2])) >= 0.0-1.0e-8)&&((1.0-(rResult[0] + rResult[1] + rResult[2])) <= 1.0+1.0e-8) )
-                        return true;
-        return false;
-    }
-
 
     /** This method gives you number of all edges of this
     geometry.
