@@ -156,6 +156,27 @@ boost::python::list GetIntegrationPointsFromElement( Element& dummy )
     return( integration_points_list );
 }
 
+boost::python::list GetIntegrationPointsFromElementInReferenceFrame( Element& dummy )
+{
+    boost::python::list integration_points_list;
+    IntegrationPointsArrayType integration_points = dummy.GetGeometry().IntegrationPoints(
+                dummy.GetIntegrationMethod() );
+    Matrix DeltaPosition(dummy.GetGeometry().size(), dummy.GetGeometry().WorkingSpaceDimension());
+    for (std::size_t i = 0; i < dummy.GetGeometry().size(); ++i)
+        for (std::size_t j = 0; j < dummy.GetGeometry().WorkingSpaceDimension(); ++j)
+            DeltaPosition(i, j) = dummy.GetGeometry()[i].Coordinates()[j] - dummy.GetGeometry()[i].GetInitialPosition()[j];
+    for( unsigned int i=0; i< integration_points.size(); i++ )
+    {
+        boost::python::list item;
+        Point<3> pnt;
+        dummy.GetGeometry().GlobalCoordinates(pnt, integration_points[i], DeltaPosition);
+        for( unsigned int j=0; j<3; j++ )
+            item.append( pnt[j] );
+        integration_points_list.append( item );
+    }
+    return( integration_points_list );
+}
+
 boost::python::list CalculateOnIntegrationPointsVector( ModelPart& rModelPart,
         Element& dummy, const Variable<Vector>& rVariable )
 {
@@ -444,7 +465,7 @@ void  AddMeshToPython()
     //.def("HasSecondTimeDerivative", &Dof::HasSecondTimeDerivative)
     //.def(self_ns::str(self))
     //      ;
-    
+
     class_<GeometricalObject, GeometricalObject::Pointer, bases<GeometricalObject::BaseType, Flags > >("GeometricalObject", init<int>())
     ;
 
@@ -510,6 +531,7 @@ void  AddMeshToPython()
     .def("GetNodes", GetNodesFromElement )
     .def("GetGeometry", GetGeometryFromElement )
     .def("GetIntegrationPoints", GetIntegrationPointsFromElement )
+    .def("GetIntegrationPointsInReferenceFrame", GetIntegrationPointsFromElementInReferenceFrame )
     .def("CalculateOnIntegrationPoints", CalculateOnIntegrationPointsVector)
     .def("GetValuesOnIntegrationPoints", GetValuesOnIntegrationPointsDouble<Element>)
     .def("GetValuesOnIntegrationPoints", GetValuesOnIntegrationPointsArray1d<Element>)
@@ -525,15 +547,15 @@ void  AddMeshToPython()
     .def("SetValuesOnIntegrationPoints", SetValuesOnIntegrationPointsString<Element>)
     .def("SetValuesOnIntegrationPoints", SetValuesOnIntegrationPointsArray1d<Element>)
     .def("ResetConstitutiveLaw", &Element::ResetConstitutiveLaw)
-    
+
     .def("Calculate", &ElementCalculateInterface<double>)
     .def("Calculate", &ElementCalculateInterface<array_1d<double,3> >)
     .def("Calculate", &ElementCalculateInterface<Vector >)
     .def("Calculate", &ElementCalculateInterface<Matrix >)
-    
-    
-    
-    
+
+
+
+
 
     //.def("__setitem__", SetValueHelperFunction< Element, Variable< VectorComponentAdaptor< array_1d<double, 3>  > > >)
     //.def("__getitem__", GetValueHelperFunction< Element, Variable< VectorComponentAdaptor< array_1d<double, 3>  > > >)
@@ -644,7 +666,7 @@ void  AddMeshToPython()
     				.def(SolutionStepVariableIndexingPython<Condition, Variable<vector<double> > >())
     				.def(SolutionStepVariableIndexingPython<Condition, Variable<matrix<double> > >())
     				.def(SolutionStepVariableIndexingPython<Condition, VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > >())
-    */				
+    */
     .def("Initialize", &Condition::Initialize)
     //.def("CalculateLocalSystem", &Condition::CalculateLocalSystem)
     .def("Info", &Condition::Info)
