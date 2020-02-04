@@ -382,28 +382,28 @@ public:
         return c;
     }
 
-    static inline array_1d<TDataType, 3> UnitCrossProduct(const array_1d<TDataType, 3>& vec, const array_1d<TDataType, 3>& Tuple)
+    static inline array_1d<TDataType, 3> UnitCrossProduct(const array_1d<TDataType, 3>& a, const array_1d<TDataType, 3>& b)
     {
-        array_1d<TDataType, 3> cross;
+        array_1d<TDataType, 3> c;
 
-        cross[0] =  Tuple[1]*vec[2] - Tuple[2]*vec[1];
-        cross[1] =  Tuple[2]*vec[0] - Tuple[0]*vec[2];
-        cross[2] =  Tuple[0]*vec[1] - Tuple[1]*vec[0];
+        c[0] = a[1]*b[2] - a[2]*b[1];
+        c[1] = a[2]*b[0] - a[0]*b[2];
+        c[2] = a[0]*b[1] - a[1]*b[0];
 
-        const TDataType length = std::sqrt(inner_prod(cross, cross));
-        cross = (1.00/length) * cross;
-        return cross;
+        const TDataType length = std::sqrt(inner_prod(c, c));
+        c = (1.00/length) * c;
+        return c;
     }
 
-    static inline array_1d<TDataType, 3> CrossProduct(const array_1d<TDataType, 3>& vec, const array_1d<TDataType, 3>& Tuple)
+    static inline array_1d<TDataType, 3> CrossProduct(const array_1d<TDataType, 3>& a, const array_1d<TDataType, 3>& b)
     {
-        array_1d<TDataType, 3> cross;
+        array_1d<TDataType, 3> c;
 
-        cross[0] =  Tuple[1]*vec[2] - Tuple[2]*vec[1];
-        cross[1] =  Tuple[2]*vec[0] - Tuple[0]*vec[2];
-        cross[2] =  Tuple[0]*vec[1] - Tuple[1]*vec[0];
- 
-	return cross;
+        c[0] = a[1]*b[2] - a[2]*b[1];
+        c[1] = a[2]*b[0] - a[0]*b[2];
+        c[2] = a[0]*b[1] - a[1]*b[0];
+
+        return c;
     }
 
 
