@@ -86,11 +86,13 @@ typename Properties::TableType& GetTableHelperFunction1( TContainerType& el,
 void  AddPropertiesToPython()
 {
     class_<Properties, Properties::Pointer, bases<Properties::BaseType > >("Properties", init<int>())
+    .def(init<const Properties&>())
+
     .def("__setitem__", SetValueHelperFunction1< Element, Variable< array_1d<double, 6> > >)
     .def("__getitem__", GetValueHelperFunction1< Properties, Variable< array_1d<double, 6> > >)
     .def("SetValue", SetValueHelperFunction1< Properties, Variable< array_1d<double, 6> > >)
     .def("GetValue", GetValueHelperFunction1< Properties, Variable< array_1d<double, 6> > >)
-	
+
     .def("__setitem__", SetValueHelperFunction1< Element, Variable< array_1d<double, 3> > >)
     .def("__getitem__", GetValueHelperFunction1< Properties, Variable< array_1d<double, 3> > >)
     .def("SetValue", SetValueHelperFunction1< Properties, Variable< array_1d<double, 3> > >)
