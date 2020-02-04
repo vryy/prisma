@@ -128,43 +128,43 @@ public:
 
     static IntegrationPointsArrayType& IntegrationPoints()
     {
-       double a = std::sqrt(3.00/5.00);
+        const double a = std::sqrt(3.00/5.00);
 
-       msIntegrationPoints[ 0] = IntegrationPointType( -a , -a, -a, 125.00/729.00 );
-       msIntegrationPoints[ 1] = IntegrationPointType(  a , -a, -a, 125.00/729.00 );
-       msIntegrationPoints[ 2] = IntegrationPointType(  a ,  a, -a, 125.00/729.00 );
-       msIntegrationPoints[ 3] = IntegrationPointType( -a ,  a, -a, 125.00/729.00 );
+        msIntegrationPoints[0] = IntegrationPointType(-a, -a, -a, 125.00 / 729.00);
+        msIntegrationPoints[1] = IntegrationPointType(0.0, -a, -a, 200.00 / 729.00);
+        msIntegrationPoints[2] = IntegrationPointType(a, -a, -a, 125.00 / 729.00);
 
-       msIntegrationPoints[ 4] = IntegrationPointType( -a , -a,  a, 125.00/729.00 );
-       msIntegrationPoints[ 5] = IntegrationPointType(  a , -a,  a, 125.00/729.00 );
-       msIntegrationPoints[ 6] = IntegrationPointType(  a ,  a,  a, 125.00/729.00 );
-       msIntegrationPoints[ 7] = IntegrationPointType( -a ,  a,  a, 125.00/729.00 );
+        msIntegrationPoints[3] = IntegrationPointType(-a, 0.0, -a, 200.00 / 729.00);
+        msIntegrationPoints[4] = IntegrationPointType(0.0, 0.0, -a, 320.00 / 729.00);
+        msIntegrationPoints[5] = IntegrationPointType(a, 0.0, -a, 200.00 / 729.00);
 
-       msIntegrationPoints[ 8] = IntegrationPointType( 0.0 , -a, -a, 200.00/729.00 );
-       msIntegrationPoints[ 9] = IntegrationPointType(  a , 0.0, -a, 200.00/729.00 );
-       msIntegrationPoints[10] = IntegrationPointType( 0.0 ,  a, -a, 200.00/729.00 );
-       msIntegrationPoints[11] = IntegrationPointType( -a , 0.0, -a, 200.00/729.00 );
+        msIntegrationPoints[6] = IntegrationPointType(-a, a, -a, 125.00 / 729.00);
+        msIntegrationPoints[7] = IntegrationPointType(0.0, a, -a, 200.00 / 729.00);
+        msIntegrationPoints[8] = IntegrationPointType(a, a, -a, 125.00 / 729.00);
 
-       msIntegrationPoints[12] = IntegrationPointType( -a , -a, 0.0, 200.00/729.00 );
-       msIntegrationPoints[13] = IntegrationPointType(  a , -a, 0.0, 200.00/729.00 );
-       msIntegrationPoints[14] = IntegrationPointType(  a ,  a, 0.0, 200.00/729.00 );
-       msIntegrationPoints[15] = IntegrationPointType( -a ,  a, 0.0, 200.00/729.00 );
+        msIntegrationPoints[9] = IntegrationPointType(-a, -a, 0.0, 200.00 / 729.00);
+        msIntegrationPoints[10] = IntegrationPointType(0.0, -a, 0.0, 320.00 / 729.00);
+        msIntegrationPoints[11] = IntegrationPointType(a, -a, 0.0, 200.00 / 729.00);
 
-       msIntegrationPoints[16] = IntegrationPointType( 0.0 , -a,  a, 200.00/729.00 );
-       msIntegrationPoints[17] = IntegrationPointType(  a , 0.0,  a, 200.00/729.00 );
-       msIntegrationPoints[18] = IntegrationPointType( 0.0 ,  a,  a, 200.00/729.00 );
-       msIntegrationPoints[19] = IntegrationPointType( -a , 0.0,  a, 200.00/729.00 );
+        msIntegrationPoints[12] = IntegrationPointType(-a, 0.0, 0.0, 320.00 / 729.00);
+        msIntegrationPoints[13] = IntegrationPointType(0.0, 0.0, 0.0, 512.00 / 729.00);
+        msIntegrationPoints[14] = IntegrationPointType(a, 0.0, 0.0, 320.00 / 729.00);
 
-       msIntegrationPoints[20] = IntegrationPointType( 0.0 , 0.0, -a, 320.00/729.00 );
+        msIntegrationPoints[15] = IntegrationPointType(-a, a, 0.0, 200.00 / 729.00);
+        msIntegrationPoints[16] = IntegrationPointType(0.0, a, 0.0, 320.00 / 729.00);
+        msIntegrationPoints[17] = IntegrationPointType(a, a, 0.0, 200.00 / 729.00);
 
-       msIntegrationPoints[21] = IntegrationPointType( 0.0 , -a, 0.0, 320.00/729.00 );
-       msIntegrationPoints[22] = IntegrationPointType(  a , 0.0, 0.0, 320.00/729.00 );
-       msIntegrationPoints[23] = IntegrationPointType( 0.0 ,  a, 0.0, 320.00/729.00 );
-       msIntegrationPoints[24] = IntegrationPointType( -a , 0.0, 0.0, 320.00/729.00 );
+        msIntegrationPoints[18] = IntegrationPointType(-a, -a, a, 125.00 / 729.00);
+        msIntegrationPoints[19] = IntegrationPointType(0.0, -a, a, 200.00 / 729.00);
+        msIntegrationPoints[20] = IntegrationPointType(a, -a, a, 125.00 / 729.00);
 
-       msIntegrationPoints[25] = IntegrationPointType( 0.0 , 0.0,  a, 320.00/729.00 );
+        msIntegrationPoints[21] = IntegrationPointType(-a, 0.0, a, 200.00 / 729.00);
+        msIntegrationPoints[22] = IntegrationPointType(0.0, 0.0, a, 320.00 / 729.00);
+        msIntegrationPoints[23] = IntegrationPointType(a, 0.0, a, 200.00 / 729.00);
 
-       msIntegrationPoints[26] = IntegrationPointType( 0.0 , 0.0, 0.0, 512.00/729.00 );
+        msIntegrationPoints[24] = IntegrationPointType(-a, a, a, 125.00 / 729.00);
+        msIntegrationPoints[25] = IntegrationPointType(0.0, a, a, 200.00 / 729.00);
+        msIntegrationPoints[26] = IntegrationPointType(a, a, a, 125.00 / 729.00);
 
        return msIntegrationPoints;
     }
