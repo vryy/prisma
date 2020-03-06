@@ -382,16 +382,15 @@ QuadrilateralGaussLegendreIntegrationPoints3::msIntegrationPoints =
 {
     {
         IntegrationPointType( -std::sqrt(3.00/5.00) , -std::sqrt(3.00/5.00), 25.00/81.00 ),
-        IntegrationPointType(             0.00 , -std::sqrt(3.00/5.00), 40.00/81.00 ),
         IntegrationPointType(  std::sqrt(3.00/5.00) , -std::sqrt(3.00/5.00), 25.00/81.00 ),
-
-        IntegrationPointType( -std::sqrt(3.00/5.00) ,             0.00, 40.00/81.00 ),
-        IntegrationPointType(             0.00 ,             0.00, 64.00/81.00 ),
-        IntegrationPointType(  std::sqrt(3.00/5.00) ,             0.00, 40.00/81.00 ),
-
+        IntegrationPointType(  std::sqrt(3.00/5.00) ,  std::sqrt(3.00/5.00), 25.00/81.00 ),
         IntegrationPointType( -std::sqrt(3.00/5.00) ,  std::sqrt(3.00/5.00), 25.00/81.00 ),
+        IntegrationPointType(             0.00 , -std::sqrt(3.00/5.00), 40.00/81.00 ),
+        IntegrationPointType(  std::sqrt(3.00/5.00) ,             0.00, 40.00/81.00 ),
         IntegrationPointType(             0.00 ,  std::sqrt(3.00/5.00), 40.00/81.00 ),
-        IntegrationPointType(  std::sqrt(3.00/5.00) ,  std::sqrt(3.00/5.00), 25.00/81.00 )
+        IntegrationPointType( -std::sqrt(3.00/5.00) ,             0.00, 40.00/81.00 ),
+        IntegrationPointType(             0.00 ,             0.00, 64.00/81.00 )
+
     }
 };
 
