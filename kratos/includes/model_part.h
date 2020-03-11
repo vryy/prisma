@@ -623,6 +623,9 @@ public:
         NodeType& rSlaveNode, const VariableComponentType& rSlaveVariable,
         const double& Weight, const double& Constant, const IndexType& ThisIndex = 0);
 
+	MasterSlaveConstraint::Pointer CreateNewMasterSlaveConstraintNoUnique(const std::string& ConstraintName,
+        const IndexType& Id, DofsVectorType& rMasterDofsVector, DofsVectorType& rSlaveDofsVector,
+        const MatrixType& RelationMatrix, const VectorType& ConstantVector, const IndexType& ThisIndex = 0);
     /**
      * @brief Remove the master-slave constraint with given Id from mesh with ThisIndex in this modelpart and all its subs.
      */
