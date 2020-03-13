@@ -245,7 +245,7 @@ public:
     virtual Pointer Create(IndexType NewId, NodesArrayType const& ThisNodes,
 			   PropertiesType::Pointer pProperties) const
     {
-        return Condition::Pointer(new Condition(NewId, GetGeometry().Create(ThisNodes), pProperties));
+        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "Not implemented")
     }
 
     /**
@@ -259,7 +259,7 @@ public:
                            GeometryType::Pointer pGeom,
                            PropertiesType::Pointer pProperties) const
     {
-        return Condition::Pointer(new Condition(NewId, pGeom, pProperties));
+        KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
     }
 
     /**
@@ -285,10 +285,7 @@ public:
      */
     virtual Pointer Clone (IndexType NewId, NodesArrayType const& ThisNodes) const
     {
-        KRATOS_TRY
-	std::cout<<" Call base class condition Clone "<<std::endl;
-        return Condition::Pointer(new Condition(NewId, GetGeometry().Create(ThisNodes), pGetProperties()));
-        KRATOS_CATCH("");
+        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "Not implemented")
     }
 
     /**
@@ -305,8 +302,7 @@ public:
     virtual void EquationIdVector(EquationIdVectorType& rResult,
 				  ProcessInfo& rCurrentProcessInfo)
     {
-        if (rResult.size() != 0)
-            rResult.resize(0);
+        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "Not implemented")
     }
 
     /**
@@ -317,8 +313,7 @@ public:
     virtual void GetDofList(DofsVectorType& rConditionDofList,
 			    ProcessInfo& rCurrentProcessInfo)
     {
-        if (rConditionDofList.size() != 0)
-            rConditionDofList.resize(0);
+        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "Not implemented")
     }
 
     /**
