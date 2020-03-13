@@ -867,6 +867,41 @@ ModelPart::MasterSlaveConstraintType::Pointer ModelPart::CreateNewMasterSlaveCon
 
 }
 
+/** Inserts an master-slave constraint in the current mesh. WITHOUT calling Unique() function.
+ */
+ModelPart::MasterSlaveConstraintType::Pointer ModelPart::CreateNewMasterSlaveConstraintNoUnique(const std::string& ConstraintName,
+    const IndexType& Id, ModelPart::DofsVectorType& rMasterDofsVector, ModelPart::DofsVectorType& rSlaveDofsVector,
+    const ModelPart::MatrixType& RelationMatrix, const ModelPart::VectorType& ConstantVector,
+    const ModelPart::IndexType& ThisIndex)
+{
+    KRATOS_TRY
+
+    if (IsSubModelPart())
+    {
+        ModelPart::MasterSlaveConstraintType::Pointer p_new_constraint = mpParentModelPart->CreateNewMasterSlaveConstraint(ConstraintName,
+            Id, rMasterDofsVector, rSlaveDofsVector, RelationMatrix, ConstantVector, ThisIndex);
+        GetMesh(ThisIndex).AddMasterSlaveConstraint(p_new_constraint);
+
+        return p_new_constraint;
+    }
+
+    auto existing_constraint_iterator = GetMesh(ThisIndex).MasterSlaveConstraints().find(Id);
+
+    if(existing_constraint_iterator != GetMesh(ThisIndex).MasterSlaveConstraintsEnd() )
+        KRATOS_THROW_ERROR(std::logic_error, "trying to construct an master-slave constraint with ID:xxx ,however a constraint with the same Id already exists", Id)
+
+    //create the new element
+    ModelPart::MasterSlaveConstraintType const& r_clone_constraint = KratosComponents<MasterSlaveConstraintType>::Get(ConstraintName);
+    ModelPart::MasterSlaveConstraintType::Pointer p_new_constraint = r_clone_constraint.Create(Id, rMasterDofsVector,
+        rSlaveDofsVector, RelationMatrix, ConstantVector);
+
+    GetMesh(ThisIndex).AddMasterSlaveConstraint(p_new_constraint);
+
+    return p_new_constraint;
+
+    KRATOS_CATCH("")
+}
+
 /** Remove the master-slave constraint with given Id from this modelpart and all its subs.
 */
 void ModelPart::RemoveMasterSlaveConstraint(ModelPart::IndexType MasterSlaveConstraintId,  IndexType ThisIndex)
