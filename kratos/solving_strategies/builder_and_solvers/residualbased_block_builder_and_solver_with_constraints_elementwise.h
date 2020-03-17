@@ -781,7 +781,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise
     ///@{
 
     // This is the set of condenced global constraints.
-    GlobalMasterSlaveRelationContainerType mGlobalMasterSlaveConstraints; //This can be changed to more efficient implementation later on.
+    GlobalMasterSlaveRelationContainerType mGlobalMasterSlaveConstraints;
 
     ///@}
     ///@name Private Operators
@@ -810,7 +810,33 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise
         const ModelPart::MasterSlaveConstraintContainerType::iterator constraints_begin = rModelPart.MasterSlaveConstraintsBegin();
         ProcessInfo &r_current_process_info = rModelPart.GetProcessInfo();
 
-#pragma omp parallel for schedule(guided, 512)
+        // prepares the pointerVectorSet (mGlobalMasterSlaveConstraints) to prevent a lot of sorting when calling (AssembleConstraint)
+        // will push_back all slave_equation_id without sorting or checking if unique and will call Unique at the end
+        for (int i_constraints = 0; i_constraints < number_of_constraints; i_constraints++)
+        {
+            ModelPart::MasterSlaveConstraintContainerType::iterator it = constraints_begin;
+            std::advance(it, i_constraints);
+            //detect if the element is active or not. If the user did not make any choice the element
+            //is active by default
+            bool constraint_is_active = true;
+            if ((it)->IsDefined(ACTIVE))
+                constraint_is_active = (it)->Is(ACTIVE);
+
+            if (constraint_is_active)
+            {
+                EquationIdVectorType slave_equation_ids(0);
+                EquationIdVectorType master_equation_ids(0);
+                //get the equation Ids of the constraint
+                it->EquationIdVector(slave_equation_ids, master_equation_ids, r_current_process_info);
+
+                for (auto slave_equation_id : slave_equation_ids)
+                {
+                    mGlobalMasterSlaveConstraints.push_back(AuxiliaryGlobalMasterSlaveConstraintType::Create(slave_equation_id));
+                }
+            }
+        }
+        mGlobalMasterSlaveConstraints.Unique();
+
         for (int i_constraints = 0; i_constraints < number_of_constraints; i_constraints++)
         {
             ModelPart::MasterSlaveConstraintContainerType::iterator it = constraints_begin;
@@ -824,7 +850,6 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise
             if (constraint_is_active)
             {
                 //assemble the Constraint contribution
-                #pragma omp critical
                 AssembleConstraint(*it, r_current_process_info);
             }
         }
@@ -836,7 +861,6 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise
 
         KRATOS_CATCH("ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise::FormulateGlobalMasterSlaveRelations failed ..");
     }
-
 
     /**
      * @brief   this method assembles the given master slave constraint to the auxiliary global master slave constraints
@@ -860,13 +884,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise
         for (auto slave_equation_id : slave_equation_ids)
         {
             int master_count = 0;
-            auto global_constraint = mGlobalMasterSlaveConstraints.find(slave_equation_id);
-            if (global_constraint == mGlobalMasterSlaveConstraints.end())
-            {
-                mGlobalMasterSlaveConstraints.push_back(AuxiliaryGlobalMasterSlaveConstraintType::Create(slave_equation_id));
-            }
-
-            global_constraint = mGlobalMasterSlaveConstraints.find(slave_equation_id);
+            auto global_constraint = mGlobalMasterSlaveConstraints(slave_equation_id);
             for (auto master_equation_id : master_equation_ids)
             {
                     global_constraint->AddMaster(master_equation_id, relation_matrix(slave_count, master_count));
