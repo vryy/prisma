@@ -411,8 +411,8 @@ boost::python::list GetValuesOnIntegrationPointsMatrix( TObject& dummy,
     return( values_list );
 }
 
-template< class TDataType >
-TDataType ElementCalculateInterface(Element& dummy, Variable<TDataType>& rVariable, ProcessInfo& rCurrentProcessInfo)
+template< class TType, class TDataType >
+TDataType ElementCalculateInterface(TType& dummy, Variable<TDataType>& rVariable, ProcessInfo& rCurrentProcessInfo)
 {
     TDataType aux;
     dummy.Calculate(rVariable, aux, rCurrentProcessInfo);
@@ -548,10 +548,10 @@ void  AddMeshToPython()
     .def("SetValuesOnIntegrationPoints", SetValuesOnIntegrationPointsArray1d<Element>)
     .def("ResetConstitutiveLaw", &Element::ResetConstitutiveLaw)
 
-    .def("Calculate", &ElementCalculateInterface<double>)
-    .def("Calculate", &ElementCalculateInterface<array_1d<double,3> >)
-    .def("Calculate", &ElementCalculateInterface<Vector >)
-    .def("Calculate", &ElementCalculateInterface<Matrix >)
+    .def("Calculate", &ElementCalculateInterface<Element, double>)
+    .def("Calculate", &ElementCalculateInterface<Element, array_1d<double,3> >)
+    .def("Calculate", &ElementCalculateInterface<Element, Vector >)
+    .def("Calculate", &ElementCalculateInterface<Element, Matrix >)
 
 
 
@@ -652,6 +652,11 @@ void  AddMeshToPython()
     .def("SetValuesOnIntegrationPoints", SetValuesOnIntegrationPointsArray1d<Condition>)
 	.def("GetArea",GetAreaFromCondition)
 
+
+    .def("Calculate", &ElementCalculateInterface<Condition, double>)
+    .def("Calculate", &ElementCalculateInterface<Condition, array_1d<double,3> >)
+    .def("Calculate", &ElementCalculateInterface<Condition, Vector >)
+    .def("Calculate", &ElementCalculateInterface<Condition, Matrix >)
 
 
 //				.def(VariableIndexingPython<Condition, Variable<int> >())
