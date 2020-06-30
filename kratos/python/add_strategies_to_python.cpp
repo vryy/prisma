@@ -47,6 +47,7 @@
 //schemes
 #include "solving_strategies/schemes/scheme.h"
 #include "solving_strategies/schemes/residualbased_incrementalupdate_static_scheme.h"
+#include "solving_strategies/schemes/residualbased_incrementalupdate_static_deactivation_scheme.h"
 #include "solving_strategies/schemes/residualbased_incrementalupdate_static_scheme_slip.h"
 
 //convergence criterias
@@ -352,6 +353,12 @@ namespace Kratos
                     bases< BaseSchemeType >, boost::noncopyable >
                     (
                     "ResidualBasedIncrementalUpdateStaticScheme", init< >()
+                    );
+
+            class_< ResidualBasedIncrementalUpdateStaticDeactivationScheme< SparseSpaceType, LocalSpaceType>,
+                    bases< BaseSchemeType >, boost::noncopyable >
+                    (
+                    "ResidualBasedIncrementalUpdateStaticDeactivationScheme", init< >()
                     );
 
             class_< ResidualBasedIncrementalUpdateStaticSchemeSlip< SparseSpaceType, LocalSpaceType>,
