@@ -917,6 +917,19 @@ public:
       KRATOS_CATCH("")
      }
 
+    /**
+     * Solve a1 * x + b1 * y = c1
+     *       a2 * x + b2 * y = c2
+     */
+    static void Solve(
+        const TDataType& a1, const TDataType& b1, const TDataType& c1,
+        const TDataType& a2, const TDataType& b2, const TDataType& c2,
+        TDataType& x, TDataType& y
+    )
+    {
+        x = (c1 * b2 - c2 * b1) / (a1 * b2 - a2 * b1);
+        y = (c2 * a1 - c1 * a2) / (a1 * b2 - a2 * b1);
+    }
 
     /*@} */
     /**@name Acces */
