@@ -145,18 +145,17 @@ public:
   //          for(SizeType j = i + 1 ; j < mrDomainsGraph.size2() ; j++) // finding neighbor domains
   //              if(mrDomainsGraph(i,j) != 0.00) // domain i has interface with domain j
   // I should continue the implementation. Pooyan.
-KRATOS_WATCH(mrDomainsGraph)
         mrMaxColor = 0;
         // Initializing the coloered graph. -1 means no connection
         // TODO: I have to change this part and create this matrix using max color number
-        mrDomainsColoredGraph = ScalarMatrix(mNumberOfPartitions, 2*mNumberOfPartitions, -1.00);
+        mrDomainsColoredGraph = GraphType(mNumberOfPartitions, 2*mNumberOfPartitions, -1);
 
         // Start coloring...
         for(SizeType i = 0 ; i < mrDomainsGraph.size1() ; i++) // for each domain
-            for(SizeType j = i + 1 ; j < mrDomainsGraph.size2() ; j++) // finding neighbor domains
-                if(mrDomainsGraph(i,j) != 0.00) // domain i has interface with domain j
+            for(SizeType j = i + 1 ; j < mrDomainsGraph.size2() ; j++) // finding neighbour domains
+                if(mrDomainsGraph(i,j) != 0) // domain i has interface with domain j
                     for(SizeType color = 0 ; color < mrDomainsColoredGraph.size2() ; color++) // finding color
-                        if((mrDomainsColoredGraph(i,color) == -1.00) && (mrDomainsColoredGraph(j,color) == -1.00)) // the first unused color
+                        if((mrDomainsColoredGraph(i,color) == -1) && (mrDomainsColoredGraph(j,color) == -1)) // the first unused color
                         {
                             mrDomainsColoredGraph(i,color) = j;
                             mrDomainsColoredGraph(j,color) = i;
