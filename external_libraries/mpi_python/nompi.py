@@ -14,5 +14,7 @@ class Mpi:
         self.rank = 0
         self.world = Mpi.World()
 
-mpi = Mpi()
+    def allgather(self, comm, thislist):
+        return thislist
 
+# mpi = Mpi()

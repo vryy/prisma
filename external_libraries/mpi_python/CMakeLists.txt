@@ -26,3 +26,5 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 # Install library and Python file
 install(TARGETS mpipython DESTINATION libs )
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/mpi.py" DESTINATION KratosMultiphysics )
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/nompi.py" DESTINATION KratosMultiphysics )
+
