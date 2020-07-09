@@ -472,41 +472,61 @@ public:
 
         // extract the longest axis of the bounding volume
         std::size_t longest_axis = rBoundingVolume.GetLongestAxis();
-        const double* longest_dir = rBoundingVolume.Direction(longest_axis);
+        const double* check_dir;
+        std::size_t check_axis = longest_axis;
+        std::size_t ncheck = 0;
 
-        // compute the centroid of the geometries underlying bounding volume
-        double C[3];
-        double Median[3];
-        Median[0] = 0.0;
-        Median[1] = 0.0;
-        Median[2] = 0.0;
-        for(typename ContainerType::ptr_iterator it = rAllConditions.ptr_begin(); it != rAllConditions.ptr_end(); ++it)
+        do
         {
-            this->ComputeCentroid((*it)->GetGeometry(), C);
-            Median[0] += C[0];
-            Median[1] += C[1];
-            Median[2] += C[2];
-        }
-        Median[0] /= rAllConditions.size();
-        Median[1] /= rAllConditions.size();
-        Median[2] /= rAllConditions.size();
+            check_dir = rBoundingVolume.Direction(check_axis);
 
-        // divide each geometry in the InputSet to each of OutputSet
-        for(typename ContainerType::ptr_iterator it = rAllConditions.ptr_begin(); it != rAllConditions.ptr_end(); ++it)
-        {
-            this->ComputeCentroid((*it)->GetGeometry(), C);
-            double v = 0.0;
-            for(std::size_t j = 0; j < 3; ++j)
-                v += (C[j] - Median[j]) * longest_dir[j];
-            if(v < 0)
-                rOutputSet1.push_back(*it);
-            else
-                rOutputSet2.push_back(*it);
-        }
+            // compute the centroid of the geometries underlying bounding volume
+            double C[3];
+            double Median[3];
+            Median[0] = 0.0;
+            Median[1] = 0.0;
+            Median[2] = 0.0;
+            for(typename ContainerType::ptr_iterator it = rAllConditions.ptr_begin(); it != rAllConditions.ptr_end(); ++it)
+            {
+                this->ComputeCentroid((*it)->GetGeometry(), C);
+                Median[0] += C[0];
+                Median[1] += C[1];
+                Median[2] += C[2];
+            }
+            Median[0] /= rAllConditions.size();
+            Median[1] /= rAllConditions.size();
+            Median[2] /= rAllConditions.size();
 
-        // make a size check
-        if(rOutputSet1.size() == 0 || rOutputSet2.size() == 0)
-            KRATOS_THROW_ERROR(std::logic_error, "The partitioning is wrong. One set of output cannot be empty", "")
+            // divide each geometry in the InputSet to each of OutputSet
+            for(typename ContainerType::ptr_iterator it = rAllConditions.ptr_begin(); it != rAllConditions.ptr_end(); ++it)
+            {
+                this->ComputeCentroid((*it)->GetGeometry(), C);
+                double v = 0.0;
+                for(std::size_t j = 0; j < 3; ++j)
+                    v += (C[j] - Median[j]) * check_dir[j];
+                if(v < 0)
+                    rOutputSet1.push_back(*it);
+                else
+                    rOutputSet2.push_back(*it);
+            }
+
+            // make a size check
+            if(rOutputSet1.size() == 0 || rOutputSet2.size() == 0)
+            // that can fail if the medians of the cell are aligned on the perpendicular axis to the checking axis
+            {
+                ++ncheck;
+                // take a new axis and perform partitioning again
+                ++check_axis;
+                if (check_axis >= rBoundingVolume.NumberOfDirections())
+                    check_axis = 0;
+                rOutputSet1.clear();
+                rOutputSet2.clear();
+            }
+
+            return; // return on success
+        } while (ncheck < rBoundingVolume.NumberOfDirections());
+
+        KRATOS_THROW_ERROR(std::logic_error, "The simple partitioning strategy does not work. That can't happen but if it does, the medians are possibly coincident.", "")
     }
 };
 
