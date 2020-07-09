@@ -211,6 +211,9 @@ public:
     /// Get the i'th-direction
     const double (&Direction(std::size_t i) const)[3] {return Direction()[i];}
 
+    /// Get the i'th-direction Normalized
+    const double (&DirectionNormalized(std::size_t i) const)[3] {return DirectionNormalized()[i];}
+
     /// Get the type of this k-DOP
     std::size_t GetType() const {return 2 * NumberOfDirections();}
 
@@ -259,10 +262,12 @@ private:
     std::vector<double> mMinValues;
     std::vector<double> mMaxValues;
     static const double msDirection[][3];
+    static const double msDirectionNormalized[][3];
     virtual const double (*Direction() const)[3];
+    virtual const double (*DirectionNormalized() const)[3];
     double NormalCoordinate(int i, const double& rX, const double& rY, const double& rZ) const
     {
-        return rX * Direction()[i][0] + rY * Direction()[i][1] + rZ * Direction()[i][2];
+        return rX * DirectionNormalized()[i][0] + rY * DirectionNormalized()[i][1] + rZ * DirectionNormalized()[i][2];
     }
 };
 
@@ -283,7 +288,9 @@ public:
 
 private:
     static const double msDirection[][3];
+    static const double msDirectionNormalized[][3];
     virtual const double (*Direction() const)[3];
+    virtual const double (*DirectionNormalized() const)[3];
 };
 
 class _8DOP : public kDOP
@@ -295,7 +302,9 @@ public:
     virtual std::size_t NumberOfDirections() const {return 4;}
 private:
     static const double msDirection[][3];
+    static const double msDirectionNormalized[][3];
     virtual const double (*Direction() const)[3];
+    virtual const double (*DirectionNormalized() const)[3];
 };
 
 class _12DOP : public kDOP
@@ -307,7 +316,9 @@ public:
     virtual std::size_t NumberOfDirections() const {return 6;}
 private:
     static const double msDirection[][3];
+    static const double msDirectionNormalized[][3];
     virtual const double (*Direction() const)[3];
+    virtual const double (*DirectionNormalized() const)[3];
 };
 
 class _14DOP : public kDOP
@@ -319,7 +330,9 @@ public:
     virtual std::size_t NumberOfDirections() const {return 7;}
 private:
     static const double msDirection[][3];
+    static const double msDirectionNormalized[][3];
     virtual const double (*Direction() const)[3];
+    virtual const double (*DirectionNormalized() const)[3];
 };
 
 class _18DOP : public kDOP
@@ -331,7 +344,9 @@ public:
     virtual std::size_t NumberOfDirections() const {return 9;}
 private:
     static const double msDirection[][3];
+    static const double msDirectionNormalized[][3];
     virtual const double (*Direction() const)[3];
+    virtual const double (*DirectionNormalized() const)[3];
 };
 
 class _20DOP : public kDOP
@@ -343,7 +358,9 @@ public:
     virtual std::size_t NumberOfDirections() const {return 10;}
 private:
     static const double msDirection[][3];
+    static const double msDirectionNormalized[][3];
     virtual const double (*Direction() const)[3];
+    virtual const double (*DirectionNormalized() const)[3];
 };
 
 class _26DOP : public kDOP
@@ -355,7 +372,9 @@ public:
     virtual std::size_t NumberOfDirections() const {return 13;}
 private:
     static const double msDirection[][3];
+    static const double msDirectionNormalized[][3];
     virtual const double (*Direction() const)[3];
+    virtual const double (*DirectionNormalized() const)[3];
 };
 
 
