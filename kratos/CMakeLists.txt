@@ -1,5 +1,7 @@
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+#include cotire (CMake module to hep generating precompiled header to speed-up the build process)
+include(cotire)
 
 # ## add the include directories needed for the compilation
 # message("current dir = " ${CMAKE_CURRENT_SOURCE_DIR})
@@ -104,6 +106,7 @@ set( KRATOS_PYTHON_SOURCES
 add_library(KratosCore SHARED ${KRATOS_CORE_SOURCES})
 #target_link_libraries(KratosCore ${Boost_PYTHON_LIBRARIES} ${PYTHON_LIBRARIES} gidpost )
 target_link_libraries(KratosCore ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${PYTHON_LIBRARIES} gidpost )
+cotire(KratosCore)
 
 if(${ADOLC_IS_AVAILABLE} MATCHES ON)
     target_link_libraries(KratosCore ${ADOL_C_LIBRARIES} )
