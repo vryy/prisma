@@ -139,6 +139,11 @@ Condition::GeometryType::Pointer GetGeometryFromCondition( Condition& dummy )
     return dummy.pGetGeometry();
 }
 
+int GetIntegrationMethodFromElement( Element& dummy )
+{
+    return dummy.GetIntegrationMethod();
+}
+
 boost::python::list GetIntegrationPointsFromElement( Element& dummy )
 {
     boost::python::list integration_points_list;
@@ -530,6 +535,7 @@ void  AddMeshToPython()
     .def("GetNode", GetNodeFromElement )
     .def("GetNodes", GetNodesFromElement )
     .def("GetGeometry", GetGeometryFromElement )
+    .def("GetIntegrationMethod", GetIntegrationMethodFromElement )
     .def("GetIntegrationPoints", GetIntegrationPointsFromElement )
     .def("GetIntegrationPointsInReferenceFrame", GetIntegrationPointsFromElementInReferenceFrame )
     .def("CalculateOnIntegrationPoints", CalculateOnIntegrationPointsVector)
