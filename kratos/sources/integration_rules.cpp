@@ -923,6 +923,42 @@ QuadrilateralGaussLobattoIntegrationPoints4::msIntegrationPoints =
     }
 };
 
+QuadrilateralGaussLobattoIntegrationPoints5::IntegrationPointsArrayType
+QuadrilateralGaussLobattoIntegrationPoints5::msIntegrationPoints =
+{
+    {
+        IntegrationPointType(-1.00, -1.00, 1.00 / 10.00 * 1.00 / 10.00),
+        IntegrationPointType(-std::sqrt(21.00) / 7.00, -1.00, 49.00 / 90.00 * 1.00 / 10.00),
+        IntegrationPointType( 0.00, -1.00, 32.00 / 45.00 * 1.00 / 10.00),
+        IntegrationPointType( std::sqrt(21.00) / 7.00, -1.00, 49.00 / 90.00 * 1.00 / 10.00),
+        IntegrationPointType( 1.00, -1.00, 1.00 / 10.00 * 1.00 / 10.00),
+
+        IntegrationPointType(-1.00, -std::sqrt(21.00) / 7.00, 1.00 / 10.00 * 49.00 / 90.00),
+        IntegrationPointType(-std::sqrt(21.00) / 7.00, -std::sqrt(21.00) / 7.00, 49.00 / 90.00 * 49.00 / 90.00),
+        IntegrationPointType( 0.00, -std::sqrt(21.00) / 7.00, 32.00 / 45.00 * 49.00 / 90.00),
+        IntegrationPointType( std::sqrt(21.00) / 7.00, -std::sqrt(21.00) / 7.00, 49.00 / 90.00 * 49.00 / 90.00),
+        IntegrationPointType( 1.00, -std::sqrt(21.00) / 7.00, 1.00 / 10.00 * 49.00 / 90.00),
+
+        IntegrationPointType(-1.00, 0.00, 1.00 / 10.00 * 32.00 / 45.00),
+        IntegrationPointType(-std::sqrt(21.00) / 7.00, 0.00, 49.00 / 90.00 * 32.00 / 45.00),
+        IntegrationPointType( 0.00, 0.00, 32.00 / 45.00 * 32.00 / 45.00),
+        IntegrationPointType( std::sqrt(21.00) / 7.00, 0.00, 49.00 / 90.00 * 32.00 / 45.00),
+        IntegrationPointType( 1.00, 0.00, 1.00 / 10.00 * 32.00 / 45.00),
+
+        IntegrationPointType(-1.00, std::sqrt(21.00) / 7.00, 1.00 / 10.00 * 49.00 / 90.00),
+        IntegrationPointType(-std::sqrt(21.00) / 7.00, std::sqrt(21.00) / 7.00, 49.00 / 90.00 * 49.00 / 90.00),
+        IntegrationPointType( 0.00, std::sqrt(21.00) / 7.00, 32.00 / 45.00 * 49.00 / 90.00),
+        IntegrationPointType( std::sqrt(21.00) / 7.00, std::sqrt(21.00) / 7.00, 49.00 / 90.00 * 49.00 / 90.00),
+        IntegrationPointType( 1.00, std::sqrt(21.00) / 7.00, 1.00 / 10.00 * 49.00 / 90.00),
+
+        IntegrationPointType(-1.00, 1.00, 1.00 / 10.00 * 1.00 / 10.00),
+        IntegrationPointType(-std::sqrt(21.00) / 7.00, 1.00, 49.00 / 90.00 * 1.00 / 10.00),
+        IntegrationPointType( 0.00, 1.00, 32.00 / 45.00 * 1.00 / 10.00),
+        IntegrationPointType( std::sqrt(21.00) / 7.00, 1.00, 49.00 / 90.00 * 1.00 / 10.00),
+        IntegrationPointType( 1.00, 1.00, 1.00 / 10.00 * 1.00 / 10.00)
+    }
+};
+
 //TETRAHEDRON:
 
 //Gauss-Legendre
