@@ -370,10 +370,19 @@ public:
             InternalSystemSolveWithPhysics(A, Dxmodified, b, rModelPart);
 
             //recover solution of the original problem
-            double start_recover = OpenMPUtils::GetCurrentTime();
-            TSparseSpace::Mult(mT, Dxmodified, Dx);
-            double stop_recover = OpenMPUtils::GetCurrentTime();
-            std::cout << "Recover back the system time: " << stop_recover - start_recover << "s" << std::endl;
+            if (mMasterIds.size() != mT.size1())
+            {
+                double start_recover = OpenMPUtils::GetCurrentTime();
+                TSparseSpace::Mult(mT, Dxmodified, Dx);
+                double stop_recover = OpenMPUtils::GetCurrentTime();
+                KRATOS_WATCH(norm_2(Dx))
+                std::cout << "Recover back the system time: " << stop_recover - start_recover << "s" << std::endl;
+            }
+            else
+            {
+                TSparseSpace::Copy(Dxmodified, Dx);
+                KRATOS_WATCH(norm_2(Dx))
+            }
         } else {
             InternalSystemSolveWithPhysics(A, Dx, b, rModelPart);
         }
@@ -456,7 +465,11 @@ public:
 
         if(rModelPart.MasterSlaveConstraints().size() != 0) {
             Timer::Start("ApplyConstraints");
-            ApplyConstraints(pScheme,A,Dx,b,rModelPart);
+            KRATOS_WATCH(mMasterIds.size())
+            KRATOS_WATCH(mT.size1())
+            KRATOS_WATCH(mT.size2())
+            if (mMasterIds.size() != mT.size1())
+                ApplyConstraints(pScheme,A,Dx,b,rModelPart);
             Timer::Stop("ApplyConstraints");
         }
 
@@ -1589,6 +1602,9 @@ private:
 
     inline void AssembleRowContribution(TSystemMatrixType& A, const Matrix& Alocal, const unsigned int i, const unsigned int i_local, Element::EquationIdVectorType& EquationId)
     {
+        if (EquationId.size() == 0)
+            return;
+
         double* values_vector = A.value_data().begin();
         std::size_t* index1_vector = A.index1_data().begin();
         std::size_t* index2_vector = A.index2_data().begin();

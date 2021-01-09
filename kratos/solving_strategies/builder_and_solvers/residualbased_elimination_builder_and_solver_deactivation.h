@@ -514,7 +514,7 @@ public:
         //create a partition of the element array
         int number_of_threads = omp_get_max_threads();
 
-        vector<unsigned int> element_partition;
+        boost::numeric::ublas::vector<unsigned int> element_partition;
         OpenMPUtils::CreatePartition(number_of_threads, pElements.size(), element_partition);
         KRATOS_WATCH( number_of_threads );
         KRATOS_WATCH( element_partition );
@@ -565,9 +565,23 @@ public:
                         KRATOS_WATCH(LHS_Contribution)
                         KRATOS_WATCH(RHS_Contribution)
                         std::cout << "type of element: " << typeid(*(*it)).name() << std::endl;
+                        std::cout << "element Properties " << (*it)->GetProperties().Id() << ": " << (*it)->GetProperties() << std::endl;
                         KRATOS_THROW_ERROR(std::logic_error, "NaN is detected at element", (*it)->Id())
                     }
                     #endif
+
+                    // for (int i = 0; i < EquationId.size(); ++i)
+                    // {
+                    //     if (EquationId[i] == 0)
+                    //     {
+                    //         std::cout << "Element " << (*it)->Id() << " contributes " << RHS_Contribution(i) << " to row " << EquationId[i] << std::endl;
+                    //         std::cout << "EquationId:";
+                    //         for (int i = 0; i < EquationId.size(); ++i)
+                    //             std::cout << " " << EquationId[i];
+                    //         std::cout << std::endl;
+                    //         break;
+                    //     }
+                    // }
 
 //                    KRATOS_WATCH(LHS_Contribution);
 //                    KRATOS_WATCH(RHS_Contribution);
@@ -620,7 +634,7 @@ public:
         }
         std::cout << "Element assembly completed" << std::endl;
 
-        vector<unsigned int> condition_partition;
+        boost::numeric::ublas::vector<unsigned int> condition_partition;
         OpenMPUtils::CreatePartition(number_of_threads, ConditionsArray.size(), condition_partition);
         KRATOS_WATCH( condition_partition );
 
@@ -658,9 +672,23 @@ public:
                         KRATOS_WATCH(norm_cond_k)
                         KRATOS_WATCH(norm_cond_r)
                         std::cout << "type of condition: " << typeid(*(*it)).name() << std::endl;
+                        std::cout << "condition Properties " << (*it)->GetProperties().Id() << ": " << (*it)->GetProperties() << std::endl;
                         KRATOS_THROW_ERROR(std::logic_error, "NaN is detected at condition", (*it)->Id())
                     }
                     #endif
+
+                    // for (int i = 0; i < EquationId.size(); ++i)
+                    // {
+                    //     if (EquationId[i] == 0)
+                    //     {
+                    //         std::cout << "Condition " << (*it)->Id() << " contributes " << RHS_Contribution(i) << " to row " << EquationId[i] << std::endl;
+                    //         std::cout << "EquationId:";
+                    //         for (int i = 0; i < EquationId.size(); ++i)
+                    //             std::cout << " " << EquationId[i];
+                    //         std::cout << std::endl;
+                    //         break;
+                    //     }
+                    // }
 
                     #if defined(ENABLE_LOG) && defined(QUERY_EQUATION_ID_AT_BUILD)
                     std::stringstream ss;
@@ -1214,7 +1242,7 @@ public:
             }
         #else
             int number_of_threads = omp_get_max_threads();
-            vector<unsigned int> element_partition;
+            boost::numeric::ublas::vector<unsigned int> element_partition;
             OpenMPUtils::CreatePartition(number_of_threads, pElements.size(), element_partition);
             KRATOS_WATCH( number_of_threads );
 
@@ -1750,7 +1778,7 @@ protected:
 
         if(CurrentProcessInfo.Has(SYSTEM_PERMUTATION_VECTOR))
         {
-            vector<int> PermutedSystemIds = CurrentProcessInfo[SYSTEM_PERMUTATION_VECTOR];
+            boost::numeric::ublas::vector<int> PermutedSystemIds = CurrentProcessInfo[SYSTEM_PERMUTATION_VECTOR];
             for (typename DofsArrayType::iterator dof_iterator = BaseType::mDofSet.begin(); dof_iterator != BaseType::mDofSet.end(); ++dof_iterator)
             {
                 int id = dof_iterator->EquationId();
@@ -1817,7 +1845,7 @@ protected:
         }
 #else
         int number_of_threads = omp_get_max_threads();
-        vector<unsigned int> matrix_partition;
+        boost::numeric::ublas::vector<unsigned int> matrix_partition;
         OpenMPUtils::CreatePartition(number_of_threads, indices.size(), matrix_partition);
         KRATOS_WATCH( matrix_partition );
         for(int k = 0; k < number_of_threads; ++k)
