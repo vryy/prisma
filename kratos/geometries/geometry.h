@@ -302,12 +302,12 @@ public:
     /// Destructor. Do nothing!!!
     virtual ~Geometry() {}
 
-    virtual GeometryData::KratosGeometryFamily GetGeometryFamily()
+    virtual GeometryData::KratosGeometryFamily GetGeometryFamily() const
     {
         return GeometryData::Kratos_generic_family;
     }
 
-    virtual GeometryData::KratosGeometryType GetGeometryType()
+    virtual GeometryData::KratosGeometryType GetGeometryType() const
     {
         return GeometryData::Kratos_generic_type;
     }
