@@ -202,7 +202,7 @@ boost::python::list GetValuesOnIntegrationPointsDouble( TObject& dummy,
     IntegrationPointsArrayType integration_points = dummy.GetGeometry().IntegrationPoints(
                 dummy.GetIntegrationMethod() );
     std::vector<double> values( integration_points.size() );
-    dummy.CalculateOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
+    dummy.GetValueOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
     for( unsigned int i=0; i<values.size(); i++ )
     {
         boost::python::list integration_point_value;
@@ -294,7 +294,7 @@ boost::python::list GetValuesOnIntegrationPointsArray1d( TObject& dummy,
     IntegrationPointsArrayType integration_points = dummy.GetGeometry().IntegrationPoints(
                 dummy.GetIntegrationMethod() );
     std::vector<array_1d<double,3> > values( integration_points.size() );
-    dummy.CalculateOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
+    dummy.GetValueOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
     for( unsigned int i=0; i<values.size(); i++ )
     {
         boost::python::list integration_point_value;
@@ -332,7 +332,7 @@ boost::python::list GetValuesOnIntegrationPointsVector( TObject& dummy,
     IntegrationPointsArrayType integration_points = dummy.GetGeometry().IntegrationPoints(
                 dummy.GetIntegrationMethod() );
     std::vector<Vector> values( integration_points.size() );
-    dummy.CalculateOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
+    dummy.GetValueOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
     for( unsigned int i=0; i<values.size(); i++ )
     {
         boost::python::list integration_point_value;
@@ -404,7 +404,7 @@ boost::python::list GetValuesOnIntegrationPointsMatrix( TObject& dummy,
     IntegrationPointsArrayType integration_points = dummy.GetGeometry().IntegrationPoints(
                 dummy.GetIntegrationMethod() );
     std::vector<Matrix> values( integration_points.size() );
-    dummy.CalculateOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
+    dummy.GetValueOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
     for( unsigned int i=0; i<values.size(); i++ )
     {
         boost::python::list integration_point_value;
