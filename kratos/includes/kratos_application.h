@@ -35,6 +35,7 @@
 #include "includes/condition.h"
 #include "includes/periodic_condition.h"
 #include "includes/master_slave_constraint.h"
+#include "includes/linear_constraint.h"
 #include "includes/linear_master_slave_constraint.h"
 
 namespace Kratos
@@ -99,7 +100,7 @@ public:
 
 
     void RegisterVariables();
-    
+
     ///////////////////////////////////////////////////////////////////
     void RegisterDeprecatedVariables(); //TODO: remove, this variables should not be there
     void RegisterC2CVariables(); //TODO: move to application
@@ -363,6 +364,7 @@ protected:
 
     // Master-Slave base constraint
     const MasterSlaveConstraint mMasterSlaveConstraint;
+    const LinearConstraint mLinearConstraint;
     const LinearMasterSlaveConstraint mLinearMasterSlaveConstraint;
 
     // Periodic Condition
@@ -603,7 +605,7 @@ inline std::ostream& operator << (std::ostream& rOStream,
 
 
 
-#endif // KRATOS_KRATOS_APPLICATION_H_INCLUDED  defined 
+#endif // KRATOS_KRATOS_APPLICATION_H_INCLUDED  defined
 
 
 
