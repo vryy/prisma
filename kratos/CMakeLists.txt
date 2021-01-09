@@ -33,7 +33,6 @@ set( KRATOS_CORE_SOURCES
 	# ${CMAKE_CURRENT_SOURCE_DIR}/processes/calculate_signed_distance_to_3d_skin_process.cpp;
 	${CMAKE_CURRENT_SOURCE_DIR}/sources/io.cpp;
 	${CMAKE_CURRENT_SOURCE_DIR}/sources/model_part.cpp;
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/linear_master_slave_constraint.cpp;
 	${CMAKE_CURRENT_SOURCE_DIR}/utilities/logger.cpp;
 	${CMAKE_CURRENT_SOURCE_DIR}/utilities/constraint_utilities.cpp;
 	${CMAKE_CURRENT_SOURCE_DIR}/sources/kratos_exception.cpp;

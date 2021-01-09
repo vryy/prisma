@@ -397,7 +397,38 @@ public:
      * @brief This method directly applies the master/slave relationship
      * @param rCurrentProcessInfo the current process info instance
      */
-    void Apply(const ProcessInfo& rCurrentProcessInfo) override;
+    void Apply(const ProcessInfo& rCurrentProcessInfo) override
+    {
+        // Saving the master dofs values
+        Vector master_dofs_values(mMasterDofsVector.size());
+
+        for (IndexType i = 0; i < mMasterDofsVector.size(); ++i) {
+            master_dofs_values[i] = mMasterDofsVector[i]->GetSolutionStepValue();
+        }
+
+        // std::cout << "master dofs:";
+        // for (IndexType i = 0; i < mMasterDofsVector.size(); ++i)
+        //     std::cout << " (" << mMasterDofsVector[i]->Id() << ", " << mMasterDofsVector[i]->GetVariable().Name()
+        //           << ", " << mMasterDofsVector[i]->GetSolutionStepValue() << ")";
+        // std::cout << std::endl;
+
+        // Apply the constraint to the slave dofs
+        for (IndexType i = 0; i < mRelationMatrix.size1(); ++i) {
+            double aux = mConstantVector[i];
+            for(IndexType j = 0; j < mRelationMatrix.size2(); ++j) {
+                aux += mRelationMatrix(i,j) * master_dofs_values[j];
+            }
+
+            #pragma omp atomic
+            mSlaveDofsVector[i]->GetSolutionStepValue() += aux;
+        }
+
+        // std::cout << "slave dofs:";
+        // for (IndexType i = 0; i < mSlaveDofsVector.size(); ++i)
+        // std::cout << " (" << mSlaveDofsVector[i]->Id() << ", " << mSlaveDofsVector[i]->GetVariable().Name()
+        //           << ", " << mSlaveDofsVector[i]->GetSolutionStepValue() << ")";
+        // std::cout << std::endl;
+    }
 
     /**
      * @brief This is called during the assembling process in order
