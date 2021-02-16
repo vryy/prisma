@@ -54,9 +54,13 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 /* External includes */
+#include <boost/numeric/ublas/vector.hpp>
+#include <boost/numeric/ublas/matrix.hpp>
 
 
 /* Project includes */
+#include "includes/define.h"
+#include "containers/array_1d.h"
 
 
 namespace Kratos
@@ -307,7 +311,7 @@ public:
     /** performs the dot product of two vectors of dimension 3
         (no check performed on vector sizes)*/
     //***********************************************************************
-    static inline TDataType Dot3(Vector& a, Vector& b)
+    static inline TDataType Dot3(VectorType& a, VectorType& b)
     {
         return (a[0]*b[0] + a[1]*b[1] + a[2]*b[2]);
     }
@@ -316,10 +320,10 @@ public:
     /** performs the dot product of two vectors of arbitrary size
         (no check performed on vector sizes)*/
     //***********************************************************************
-    static inline TDataType Dot(const Vector& FirstVector, const Vector& SecondVector)
+    static inline TDataType Dot(const VectorType& FirstVector, const VectorType& SecondVector)
     {
-        Vector::const_iterator i = FirstVector.begin();
-        Vector::const_iterator j = SecondVector.begin();
+        typename VectorType::const_iterator i = FirstVector.begin();
+        typename VectorType::const_iterator j = SecondVector.begin();
         TDataType temp = TDataType();
         while(i != FirstVector.end())
             temp += *i++ * *j++;
@@ -333,7 +337,7 @@ public:
         (no check is performed on the vector's size)
             */
     //***********************************************************************
-    static inline TDataType Norm3(Vector& a)
+    static inline TDataType Norm3(VectorType& a)
     {
         TDataType temp = pow(a[0],2) + pow(a[1],2) + pow(a[2],2);
         temp = sqrt(temp);
@@ -353,9 +357,9 @@ public:
             */
     //***********************************************************************
 
-    static inline TDataType Norm(const Vector& a)
+    static inline TDataType Norm(const VectorType& a)
     {
-        Vector::const_iterator i = a.begin();
+        typename VectorType::const_iterator i = a.begin();
         TDataType temp = TDataType();
         while(i != a.end())
         {
@@ -371,9 +375,9 @@ public:
         a,b are assumed to be of size 3 (no check is performed on vector sizes)
             */
     //***********************************************************************
-    static inline Vector CrossProduct(Vector& a, Vector& b)
+    static inline VectorType CrossProduct(VectorType& a, VectorType& b)
     {
-        Vector c(3);
+        VectorType c(3);
 
         c[0] = a[1]*b[2] - a[2]*b[1];
         c[1] = a[2]*b[0] - a[0]*b[2];
@@ -393,6 +397,23 @@ public:
         const TDataType length = std::sqrt(inner_prod(c, c));
         c = (1.00/length) * c;
         return c;
+    }
+
+    /**
+     * @brief Performs the unitary cross product of the two input vectors a,b
+     * @details a,b are assumed to be of size 3 (no check is performed on vector sizes)
+     * @param a First input vector
+     * @param b Second input vector
+     * @param c The resulting vector
+     */
+    template< class T1, class T2 , class T3>
+    static inline void UnitCrossProduct(T1& c, const T2& a, const T3& b )
+    {
+        c[0] = a[1]*b[2] - a[2]*b[1];
+        c[1] = a[2]*b[0] - a[0]*b[2];
+        c[2] = a[0]*b[1] - a[1]*b[0];
+        const double norm = norm_2(c);
+        c/=norm;
     }
 
     static inline array_1d<TDataType, 3> CrossProduct(const array_1d<TDataType, 3>& a, const array_1d<TDataType, 3>& b)
@@ -422,7 +443,7 @@ public:
         a,b are assumed to be of order 3, no check is performed on the size of the vectors
              */
     //***********************************************************************
-    static inline MatrixType TensorProduct3(Vector& a, Vector& b)
+    static inline MatrixType TensorProduct3(VectorType& a, VectorType& b)
     {
         MatrixType A(3,3);
         A(0,0)=a[0]*b[0];
@@ -502,7 +523,7 @@ public:
 
     //***********************************************************************
     //***********************************************************************
-    //performs the Kroneker product of the Reduced Matrix with the identity matrix of
+    //performs the Kroneker product of the Reduced MatrixType with the identity matrix of
     //size "dimension"
     static inline void  ExpandReducedMatrix(
         MatrixType& Destination,
@@ -526,7 +547,7 @@ public:
     }
     //***********************************************************************
     //***********************************************************************
-    //performs the Kroneker product of the Reduced Matrix with the identity matrix of
+    //performs the Kroneker product of the Reduced MatrixType with the identity matrix of
     //size "dimension" ADDING to the destination matrix
     static inline void  ExpandAndAddReducedMatrix(
         MatrixType& Destination,
@@ -554,9 +575,9 @@ public:
              */
     //***********************************************************************
     static inline void  VecAdd(
-        Vector& x,
+        VectorType& x,
         TDataType coeff,
-        Vector& y)
+        VectorType& y)
     {
         KRATOS_TRY
         unsigned int size=x.size();
@@ -580,10 +601,10 @@ public:
      * @param rStressVector the given stress vector
      * @return the corresponding stress tensor in matrix form
      */
-    static inline MatrixType StressVectorToTensor(const Vector& rStressVector)
+    static inline MatrixType StressVectorToTensor(const VectorType& rStressVector)
     {
       KRATOS_TRY
-      Matrix StressTensor;
+      MatrixType StressTensor;
 
       if (rStressVector.size()==3)
         {
@@ -638,10 +659,10 @@ public:
      * @param rVector the given stress vector
      * @return the corresponding Tensor in matrix form
      */
-    static inline MatrixType VectorToSymmetricTensor(const Vector& rVector)
+    static inline MatrixType VectorToSymmetricTensor(const VectorType& rVector)
     {
       KRATOS_TRY
-      Matrix Tensor;
+      MatrixType Tensor;
 
       if (rVector.size()==3)
         {
@@ -710,7 +731,7 @@ public:
     static inline MatrixType StrainVectorToTensor( const VectorType& rStrainVector)
     {
       KRATOS_TRY
-      Matrix StrainTensor;
+      MatrixType StrainTensor;
 
       if (rStrainVector.size()==3)
         {
@@ -754,21 +775,21 @@ public:
 
     /**
     * Transforms a given symmetric Strain Tensor to Voigt Notation:
-    * in the 3D case: from a second order tensor (3*3) Matrix  to a corresponing (6*1) Vector
+    * in the 3D case: from a second order tensor (3*3) MatrixType  to a corresponing (6*1) VectorType
     * \f$ [ e11, e22, e33, 2*e12, 2*e23, 2*e13 ] \f$ for 3D case and
-    * in the 2D case: from a second order tensor (3*3) Matrix  to a corresponing (4*1) Vector
+    * in the 2D case: from a second order tensor (3*3) MatrixType  to a corresponing (4*1) VectorType
     * \f$ [ e11, e22, e33, 2*e12 ] \f$ fir 2D case.
-    * in the 2D case: from a second order tensor (2*2) Matrix  to a corresponing (3*1) Vector
+    * in the 2D case: from a second order tensor (2*2) MatrixType  to a corresponing (3*1) VectorType
     * \f$ [ e11, e22, 2*e12 ] \f$ fir 2D case.
     * @param rStrainTensor the given symmetric second order strain tensor
     * @return the corresponding strain tensor in vector form
     */
 
-    static inline Vector StrainTensorToVector( const Matrix& rStrainTensor, unsigned int rSize = 0 )
+    static inline VectorType StrainTensorToVector( const MatrixType& rStrainTensor, unsigned int rSize = 0 )
     {
       KRATOS_TRY
 
-      Vector StrainVector;
+      VectorType StrainVector;
 
      if(rSize == 0){
 	if(rStrainTensor.size1() == 2)
@@ -811,18 +832,18 @@ public:
 
     /**
     * Transforms a given symmetric Stress Tensor to Voigt Notation:
-    * in the 3D case: from a second order tensor (3*3) Matrix  to a corresponing (6*1) Vector
-    * in the 3D case: from a second order tensor (3*3) Matrix  to a corresponing (4*1) Vector
-    * in the 2D case: from a second order tensor (2*2) Matrix  to a corresponing (3*1) Vector
+    * in the 3D case: from a second order tensor (3*3) MatrixType  to a corresponing (6*1) VectorType
+    * in the 3D case: from a second order tensor (3*3) MatrixType  to a corresponing (4*1) VectorType
+    * in the 2D case: from a second order tensor (2*2) MatrixType  to a corresponing (3*1) VectorType
     * @param rStressTensor the given symmetric second order stress tensor
     * @return the corresponding stress tensor in vector form
     */
-    static inline Vector StressTensorToVector(const Matrix& rStressTensor, unsigned int rSize = 0)
+    static inline VectorType StressTensorToVector(const MatrixType& rStressTensor, unsigned int rSize = 0)
     {
 
       KRATOS_TRY
 
-      Vector StressVector;
+      VectorType StressVector;
       
       if(rSize == 0){
 	if(rStressTensor.size1() == 2)
@@ -866,18 +887,18 @@ public:
 
     /**
     * Transforms a given symmetric Tensor to Voigt Notation:
-    * in the 3D case: from a second order tensor (3*3) Matrix  to a corresponing (6*1) Vector
-    * in the 3D case: from a second order tensor (3*3) Matrix  to a corresponing (4*1) Vector
-    * in the 2D case: from a second order tensor (2*2) Matrix  to a corresponing (3*1) Vector
+    * in the 3D case: from a second order tensor (3*3) MatrixType  to a corresponing (6*1) VectorType
+    * in the 3D case: from a second order tensor (3*3) MatrixType  to a corresponing (4*1) VectorType
+    * in the 2D case: from a second order tensor (2*2) MatrixType  to a corresponing (3*1) VectorType
     * @param rStressTensor the given symmetric second order stress tensor
     * @return the corresponding stress tensor in vector form
     */
-    static inline Vector SymmetricTensorToVector(const Matrix& rTensor, unsigned int rSize = 0)
+    static inline VectorType SymmetricTensorToVector(const MatrixType& rTensor, unsigned int rSize = 0)
     {
 
       KRATOS_TRY
 
-      Vector vector;
+      VectorType vector;
       
       if(rSize == 0){
 	if(rTensor.size1() == 2)

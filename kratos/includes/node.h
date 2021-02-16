@@ -826,7 +826,7 @@ public:
         pAddDof(rDofVariable)->FreeDof();
     }
 
-    IndexType GetBufferSize()
+    IndexType GetBufferSize() const
     {
         return mSolutionStepsNodalData.QueueSize();
     }
@@ -894,6 +894,11 @@ public:
         return mSolutionStepsNodalData.pGetVariablesList();
     }
 
+    const VariablesList * pGetVariablesList() const
+    {
+        return mSolutionStepsNodalData.pGetVariablesList();
+    }
+
 
     /// TODO: remove this function when removing data_file_io object.
 //        IndexType& DepricatedIdAccess()
@@ -907,10 +912,29 @@ public:
 
     //advanced functions by Riccardo
     template<class TVariableType>
-    inline unsigned int GetDofPosition(TVariableType const& rDofVariable)
+    inline unsigned int GetDofPosition(TVariableType const& rDofVariable) const
     {
         typename DofsContainerType::iterator it=mDofs.find(rDofVariable.Key());
         return it - mDofs.begin();
+    }
+
+    template<class TVariableType>
+    inline const DofType& GetDof(TVariableType const& rDofVariable, int pos) const
+    {
+        typename DofsContainerType::const_iterator it_begin=mDofs.begin();
+        typename DofsContainerType::const_iterator it_end=mDofs.end();
+        typename DofsContainerType::const_iterator it;
+        //if the guess is exact return the guess
+        if(pos < it_end-it_begin)
+        {
+            it = it_begin + pos;
+            if( (it)->GetVariable() == rDofVariable)
+                return *it;
+        }
+
+        //otherwise do a find
+        it = mDofs.find(rDofVariable.Key());
+        return *(it);
     }
 
     template<class TVariableType>
@@ -930,6 +954,20 @@ public:
         //otherwise do a find
         it = mDofs.find(rDofVariable.Key());
         return *(it);
+    }
+
+    /** retuns the Dof asociated with variable  */
+    template<class TVariableType>
+    inline const DofType& GetDof(TVariableType const& rDofVariable) const
+    {
+        typename DofsContainerType::const_iterator it=mDofs.find(rDofVariable.Key());
+        if ( it!= mDofs.end() )
+            return *it;
+
+        std::stringstream buffer;
+        buffer << "Not existant DOF in node #" << Id() << " for variable : " << rDofVariable.Name();
+        KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+
     }
 
     /** retuns the Dof asociated with variable  */
@@ -959,6 +997,56 @@ public:
         typename DofsContainerType::iterator it=mDofs.find(rDofVariable.Key());
         if ( it!= mDofs.end() )
             return *(it.base());
+
+        std::stringstream buffer;
+        buffer << "Not existant DOF in node #" << Id() << " for variable : " << rDofVariable.Name();
+        KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+
+    }
+
+    /** retuns a counted pointer to the Dof asociated with variable  */
+    template<class TVariableType>
+    inline const typename DofType::Pointer pGetDof(TVariableType const& rDofVariable) const
+    {
+        typename DofsContainerType::const_iterator it=mDofs.find(rDofVariable.Key());
+        if ( it!= mDofs.end() )
+            return *(it.base());
+
+        std::stringstream buffer;
+        buffer << "Not existant DOF in node #" << Id() << " for variable : " << rDofVariable.Name();
+        KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+
+    }
+
+    /**
+     * @brief Get DoF counted pointer with a given position. If not found it is search
+     * @param rDofVariable Name of the variable
+     * @param Position Position of the DoF
+     * @tparam TVariableType The variable type template argument
+     * @return The DoF associated to the given variable
+     */
+    template<class TVariableType>
+    inline const typename DofType::Pointer pGetDof(
+        TVariableType const& rDofVariable,
+        int Position
+        ) const
+    {
+        const auto it_begin = mDofs.begin();
+        const auto it_end = mDofs.end();
+        // If the guess is exact return the guess
+        if(Position < it_end-it_begin) {
+            auto it_dof = it_begin + Position;
+            if( (*it_dof)->GetVariable() == rDofVariable) {
+                return (*it_dof).get();
+            }
+        }
+
+        // Otherwise do a find
+        for(auto it_dof = it_begin; it_dof != it_end; ++it_dof){
+            if((*it_dof)->GetVariable() == rDofVariable){
+                return (*it_dof).get();
+            }
+        }
 
         std::stringstream buffer;
         buffer << "Not existant DOF in node #" << Id() << " for variable : " << rDofVariable.Name();

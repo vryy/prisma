@@ -123,8 +123,14 @@ public:
      * ShapefunctionsLocalGradients function return this
      * type as its result.
      */
-    typedef typename BaseType::ShapeFunctionsSecondDerivativesType
-    ShapeFunctionsSecondDerivativesType;
+    typedef typename BaseType::ShapeFunctionsSecondDerivativesType ShapeFunctionsSecondDerivativesType;
+
+    /**
+    * A third order tensor to hold shape functions' local second derivatives.
+    * ShapefunctionsLocalGradients function return this
+    * type as its result.
+    */
+    typedef typename BaseType::ShapeFunctionsThirdDerivativesType ShapeFunctionsThirdDerivativesType;
 
     /** A third order tensor to hold jacobian matrices evaluated at
     integration points. Jacobian and InverseOfJacobian functions
@@ -829,6 +835,41 @@ public:
         rResult[0]( 0, 0 ) = 1.0;
         rResult[2]( 0, 0 ) = -2.0;
         rResult[1]( 0, 0 ) = 1.0;
+
+        return rResult;
+    }
+
+    /**
+     * returns the third order derivatives of all shape functions
+     * in given arbitrary pointers
+     * @param rResult a fourth order tensor which contains the third derivatives
+     * @param rPoint the given point the third order derivatives are calculated in
+     */
+    virtual ShapeFunctionsThirdDerivativesType& ShapeFunctionsThirdDerivatives( ShapeFunctionsThirdDerivativesType& rResult, const CoordinatesArrayType& rPoint ) const
+    {
+        if ( rResult.size() != this->PointsNumber() )
+        {
+            // KLUDGE: While there is a bug in
+            // ublas vector resize, I have to put this beside resizing!!
+//                 ShapeFunctionsGradientsType
+            ShapeFunctionsThirdDerivativesType temp( this->PointsNumber() );
+            rResult.swap( temp );
+        }
+
+        for ( IndexType i = 0; i < rResult.size(); i++ )
+        {
+            boost::numeric::ublas::vector<Matrix> temp( this->PointsNumber() );
+            rResult[i].swap( temp );
+        }
+
+        rResult[0][0].resize( 1, 1, false );
+        rResult[1][0].resize( 1, 1, false );
+        rResult[3][0].resize( 1, 1, false );
+
+        for ( int i = 0; i < 3; i++ )
+        {
+            rResult[i][0]( 0, 0 ) = 0.0;
+        }
 
         return rResult;
     }

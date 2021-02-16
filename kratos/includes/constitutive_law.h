@@ -406,6 +406,24 @@ public:
       Vector& GetStressVector                  (Vector & rStressVector) {rStressVector=*mpStressVector; return rStressVector;};
       Matrix& GetConstitutiveMatrix            (Matrix & rConstitutiveMatrix) {rConstitutiveMatrix=*mpConstitutiveMatrix; return rConstitutiveMatrix;};
 
+      /**
+       * Returns if the different components has been set
+       */
+
+      bool IsSetDeterminantF              () {return (mDeterminantF > 0.0);};
+      bool IsSetShapeFunctionsValues      () {return (mpShapeFunctionsValues != NULL);};
+      bool IsSetShapeFunctionsDerivatives () {return (mpShapeFunctionsDerivatives != NULL);};
+      bool IsSetDeformationGradientF      () {return (mpDeformationGradientF != NULL);};
+
+      bool IsSetStrainVector              () {return (mpStrainVector != NULL);};
+      bool IsSetStressVector              () {return (mpStressVector != NULL);};
+
+      bool IsSetConstitutiveMatrix        () {return (mpConstitutiveMatrix != NULL);};
+
+      bool IsSetProcessInfo               () {return (mpCurrentProcessInfo != NULL);};
+      bool IsSetMaterialProperties        () {return (mpMaterialProperties != NULL);};
+      bool IsSetElementGeometry           () {return (mpElementGeometry != NULL);};
+
     };// struct Parameters end
 
 
@@ -820,8 +838,6 @@ public:
     virtual void FinalizeMaterialResponseCauchy (Parameters& rValues);
 
 
-
-
     /**
      * This can be used in order to reset all internal variables of the
      * constitutive law (e.g. if a model should be reset to its reference state)
@@ -831,6 +847,20 @@ public:
      * @param the current ProcessInfo instance
      */
     virtual void ResetMaterial(const Properties& rMaterialProperties,
+                               const GeometryType& rElementGeometry,
+                               const Vector& rShapeFunctionsValues);
+
+
+    /**
+     * This can be used in order to rewind all internal variables of the
+     * constitutive law (e.g. if a model should be rewinded to a previous state)
+     * REMARK: EXPERIMENTAL METHOD
+     * @param rMaterialProperties the Properties instance of the current element
+     * @param rElementGeometry the geometry of the current element
+     * @param rShapeFunctionsValues the shape functions values in the current integration point
+     * @param the current ProcessInfo instance
+     */
+    virtual void RewindMaterial(const Properties& rMaterialProperties,
                                const GeometryType& rElementGeometry,
                                const Vector& rShapeFunctionsValues);
 

@@ -1432,7 +1432,6 @@ public:
 
         for ( int i = 0; i < 4; i++ )
         {
-
             rResult[i][0]( 0, 0 ) = 0.0;
             rResult[i][0]( 0, 1 ) = 0.0;
             rResult[i][0]( 1, 0 ) = 0.0;

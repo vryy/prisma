@@ -655,6 +655,23 @@ namespace Kratos
 
 
 
+    /**
+     * This can be used in order to rewind all internal variables of the
+     * constitutive law (e.g. if a model should be rewinded to a previous state)
+     * REMARK: EXPERIMENTAL METHOD
+     * @param rMaterialProperties the Properties instance of the current element
+     * @param rElementGeometry the geometry of the current element
+     * @param rShapeFunctionsValues the shape functions values in the current integration point
+     * @param the current ProcessInfo instance
+     */
+     void ConstitutiveLaw::RewindMaterial(const Properties& rMaterialProperties,
+                               const GeometryType& rElementGeometry,
+                               const Vector& rShapeFunctionsValues)
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Calling virtual function for RewindMaterial", "");
+    }
+
+
 
     /**
      * Methods to transform strain Vectors:

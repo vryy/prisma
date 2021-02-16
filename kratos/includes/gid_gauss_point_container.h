@@ -172,7 +172,7 @@ public:
                 for( ModelPart::ElementsContainerType::iterator it = mMeshElements.begin();
                         it != mMeshElements.end(); it++ )
                 {
-                    it->GetValueOnIntegrationPoints( rVariable, ValuesOnIntPoint,
+                    it->GetValuesOnIntegrationPoints( rVariable, ValuesOnIntPoint,
                                                      r_model_part.GetProcessInfo() );
                     for(unsigned int i=0; i<mIndexContainer.size(); i++)
                     {
@@ -186,7 +186,7 @@ public:
                 for( ModelPart::ConditionsContainerType::iterator it = mMeshConditions.begin();
                         it != mMeshConditions.end(); it++ )
                 {
-                    it->GetValueOnIntegrationPoints( rVariable, ValuesOnIntPoint,
+                    it->GetValuesOnIntegrationPoints( rVariable, ValuesOnIntPoint,
                                                      r_model_part.GetProcessInfo() );
                     for(unsigned int i=0; i<mIndexContainer.size(); i++)
                     {
@@ -214,7 +214,7 @@ public:
                 for( ModelPart::ElementsContainerType::iterator it = mMeshElements.begin();
                         it != mMeshElements.end(); it++ )
                 {
-                    it->GetValueOnIntegrationPoints( rVariable, ValuesOnIntPoint,
+                    it->GetValuesOnIntegrationPoints( rVariable, ValuesOnIntPoint,
                                                      r_model_part.GetProcessInfo() );
                     for(unsigned int i=0; i<mIndexContainer.size(); i++)
                     {
@@ -232,7 +232,7 @@ public:
                 for( ModelPart::ConditionsContainerType::iterator it = mMeshConditions.begin();
                         it != mMeshConditions.end(); it++ )
                 {
-                    it->GetValueOnIntegrationPoints( rVariable, ValuesOnIntPoint,
+                    it->GetValuesOnIntegrationPoints( rVariable, ValuesOnIntPoint,
                                                      r_model_part.GetProcessInfo() );
                     for(unsigned int i=0; i<mIndexContainer.size(); i++)
                     {
@@ -262,7 +262,7 @@ public:
                 for( ModelPart::ElementsContainerType::iterator it = mMeshElements.begin();
                         it != mMeshElements.end(); ++it )
                 {
-                    it->GetValueOnIntegrationPoints( rVariable, ValuesOnIntPoint,
+                    it->GetValuesOnIntegrationPoints( rVariable, ValuesOnIntPoint,
                                                      r_model_part.GetProcessInfo() );
                     for(unsigned int i=0; i<mIndexContainer.size(); i++)
                     {
@@ -279,7 +279,7 @@ public:
                 for( ModelPart::ConditionsContainerType::iterator it = mMeshConditions.begin();
                         it != mMeshConditions.end(); it++ )
                 {
-                    it->GetValueOnIntegrationPoints( rVariable, ValuesOnIntPoint,
+                    it->GetValuesOnIntegrationPoints( rVariable, ValuesOnIntPoint,
                                                      r_model_part.GetProcessInfo() );
                     for(unsigned int i=0; i<mIndexContainer.size(); i++)
                     {
@@ -310,7 +310,7 @@ public:
                 for( ModelPart::ElementsContainerType::iterator it = mMeshElements.begin();
                         it != mMeshElements.end(); ++it )
                 {
-                    it->GetValueOnIntegrationPoints( rVariable, ValuesOnIntPoint,
+                    it->GetValuesOnIntegrationPoints( rVariable, ValuesOnIntPoint,
                                                      r_model_part.GetProcessInfo() );
                     for(unsigned int i=0; i<mIndexContainer.size(); i++)
                     {
@@ -326,7 +326,7 @@ public:
                 for( ModelPart::ConditionsContainerType::iterator it = mMeshConditions.begin();
                         it != mMeshConditions.end(); it++ )
                 {
-                    it->GetValueOnIntegrationPoints( rVariable, ValuesOnIntPoint,
+                    it->GetValuesOnIntegrationPoints( rVariable, ValuesOnIntPoint,
                                                      r_model_part.GetProcessInfo() );
                     for(unsigned int i=0; i<mIndexContainer.size(); i++)
                     {
@@ -355,7 +355,7 @@ public:
                 for( ModelPart::ElementsContainerType::iterator it = mMeshElements.begin();
                         it != mMeshElements.end(); ++it )
                 {
-                    it->GetValueOnIntegrationPoints( rVariable, ValuesOnIntPoint,
+                    it->GetValuesOnIntegrationPoints( rVariable, ValuesOnIntPoint,
                                                      r_model_part.GetProcessInfo() );
                     for(unsigned int i=0; i<mIndexContainer.size(); i++)
                     {
@@ -396,7 +396,7 @@ public:
                 for( ModelPart::ConditionsContainerType::iterator it = mMeshConditions.begin();
                         it != mMeshConditions.end(); it++ )
                 {
-                    it->GetValueOnIntegrationPoints( rVariable, ValuesOnIntPoint,
+                    it->GetValuesOnIntegrationPoints( rVariable, ValuesOnIntPoint,
                                                      r_model_part.GetProcessInfo() );
                     for(unsigned int i=0; i<mIndexContainer.size(); i++)
                     {
