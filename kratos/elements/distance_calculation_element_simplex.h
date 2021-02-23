@@ -383,7 +383,7 @@ public:
      * @param Output Will be filled with the values of the variable on integrartion points
      * @param rCurrentProcessInfo Process info instance
      */
-//    virtual void GetValueOnIntegrationPoints(const Variable<array_1d<double, 3 > >& rVariable,
+//    virtual void GetValuesOnIntegrationPoints(const Variable<array_1d<double, 3 > >& rVariable,
 //            std::vector<array_1d<double, 3 > >& rValues,
 //            const ProcessInfo& rCurrentProcessInfo)
 //    {

@@ -58,7 +58,7 @@ private:
 
     static IntegrationPointsArrayType msIntegrationPoints;
 
-}; 
+};
 
 
 class KRATOS_API(KRATOS_CORE) LineGaussLobattoIntegrationPoints2
@@ -99,7 +99,7 @@ private:
 
     static IntegrationPointsArrayType msIntegrationPoints;
 
-}; 
+};
 
 
 class KRATOS_API(KRATOS_CORE) LineGaussLobattoIntegrationPoints3
@@ -294,6 +294,6 @@ private:
 
 }  // namespace Kratos.
 
-#endif // KRATOS_LINE_GAUSS_LOBATTO_INTEGRATION_POINTS_H_INCLUDED  defined 
+#endif // KRATOS_LINE_GAUSS_LOBATTO_INTEGRATION_POINTS_H_INCLUDED  defined
 
 

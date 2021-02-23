@@ -493,6 +493,7 @@ namespace Kratos
 
     // Master-Slave Constraint
     mMasterSlaveConstraint(),
+    mLinearConstraint(),
     mLinearMasterSlaveConstraint()
 
   {}
@@ -947,6 +948,7 @@ namespace Kratos
 
     //master-slave constraints
     KRATOS_REGISTER_CONSTRAINT("MasterSlaveConstraint",mMasterSlaveConstraint)
+    KRATOS_REGISTER_CONSTRAINT("LinearConstraint",mLinearConstraint)
     KRATOS_REGISTER_CONSTRAINT("LinearMasterSlaveConstraint",mLinearMasterSlaveConstraint)
 
       //Register specific elements ( must be completed : elements defined in kratos_appliction.h)

@@ -522,8 +522,8 @@ public:
                 rOutputSet1.clear();
                 rOutputSet2.clear();
             }
-
-            return; // return on success
+            else
+                return; // return on success
         } while (ncheck < rBoundingVolume.NumberOfDirections());
 
         KRATOS_THROW_ERROR(std::logic_error, "The simple partitioning strategy does not work. That can't happen but if it does, the medians are possibly coincident.", "")

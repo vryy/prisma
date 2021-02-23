@@ -254,12 +254,12 @@ public:
     /// Destructor. Does nothing!!!
     virtual ~Tetrahedra3D10() {}
 
-    GeometryData::KratosGeometryFamily GetGeometryFamily()
+    GeometryData::KratosGeometryFamily GetGeometryFamily() const final
     {
         return GeometryData::Kratos_Tetrahedra;
     }
 
-    GeometryData::KratosGeometryType GetGeometryType()
+    GeometryData::KratosGeometryType GetGeometryType() const final
     {
         return GeometryData::Kratos_Tetrahedra3D10;
     }

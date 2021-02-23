@@ -32,7 +32,10 @@ namespace Kratos
 	std::cout << " ' /   __| _` | __|  _ \\   __|" << std::endl;
 	std::cout << " . \\  |   (   | |   (   |\\__ \\ " << std::endl;
 	std::cout << "_|\\_\\_|  \\__,_|\\__|\\___/ ____/" << std::endl;
-    std::cout << "           Multi-Physics "<< KRATOS_VERSION << std::endl;
+    // std::cout << "           Multi-Physics "<< KRATOS_VERSION << std::endl;
+    std::cout << "           Multi-Physics " << std::endl;
+    std::cout << "   Hoang-Giang Bui " << std::endl;
+    std::cout << "     Ruhr University Bochum " << std::endl;
 
         mKratosApplication.RegisterVariables();
     }

@@ -414,8 +414,93 @@ public:
             if(BaseType::mpLinearSystemSolver->AdditionalPhysicalDataIsNeeded() )
                 BaseType::mpLinearSystemSolver->ProvideAdditionalData(A, Dx, b, BaseType::mDofSet, rModelPart);
 
+            // double norm_bu = 0, norm_bp = 0;
+            // double norm_dxu = 0, norm_dxp = 0;
+            // double norm_diag_au = 0.0, norm_diag_ap = 0.0;
+            // std::size_t n_pressure_dofs = 0;
+            // for (auto dof_iterator = BaseType::mDofSet.begin(); dof_iterator != BaseType::mDofSet.end(); ++dof_iterator)
+            // {
+            //     // std::cout << "node " << dof_iterator->Id()
+            //     //           << " EquationId: " << dof_iterator->EquationId()
+            //     //           << ", " << dof_iterator->GetVariable().Name() << ": " << dof_iterator->GetSolutionStepValue()
+            //     //           << std::endl;
+            //     if (dof_iterator->GetVariable().Name() == "WATER_PRESSURE")
+            //     {
+            //         norm_bp += pow(b[dof_iterator->EquationId()], 2);
+            //         norm_dxp += pow(Dx[dof_iterator->EquationId()], 2);
+            //         norm_diag_ap += pow(A(dof_iterator->EquationId(), dof_iterator->EquationId()), 2);
+            //         ++n_pressure_dofs;
+            //         // std::cout << "node " << dof_iterator->Id()
+            //         //       << " EquationId: " << dof_iterator->EquationId()
+            //         //       << ", " << dof_iterator->GetVariable().Name() << ": " << dof_iterator->GetSolutionStepValue()
+            //         //       << ", IsFixed: " << dof_iterator->IsFixed()
+            //         //       << std::endl;
+            //     }
+            //     else
+            //     {
+            //         norm_bu += pow(b[dof_iterator->EquationId()], 2);
+            //         norm_dxu += pow(Dx[dof_iterator->EquationId()], 2);
+            //         norm_diag_au += pow(A(dof_iterator->EquationId(), dof_iterator->EquationId()), 2);
+            //     }
+            // }
+            // norm_bu = sqrt(norm_bu);
+            // norm_bp = sqrt(norm_bp);
+            // norm_dxu = sqrt(norm_dxu);
+            // norm_dxp = sqrt(norm_dxp);
+            // norm_diag_au = sqrt(norm_diag_au);
+            // norm_diag_ap = sqrt(norm_diag_ap);
+
+            // KRATOS_WATCH(__LINE__)
+            // std::cout << "Before solve:" << std::endl;
+            // KRATOS_WATCH(norm_bu)
+            // KRATOS_WATCH(norm_bp)
+            // KRATOS_WATCH(norm_dxu)
+            // KRATOS_WATCH(norm_dxp)
+            // KRATOS_WATCH(norm_diag_au)
+            // KRATOS_WATCH(norm_diag_ap)
+            // KRATOS_WATCH(n_pressure_dofs)
+
             //do solve
             BaseType::mpLinearSystemSolver->Solve(A, Dx, b);
+
+            // for (auto dof_iterator = BaseType::mDofSet.begin(); dof_iterator != BaseType::mDofSet.end(); ++dof_iterator)
+            // {
+            //     std::cout << "node " << dof_iterator->Id()
+            //               << " EquationId: " << dof_iterator->EquationId()
+            //               << ", " << dof_iterator->GetVariable().Name() << ": " << dof_iterator->GetSolutionStepValue()
+            //               << std::endl;
+            // }
+
+            // norm_bu = 0; norm_bp = 0;
+            // norm_dxu = 0; norm_dxp = 0;
+            // for (auto dof_iterator = BaseType::mDofSet.begin(); dof_iterator != BaseType::mDofSet.end(); ++dof_iterator)
+            // {
+            //     // std::cout << "node " << dof_iterator->Id()
+            //     //           << " EquationId: " << dof_iterator->EquationId()
+            //     //           << ", " << dof_iterator->GetVariable().Name() << ": " << dof_iterator->GetSolutionStepValue()
+            //     //           << std::endl;
+            //     if (dof_iterator->GetVariable().Name() == "WATER_PRESSURE")
+            //     {
+            //         norm_bp += pow(b[dof_iterator->EquationId()], 2);
+            //         norm_dxp += pow(Dx[dof_iterator->EquationId()], 2);
+            //     }
+            //     else
+            //     {
+            //         norm_bu += pow(b[dof_iterator->EquationId()], 2);
+            //         norm_dxu += pow(Dx[dof_iterator->EquationId()], 2);
+            //     }
+            // }
+            // norm_bu = sqrt(norm_bu);
+            // norm_bp = sqrt(norm_bp);
+            // norm_dxu = sqrt(norm_dxu);
+            // norm_dxp = sqrt(norm_dxp);
+
+            // KRATOS_WATCH(__LINE__)
+            // std::cout << "After solve:" << std::endl;
+            // KRATOS_WATCH(norm_bu)
+            // KRATOS_WATCH(norm_bp)
+            // KRATOS_WATCH(norm_dxu)
+            // KRATOS_WATCH(norm_dxp)
         } else {
             TSparseSpace::SetToZero(Dx);
             std::cout << "ATTENTION! setting the RHS to zero!" << std::endl;

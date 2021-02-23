@@ -560,12 +560,12 @@ public:
     /// Destructor. Does nothing!!!
     virtual ~HexahedraInterface3D8() {}
 
-    GeometryData::KratosGeometryFamily GetGeometryFamily()
+    GeometryData::KratosGeometryFamily GetGeometryFamily() const final
     {
         return GeometryData::Kratos_Hexahedra;
     }
 
-    GeometryData::KratosGeometryType GetGeometryType()
+    GeometryData::KratosGeometryType GetGeometryType() const final
     {
         return GeometryData::Kratos_Hexahedra3D8;
     }

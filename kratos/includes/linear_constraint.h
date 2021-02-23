@@ -4,14 +4,14 @@
 //   _|\_\_|  \__,_|\__|\___/ ____/
 //                   Multi-Physics
 //
-//  License:		 BSD License
-//					 Kratos default license: kratos/license.txt
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
-//  Main authors:    Aditya Ghantasala
+//  Main authors:    Hoang-Giang Bui
 //
 
-#if !defined(LINEAR_MASTER_SLAVE_CONSTRAINT_H)
-#define LINEAR_MASTER_SLAVE_CONSTRAINT_H
+#if !defined(LINEAR_CONSTRAINT_H_INCLUDED)
+#define LINEAR_CONSTRAINT_H_INCLUDED
 
 // System includes
 
@@ -43,18 +43,18 @@ namespace Kratos
 ///@{
 
 /**
- * @class LinearMasterSlaveConstraint
+ * @class LinearConstraint
  * @ingroup KratosCore
- * @brief This class allows to add a master-slave constraint which is of the form
- * SlaveDofVector = T * MasterDofVector + ConstantVector.
+ * @brief This class allows to add a constant constraint which is of the form. This allows to add the inhomogeneous BC to the model conveniently.
+ * SlaveDofVector = ConstantVector.
  *
  * or
  *
- * SlaveDof = weight * MasterDof + Constant
- * @details The data T and ConstantVector (or the equivalent scalars) are not stored in the base class, since they can be eventually evaluated runtime.
- * @author Aditya Ghantasala
+ * SlaveDof = Constant
+ * @details The ConstantVector (or the equivalent scalars) is not stored in the base class, since they can be eventually evaluated runtime.
+ * @author hbui
  */
-class LinearMasterSlaveConstraint
+class LinearConstraint
     :  public MasterSlaveConstraint
 {
 public:
@@ -92,7 +92,7 @@ public:
     typedef BaseType::VariableComponentType VariableComponentType;
 
     /// Pointer definition of DataValueContainer
-    KRATOS_CLASS_POINTER_DEFINITION(LinearMasterSlaveConstraint);
+    KRATOS_CLASS_POINTER_DEFINITION(LinearConstraint);
 
     ///@}
     ///@name  Enum's
@@ -106,7 +106,7 @@ public:
      * @brief The default constructor
      * @param IndexType The Id of the new created constraint
      */
-    explicit LinearMasterSlaveConstraint(IndexType Id = 0)
+    explicit LinearConstraint(IndexType Id = 0)
         : BaseType(Id)
     {
     }
@@ -114,54 +114,41 @@ public:
     /**
      * @brief Constructor by passing a vector of Master and slave dofs and corresponding Matrix and constant vector
      * @param IndexType The Id of the new created constraint
-     * @param rMasterDofsVector The vector containing the DoF of the master side
      * @param rSlaveDofsVector The vector containing the DoF of the slave side
-     * @param rRelationMatrix The relation matrix between the master/slave DoF
      * @param rConstantVector The vector containing the additional kinematic relationship
      */
-    LinearMasterSlaveConstraint(
+    LinearConstraint(
         IndexType Id,
-        DofPointerVectorType& rMasterDofsVector,
         DofPointerVectorType& rSlaveDofsVector,
-        const MatrixType& rRelationMatrix,
         const VectorType& rConstantVector
         ) : BaseType(Id),
             mSlaveDofsVector(rSlaveDofsVector),
-            mMasterDofsVector(rMasterDofsVector),
-            mRelationMatrix(rRelationMatrix),
             mConstantVector(rConstantVector)
     {
+        mEmptyDofsVector.resize(0);
     }
 
     /**
      * @brief Constructor by passing a single Master and slave dofs and corresponding weight and constant for a variable component
      * @param IndexType The Id of the new created constraint
-     * @param rMasterNode The node of master side
-     * @param rMasterVariable The variable of the master DoF
      * @param rSlaveNode The node of slave side
      * @param rSlaveVariable The variable of the slave DoF
-     * @param Weight The relation between the master/slave DoF
      * @param Constant The additional kinematic relationship
      */
-    LinearMasterSlaveConstraint(
+    LinearConstraint(
         IndexType Id,
-        NodeType& rMasterNode,
-        const VariableType& rMasterVariable,
         NodeType& rSlaveNode,
         const VariableType& rSlaveVariable,
-        const double Weight,
         const double Constant
         ) : MasterSlaveConstraint(Id)
     {
-        // Resizing the memeber variables
-        mRelationMatrix.resize(1,1,false);
+        // Resizing the member variables
         mConstantVector.resize(1,false);
 
         // Obtaining the dofs from the variables
         mSlaveDofsVector.push_back(rSlaveNode.pGetDof(rSlaveVariable));
-        mMasterDofsVector.push_back(rMasterNode.pGetDof(rMasterVariable));
+        mEmptyDofsVector.resize(0);
 
-        mRelationMatrix(0,0) = Weight;
         mConstantVector(0) = Constant;
 
         // Setting the slave flag on the node
@@ -171,32 +158,24 @@ public:
     /**
      * @brief Constructor by passing a single Master and slave dofs and corresponding weight and constant for a variable component
      * @param IndexType The Id of the new created constraint
-     * @param rMasterNode The node of master side
-     * @param rMasterVariable The variable of the master DoF
      * @param rSlaveNode The node of slave side
      * @param rSlaveVariable The variable of the slave DoF
-     * @param Weight The relation between the master/slave DoF
      * @param Constant The additional kinematic relationship
      */
-    LinearMasterSlaveConstraint(
+    LinearConstraint(
         IndexType Id,
-        NodeType& rMasterNode,
-        const VariableComponentType& rMasterVariable,
         NodeType& rSlaveNode,
         const VariableComponentType& rSlaveVariable,
-        const double Weight,
         const double Constant
         ) : MasterSlaveConstraint(Id)
     {
         // Resizing the memeber variables
-        mRelationMatrix.resize(1,1,false);
         mConstantVector.resize(1,false);
 
         // Obtaining the dofs from the variables
         mSlaveDofsVector.push_back(rSlaveNode.pGetDof(rSlaveVariable));
-        mMasterDofsVector.push_back(rMasterNode.pGetDof(rMasterVariable));
+        mEmptyDofsVector.resize(0);
 
-        mRelationMatrix(0,0) = Weight;
         mConstantVector(0) = Constant;
 
         // Setting the slave flag on the node
@@ -204,28 +183,23 @@ public:
     }
 
     /// Destructor.
-    ~LinearMasterSlaveConstraint() override
+    ~LinearConstraint() override
     {
-
     }
 
     /// Copy Constructor
-    LinearMasterSlaveConstraint(const LinearMasterSlaveConstraint& rOther)
+    LinearConstraint(const LinearConstraint& rOther)
         : BaseType(rOther),
           mSlaveDofsVector(rOther.mSlaveDofsVector),
-          mMasterDofsVector(rOther.mMasterDofsVector),
-          mRelationMatrix(rOther.mRelationMatrix),
           mConstantVector(rOther.mConstantVector)
     {
     }
 
     /// Assignment operator
-    LinearMasterSlaveConstraint& operator=(const LinearMasterSlaveConstraint& rOther)
+    LinearConstraint& operator=(const LinearConstraint& rOther)
     {
         BaseType::operator=( rOther );
         mSlaveDofsVector = rOther.mSlaveDofsVector;
-        mMasterDofsVector = rOther.mMasterDofsVector;
-        mRelationMatrix = rOther.mRelationMatrix;
         mConstantVector = rOther.mConstantVector;
         return *this;
     }
@@ -255,7 +229,7 @@ public:
         const VectorType& rConstantVector
         ) const override
     {
-        return MasterSlaveConstraint::Pointer(new LinearMasterSlaveConstraint(Id, rMasterDofsVector, rSlaveDofsVector, rRelationMatrix, rConstantVector));
+        return MasterSlaveConstraint::Pointer(new LinearConstraint(Id, rSlaveDofsVector, rConstantVector));
     }
 
     /**
@@ -279,7 +253,7 @@ public:
         const double Constant
         ) const override
     {
-        return MasterSlaveConstraint::Pointer(new LinearMasterSlaveConstraint(Id, rMasterNode, rMasterVariable, rSlaveNode, rSlaveVariable, Weight, Constant));
+        return MasterSlaveConstraint::Pointer(new LinearConstraint(Id, rSlaveNode, rSlaveVariable, Constant));
     }
 
     /**
@@ -303,7 +277,7 @@ public:
         const double Constant
         ) const override
     {
-        return MasterSlaveConstraint::Pointer(new LinearMasterSlaveConstraint(Id, rMasterNode, rMasterVariable, rSlaveNode, rSlaveVariable, Weight, Constant));
+        return MasterSlaveConstraint::Pointer(new LinearConstraint(Id, rSlaveNode, rSlaveVariable, Constant));
     }
 
     /**
@@ -315,7 +289,7 @@ public:
     {
         KRATOS_TRY
 
-        MasterSlaveConstraint::Pointer p_constraint = boost::make_shared<LinearMasterSlaveConstraint>(*this);
+        MasterSlaveConstraint::Pointer p_constraint = boost::make_shared<LinearConstraint>(*this);
         p_constraint->SetData(this->GetData());
         return p_constraint;
 
@@ -335,7 +309,7 @@ public:
         ) const override
     {
         rSlaveDofsVector = mSlaveDofsVector;
-        rMasterDofsVector = mMasterDofsVector;
+        rMasterDofsVector = mEmptyDofsVector;
     }
 
     /**
@@ -353,14 +327,14 @@ public:
         if (rSlaveEquationIds.size() != mSlaveDofsVector.size())
             rSlaveEquationIds.resize(mSlaveDofsVector.size());
 
-        if (rMasterEquationIds.size() != mMasterDofsVector.size())
-            rMasterEquationIds.resize(mMasterDofsVector.size());
+        if (rMasterEquationIds.size() != mEmptyDofsVector.size())
+            rMasterEquationIds.resize(mEmptyDofsVector.size());
 
         for(IndexType i=0; i<rSlaveEquationIds.size(); ++i)
             rSlaveEquationIds[i] = mSlaveDofsVector[i]->EquationId();
 
         for(IndexType i=0; i<rMasterEquationIds.size(); ++i)
-            rMasterEquationIds[i] = mMasterDofsVector[i]->EquationId();
+            rMasterEquationIds[i] = mEmptyDofsVector[i]->EquationId();
     }
 
     /**
@@ -378,7 +352,7 @@ public:
      */
     const DofPointerVectorType& GetMasterDofsVector() const override
     {
-        return mMasterDofsVector;
+        return mEmptyDofsVector;
     }
 
     /**
@@ -399,35 +373,11 @@ public:
      */
     void Apply(const ProcessInfo& rCurrentProcessInfo) override
     {
-        // Saving the master dofs values
-        Vector master_dofs_values(mMasterDofsVector.size());
-
-        for (IndexType i = 0; i < mMasterDofsVector.size(); ++i) {
-            master_dofs_values[i] = mMasterDofsVector[i]->GetSolutionStepValue();
-        }
-
-        // std::cout << "master dofs:";
-        // for (IndexType i = 0; i < mMasterDofsVector.size(); ++i)
-        //     std::cout << " (" << mMasterDofsVector[i]->Id() << ", " << mMasterDofsVector[i]->GetVariable().Name()
-        //           << ", " << mMasterDofsVector[i]->GetSolutionStepValue() << ")";
-        // std::cout << std::endl;
-
         // Apply the constraint to the slave dofs
-        for (IndexType i = 0; i < mRelationMatrix.size1(); ++i) {
-            double aux = mConstantVector[i];
-            for(IndexType j = 0; j < mRelationMatrix.size2(); ++j) {
-                aux += mRelationMatrix(i,j) * master_dofs_values[j];
-            }
-
+        for (IndexType i = 0; i < mConstantVector.size(); ++i) {
             #pragma omp atomic
-            mSlaveDofsVector[i]->GetSolutionStepValue() += aux;
+            mSlaveDofsVector[i]->GetSolutionStepValue() += mConstantVector[i];
         }
-
-        // std::cout << "slave dofs:";
-        // for (IndexType i = 0; i < mSlaveDofsVector.size(); ++i)
-        // std::cout << " (" << mSlaveDofsVector[i]->Id() << ", " << mSlaveDofsVector[i]->GetVariable().Name()
-        //           << ", " << mSlaveDofsVector[i]->GetSolutionStepValue() << ")";
-        // std::cout << std::endl;
     }
 
     /**
@@ -443,7 +393,7 @@ public:
         const ProcessInfo& rCurrentProcessInfo
         ) override
     {
-        rTransformationMatrix = mRelationMatrix;
+        rTransformationMatrix = ZeroMatrix(0);
         rConstantVector = mConstantVector;
     }
 
@@ -457,7 +407,7 @@ public:
      */
     std::string GetInfo() const override
     {
-        return "Linear User Provided Master Slave Constraint class !";
+        return "Linear User Provided Constraint class !";
     }
 
     /**
@@ -466,9 +416,9 @@ public:
      */
     void PrintInfo(std::ostream &rOStream) const override
     {
-        rOStream << " LinearMasterSlaveConstraint Id  : " << this->Id() << std::endl;
+        rOStream << " LinearConstraint Id  : " << this->Id() << std::endl;
         rOStream << " Number of Slaves          : " << mSlaveDofsVector.size() << std::endl;
-        rOStream << " Number of Masters         : " << mMasterDofsVector.size() << std::endl;
+        rOStream << " Number of Masters         : " << 0 << std::endl;
     }
 
     ///@}
@@ -481,8 +431,7 @@ protected:
     ///@{
 
     DofPointerVectorType mSlaveDofsVector;  /// The DoFs of slave side
-    DofPointerVectorType mMasterDofsVector; /// The DoFs of master side
-    MatrixType mRelationMatrix;             /// The relation matrix between the master/slave DoF
+    DofPointerVectorType mEmptyDofsVector;  /// Empty dofs array
     VectorType mConstantVector;             /// The vector containing the additional kinematic relationship
 
     ///@}
@@ -523,8 +472,6 @@ private:
     {
         KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, MasterSlaveConstraint);
         rSerializer.save("SlaveDofVec", mSlaveDofsVector);
-        rSerializer.save("MasterDofVec", mMasterDofsVector);
-        rSerializer.save("RelationMat", mRelationMatrix);
         rSerializer.save("ConstantVec", mConstantVector);
     }
 
@@ -532,8 +479,6 @@ private:
     {
         KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, MasterSlaveConstraint);
         rSerializer.load("SlaveDofVec", mSlaveDofsVector);
-        rSerializer.load("MasterDofVec", mMasterDofsVector);
-        rSerializer.load("RelationMat", mRelationMatrix);
         rSerializer.load("ConstantVec", mConstantVector);
     }
 };
@@ -542,11 +487,11 @@ private:
 ///@{
 
 /// input stream function
-inline std::istream& operator>>(std::istream& rIStream, LinearMasterSlaveConstraint& rThis);
+inline std::istream& operator>>(std::istream& rIStream, LinearConstraint& rThis);
 
 /// output stream function
 inline std::ostream& operator<<(std::ostream& rOStream,
-                                const LinearMasterSlaveConstraint& rThis)
+                                const LinearConstraint& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;
@@ -559,4 +504,4 @@ inline std::ostream& operator<<(std::ostream& rOStream,
 
 } // namespace Kratos
 
-#endif // USER_PROVIDED_LINEAR_MASTER_SLAVE_CONSTRAINT_H
+#endif // LINEAR_CONSTRAINT_H_INCLUDED

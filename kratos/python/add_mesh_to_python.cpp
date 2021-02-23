@@ -182,26 +182,12 @@ boost::python::list GetIntegrationPointsFromElementInReferenceFrame( Element& du
     return( integration_points_list );
 }
 
-boost::python::list CalculateOnIntegrationPointsVector( ModelPart& rModelPart,
-        Element& dummy, const Variable<Vector>& rVariable )
-{
-    std::vector<Vector> Output;
-    dummy.CalculateOnIntegrationPoints( rVariable, Output,
-                                        rModelPart.GetProcessInfo() );
-    boost::python::list result;
-    for( unsigned int j=0; j<Output.size(); j++ )
-        result.append( Output[j] );
-    return result;
-}
-
 template< class TObject >
 boost::python::list GetValuesOnIntegrationPointsDouble( TObject& dummy,
         const Variable<double>& rVariable, const ProcessInfo& rCurrentProcessInfo )
 {
     boost::python::list values_list;
-    IntegrationPointsArrayType integration_points = dummy.GetGeometry().IntegrationPoints(
-                dummy.GetIntegrationMethod() );
-    std::vector<double> values( integration_points.size() );
+    std::vector<double> values;
     dummy.CalculateOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
     for( unsigned int i=0; i<values.size(); i++ )
     {
@@ -210,6 +196,13 @@ boost::python::list GetValuesOnIntegrationPointsDouble( TObject& dummy,
         values_list.append( integration_point_value );
     }
     return( values_list );
+}
+
+template< class TObject >
+boost::python::list CalculateOnIntegrationPointsDouble( TObject& dummy,
+        const Variable<double>& rVariable, const ProcessInfo& rCurrentProcessInfo )
+{
+    return GetValuesOnIntegrationPointsDouble<TObject>(dummy, rVariable, rCurrentProcessInfo);
 }
 
 template< class TObject >
@@ -228,7 +221,7 @@ void SetValuesOnIntegrationPointsDouble( TObject& dummy, const Variable<double>&
         else
             break;
     }
-    dummy.SetValueOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
+    dummy.SetValuesOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
 }
 
 template< class TObject >
@@ -247,7 +240,7 @@ void SetValuesOnIntegrationPointsInt( TObject& dummy, const Variable<int>& rVari
         else
             break;
     }
-    dummy.SetValueOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
+    dummy.SetValuesOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
 }
 
 template< class TObject >
@@ -255,15 +248,20 @@ boost::python::list GetValuesOnIntegrationPointsString( TObject& dummy,
         const Variable<std::string>& rVariable, const ProcessInfo& rCurrentProcessInfo )
 {
     boost::python::list values_list;
-    IntegrationPointsArrayType integration_points = dummy.GetGeometry().IntegrationPoints(
-                dummy.GetIntegrationMethod() );
-    std::vector<std::string> values( integration_points.size() );
-    dummy.GetValueOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
+    std::vector<std::string> values;
+    dummy.CalculateOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
     for( unsigned int i=0; i<values.size(); i++ )
     {
         values_list.append( values[i] );
     }
     return( values_list );
+}
+
+template< class TObject >
+boost::python::list CalculateOnIntegrationPointsString( TObject& dummy,
+        const Variable<std::string>& rVariable, const ProcessInfo& rCurrentProcessInfo )
+{
+    return GetValuesOnIntegrationPointsString<TObject>(dummy, rVariable, rCurrentProcessInfo);
 }
 
 template< class TObject >
@@ -282,18 +280,15 @@ void SetValuesOnIntegrationPointsString( TObject& dummy, const Variable<std::str
         else
             break;
     }
-    dummy.SetValueOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
+    dummy.SetValuesOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
 }
-
 
 template< class TObject >
 boost::python::list GetValuesOnIntegrationPointsArray1d( TObject& dummy,
         const Variable<array_1d<double,3> >& rVariable, const ProcessInfo& rCurrentProcessInfo )
 {
     boost::python::list values_list;
-    IntegrationPointsArrayType integration_points = dummy.GetGeometry().IntegrationPoints(
-                dummy.GetIntegrationMethod() );
-    std::vector<array_1d<double,3> > values( integration_points.size() );
+    std::vector<array_1d<double,3> > values;
     dummy.CalculateOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
     for( unsigned int i=0; i<values.size(); i++ )
     {
@@ -303,6 +298,13 @@ boost::python::list GetValuesOnIntegrationPointsArray1d( TObject& dummy,
         values_list.append( integration_point_value );
     }
     return( values_list );
+}
+
+template< class TObject >
+boost::python::list CalculateOnIntegrationPointsArray1d( TObject& dummy,
+        const Variable<array_1d<double,3> >& rVariable, const ProcessInfo& rCurrentProcessInfo )
+{
+    return GetValuesOnIntegrationPointsArray1d<TObject>(dummy, rVariable, rCurrentProcessInfo);
 }
 
 template< class TObject >
@@ -321,7 +323,7 @@ void SetValuesOnIntegrationPointsArray1d( TObject& dummy, const Variable< array_
         else
             break;
     }
-    dummy.SetValueOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
+    dummy.SetValuesOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
 }
 
 template< class TObject >
@@ -329,9 +331,7 @@ boost::python::list GetValuesOnIntegrationPointsVector( TObject& dummy,
         const Variable<Vector>& rVariable, const ProcessInfo& rCurrentProcessInfo )
 {
     boost::python::list values_list;
-    IntegrationPointsArrayType integration_points = dummy.GetGeometry().IntegrationPoints(
-                dummy.GetIntegrationMethod() );
-    std::vector<Vector> values( integration_points.size() );
+    std::vector<Vector> values;
     dummy.CalculateOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
     for( unsigned int i=0; i<values.size(); i++ )
     {
@@ -341,6 +341,13 @@ boost::python::list GetValuesOnIntegrationPointsVector( TObject& dummy,
         values_list.append( integration_point_value );
     }
     return( values_list );
+}
+
+template< class TObject >
+boost::python::list CalculateOnIntegrationPointsVector( TObject& dummy,
+        const Variable<Vector>& rVariable, const ProcessInfo& rCurrentProcessInfo )
+{
+    return GetValuesOnIntegrationPointsVector<TObject>(dummy, rVariable, rCurrentProcessInfo);
 }
 
 template< class TObject >
@@ -365,7 +372,7 @@ void SetValuesOnIntegrationPointsVector( TObject& dummy,
         }
         values[i] = value_item;
     }
-    dummy.SetValueOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
+    dummy.SetValuesOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
 }
 
 template< class TObject >
@@ -392,18 +399,15 @@ void SetValuesOnIntegrationPointsVectorVariableLength( TObject& dummy,
         else
             break;
     }
-    dummy.SetValueOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
+    dummy.SetValuesOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
 }
-
 
 template< class TObject >
 boost::python::list GetValuesOnIntegrationPointsMatrix( TObject& dummy,
         const Variable<Matrix>& rVariable, const ProcessInfo& rCurrentProcessInfo )
 {
     boost::python::list values_list;
-    IntegrationPointsArrayType integration_points = dummy.GetGeometry().IntegrationPoints(
-                dummy.GetIntegrationMethod() );
-    std::vector<Matrix> values( integration_points.size() );
+    std::vector<Matrix> values;
     dummy.CalculateOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
     for( unsigned int i=0; i<values.size(); i++ )
     {
@@ -414,6 +418,13 @@ boost::python::list GetValuesOnIntegrationPointsMatrix( TObject& dummy,
         values_list.append( integration_point_value );
     }
     return( values_list );
+}
+
+template< class TObject >
+boost::python::list CalculateOnIntegrationPointsMatrix( TObject& dummy,
+        const Variable<Matrix>& rVariable, const ProcessInfo& rCurrentProcessInfo )
+{
+    return GetValuesOnIntegrationPointsMatrix<TObject>(dummy, rVariable, rCurrentProcessInfo);
 }
 
 template< class TType, class TDataType >
@@ -429,12 +440,18 @@ boost::python::list GetValuesOnIntegrationPointsConstitutiveLaw( Element& dummy,
 {
     boost::python::list values_list;
     std::vector<ConstitutiveLaw::Pointer> values;
-    dummy.GetValueOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
+    dummy.CalculateOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
     for( unsigned int i=0; i<values.size(); i++ )
     {
         values_list.append( values[i] );
     }
     return( values_list );
+}
+
+boost::python::list CalculateOnIntegrationPointsConstitutiveLaw( Element& dummy,
+        const Variable<ConstitutiveLaw::Pointer>& rVariable, const ProcessInfo& rCurrentProcessInfo )
+{
+    return GetValuesOnIntegrationPointsConstitutiveLaw(dummy, rVariable, rCurrentProcessInfo);
 }
 
 void SetValuesOnIntegrationPointsConstitutiveLaw( Element& dummy, const Variable<ConstitutiveLaw::Pointer>& rVariable, boost::python::list values_list, const ProcessInfo& rCurrentProcessInfo )
@@ -448,7 +465,7 @@ void SetValuesOnIntegrationPointsConstitutiveLaw( Element& dummy, const Variable
         boost::python::extract<ConstitutiveLaw::Pointer> x( values_list[i] );
         values[i] = x();
     }
-    dummy.SetValueOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
+    dummy.SetValuesOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
 }
 
 void  AddMeshToPython()
@@ -538,7 +555,12 @@ void  AddMeshToPython()
     .def("GetIntegrationMethod", GetIntegrationMethodFromElement )
     .def("GetIntegrationPoints", GetIntegrationPointsFromElement )
     .def("GetIntegrationPointsInReferenceFrame", GetIntegrationPointsFromElementInReferenceFrame )
-    .def("CalculateOnIntegrationPoints", CalculateOnIntegrationPointsVector)
+    .def("CalculateOnIntegrationPoints", CalculateOnIntegrationPointsVector<Element>)
+    .def("CalculateOnIntegrationPoints", CalculateOnIntegrationPointsString<Element>)
+    .def("CalculateOnIntegrationPoints", CalculateOnIntegrationPointsArray1d<Element>)
+    .def("CalculateOnIntegrationPoints", CalculateOnIntegrationPointsMatrix<Element>)
+    .def("CalculateOnIntegrationPoints", CalculateOnIntegrationPointsDouble<Element>)
+    .def("CalculateOnIntegrationPoints", CalculateOnIntegrationPointsConstitutiveLaw)
     .def("GetValuesOnIntegrationPoints", GetValuesOnIntegrationPointsDouble<Element>)
     .def("GetValuesOnIntegrationPoints", GetValuesOnIntegrationPointsArray1d<Element>)
     .def("GetValuesOnIntegrationPoints", GetValuesOnIntegrationPointsVector<Element>)
@@ -647,6 +669,12 @@ void  AddMeshToPython()
     .def("GetNode", GetNodeFromCondition )
     .def("GetNodes", GetNodesFromCondition )
     .def("GetGeometry", GetGeometryFromCondition )
+
+    .def("CalculateOnIntegrationPoints", CalculateOnIntegrationPointsVector<Condition>)
+    .def("CalculateOnIntegrationPoints", CalculateOnIntegrationPointsString<Condition>)
+    .def("CalculateOnIntegrationPoints", CalculateOnIntegrationPointsArray1d<Condition>)
+    .def("CalculateOnIntegrationPoints", CalculateOnIntegrationPointsMatrix<Condition>)
+    .def("CalculateOnIntegrationPoints", CalculateOnIntegrationPointsDouble<Condition>)
 
     .def("GetValuesOnIntegrationPoints", GetValuesOnIntegrationPointsDouble<Condition>)
     .def("GetValuesOnIntegrationPoints", GetValuesOnIntegrationPointsArray1d<Condition>)

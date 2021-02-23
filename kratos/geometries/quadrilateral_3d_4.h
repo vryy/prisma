@@ -251,12 +251,12 @@ public:
      */
     virtual ~Quadrilateral3D4() {}
 
-    GeometryData::KratosGeometryFamily GetGeometryFamily()
+    GeometryData::KratosGeometryFamily GetGeometryFamily() const final
     {
         return GeometryData::Kratos_Quadrilateral;
     }
 
-    GeometryData::KratosGeometryType GetGeometryType()
+    GeometryData::KratosGeometryType GetGeometryType() const final
     {
         return GeometryData::Kratos_Quadrilateral3D4;
     }
@@ -1432,7 +1432,6 @@ public:
 
         for ( int i = 0; i < 4; i++ )
         {
-
             rResult[i][0]( 0, 0 ) = 0.0;
             rResult[i][0]( 0, 1 ) = 0.0;
             rResult[i][0]( 1, 0 ) = 0.0;
