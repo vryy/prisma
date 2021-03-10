@@ -86,7 +86,6 @@ Properties::Pointer GetPropertiesFromElement( Element& pelem )
 }
 void SetPropertiesFromElement( Element& pelem, Properties::Pointer pProperties )
 {
-//     pelem.pGetProperties() =pProperties ;
      pelem.SetProperties(pProperties);
 }
 
@@ -96,7 +95,7 @@ Properties::Pointer GetPropertiesFromCondition( Condition& pcond )
 }
 void SetPropertiesFromCondition( Condition& pcond, Properties::Pointer pProperties )
 {
-     pcond.pGetProperties() =pProperties ;
+     pcond.SetProperties(pProperties);
 }
 
 NodeType::Pointer GetNodeFromElement( Element& dummy, unsigned int index )
@@ -178,6 +177,31 @@ boost::python::list GetIntegrationPointsFromElementInReferenceFrame( Element& du
         for( unsigned int j=0; j<3; j++ )
             item.append( pnt[j] );
         integration_points_list.append( item );
+    }
+    return( integration_points_list );
+}
+
+boost::python::list GetIntegrationPointsFromElementInLocalCoordinates( Element& dummy )
+{
+    boost::python::list integration_points_list;
+    IntegrationPointsArrayType integration_points = dummy.GetGeometry().IntegrationPoints(
+                dummy.GetIntegrationMethod() );
+    for( unsigned int i=0; i< integration_points.size(); i++ )
+    {
+        integration_points_list.append( integration_points[i] );
+    }
+    return( integration_points_list );
+}
+
+boost::python::list GetIntegrationPointsLocalCoordinatesFromElement( Element& dummy )
+{
+    boost::python::list integration_points_list;
+    IntegrationPointsArrayType integration_points = dummy.GetGeometry().IntegrationPoints(
+                dummy.GetIntegrationMethod() );
+    for( unsigned int i=0; i< integration_points.size(); i++ )
+    {
+        array_1d<double, 3> p = integration_points[i];
+        integration_points_list.append( p );
     }
     return( integration_points_list );
 }
@@ -555,6 +579,8 @@ void  AddMeshToPython()
     .def("GetIntegrationMethod", GetIntegrationMethodFromElement )
     .def("GetIntegrationPoints", GetIntegrationPointsFromElement )
     .def("GetIntegrationPointsInReferenceFrame", GetIntegrationPointsFromElementInReferenceFrame )
+    .def("GetIntegrationPointsInLocalCoordinates", GetIntegrationPointsFromElementInLocalCoordinates )
+    .def("GetIntegrationPointsLocalCoordinates", GetIntegrationPointsLocalCoordinatesFromElement )
     .def("CalculateOnIntegrationPoints", CalculateOnIntegrationPointsVector<Element>)
     .def("CalculateOnIntegrationPoints", CalculateOnIntegrationPointsString<Element>)
     .def("CalculateOnIntegrationPoints", CalculateOnIntegrationPointsArray1d<Element>)
