@@ -1,10 +1,10 @@
-//    |  /           | 
-//    ' /   __| _` | __|  _ \   __| 
+//    |  /           |
+//    ' /   __| _` | __|  _ \   __|
 //    . \  |   (   | |   (   |\__ \.
-//   _|\_\_|  \__,_|\__|\___/ ____/ 
-//                   Multi-Physics  
+//   _|\_\_|  \__,_|\__|\___/ ____/
+//                   Multi-Physics
 //
-//  License:         BSD License 
+//  License:         BSD License
 //                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Pooyan Dadvand
@@ -245,7 +245,11 @@ public:
     virtual Pointer Create(IndexType NewId, NodesArrayType const& ThisNodes,
                PropertiesType::Pointer pProperties) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "Not implemented")
+        std::stringstream ss;
+        ss << "Condition " << typeid(*this).name() << ": "
+           << __FUNCTION__ << " is not implemented";
+
+        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
     }
 
     /**
@@ -259,7 +263,11 @@ public:
                            GeometryType::Pointer pGeom,
                            PropertiesType::Pointer pProperties) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
+        std::stringstream ss;
+        ss << "Condition " << typeid(*this).name() << ": "
+           << __FUNCTION__ << " is not implemented";
+
+        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
     }
 
     /**
@@ -273,7 +281,11 @@ public:
                            std::vector<GeometryType::Pointer> pGeom,
                            PropertiesType::Pointer pProperties) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "Not implemented")
+        std::stringstream ss;
+        ss << "Condition " << typeid(*this).name() << ": "
+           << __FUNCTION__ << " is not implemented";
+
+        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
     }
 
     /**
@@ -285,7 +297,11 @@ public:
      */
     virtual Pointer Clone (IndexType NewId, NodesArrayType const& ThisNodes) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "Not implemented")
+        std::stringstream ss;
+        ss << "Condition " << typeid(*this).name() << ": "
+           << __FUNCTION__ << " is not implemented";
+
+        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
     }
 
     /**
@@ -302,7 +318,11 @@ public:
     virtual void EquationIdVector(EquationIdVectorType& rResult,
                   const ProcessInfo& rCurrentProcessInfo) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "Not implemented")
+        std::stringstream ss;
+        ss << "Condition " << typeid(*this).name() << ": "
+           << __FUNCTION__ << " is not implemented";
+
+        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
     }
 
     /**
@@ -313,7 +333,11 @@ public:
     virtual void GetDofList(DofsVectorType& rConditionDofList,
                 const ProcessInfo& rCurrentProcessInfo) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "Not implemented")
+        std::stringstream ss;
+        ss << "Condition " << typeid(*this).name() << ": "
+           << __FUNCTION__ << " is not implemented";
+
+        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
     }
 
     /**
@@ -453,10 +477,11 @@ public:
                       VectorType& rRightHandSideVector,
                       const ProcessInfo& rCurrentProcessInfo)
     {
-        if (rLeftHandSideMatrix.size1() != 0)
-      rLeftHandSideMatrix.resize(0, 0, false);
-        if (rRightHandSideVector.size() != 0)
-      rRightHandSideVector.resize(0, false);
+        std::stringstream ss;
+        ss << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
+           << __FUNCTION__ << " is not implemented";
+
+        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
     }
 
     /**
@@ -474,6 +499,11 @@ public:
                                       const std::vector< Variable< VectorType > >& rRHSVariables,
                                       const ProcessInfo& rCurrentProcessInfo)
     {
+        std::stringstream ss;
+        ss << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
+           << __FUNCTION__ << " is not implemented";
+
+        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
     }
 
     /**
@@ -485,8 +515,11 @@ public:
     virtual void CalculateLeftHandSide(MatrixType& rLeftHandSideMatrix,
                        const ProcessInfo& rCurrentProcessInfo)
     {
-        if (rLeftHandSideMatrix.size1() != 0)
-      rLeftHandSideMatrix.resize(0, 0, false);
+        std::stringstream ss;
+        ss << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
+           << __FUNCTION__ << " is not implemented";
+
+        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
     }
 
     /**
@@ -500,6 +533,11 @@ public:
                     const std::vector< Variable< MatrixType > >& rLHSVariables,
                     const ProcessInfo& rCurrentProcessInfo)
     {
+        std::stringstream ss;
+        ss << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
+           << __FUNCTION__ << " is not implemented";
+
+        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
     }
 
     /**
@@ -511,8 +549,11 @@ public:
     virtual void CalculateRightHandSide(VectorType& rRightHandSideVector,
                     const ProcessInfo& rCurrentProcessInfo)
     {
-        if (rRightHandSideVector.size() != 0)
-      rRightHandSideVector.resize(0, false);
+        std::stringstream ss;
+        ss << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
+           << __FUNCTION__ << " is not implemented";
+
+        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
     }
 
     /**
@@ -526,6 +567,11 @@ public:
                     const std::vector< Variable< VectorType > >& rRHSVariables,
                     const ProcessInfo& rCurrentProcessInfo)
     {
+        std::stringstream ss;
+        ss << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
+           << __FUNCTION__ << " is not implemented";
+
+        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
     }
 
 
@@ -551,10 +597,11 @@ public:
                             VectorType& rRightHandSideVector,
                             const ProcessInfo& rCurrentProcessInfo)
     {
-       if (rLeftHandSideMatrix.size1() != 0)
-      rLeftHandSideMatrix.resize(0, 0, false);
-        if (rRightHandSideVector.size() != 0)
-      rRightHandSideVector.resize(0, false);
+        std::stringstream ss;
+        ss << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
+           << __FUNCTION__ << " is not implemented";
+
+        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
     }
 
     /**
@@ -566,8 +613,11 @@ public:
     virtual void CalculateFirstDerivativesLHS(MatrixType& rLeftHandSideMatrix,
                           const ProcessInfo& rCurrentProcessInfo)
     {
-        if (rLeftHandSideMatrix.size1() != 0)
-      rLeftHandSideMatrix.resize(0, 0, false);
+        std::stringstream ss;
+        ss << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
+           << __FUNCTION__ << " is not implemented";
+
+        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
     }
 
 
@@ -580,8 +630,11 @@ public:
     virtual void CalculateFirstDerivativesRHS(VectorType& rRightHandSideVector,
                           const ProcessInfo& rCurrentProcessInfo)
     {
-        if (rRightHandSideVector.size() != 0)
-      rRightHandSideVector.resize(0, false);
+        std::stringstream ss;
+        ss << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
+           << __FUNCTION__ << " is not implemented";
+
+        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
     }
 
 
@@ -607,10 +660,11 @@ public:
                              VectorType& rRightHandSideVector,
                              const ProcessInfo& rCurrentProcessInfo)
     {
-       if (rLeftHandSideMatrix.size1() != 0)
-      rLeftHandSideMatrix.resize(0, 0, false);
-        if (rRightHandSideVector.size() != 0)
-      rRightHandSideVector.resize(0, false);
+        std::stringstream ss;
+        ss << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
+           << __FUNCTION__ << " is not implemented";
+
+        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
     }
 
 
@@ -623,8 +677,11 @@ public:
     virtual void CalculateSecondDerivativesLHS(MatrixType& rLeftHandSideMatrix,
                            const ProcessInfo& rCurrentProcessInfo)
     {
-        if (rLeftHandSideMatrix.size1() != 0)
-      rLeftHandSideMatrix.resize(0, 0, false);
+        std::stringstream ss;
+        ss << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
+           << __FUNCTION__ << " is not implemented";
+
+        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
     }
 
 
@@ -637,8 +694,11 @@ public:
     virtual void CalculateSecondDerivativesRHS(VectorType& rRightHandSideVector,
                            const ProcessInfo& rCurrentProcessInfo)
     {
-        if (rRightHandSideVector.size() != 0)
-      rRightHandSideVector.resize(0, false);
+        std::stringstream ss;
+        ss << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
+           << __FUNCTION__ << " is not implemented";
+
+        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
     }
 
 
@@ -656,8 +716,11 @@ public:
      */
     virtual void CalculateMassMatrix(MatrixType& rMassMatrix, const ProcessInfo& rCurrentProcessInfo)
     {
-        if (rMassMatrix.size1() != 0)
-      rMassMatrix.resize(0, 0, false);
+        std::stringstream ss;
+        ss << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
+           << __FUNCTION__ << " is not implemented";
+
+        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
     }
 
 
@@ -669,8 +732,11 @@ public:
      */
     virtual void CalculateDampingMatrix(MatrixType& rDampingMatrix, const ProcessInfo& rCurrentProcessInfo)
     {
-        if (rDampingMatrix.size1() != 0)
-      rDampingMatrix.resize(0, 0, false);
+        std::stringstream ss;
+        ss << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
+           << __FUNCTION__ << " is not implemented";
+
+        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
     }
 
 
@@ -766,7 +832,7 @@ public:
                          const ProcessInfo& rCurrentProcessInfo)
     {
     }
-    
+
     virtual void CalculateOnIntegrationPoints(const Variable<double>& rVariable,
                          std::vector<double>& rValues,
                          const ProcessInfo& rCurrentProcessInfo)
@@ -827,7 +893,7 @@ public:
                          const ProcessInfo& rCurrentProcessInfo)
     {
     }
-    
+
     virtual void SetValuesOnIntegrationPoints(const Variable<double>& rVariable,
                          const std::vector<double>& rValues,
                          const ProcessInfo& rCurrentProcessInfo)
@@ -878,7 +944,7 @@ public:
     {
         this->CalculateOnIntegrationPoints(rVariable, rValues, rCurrentProcessInfo);
     }
-    
+
     void GetValuesOnIntegrationPoints(const Variable<double>& rVariable,
                          std::vector<double>& rValues,
                          const ProcessInfo& rCurrentProcessInfo)
@@ -975,8 +1041,11 @@ public:
      */
     virtual void MassMatrix(MatrixType& rMassMatrix, const ProcessInfo& rCurrentProcessInfo)
     {
-        if (rMassMatrix.size1() != 0)
-      rMassMatrix.resize(0, 0, false);
+        std::stringstream ss;
+        ss << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
+           << __FUNCTION__ << " is not implemented";
+
+        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
     }
 
     /**
@@ -997,8 +1066,11 @@ public:
      */
     virtual void DampMatrix(MatrixType& rDampMatrix, const ProcessInfo& rCurrentProcessInfo)
     {
-        if (rDampMatrix.size1() != 0)
-      rDampMatrix.resize(0, 0, false);
+        std::stringstream ss;
+        ss << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
+           << __FUNCTION__ << " is not implemented";
+
+        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
     }
 
     /**
@@ -1018,8 +1090,11 @@ public:
      */
     virtual void CalculateLocalVelocityContribution(MatrixType& rDampingMatrix, VectorType& rRightHandSideVector, const ProcessInfo& rCurrentProcessInfo)
     {
-        if (rDampingMatrix.size1() != 0)
-            rDampingMatrix.resize(0, 0, false);
+        std::stringstream ss;
+        ss << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
+           << __FUNCTION__ << " is not implemented";
+
+        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
     }
 
     //METHODS TO BE CLEANED: DEPRECATED end
@@ -1048,6 +1123,10 @@ public:
         return *mpProperties;
     }
 
+    void SetProperties(PropertiesType::Pointer pProperties)
+    {
+        mpProperties = pProperties;
+    }
 
     ///@}
     ///@name Condition Data

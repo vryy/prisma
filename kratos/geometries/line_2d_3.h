@@ -864,7 +864,7 @@ public:
 
         rResult[0][0].resize( 1, 1, false );
         rResult[1][0].resize( 1, 1, false );
-        rResult[3][0].resize( 1, 1, false );
+        rResult[2][0].resize( 1, 1, false );
 
         for ( int i = 0; i < 3; i++ )
         {

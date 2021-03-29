@@ -1283,6 +1283,21 @@ private:
 ///@name Type Definitions
 ///@{
 
+template<typename TEntityType>
+struct ModelPartEntitiesContainerSelector
+{};
+
+template<>
+struct ModelPartEntitiesContainerSelector<Element>
+{
+    typedef ModelPart::ElementsContainerType EntitiesContainerType;
+};
+
+template<>
+struct ModelPartEntitiesContainerSelector<Condition>
+{
+    typedef ModelPart::ConditionsContainerType EntitiesContainerType;
+};
 
 ///@}
 ///@name Input and output
