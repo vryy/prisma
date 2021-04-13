@@ -1261,6 +1261,7 @@ protected:
             mConstantVector[eq_id] = 0.0;
             mT(eq_id, eq_id) = 1.0;
         }
+        // fixing the constraint transformation matrix if there's a dof that's a slave in one constraint and a master in another constraint.
         for (int k = 0; k < static_cast<int>(mSlaveIds.size()); ++k)
         {
             const IndexType slave_equation_id = mSlaveIds[k];

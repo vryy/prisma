@@ -1308,7 +1308,23 @@ protected:
             mConstantVector[eq_id] = 0.0;
             mT(eq_id, eq_id) = 1.0;
         }
-
+        // fixing the constraint transformation matrix if there's a dof that's a slave in one constraint and a master in another constraint.
+        for (int k = 0; k < static_cast<int>(mSlaveIds.size()); ++k)
+        {
+            const IndexType slave_equation_id = mSlaveIds[k];
+            for (int i = 0; i < static_cast<int>(mT.size1()); ++i)
+            {
+                if (mT(i,slave_equation_id) != 0)
+                {
+                    std::cout << "ATTENTION! ResidualBasedBlockBuilderAndSolverWithConstraints. constraint slave is used as master for another constraint!" << std::endl;
+                    for (int j = 0; j < static_cast<int>(mT.size2()); ++j)
+                    {
+                        mT(i,j) = mT(i,j) + mT(i,slave_equation_id) * mT(slave_equation_id,j);
+                    }
+                    mT(i,slave_equation_id) = 0;
+                }
+            }
+        }
         KRATOS_CATCH("")
     }
 
