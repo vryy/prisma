@@ -234,6 +234,8 @@ void SetValuesOnIntegrationPointsDouble( TObject& dummy, const Variable<double>&
 {
     IntegrationPointsArrayType integration_points = dummy.GetGeometry().IntegrationPoints(
                 dummy.GetIntegrationMethod() );
+    if (boost::python::len(values_list) != integration_points.size())
+        KRATOS_THROW_ERROR(std::logic_error, "Incompatiable number of integration points and given values", "")
     std::vector<double> values( integration_points.size() );
     for( unsigned int i=0; i<integration_points.size(); i++ )
     {
@@ -253,6 +255,8 @@ void SetValuesOnIntegrationPointsInt( TObject& dummy, const Variable<int>& rVari
 {
     IntegrationPointsArrayType integration_points = dummy.GetGeometry().IntegrationPoints(
                 dummy.GetIntegrationMethod() );
+    if (boost::python::len(values_list) != integration_points.size())
+        KRATOS_THROW_ERROR(std::logic_error, "Incompatiable number of integration points and given values", "")
     std::vector<int> values( integration_points.size() );
     for( unsigned int i=0; i<integration_points.size(); i++ )
     {
@@ -293,6 +297,8 @@ void SetValuesOnIntegrationPointsString( TObject& dummy, const Variable<std::str
 {
     IntegrationPointsArrayType integration_points = dummy.GetGeometry().IntegrationPoints(
                 dummy.GetIntegrationMethod() );
+    if (boost::python::len(values_list) != integration_points.size())
+        KRATOS_THROW_ERROR(std::logic_error, "Incompatiable number of integration points and given values", "")
     std::vector<std::string> values( integration_points.size() );
     for( unsigned int i=0; i<integration_points.size(); i++ )
     {
@@ -336,6 +342,8 @@ void SetValuesOnIntegrationPointsArray1d( TObject& dummy, const Variable< array_
 {
     IntegrationPointsArrayType integration_points = dummy.GetGeometry().IntegrationPoints(
                 dummy.GetIntegrationMethod() );
+    if (boost::python::len(values_list) != integration_points.size())
+        KRATOS_THROW_ERROR(std::logic_error, "Incompatiable number of integration points and given values", "")
     std::vector< array_1d<double,3> > values( integration_points.size() );
     for( unsigned int i=0; i<integration_points.size(); i++ )
     {
@@ -380,6 +388,8 @@ void SetValuesOnIntegrationPointsVector( TObject& dummy,
 {
     IntegrationPointsArrayType integration_points = dummy.GetGeometry().IntegrationPoints(
                 dummy.GetIntegrationMethod() );
+    if (boost::python::len(values_list) != integration_points.size())
+        KRATOS_THROW_ERROR(std::logic_error, "Incompatiable number of integration points and given values", "")
     std::vector<Vector> values( integration_points.size() );
     for( unsigned int i=0; i<integration_points.size(); i++ )
     {
@@ -405,6 +415,8 @@ void SetValuesOnIntegrationPointsVectorVariableLength( TObject& dummy,
 {
     IntegrationPointsArrayType integration_points = dummy.GetGeometry().IntegrationPoints(
                 dummy.GetIntegrationMethod() );
+    if (boost::python::len(values_list) != integration_points.size())
+        KRATOS_THROW_ERROR(std::logic_error, "Incompatiable number of integration points and given values", "")
     std::vector<Vector> values( integration_points.size() );
     for( unsigned int i=0; i<integration_points.size(); i++ )
     {
@@ -482,6 +494,8 @@ void SetValuesOnIntegrationPointsConstitutiveLaw( Element& dummy, const Variable
 {
     IntegrationPointsArrayType integration_points = dummy.GetGeometry().IntegrationPoints(
                 dummy.GetIntegrationMethod() );
+    if (boost::python::len(values_list) != integration_points.size())
+        KRATOS_THROW_ERROR(std::logic_error, "Incompatiable number of integration points and given values", "")
     std::vector<ConstitutiveLaw::Pointer> values( integration_points.size() );
     for( unsigned int i=0; i<integration_points.size(); i++ )
     {
@@ -635,6 +649,7 @@ void  AddMeshToPython()
     .def("InitializeNonLinearIteration", &Element::InitializeNonLinearIteration)
     .def("FinalizeNonLinearIteration", &Element::FinalizeNonLinearIteration)
     .def("FinalizeSolutionStep", &Element::FinalizeSolutionStep)
+    .def("Info", &Element::Info)
     .def(self_ns::str(self))
     ;
 
