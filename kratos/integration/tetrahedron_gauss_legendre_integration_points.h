@@ -82,10 +82,10 @@ public:
 
     static IntegrationPointsArrayType& IntegrationPoints()
     {
-        msIntegrationPoints[0] = IntegrationPointType( 0.13819660,0.13819660,0.13819660 , 1.00 / 24.00 );
-        msIntegrationPoints[1] = IntegrationPointType( 0.58541020,0.13819660,0.13819660 , 1.00 / 24.00 );
-        msIntegrationPoints[2] = IntegrationPointType( 0.13819660,0.58541020,0.13819660 , 1.00 / 24.00 );
-        msIntegrationPoints[3] = IntegrationPointType( 0.13819660,0.13819660,0.58541020 , 1.00 / 24.00 );
+        msIntegrationPoints[0] = IntegrationPointType( 0.58541020,0.13819660,0.13819660 , 1.00 / 24.00 );
+        msIntegrationPoints[1] = IntegrationPointType( 0.13819660,0.58541020,0.13819660 , 1.00 / 24.00 );
+        msIntegrationPoints[2] = IntegrationPointType( 0.13819660,0.13819660,0.58541020 , 1.00 / 24.00 );
+        msIntegrationPoints[3] = IntegrationPointType( 0.13819660,0.13819660,0.13819660 , 1.00 / 24.00 );
         return msIntegrationPoints;
     }
 
