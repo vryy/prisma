@@ -469,6 +469,8 @@ public:
         rOStream << " LinearMasterSlaveConstraint Id  : " << this->Id() << std::endl;
         rOStream << " Number of Slaves          : " << mSlaveDofsVector.size() << std::endl;
         rOStream << " Number of Masters         : " << mMasterDofsVector.size() << std::endl;
+        rOStream << " Relation Matrix           : " << mRelationMatrix << std::endl;
+        rOStream << " Constant Vector           : " << mConstantVector << std::endl;
     }
 
     ///@}
