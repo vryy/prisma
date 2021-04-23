@@ -142,7 +142,7 @@ public:
 
     /** Destructor.
      */
-    ~ResidualBasedBlockBuilderAndSolverWithConstraints() //override
+    ~ResidualBasedBlockBuilderAndSolverWithConstraints() override
     {
     }
 
@@ -166,7 +166,7 @@ public:
         typename TSchemeType::Pointer pScheme,
         ModelPart& rModelPart,
         TSystemMatrixType& A,
-        TSystemVectorType& b) //override
+        TSystemVectorType& b) override
     {
         KRATOS_TRY
         if(!pScheme)
@@ -275,7 +275,7 @@ public:
     void BuildLHS(
         typename TSchemeType::Pointer pScheme,
         ModelPart& rModelPart,
-        TSystemMatrixType& A) //override
+        TSystemMatrixType& A) override
     {
         KRATOS_TRY
 
@@ -297,7 +297,7 @@ public:
     void BuildLHS_CompleteOnFreeRows(
         typename TSchemeType::Pointer pScheme,
         ModelPart& rModelPart,
-        TSystemMatrixType& A) //override
+        TSystemMatrixType& A) override
     {
         KRATOS_TRY
 
@@ -317,7 +317,7 @@ public:
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
         TSystemVectorType& b
-    ) //override
+    ) override
     {
         KRATOS_TRY
 
@@ -453,7 +453,7 @@ public:
         ModelPart& rModelPart,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
-        TSystemVectorType& b) //override
+        TSystemVectorType& b) override
     {
         KRATOS_TRY
 
@@ -514,7 +514,7 @@ public:
         ModelPart& rModelPart,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
-        TSystemVectorType& b) //override
+        TSystemVectorType& b) override
     {
         KRATOS_TRY
 
@@ -533,7 +533,7 @@ public:
     void BuildRHS(
         typename TSchemeType::Pointer pScheme,
         ModelPart& rModelPart,
-        TSystemVectorType& b) //override
+        TSystemVectorType& b) override
     {
         KRATOS_TRY
 
@@ -566,7 +566,7 @@ public:
     void SetUpDofSet(
         typename TSchemeType::Pointer pScheme,
         ModelPart& rModelPart
-    ) //override
+    ) override
     {
         KRATOS_TRY;
 
@@ -728,7 +728,7 @@ public:
      */
     void SetUpSystem(
         ModelPart& rModelPart
-    ) //override
+    ) override
     {
         //int free_id = 0;
         BaseType::mEquationSystemSize = BaseType::mDofSet.size();
@@ -750,7 +750,7 @@ public:
         TSystemVectorPointerType& pDx,
         TSystemVectorPointerType& pb,
         ModelPart& rModelPart
-    ) ////override
+    ) //override
     {
         KRATOS_TRY
         if (pA == NULL) //if the pointer is not initialized initialize it to an empty matrix
@@ -818,7 +818,7 @@ public:
         ModelPart& rModelPart,
         TSystemMatrixType& rA,
         TSystemVectorType& rDx,
-        TSystemVectorType& rb) //override
+        TSystemVectorType& rb) override
     {
         KRATOS_TRY
 
@@ -846,7 +846,7 @@ public:
         ModelPart& rModelPart,
         TSystemMatrixType& rA,
         TSystemVectorType& rDx,
-        TSystemVectorType& rb) //override
+        TSystemVectorType& rb) override
     {
         BaseType::FinalizeSolutionStep(rModelPart, rA, rDx, rb);
 
@@ -871,7 +871,7 @@ public:
         ModelPart& rModelPart,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
-        TSystemVectorType& b) //override
+        TSystemVectorType& b) override
     {
         TSparseSpace::SetToZero(b);
 
@@ -906,7 +906,7 @@ public:
         ModelPart& rModelPart,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
-        TSystemVectorType& b) //override
+        TSystemVectorType& b) override
     {
         const double start_apply = OpenMPUtils::GetCurrentTime();
 
@@ -988,7 +988,7 @@ public:
     /**
      * @brief This function is intended to be called at the end of the solution step to clean up memory storage not needed
      */
-    void Clear() //override
+    void Clear() override
     {
         BaseType::Clear();
         this->mpLinearSystemSolver->Clear();
@@ -1012,7 +1012,7 @@ public:
      * @param rModelPart The model part of the problem to solve
      * @return 0 all ok
      */
-    int Check(ModelPart& rModelPart) //override
+    int Check(ModelPart& rModelPart) override
     {
         KRATOS_TRY
 
@@ -1033,19 +1033,19 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    std::string Info() const //override
+    std::string Info() const override
     {
         return "ResidualBasedBlockBuilderAndSolverWithConstraints";
     }
 
     /// Print information about this object.
-    void PrintInfo(std::ostream& rOStream) const //override
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << Info();
     }
 
     /// Print object's data.
-    void PrintData(std::ostream& rOStream) const //override
+    void PrintData(std::ostream& rOStream) const override
     {
         rOStream << Info();
     }

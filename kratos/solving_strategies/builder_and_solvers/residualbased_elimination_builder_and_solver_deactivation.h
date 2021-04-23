@@ -260,7 +260,7 @@ public:
 
     /** Destructor.
     */
-    virtual ~ResidualBasedEliminationBuilderAndSolverDeactivation()
+    ~ResidualBasedEliminationBuilderAndSolverDeactivation() override
     {
     }
 
@@ -302,7 +302,7 @@ public:
         typename TSchemeType::Pointer pScheme,
         ModelPart& r_model_part,
         TSystemMatrixType& A,
-        TSystemVectorType& b)
+        TSystemVectorType& b) override
     {
         KRATOS_TRY
 
@@ -566,6 +566,7 @@ public:
                         KRATOS_WATCH(RHS_Contribution)
                         std::cout << "type of element: " << typeid(*(*it)).name() << std::endl;
                         std::cout << "element Properties " << (*it)->GetProperties().Id() << ": " << (*it)->GetProperties() << std::endl;
+                        KRATOS_WATCH(*(*it))
                         KRATOS_THROW_ERROR(std::logic_error, "NaN is detected at element", (*it)->Id())
                     }
                     #endif
@@ -673,6 +674,7 @@ public:
                         KRATOS_WATCH(norm_cond_r)
                         std::cout << "type of condition: " << typeid(*(*it)).name() << std::endl;
                         std::cout << "condition Properties " << (*it)->GetProperties().Id() << ": " << (*it)->GetProperties() << std::endl;
+                        KRATOS_WATCH(*(*it))
                         KRATOS_THROW_ERROR(std::logic_error, "NaN is detected at condition", (*it)->Id())
                     }
                     #endif
@@ -868,7 +870,7 @@ public:
     void BuildLHS(
         typename TSchemeType::Pointer pScheme,
         ModelPart& r_model_part,
-        TSystemMatrixType& A)
+        TSystemMatrixType& A) override
     {
         KRATOS_TRY
 
@@ -930,7 +932,7 @@ public:
     void BuildLHS_CompleteOnFreeRows(
         typename TSchemeType::Pointer pScheme,
         ModelPart& r_model_part,
-        TSystemMatrixType& A)
+        TSystemMatrixType& A) override
     {
         KRATOS_TRY
 
@@ -993,7 +995,7 @@ public:
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
         TSystemVectorType& b
-    )
+    ) override
     {
         KRATOS_TRY
 
@@ -1048,7 +1050,7 @@ public:
         ModelPart& r_model_part,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
-        TSystemVectorType& b)
+        TSystemVectorType& b) override
     {
         KRATOS_TRY
 
@@ -1134,7 +1136,7 @@ public:
         ModelPart& r_model_part,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
-        TSystemVectorType& b)
+        TSystemVectorType& b) override
     {
         KRATOS_TRY
 
@@ -1149,7 +1151,7 @@ public:
     void BuildRHS(
         typename TSchemeType::Pointer pScheme,
         ModelPart& r_model_part,
-        TSystemVectorType& b)
+        TSystemVectorType& b) override
     {
         KRATOS_TRY
 
@@ -1283,7 +1285,7 @@ public:
     void SetUpDofSet(
         typename TSchemeType::Pointer pScheme,
         ModelPart& r_model_part
-    )
+    ) override
     {
         KRATOS_TRY
 
@@ -1380,7 +1382,7 @@ public:
     #ifdef DOF_ENUMERATION_REVERSE
     void SetUpSystem(
         ModelPart& r_model_part
-    )
+    ) override
     {
         // initialize the equation id for every dofs in the system. This is to avoid any untouched dofs when the elements are deactivated.
         for (typename DofsArrayType::iterator dof_iterator = mAllDofs.begin(); dof_iterator != mAllDofs.end(); ++dof_iterator)
@@ -1426,7 +1428,7 @@ public:
     #ifdef DOF_ENUMERATION_STRAIGHT
     void SetUpSystem(
         ModelPart& r_model_part
-    )
+    ) override
     {
         #ifdef ENABLE_LOG
         MY_LOG_TRACE << "DOF_ENUMERATION_STRAIGHT" << std::endl;
@@ -1482,7 +1484,7 @@ public:
     #ifdef DOF_ENUMERATION_FULL_STRAIGHT
     void SetUpSystem(
         ModelPart& r_model_part
-    )
+    ) override
     {
         #ifdef ENABLE_LOG
         MY_LOG_TRACE << "DOF_ENUMERATION_FULL_STRAIGHT" << std::endl;
@@ -1544,7 +1546,7 @@ public:
         ElementsArrayType& rElements,
         ConditionsArrayType& rConditions,
         ProcessInfo& CurrentProcessInfo
-    )
+    ) override
     {
         KRATOS_TRY
         if(pA == NULL) //if the pointer is not initialized initialize it to an empty matrix
@@ -1611,7 +1613,7 @@ public:
         TSystemVectorPointerType& pDx,
         TSystemVectorPointerType& pb,
         ModelPart& rModelPart
-    )
+    ) override
     {
         ResizeAndInitializeVectors(pA, pDx, pb, rModelPart.Elements(), rModelPart.Conditions(), rModelPart.GetProcessInfo());
     }
@@ -1622,7 +1624,7 @@ public:
         ModelPart& r_model_part,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
-        TSystemVectorType& b)
+        TSystemVectorType& b) override
     {
         KRATOS_TRY
         KRATOS_CATCH("")
@@ -1634,7 +1636,7 @@ public:
         ModelPart& r_model_part,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
-        TSystemVectorType& b)
+        TSystemVectorType& b) override
     {
         ++mStepCounter;
         mLocalCounter = 0;
@@ -1647,7 +1649,7 @@ public:
         ModelPart& r_model_part,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
-        TSystemVectorType& b)
+        TSystemVectorType& b) override
     {
         //build RHS with reactions
         BuildRHSreactions(pScheme,r_model_part,b);
@@ -1684,7 +1686,7 @@ public:
         ModelPart& r_model_part,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
-        TSystemVectorType& b)
+        TSystemVectorType& b) override
     {}
 
     //**************************************************************************
@@ -1692,14 +1694,14 @@ public:
     void ApplyPointLoads(
         typename TSchemeType::Pointer pScheme,
         ModelPart& r_model_part,
-        TSystemVectorType& b)
+        TSystemVectorType& b) override
     {}
 
     /**
     this function is intended to be called at the end of the solution step to clean up memory
     storage not needed
     */
-    void Clear()
+    void Clear() override
     {
         this->mDofSet = DofsArrayType();
 
@@ -1712,8 +1714,6 @@ public:
             KRATOS_WATCH("ResidualBasedEliminationBuilderAndSolverDeactivation Clear Function called");
         }
     }
-
-
 
 
     /*@} */
@@ -1730,6 +1730,27 @@ public:
     /**@name Inquiry */
     /*@{ */
 
+    ///@}
+    ///@name Input and output
+    ///@{
+
+    /// Turn back information as a string.
+    std::string Info() const override
+    {
+        return "ResidualBasedEliminationBuilderAndSolverDeactivation";
+    }
+
+    /// Print information about this object.
+    void PrintInfo(std::ostream& rOStream) const override
+    {
+        rOStream << Info();
+    }
+
+    /// Print object's data.
+    void PrintData(std::ostream& rOStream) const override
+    {
+        rOStream << Info();
+    }
 
     /*@} */
     /**@name Friends */

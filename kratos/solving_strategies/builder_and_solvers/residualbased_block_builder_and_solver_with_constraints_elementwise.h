@@ -118,7 +118,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise
 
     /** Destructor.
      */
-    ~ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise() // override
+    ~ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise() override
     {
     }
 
@@ -131,7 +131,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise
     ///@{
 
     void SetUpSystem(
-        ModelPart &rModelPart) // override
+        ModelPart &rModelPart) override
     {
         BaseType::SetUpSystem(rModelPart);
         if(rModelPart.NumberOfMasterSlaveConstraints() > 0)
@@ -152,7 +152,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise
         typename TSchemeType::Pointer pScheme,
         ModelPart &rModelPart,
         TSystemMatrixType &A,
-        TSystemVectorType &b) // override
+        TSystemVectorType &b) override
     {
         if(mGlobalMasterSlaveConstraints.size() > 0)
             BuildWithConstraints(pScheme, rModelPart, A, b);
@@ -176,7 +176,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise
         ModelPart &rModelPart,
         TSystemMatrixType &A,
         TSystemVectorType &Dx,
-        TSystemVectorType &b) // override
+        TSystemVectorType &b) override
     {
         if(mGlobalMasterSlaveConstraints.size() > 0)
             BuildAndSolveWithConstraints(pScheme, rModelPart, A, Dx, b);
@@ -189,7 +189,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise
         ModelPart &rModelPart,
         TSystemMatrixType &A,
         TSystemVectorType &Dx,
-        TSystemVectorType &b) // override
+        TSystemVectorType &b) override
     {
         KRATOS_TRY
 
@@ -203,7 +203,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise
         ModelPart &rModelPart,
         TSystemMatrixType &A,
         TSystemVectorType &Dx,
-        TSystemVectorType &b) // override
+        TSystemVectorType &b) override
     {
         KRATOS_TRY
         BaseType::FinalizeSolutionStep(rModelPart, A, Dx, b);
@@ -236,19 +236,19 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise
     ///@{
 
     /// Turn back information as a string.
-    std::string Info() const // override
+    std::string Info() const override
     {
         return "ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise";
     }
 
     /// Print information about this object.
-    void PrintInfo(std::ostream& rOStream) const // override
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << Info();
     }
 
     /// Print object's data.
-    void PrintData(std::ostream& rOStream) const // override
+    void PrintData(std::ostream& rOStream) const override
     {
         rOStream << Info();
     }
@@ -277,7 +277,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise
 
     void ConstructMatrixStructure(
         TSystemMatrixType &A,
-        ModelPart &rModelPart) // override
+        ModelPart &rModelPart) override
     {
         if(mGlobalMasterSlaveConstraints.size() > 0)
             ConstructMatrixStructureWithConstraints(A, rModelPart);
@@ -612,7 +612,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise
     void SetUpDofSet(
         typename TSchemeType::Pointer pScheme,
         ModelPart& rModelPart
-    ) // override
+    ) override
     {
         KRATOS_TRY;
 
