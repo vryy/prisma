@@ -1183,6 +1183,19 @@ protected:
                 if(constraint_is_active) {
                     it_const->EquationIdVector(slave_ids, master_ids, r_current_process_info);
 
+                    // here have to disable the constraint that has inactive master dof
+                    // this happens because when the elements are deactivated, certain master nodes will disappear
+                    // , so the corresponding constraint will be invalidated
+                    for (auto &eq_id : master_ids) {
+                        if (eq_id >= BaseType::mEquationSystemSize) {
+                            constraint_is_active = false;
+                            break;
+                        }
+                    }
+
+                    if (constraint_is_active == false)
+                        continue;
+
                     // Slave DoFs
                     for (auto &id_i : slave_ids) {
                         if (id_i < BaseType::mEquationSystemSize)
@@ -1273,10 +1286,34 @@ protected:
             if (it_const->IsDefined(ACTIVE))
                 constraint_is_active = it_const->Is(ACTIVE);
 
+            it_const->EquationIdVector(slave_equation_ids, master_equation_ids, r_current_process_info);
+
+            // here have to disable the constraint that has inactive master dof
+            // this happens because when the elements are deactivated, certain master nodes will disappear
+            // , so the corresponding constraint will be invalidated
+            for (auto &eq_id : master_equation_ids) {
+                if (eq_id >= BaseType::mEquationSystemSize) {
+                    constraint_is_active = false;
+                    break;
+                }
+            }
+// KRATOS_WATCH(it_const->Id())
             if (constraint_is_active) {
                 it_const->CalculateLocalSystem(transformation_matrix, constant_vector, r_current_process_info);
-                it_const->EquationIdVector(slave_equation_ids, master_equation_ids, r_current_process_info);
 
+// KRATOS_WATCH(__LINE__)
+// KRATOS_WATCH(BaseType::mEquationSystemSize)
+// KRATOS_WATCH(mT.size1())
+// KRATOS_WATCH(mT.size2())
+// KRATOS_WATCH(mConstantVector.size())
+// std::cout << "slave_equation_ids:";
+// for (IndexType i = 0; i < slave_equation_ids.size(); ++i)
+//     std::cout << " " << slave_equation_ids[i];
+// std::cout << std::endl;
+// std::cout << "master_equation_ids:";
+// for (IndexType i = 0; i < master_equation_ids.size(); ++i)
+//     std::cout << " " << master_equation_ids[i];
+// std::cout << std::endl;
                 for (IndexType i = 0; i < slave_equation_ids.size(); ++i) {
                     const IndexType i_global = slave_equation_ids[i];
 
@@ -1292,8 +1329,14 @@ protected:
                     }
                 }
             } else { // Taking into account inactive constraints
-                it_const->EquationIdVector(slave_equation_ids, master_equation_ids, r_current_process_info);
-                mInactiveSlaveDofs.insert(slave_equation_ids.begin(), slave_equation_ids.end());
+// KRATOS_WATCH(__LINE__)
+                for (auto &eq_id : slave_equation_ids) {
+                    if (eq_id < BaseType::mEquationSystemSize) {
+                        mInactiveSlaveDofs.insert(eq_id);
+                    }
+                }
+                // mInactiveSlaveDofs.insert(slave_equation_ids.begin(), slave_equation_ids.end());
+// KRATOS_WATCH(__LINE__)
             }
         }
 
@@ -1327,8 +1370,10 @@ protected:
             BuildMasterSlaveConstraints(rModelPart);
 
             // We compute the transposed matrix of the global relation matrix
+// KRATOS_WATCH(mT)
             TSystemMatrixType T_transpose_matrix(mT.size2(), mT.size1());
             SparseMatrixMultiplicationUtility::TransposeMatrix<TSystemMatrixType, TSystemMatrixType>(T_transpose_matrix, mT, 1.0);
+// KRATOS_WATCH(T_transpose_matrix)
 
             TSystemVectorType b_modified(rb.size());
             TSparseSpace::Mult(T_transpose_matrix, rb, b_modified);
@@ -1352,8 +1397,10 @@ protected:
             for (int i = 0; i < static_cast<int>(mSlaveIds.size()); ++i) {
                 const IndexType slave_equation_id = mSlaveIds[i];
                 if (mInactiveSlaveDofs.find(slave_equation_id) == mInactiveSlaveDofs.end()) {
-                    rA(slave_equation_id, slave_equation_id) = max_diag;
-                    rb[slave_equation_id] = 0.0;
+                    if (slave_equation_id < BaseType::mEquationSystemSize) {
+                        rA(slave_equation_id, slave_equation_id) = max_diag;
+                        rb[slave_equation_id] = 0.0;
+                    }
                 }
             }
 
