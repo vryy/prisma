@@ -77,7 +77,7 @@ public:
 
     /// Check if the point is inside the bounding volume
     /// tolerance parameter is to account for proximity
-    bool IsInside(const PointType& r_point, double tolerance) const
+    bool IsInside(const PointType& r_point, const double& tolerance) const
     {
         bool is_inside = true;
         for(std::size_t i = 0; i < this->NumberOfDirections(); ++i)
@@ -95,7 +95,7 @@ public:
     ///     +   0: the two BVs are not overlapping within the tolerance, which mean this condition is satisfied in at least one direction: (this.max <= other.min - tol) or (this.min >= other.max + tol)
     ///     +   1: the two BVs are overlapping, which means in all direction, this condition is satisfied: (this.max >= other.min + tol) or (this.min <= other.max - tol)
     ///     +   2: the two BVs are in tangent to each other (only enabled if test_tangent == true)
-    int TestOverlapped(const kDOP& rOther, double tolerance, bool test_tangent = true) const
+    int TestOverlapped(const kDOP& rOther, const double& tolerance, const bool& test_tangent = true) const
     {
         if(this->NumberOfDirections() != rOther.NumberOfDirections())
             return false;
@@ -172,7 +172,7 @@ public:
     }
 
     /// Set the bounding volume by intersecting two BVs. It will re-initialize all data of this kDOP
-    bool SetVolumeIntersection(const kDOP& rBV1, const kDOP& rBV2, double tolerance)
+    bool SetVolumeIntersection(const kDOP& rBV1, const kDOP& rBV2, const double& tolerance)
     {
         int test = rBV1.TestOverlapped(rBV2, tolerance, true);
         if(test == 1)
@@ -209,10 +209,10 @@ public:
     }
 
     /// Get the i'th-direction
-    const double (&Direction(std::size_t i) const)[3] {return Direction()[i];}
+    const double (&Direction(const std::size_t& i) const)[3] {return Direction()[i];}
 
     /// Get the i'th-direction Normalized
-    const double (&DirectionNormalized(std::size_t i) const)[3] {return DirectionNormalized()[i];}
+    const double (&DirectionNormalized(const std::size_t& i) const)[3] {return DirectionNormalized()[i];}
 
     /// Get the type of this k-DOP
     std::size_t GetType() const {return 2 * NumberOfDirections();}
@@ -396,12 +396,12 @@ public:
     virtual void Partition(ContainerType& rAllConditions,
                            const kDOP& rBoundingVolume,
                            ContainerType& rOutputSet1,
-                           ContainerType& rOutputSet2)
+                           ContainerType& rOutputSet2) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling base function", "")
     }
 
-    void ComputeCentroid(GeometryType& rGeometry, double C[3])
+    void ComputeCentroid(GeometryType& rGeometry, double C[3]) const
     {
         C[0] = 0.0;
         C[1] = 0.0;
@@ -446,7 +446,7 @@ public:
     virtual void Partition(ContainerType& rAllConditions,
                            const kDOP& rBoundingVolume,
                            ContainerType& rOutputSet1,
-                           ContainerType& rOutputSet2)
+                           ContainerType& rOutputSet2) const
     {
         // for simplest case, if there is only one segment, then output 1 is set straightforward
         if(rAllConditions.size() == 1)
@@ -542,7 +542,7 @@ public:
     virtual void Partition(ContainerType& rAllConditions,
                            const kDOP& rBoundingVolume,
                            ContainerType& rOutputSet1,
-                           ContainerType& rOutputSet2)
+                           ContainerType& rOutputSet2) const
     {
         // firstly extract all the nodes of the providing geometry
         std::set<std::size_t> NodeIds;
@@ -563,11 +563,11 @@ public:
 
 /// Class Description:
 /// +   Bounding volume tree is the spatial container for fast collision detection. It is mainly used as the contact search algorithm.
-/// +   
+/// +
 /// +   This class requires following components:
-/// +   -   
+/// +   -
 ///
-/// 
+///
 /// REFERENCE:
 /// +   Yang & Laursen, A contact searching algorithm including bounding volume trees applied to finite sliding mortar formulations
 /// +   Klosowski et al, Efficient collision detection using bounding volume hierarchies of k-DOPs
@@ -577,7 +577,9 @@ class BoundingVolumeTree
 public:
     KRATOS_CLASS_POINTER_DEFINITION(BoundingVolumeTree);
 
-    BoundingVolumeTree(int type)
+    typedef kDOP::PointType PointType;
+
+    BoundingVolumeTree(const int& type)
     {
         if(type == 6)
             mpBV = kDOP::Pointer(new _6DOP());
@@ -600,11 +602,11 @@ public:
     virtual ~BoundingVolumeTree()
     {}
 
-    void BuildTreeTopDown(ContainerType& rAllConditions, BoundingVolumePartitioner<TFrame, ContainerType>& rPartitioner)
+    void BuildTreeTopDown(ContainerType& rAllConditions, const BoundingVolumePartitioner<TFrame, ContainerType>& rPartitioner)
     {
         mGeometryIds.clear();
         mpBV->Initialize();
-        this->AddGeometryFromConditions(rAllConditions);
+        this->AddGeometryFrom(rAllConditions);
 
         if(rAllConditions.size() < 2)
             return;
@@ -651,7 +653,7 @@ public:
         }
     }
 
-    void AddGeometryFromConditions(ContainerType& rAllConditions)
+    void AddGeometryFrom(ContainerType& rAllConditions)
     {
         for(typename ContainerType::ptr_iterator it = rAllConditions.ptr_begin(); it != rAllConditions.ptr_end(); ++it)
         {
@@ -660,9 +662,39 @@ public:
         }
     }
 
+    template<typename TGeometryContainerType>
+    void GetContainingGeometries(TGeometryContainerType& rGeometryIds, const PointType& r_point, const double& tolerance) const
+    {
+        if(mGeometryIds.size() == 0)
+            return;
+
+        if(this->IsLeaf())
+        {
+            if (mpBV->IsInside(r_point, tolerance))
+                rGeometryIds.insert(mGeometryIds.begin(), mGeometryIds.end());
+        }
+        else
+        {
+            if(mpLeft != NULL)
+                mpLeft->GetContainingGeometries(rGeometryIds, r_point, tolerance);
+            if(mpRight != NULL)
+                mpRight->GetContainingGeometries(rGeometryIds, r_point, tolerance);
+        }
+    }
+
     const kDOP& GetBoundingVolume() const {return *mpBV;}
 
     bool IsLeaf() const {return (mpLeft == NULL) && (mpRight == NULL);}
+
+    std::size_t Depth() const
+    {
+        std::size_t depth = 0;
+        if(mpLeft != NULL)
+            depth = mpLeft->Depth();
+        if(mpRight != NULL)
+            depth = std::max(depth, mpRight->Depth());
+        return depth+1;
+    }
 
     bool CheckValidity() const
     {
@@ -727,5 +759,5 @@ private:
 
 }  // namespace Kratos.
 
-#endif // KRATOS_BOUNDING_VOLUME_TREE_H_INCLUDED  defined 
+#endif // KRATOS_BOUNDING_VOLUME_TREE_H_INCLUDED  defined
 
