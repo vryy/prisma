@@ -132,14 +132,14 @@ public:
 
     /**
      * A third order tensor to hold shape functions' local second derivatives.
-     * ShapefunctionsLocalGradients function return this
+     * ShapeFunctionsSecondDerivatives function return this
      * type as its result.
      */
     typedef typename BaseType::ShapeFunctionsSecondDerivativesType ShapeFunctionsSecondDerivativesType;
 
     /**
-    * A third order tensor to hold shape functions' local second derivatives.
-    * ShapefunctionsLocalGradients function return this
+    * A fourth order tensor to hold shape functions' local third derivatives.
+    * ShapeFunctionsThirdDerivatives function return this
     * type as its result.
     */
     typedef typename BaseType::ShapeFunctionsThirdDerivativesType ShapeFunctionsThirdDerivativesType;
