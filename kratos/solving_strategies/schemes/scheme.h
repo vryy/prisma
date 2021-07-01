@@ -183,17 +183,17 @@ public:
       
       void Initialize()
       {
-	mpLHS_Element_Components = NULL;
-	mpLHS_Element_Variables  = NULL;
+    mpLHS_Element_Components = NULL;
+    mpLHS_Element_Variables  = NULL;
 
-	mpRHS_Element_Components = NULL;
-	mpRHS_Element_Variables  = NULL;
+    mpRHS_Element_Components = NULL;
+    mpRHS_Element_Variables  = NULL;
 
-	mpLHS_Condition_Components = NULL;
-	mpLHS_Condition_Variables  = NULL;
+    mpLHS_Condition_Components = NULL;
+    mpLHS_Condition_Variables  = NULL;
 
-	mpRHS_Condition_Components = NULL;
-	mpRHS_Condition_Variables  = NULL;
+    mpRHS_Condition_Components = NULL;
+    mpRHS_Condition_Variables  = NULL;
       }
 
       //setting pointer variables
@@ -248,7 +248,7 @@ public:
     {
         mSchemeIsInitialized = false;
         mElementsAreInitialized = false;
-	mConditionsAreInitialized = false;
+    mConditionsAreInitialized = false;
     }
 
 
@@ -489,7 +489,7 @@ public:
     to be used when system is not explicitely defined, for example for fractional step
     strategies
      */
-    /*		virtual void InitializeSolutionStep(
+    /*      virtual void InitializeSolutionStep(
                             ModelPart& r_model_part
                             )
                     {
@@ -502,7 +502,7 @@ public:
     to be used when system is not explicitely defined, for example for fractional step
     strategies
      */
-    /*		virtual void FinalizeSolutionStep(
+    /*      virtual void FinalizeSolutionStep(
                             ModelPart& r_model_part
                             )
                     {
@@ -513,7 +513,7 @@ public:
     /**
     executed before each fractional step
      */
-    /*		virtual void InitializeFractionalSolutionStep(
+    /*      virtual void InitializeFractionalSolutionStep(
                             ModelPart& r_model_part
                             )
                     {
@@ -524,7 +524,7 @@ public:
     /**
     executed after each fractional step
      */
-    /*		virtual void FinalizeFractionalSolutionStep(
+    /*      virtual void FinalizeFractionalSolutionStep(
                             ModelPart& r_model_part
                             )
                     {
@@ -564,7 +564,7 @@ public:
     }
     
     virtual void InitializeNonLinearIteration(Condition::Pointer rCurrentCondition,
-					      ProcessInfo& CurrentProcessInfo)
+        ProcessInfo& CurrentProcessInfo)
     {
         KRATOS_TRY
         rCurrentCondition->InitializeNonLinearIteration(CurrentProcessInfo);
@@ -572,7 +572,7 @@ public:
     }
 
     virtual void InitializeNonLinearIteration(Element::Pointer rCurrentElement,
-					      ProcessInfo& CurrentProcessInfo)
+        ProcessInfo& CurrentProcessInfo)
     {
         KRATOS_TRY
         rCurrentElement->InitializeNonLinearIteration(CurrentProcessInfo);
@@ -670,17 +670,17 @@ public:
     /**
     function to clean up "element" scratch space after each element is built.
      */
-    virtual void CleanMemory(Element::Pointer rCurrentElement)
+    virtual void CleanMemory(Element& rCurrentElement)
     {
-        rCurrentElement->CleanMemory();
+        rCurrentElement.CleanMemory();
     }
 
     /**
     function to clean up "condition" scratch space after each condition is built.
      */
-    virtual void CleanMemory(Condition::Pointer rCurrentCondition)
+    virtual void CleanMemory(Condition& rCurrentCondition)
     {
-        rCurrentCondition->CleanMemory();
+        rCurrentCondition.CleanMemory();
     }
 
     /**
@@ -726,94 +726,94 @@ public:
       of the system
      */
     virtual void CalculateSystemContributions(
-        Element::Pointer rCurrentElement,
+        Element& rCurrentElement,
         LocalSystemMatrixType& LHS_Contribution,
         LocalSystemVectorType& RHS_Contribution,
         Element::EquationIdVectorType& EquationId,
-        ProcessInfo& CurrentProcessInfo)
+        const ProcessInfo& CurrentProcessInfo)
     {
     }
 
-    virtual void Calculate_RHS_Contribution(
-        Element::Pointer rCurrentElement,
+    virtual void CalculateRHSContribution(
+        Element& rCurrentElement,
         LocalSystemVectorType& RHS_Contribution,
         Element::EquationIdVectorType& EquationId,
-        ProcessInfo& CurrentProcessInfo)
+        const ProcessInfo& CurrentProcessInfo)
     {
     }
 
-    virtual void Calculate_LHS_Contribution(
-        Element::Pointer rCurrentElement,
+    virtual void CalculateLHSContribution(
+        Element& rCurrentElement,
         LocalSystemMatrixType& LHS_Contribution,
         Element::EquationIdVectorType& EquationId,
-        ProcessInfo& CurrentProcessInfo)
+        const ProcessInfo& CurrentProcessInfo)
     {
     }
 
     virtual void EquationId(
-        Element::Pointer rCurrentElement,
+        const Element& rCurrentElement,
         Element::EquationIdVectorType& EquationId,
-        ProcessInfo& CurrentProcessInfo)
+        const ProcessInfo& CurrentProcessInfo)
     {
-        (rCurrentElement)->EquationIdVector(EquationId, CurrentProcessInfo);
+        rCurrentElement.EquationIdVector(EquationId, CurrentProcessInfo);
     }
 
     /** functions totally analogous to the precedent but applied to
     the "condition" objects
      */
-    virtual void Condition_CalculateSystemContributions(
-        Condition::Pointer rCurrentCondition,
+    virtual void CalculateSystemContributions(
+        Condition& rCurrentCondition,
         LocalSystemMatrixType& LHS_Contribution,
         LocalSystemVectorType& RHS_Contribution,
         Element::EquationIdVectorType& EquationId,
-        ProcessInfo& CurrentProcessInfo)
+        const ProcessInfo& CurrentProcessInfo)
     {
     }
 
-    virtual void Condition_Calculate_RHS_Contribution(
-        Condition::Pointer rCurrentCondition,
+    virtual void CalculateRHSContribution(
+        Condition& rCurrentCondition,
         LocalSystemVectorType& RHS_Contribution,
         Element::EquationIdVectorType& EquationId,
-        ProcessInfo& CurrentProcessInfo)
+        const ProcessInfo& CurrentProcessInfo)
     {
     }
 
-    virtual void Condition_Calculate_LHS_Contribution(
-        Condition::Pointer rCurrentCondition,
+    virtual void CalculateLHSContribution(
+        Condition& rCurrentCondition,
         LocalSystemMatrixType& LHS_Contribution,
         Element::EquationIdVectorType& EquationId,
-        ProcessInfo& CurrentProcessInfo)
+        const ProcessInfo& CurrentProcessInfo)
     {
     }
 
-    virtual void Condition_EquationId(
-        Condition::Pointer rCurrentCondition,
+    virtual void EquationId(
+        const Condition& rCurrentCondition,
         Element::EquationIdVectorType& EquationId,
-        ProcessInfo& CurrentProcessInfo)
+        const ProcessInfo& CurrentProcessInfo)
     {
-        (rCurrentCondition)->EquationIdVector(EquationId, CurrentProcessInfo);
+        rCurrentCondition.EquationIdVector(EquationId, CurrentProcessInfo);
     }
 
     /** Function that returns the list of Degrees of freedom to be
     assembled in the system for a Given Element
      */
-    virtual void GetElementalDofList(
-        Element::Pointer rCurrentElement,
+    virtual void GetDofList(
+        const Element& rCurrentElement,
         Element::DofsVectorType& ElementalDofList,
-        ProcessInfo& CurrentProcessInfo)
+        const ProcessInfo& CurrentProcessInfo)
     {
-        rCurrentElement->GetDofList(ElementalDofList, CurrentProcessInfo);
+        rCurrentElement.GetDofList(ElementalDofList, CurrentProcessInfo);
     }
 
     /** Function that returns the list of Degrees of freedom to be
     assembled in the system for a Given Element
      */
-    virtual void GetConditionDofList(
-        Condition::Pointer rCurrentCondition,
+    virtual void GetDofList(
+        const Condition& rCurrentCondition,
         Element::DofsVectorType& ConditionDofList,
-        ProcessInfo& CurrentProcessInfo)
+        const ProcessInfo& CurrentProcessInfo)
     {
-        rCurrentCondition->GetDofList(ConditionDofList, CurrentProcessInfo);
+        rCurrentCondition.GetDofList(ConditionDofList, CurrentProcessInfo);
     }
 
     /*@} */
