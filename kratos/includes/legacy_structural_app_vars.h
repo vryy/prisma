@@ -34,11 +34,14 @@
 
 // Project includes
 #include "includes/define.h"
+#include "includes/kratos_components.h"
+#include "includes/ublas_interface.h"
+#include "includes/node.h"
+#include "includes/element.h"
+#include "includes/condition.h"
 #include "containers/variable.h"
 #include "containers/variable_component.h"
 #include "containers/vector_component_adaptor.h"
-#include "includes/kratos_components.h"
-#include "includes/ublas_interface.h"
 #include "containers/array_1d.h"
 #include "containers/weak_pointer_vector.h"
 #include "containers/periodic_variables_container.h"
@@ -95,6 +98,7 @@ namespace Kratos
     KRATOS_DEFINE_VARIABLE( double, CONTACT_STICK )
 
     KRATOS_DEFINE_VARIABLE( bool, USE_DISTRIBUTED_PROPERTIES )
+    KRATOS_DEFINE_VARIABLE( bool, SET_CALCULATE_REACTION )
 
     KRATOS_DEFINE_VARIABLE( int, CONTACT_RAMP )
     KRATOS_DEFINE_VARIABLE( int, CONTACT_SLAVE_INTEGRATION_POINT_INDEX )
@@ -177,6 +181,10 @@ namespace Kratos
 
     KRATOS_DEFINE_VARIABLE( int, IS_SHAPE_FUNCTION_REQUIRED )
     KRATOS_DEFINE_VARIABLE( int, RESET_CONFIGURATION )
+
+    KRATOS_DEFINE_VARIABLE( Node<3>::Pointer, ASSOCIATED_NODE )
+    KRATOS_DEFINE_VARIABLE( Element::Pointer, ASSOCIATED_ELEMENT )
+    KRATOS_DEFINE_VARIABLE( Condition::Pointer, ASSOCIATED_CONDITION )
 
 }  // namespace Kratos.
 
