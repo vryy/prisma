@@ -261,18 +261,10 @@ if(${MPI_NEEDED} MATCHES ON )
     #note that this will be included in the compilation of the kratos core, so that it is not needed to include it somewhere else
     include_directories(${MPI_INCLUDE_PATH})
 #    find_package(Boost COMPONENTS mpi_python REQUIRED)
+    message("Kratos is compiled with MPI support")
 endif(${MPI_NEEDED} MATCHES ON )
 
 ##*****************************
-# ADOL-C
-if(ADOL_C_DIR)
-    add_definitions(-DKRATOS_USE_ADOL_C)
-    set(ADOLC_IS_AVAILABLE ON)
-    FIND_PACKAGE(ADOLC REQUIRED)
-    INCLUDE_DIRECTORIES(${ADOL_C_INCLUDE_DIR})
-    MESSAGE("KRATOS USE ADOL_C AT: " ${ADOL_C_LIBRARIES})
-endif()
-
 
 ##echo user options
 message( " ")
