@@ -39,6 +39,9 @@
 
 // Project includes
 #include "includes/define.h"
+#include "includes/node.h"
+#include "geometries/geometry.h"
+#include "utilities/indexed_object.h"
 
 
 namespace Kratos
