@@ -21,6 +21,7 @@
 #include "includes/define.h"
 #include "includes/model_part.h"
 #include "boost/make_shared.hpp"
+#include "boost/progress.hpp"
 
 namespace Kratos
 {
@@ -1214,14 +1215,33 @@ KRATOS_THROW_ERROR(std::logic_error, "The sub modelpart does not exist", "")
 	int ModelPart::Check(ProcessInfo& rCurrentProcessInfo) const
 	{
 		KRATOS_TRY
-			int err = 0;
-		for (ElementConstantIterator elem_iterator = ElementsBegin(); elem_iterator != ElementsEnd(); elem_iterator++)
+		int err = 0;
+
+		boost::progress_display show_progress_elements( NumberOfElements() );
+		std::cout << "Checking elements:" << std::endl;
+		for (ElementConstantIterator elem_iterator = ElementsBegin(); elem_iterator != ElementsEnd(); ++elem_iterator)
+		{
 			err = elem_iterator->Check(rCurrentProcessInfo);
-		for (ConditionConstantIterator condition_iterator = ConditionsBegin(); condition_iterator != ConditionsEnd(); condition_iterator++)
+			++show_progress_elements;
+		}
+
+		boost::progress_display show_progress_conditions( NumberOfConditions() );
+		std::cout << "Checking conditions:" << std::endl;
+		for (ConditionConstantIterator condition_iterator = ConditionsBegin(); condition_iterator != ConditionsEnd(); ++condition_iterator)
+		{
 			err = condition_iterator->Check(rCurrentProcessInfo);
+			++show_progress_conditions;
+		}
+
+		boost::progress_display show_progress_constraints( NumberOfMasterSlaveConstraints() );
+		std::cout << "Checking constraints:" << std::endl;
   		for (MasterSlaveConstraintConstantIteratorType constraint_iterator = MasterSlaveConstraintsBegin();
-        		constraint_iterator != MasterSlaveConstraintsEnd(); constraint_iterator++)
-       			err = constraint_iterator->Check(rCurrentProcessInfo);
+        		constraint_iterator != MasterSlaveConstraintsEnd(); ++constraint_iterator)
+  		{
+       		err = constraint_iterator->Check(rCurrentProcessInfo);
+       		++show_progress_constraints;
+  		}
+
 		return err;
 		KRATOS_CATCH("");
 	}
