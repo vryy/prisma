@@ -5,12 +5,12 @@
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 //
-// 	-	Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-// 	-	Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
-// 		in the documentation and/or other materials provided with the distribution.
-// 	-	All advertising materials mentioning features or use of this software must display the following acknowledgement:
-// 			This product includes Kratos Multi-Physics technology.
-// 	-	Neither the name of the CIMNE nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+//  -   Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+//  -   Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
+//      in the documentation and/or other materials provided with the distribution.
+//  -   All advertising materials mentioning features or use of this software must display the following acknowledgement:
+//          This product includes Kratos Multi-Physics technology.
+//  -   Neither the name of the CIMNE nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
 // THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
@@ -26,7 +26,7 @@
 // External includes
 #include <boost/python.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
-#include <boost/python/object.hpp>
+// #include <boost/python/object.hpp>
 
 
 // Project includes
@@ -70,7 +70,7 @@ template< class TContainerType, class XVariableType, class YVariableType> void S
     TContainerType& el,
     const XVariableType& XVar,
     const YVariableType& YVar,
-	const typename Properties::TableType& Data)
+    const typename Properties::TableType& Data)
 {
     el.SetTable(XVar, YVar, Data);
 }
@@ -138,17 +138,18 @@ void  AddPropertiesToPython()
     .def("SetValue", SetValueHelperFunction1< Properties, Variable< double > >)
     .def("GetValue", GetValueHelperFunction1< Properties, Variable< double > >)
 
-    .def("__setitem__", SetValueHelperFunction1< Properties, Variable< boost::python::object > >)
-    .def("__getitem__", GetValueHelperFunction1< Properties, Variable< boost::python::object > >)
-    .def("SetValue", SetValueHelperFunction1< Properties, Variable< boost::python::object > >)
-    .def("GetValue", GetValueHelperFunction1< Properties, Variable< boost::python::object > >)
+    //// does not compile with clang-11
+    // .def("__setitem__", SetValueHelperFunction1< Properties, Variable< boost::python::object > >)
+    // .def("__getitem__", GetValueHelperFunction1< Properties, Variable< boost::python::object > >)
+    // .def("SetValue", SetValueHelperFunction1< Properties, Variable< boost::python::object > >)
+    // .def("GetValue", GetValueHelperFunction1< Properties, Variable< boost::python::object > >)
 
     .def("__setitem__", SetValueHelperFunction1< Properties, Variable< ConstitutiveLawBaseType::Pointer > >)
     .def("__getitem__", GetValueHelperFunction1< Properties, Variable< ConstitutiveLawBaseType::Pointer > >)
     .def("SetValue", SetValueHelperFunction1< Properties, Variable< ConstitutiveLawBaseType::Pointer > >)
     .def("GetValue", GetValueHelperFunction1< Properties, Variable< ConstitutiveLawBaseType::Pointer > >)
 
-	.def("GetTable", GetTableHelperFunction1< Properties, Variable< double > , Variable<double> >, return_internal_reference<>())
+    .def("GetTable", GetTableHelperFunction1< Properties, Variable< double > , Variable<double> >, return_internal_reference<>())
     .def("GetTable", GetTableHelperFunction1< Properties, VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > , Variable<double> >, return_internal_reference<>())
     .def("GetTable", GetTableHelperFunction1< Properties, Variable<double>, VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > >, return_internal_reference<>())
     .def("GetTable", GetTableHelperFunction1< Properties, VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > , VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > >, return_internal_reference<>())
@@ -157,7 +158,7 @@ void  AddPropertiesToPython()
     .def("SetTable", SetTableHelperFunction1< Properties, Variable<double>, VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > >)
     .def("SetTable", SetTableHelperFunction1< Properties, VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > , VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > >)
 
-	.def(self_ns::str(self))
+    .def(self_ns::str(self))
     ;
 
     PointerVectorSetPythonInterface<MeshType::PropertiesContainerType>::CreateInterface("PropertiesArray")
