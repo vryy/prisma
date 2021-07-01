@@ -311,7 +311,7 @@ public:
     /** performs the dot product of two vectors of dimension 3
         (no check performed on vector sizes)*/
     //***********************************************************************
-    static inline TDataType Dot3(VectorType& a, VectorType& b)
+    static inline TDataType Dot3(const VectorType& a, const VectorType& b)
     {
         return (a[0]*b[0] + a[1]*b[1] + a[2]*b[2]);
     }
@@ -337,17 +337,11 @@ public:
         (no check is performed on the vector's size)
             */
     //***********************************************************************
-    static inline TDataType Norm3(VectorType& a)
+    template<class TVectorType>
+    static inline TDataType Norm3(const TVectorType& a)
     {
-        TDataType temp = pow(a[0],2) + pow(a[1],2) + pow(a[2],2);
-        temp = sqrt(temp);
-        return temp;
-    }
-
-    static inline TDataType Norm3(const array_1d<TDataType, 3>& a)
-    {
-        TDataType temp = pow(a[0],2) + pow(a[1],2) + pow(a[2],2);
-        temp = sqrt(temp);
+        TDataType temp = std::pow(a[0],2) + std::pow(a[1],2) + std::pow(a[2],2);
+        temp = std::sqrt(temp);
         return temp;
     }
 
@@ -375,15 +369,28 @@ public:
         a,b are assumed to be of size 3 (no check is performed on vector sizes)
             */
     //***********************************************************************
-    static inline VectorType CrossProduct(VectorType& a, VectorType& b)
+    template<class T>
+    static inline T CrossProduct(
+        const T& a,
+        const T& b
+        )
     {
-        VectorType c(3);
+        T c(a);
 
         c[0] = a[1]*b[2] - a[2]*b[1];
         c[1] = a[2]*b[0] - a[0]*b[2];
         c[2] = a[0]*b[1] - a[1]*b[0];
 
         return c;
+    }
+
+
+    //identical but it assumes that the output vector is given already the correct size
+    template< class T1, class T2 , class T3>
+    static inline void CrossProduct(T1& c, const T2& a, const T3& b ){
+        c[0] = a[1]*b[2] - a[2]*b[1];
+        c[1] = a[2]*b[0] - a[0]*b[2];
+        c[2] = a[0]*b[1] - a[1]*b[0];
     }
 
     static inline array_1d<TDataType, 3> UnitCrossProduct(const array_1d<TDataType, 3>& a, const array_1d<TDataType, 3>& b)
@@ -416,26 +423,6 @@ public:
         c/=norm;
     }
 
-    static inline array_1d<TDataType, 3> CrossProduct(const array_1d<TDataType, 3>& a, const array_1d<TDataType, 3>& b)
-    {
-        array_1d<TDataType, 3> c;
-
-        c[0] = a[1]*b[2] - a[2]*b[1];
-        c[1] = a[2]*b[0] - a[0]*b[2];
-        c[2] = a[0]*b[1] - a[1]*b[0];
-
-        return c;
-    }
-
-
-    //identical but it assumes that the output vector is given already the correct size
-    static inline void CrossProduct(array_1d<TDataType, 3>& c, const array_1d<TDataType, 3>& a, const array_1d<TDataType, 3>& b)
-    {
-        c[0] = a[1]*b[2] - a[2]*b[1];
-        c[1] = a[2]*b[0] - a[0]*b[2];
-        c[2] = a[0]*b[1] - a[1]*b[0];
-    }
-
     //***********************************************************************
     /**
     returns a matrix :
@@ -443,7 +430,7 @@ public:
         a,b are assumed to be of order 3, no check is performed on the size of the vectors
              */
     //***********************************************************************
-    static inline MatrixType TensorProduct3(VectorType& a, VectorType& b)
+    static inline MatrixType TensorProduct3(const VectorType& a, const VectorType& b)
     {
         MatrixType A(3,3);
         A(0,0)=a[0]*b[0];
@@ -468,7 +455,7 @@ public:
     //***********************************************************************
     static inline void  AddMatrix(
         MatrixType& Destination,
-        MatrixType& InputMatrix,
+        const MatrixType& InputMatrix,
         int InitialRow,
         int InitialCol)
     {
@@ -488,7 +475,7 @@ public:
     //***********************************************************************
     static inline void  SubtractMatrix(
         MatrixType& Destination,
-        MatrixType& InputMatrix,
+        const MatrixType& InputMatrix,
         int InitialRow,
         int InitialCol)
     {
@@ -510,7 +497,7 @@ public:
     //***********************************************************************
     static inline void  WriteMatrix(
         MatrixType& Destination,
-        MatrixType& InputMatrix,
+        const MatrixType& InputMatrix,
         int InitialRow,
         int InitialCol)
     {
@@ -527,7 +514,7 @@ public:
     //size "dimension"
     static inline void  ExpandReducedMatrix(
         MatrixType& Destination,
-        MatrixType& ReducedMatrix,
+        const MatrixType& ReducedMatrix,
         unsigned int dimension)
     {
         KRATOS_TRY
@@ -551,7 +538,7 @@ public:
     //size "dimension" ADDING to the destination matrix
     static inline void  ExpandAndAddReducedMatrix(
         MatrixType& Destination,
-        MatrixType& ReducedMatrix,
+        const MatrixType& ReducedMatrix,
         unsigned int dimension)
     {
         KRATOS_TRY
@@ -576,8 +563,8 @@ public:
     //***********************************************************************
     static inline void  VecAdd(
         VectorType& x,
-        TDataType coeff,
-        VectorType& y)
+        const TDataType& coeff,
+        const VectorType& y)
     {
         KRATOS_TRY
         unsigned int size=x.size();
