@@ -452,6 +452,11 @@ public:
         return mpProperties->GetContainer();
     }
 
+    const typename PropertiesContainerType::ContainerType& PropertiesArray() const
+    {
+        return mpProperties->GetContainer();
+    }
+
 	bool HasProperties(IndexType NodeId) const
 	{
 		return (mpProperties->find(NodeId) != mpProperties->end());
@@ -481,6 +486,12 @@ public:
 
     /** Returns a reference element corresponding to it's identifier */
     ElementType& GetElement(IndexType ElementId)
+    {
+        return (*mpElements)[ElementId];
+    }
+
+    /** Returns a reference element corresponding to it's identifier */
+    const ElementType& GetElement(IndexType ElementId) const
     {
         return (*mpElements)[ElementId];
     }
@@ -531,6 +542,11 @@ public:
         return *mpElements;
     }
 
+    const ElementsContainerType& Elements() const
+    {
+        return *mpElements;
+    }
+
     typename ElementsContainerType::Pointer pElements()
     {
         return mpElements;
@@ -546,6 +562,10 @@ public:
         return mpElements->GetContainer();
     }
 
+    const typename ElementsContainerType::ContainerType& ElementsArray() const
+    {
+        return mpElements->GetContainer();
+    }
 
 	bool HasElement(IndexType NodeId) const
 	{
@@ -576,6 +596,12 @@ public:
 
     /** Returns a reference condition corresponding to it's identifier */
     ConditionType& GetCondition(IndexType ConditionId)
+    {
+        return (*mpConditions)[ConditionId];
+    }
+
+    /** Returns a reference condition corresponding to it's identifier */
+    const ConditionType& GetCondition(IndexType ConditionId) const
     {
         return (*mpConditions)[ConditionId];
     }
@@ -626,6 +652,11 @@ public:
         return *mpConditions;
     }
 
+    const ConditionsContainerType& Conditions() const
+    {
+        return *mpConditions;
+    }
+
     typename ConditionsContainerType::Pointer pConditions()
     {
         return mpConditions;
@@ -637,6 +668,11 @@ public:
     }
 
     typename ConditionsContainerType::ContainerType& ConditionsArray()
+    {
+        return mpConditions->GetContainer();
+    }
+
+    const typename ConditionsContainerType::ContainerType& ConditionsArray() const
     {
         return mpConditions->GetContainer();
     }

@@ -762,6 +762,11 @@ public:
         return GetMesh(ThisIndex).PropertiesArray();
     }
 
+    const PropertiesContainerType::ContainerType& PropertiesArray(IndexType ThisIndex = 0) const
+    {
+        return GetMesh(ThisIndex).PropertiesArray();
+    }
+
     ///@}
     ///@name Elements
     ///@{
@@ -791,6 +796,12 @@ public:
 
     /** Returns a reference element corresponding to it's identifier */
     ElementType& GetElement(IndexType ElementId, IndexType ThisIndex = 0)
+    {
+        return GetMesh(ThisIndex).GetElement(ElementId);
+    }
+
+    /** Returns a reference element corresponding to it's identifier */
+    const ElementType& GetElement(IndexType ElementId, IndexType ThisIndex = 0) const
     {
         return GetMesh(ThisIndex).GetElement(ElementId);
     }
@@ -844,6 +855,11 @@ public:
         return GetMesh(ThisIndex).Elements();
     }
 
+    const ElementsContainerType& Elements(IndexType ThisIndex = 0) const
+    {
+        return GetMesh(ThisIndex).Elements();
+    }
+
     ElementsContainerType::Pointer pElements(IndexType ThisIndex = 0)
     {
         return GetMesh(ThisIndex).pElements();
@@ -859,6 +875,10 @@ public:
         return GetMesh(ThisIndex).ElementsArray();
     }
 
+    const ElementsContainerType::ContainerType& ElementsArray(IndexType ThisIndex = 0) const
+    {
+        return GetMesh(ThisIndex).ElementsArray();
+    }
 
     ///@}
     ///@name Conditions
@@ -893,6 +913,12 @@ public:
 
     /** Returns a reference condition corresponding to it's identifier */
     ConditionType& GetCondition(IndexType ConditionId, IndexType ThisIndex = 0)
+    {
+        return GetMesh(ThisIndex).GetCondition(ConditionId);
+    }
+
+    /** Returns a reference condition corresponding to it's identifier */
+    const ConditionType& GetCondition(IndexType ConditionId, IndexType ThisIndex = 0) const
     {
         return GetMesh(ThisIndex).GetCondition(ConditionId);
     }
@@ -946,6 +972,11 @@ public:
         return GetMesh(ThisIndex).Conditions();
     }
 
+    const ConditionsContainerType& Conditions(IndexType ThisIndex = 0) const
+    {
+        return GetMesh(ThisIndex).Conditions();
+    }
+
     ConditionsContainerType::Pointer pConditions(IndexType ThisIndex = 0)
     {
         return GetMesh(ThisIndex).pConditions();
@@ -961,6 +992,10 @@ public:
         return GetMesh(ThisIndex).ConditionsArray();
     }
 
+    const ConditionsContainerType::ContainerType& ConditionsArray(IndexType ThisIndex = 0) const
+    {
+        return GetMesh(ThisIndex).ConditionsArray();
+    }
 
 	///@}
 	///@name Sub model parts
