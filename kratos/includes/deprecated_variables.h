@@ -39,9 +39,9 @@
 #include "containers/vector_component_adaptor.h"
 #include "includes/kratos_components.h"
 #include "includes/ublas_interface.h"
+#include "includes/geometrical_object.h"
 #include "containers/array_1d.h"
 #include "containers/weak_pointer_vector.h"
-#include "containers/periodic_variables_container.h"
 
 #undef  KRATOS_EXPORT_MACRO
 #define KRATOS_EXPORT_MACRO KRATOS_API
@@ -101,13 +101,13 @@ namespace Kratos
     KRATOS_DEFINE_VARIABLE( double, IS_PERMANENT )
     KRATOS_DEFINE_VARIABLE( double, IS_WALL )
 
-    KRATOS_DEFINE_VARIABLE( double, Ypr ) //var name does not follow standard
-    KRATOS_DEFINE_VARIABLE( double, Yox )
-    KRATOS_DEFINE_VARIABLE( double, Yfuel )
-    KRATOS_DEFINE_VARIABLE( double, Hfuel )
-    KRATOS_DEFINE_VARIABLE( double, Hpr )
-    KRATOS_DEFINE_VARIABLE( double, Hpr1 )
-    KRATOS_DEFINE_VARIABLE( double, Hox )
+    // KRATOS_DEFINE_VARIABLE( double, Ypr ) //var name does not follow standard
+    // KRATOS_DEFINE_VARIABLE( double, Yox )
+    // KRATOS_DEFINE_VARIABLE( double, Yfuel )
+    // KRATOS_DEFINE_VARIABLE( double, Hfuel )
+    // KRATOS_DEFINE_VARIABLE( double, Hpr )
+    // KRATOS_DEFINE_VARIABLE( double, Hpr1 )
+    // KRATOS_DEFINE_VARIABLE( double, Hox )
 
     KRATOS_DEFINE_VARIABLE( double, RADIATIVE_INTENSITY )
     KRATOS_DEFINE_VARIABLE( double, RADIATIVE_INTENSITY_1 )
@@ -135,10 +135,10 @@ namespace Kratos
     KRATOS_DEFINE_VARIABLE( double, RADIATIVE_INTENSITY_23 )
     KRATOS_DEFINE_VARIABLE( double, RADIATIVE_INTENSITY_24 )
 
-    KRATOS_DEFINE_VARIABLE( double, rhoD )
-    KRATOS_DEFINE_VARIABLE( double, xi )
-    KRATOS_DEFINE_VARIABLE( double, a )
-    KRATOS_DEFINE_VARIABLE( double, b )
+    // KRATOS_DEFINE_VARIABLE( double, rhoD )
+    // KRATOS_DEFINE_VARIABLE( double, xi )
+    // KRATOS_DEFINE_VARIABLE( double, a )
+    // KRATOS_DEFINE_VARIABLE( double, b )
 
 
     KRATOS_DEFINE_VARIABLE( double, IS_SLIP )
@@ -146,7 +146,9 @@ namespace Kratos
     //for Level Set application:
     KRATOS_DEFINE_VARIABLE( double, IS_DIVIDED )
 
-    KRATOS_DEFINE_3D_VARIABLE_WITH_COMPONENTS( xi_c )
+    // KRATOS_DEFINE_3D_VARIABLE_WITH_COMPONENTS( xi_c )
+
+    KRATOS_DEFINE_VARIABLE( WeakPointerVector< GeometricalObject >, NEIGHBOUR_EMBEDDED_FACES )
 
 }  // namespace Kratos.
 

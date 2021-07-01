@@ -1,10 +1,10 @@
-//    |  /           | 
-//    ' /   __| _` | __|  _ \   __| 
+//    |  /           |
+//    ' /   __| _` | __|  _ \   __|
 //    . \  |   (   | |   (   |\__ \.
-//   _|\_\_|  \__,_|\__|\___/ ____/ 
-//                   Multi-Physics  
+//   _|\_\_|  \__,_|\__|\___/ ____/
+//                   Multi-Physics
 //
-//  License:		 BSD License 
+//  License:		 BSD License
 //					 Kratos default license: kratos/license.txt
 //
 //  Main authors:    Riccardo Rossi
@@ -101,7 +101,7 @@ namespace Kratos
     KRATOS_CREATE_VARIABLE( int, IMPOSED_ANGULAR_VELOCITY_X )
     KRATOS_CREATE_VARIABLE( int, IMPOSED_ANGULAR_VELOCITY_Y )
     KRATOS_CREATE_VARIABLE( int, IMPOSED_ANGULAR_VELOCITY_Z )
-    
+
     //For the DEM Application:
     KRATOS_CREATE_VARIABLE(double, IMPOSED_VELOCITY_X_VALUE)
     KRATOS_CREATE_VARIABLE(double, IMPOSED_VELOCITY_Y_VALUE)
@@ -131,13 +131,13 @@ namespace Kratos
     KRATOS_CREATE_VARIABLE( double, IS_PERMANENT )
     KRATOS_CREATE_VARIABLE( double, IS_WALL )
 
-    KRATOS_CREATE_VARIABLE( double, Ypr ) //var name does not follow standard
-    KRATOS_CREATE_VARIABLE( double, Yox )
-    KRATOS_CREATE_VARIABLE( double, Yfuel )
-    KRATOS_CREATE_VARIABLE( double, Hfuel )
-    KRATOS_CREATE_VARIABLE( double, Hpr )
-    KRATOS_CREATE_VARIABLE( double, Hpr1 )
-    KRATOS_CREATE_VARIABLE( double, Hox )
+    // KRATOS_CREATE_VARIABLE( double, Ypr ) //var name does not follow standard
+    // KRATOS_CREATE_VARIABLE( double, Yox )
+    // KRATOS_CREATE_VARIABLE( double, Yfuel )
+    // KRATOS_CREATE_VARIABLE( double, Hfuel )
+    // KRATOS_CREATE_VARIABLE( double, Hpr )
+    // KRATOS_CREATE_VARIABLE( double, Hpr1 )
+    // KRATOS_CREATE_VARIABLE( double, Hox )
 
     KRATOS_CREATE_VARIABLE( double, RADIATIVE_INTENSITY )
     KRATOS_CREATE_VARIABLE( double, RADIATIVE_INTENSITY_1 )
@@ -165,10 +165,10 @@ namespace Kratos
     KRATOS_CREATE_VARIABLE( double, RADIATIVE_INTENSITY_23 )
     KRATOS_CREATE_VARIABLE( double, RADIATIVE_INTENSITY_24 )
 
-    KRATOS_CREATE_VARIABLE( double, rhoD )
-    KRATOS_CREATE_VARIABLE( double, xi )
-    KRATOS_CREATE_VARIABLE( double, a )
-    KRATOS_CREATE_VARIABLE( double, b )
+    // KRATOS_CREATE_VARIABLE( double, rhoD )
+    // KRATOS_CREATE_VARIABLE( double, xi )
+    // KRATOS_CREATE_VARIABLE( double, a )
+    // KRATOS_CREATE_VARIABLE( double, b )
 
 
     KRATOS_CREATE_VARIABLE( double, IS_SLIP )
@@ -176,13 +176,13 @@ namespace Kratos
     //for Level Set application:
     KRATOS_CREATE_VARIABLE( double, IS_DIVIDED )
 
-    KRATOS_CREATE_3D_VARIABLE_WITH_COMPONENTS( xi_c )
+    // KRATOS_CREATE_3D_VARIABLE_WITH_COMPONENTS( xi_c )
 
-  
+
 
   void KratosApplication::RegisterDeprecatedVariables()
   {
-      
+
     KRATOS_REGISTER_VARIABLE(  IS_INACTIVE )
 
     //for Level Set application:
@@ -199,7 +199,7 @@ namespace Kratos
     KRATOS_REGISTER_VARIABLE( IMPOSED_ANGULAR_VELOCITY_X )
     KRATOS_REGISTER_VARIABLE( IMPOSED_ANGULAR_VELOCITY_Y )
     KRATOS_REGISTER_VARIABLE( IMPOSED_ANGULAR_VELOCITY_Z )
-    
+
     //For the DEM Application:
     KRATOS_REGISTER_VARIABLE(IMPOSED_VELOCITY_X_VALUE)
     KRATOS_REGISTER_VARIABLE(IMPOSED_VELOCITY_Y_VALUE)
@@ -229,13 +229,13 @@ namespace Kratos
     KRATOS_REGISTER_VARIABLE(   IS_PERMANENT )
     KRATOS_REGISTER_VARIABLE(   IS_WALL )
 
-    KRATOS_REGISTER_VARIABLE(   Ypr ) //var name does not follow standard
-    KRATOS_REGISTER_VARIABLE(   Yox )
-    KRATOS_REGISTER_VARIABLE(   Yfuel )
-    KRATOS_REGISTER_VARIABLE(   Hfuel )
-    KRATOS_REGISTER_VARIABLE(   Hpr )
-    KRATOS_REGISTER_VARIABLE(   Hpr1 )
-    KRATOS_REGISTER_VARIABLE(   Hox )
+    // KRATOS_REGISTER_VARIABLE(   Ypr ) //var name does not follow standard
+    // KRATOS_REGISTER_VARIABLE(   Yox )
+    // KRATOS_REGISTER_VARIABLE(   Yfuel )
+    // KRATOS_REGISTER_VARIABLE(   Hfuel )
+    // KRATOS_REGISTER_VARIABLE(   Hpr )
+    // KRATOS_REGISTER_VARIABLE(   Hpr1 )
+    // KRATOS_REGISTER_VARIABLE(   Hox )
 
     KRATOS_REGISTER_VARIABLE(   RADIATIVE_INTENSITY )
     KRATOS_REGISTER_VARIABLE(   RADIATIVE_INTENSITY_1 )
@@ -263,10 +263,10 @@ namespace Kratos
     KRATOS_REGISTER_VARIABLE(   RADIATIVE_INTENSITY_23 )
     KRATOS_REGISTER_VARIABLE(   RADIATIVE_INTENSITY_24 )
 
-    KRATOS_REGISTER_VARIABLE(   rhoD )
-    KRATOS_REGISTER_VARIABLE(   xi )
-    KRATOS_REGISTER_VARIABLE(   a )
-    KRATOS_REGISTER_VARIABLE(   b )
+    // KRATOS_REGISTER_VARIABLE(   rhoD )
+    // KRATOS_REGISTER_VARIABLE(   xi )
+    // KRATOS_REGISTER_VARIABLE(   a )
+    // KRATOS_REGISTER_VARIABLE(   b )
 
 
     KRATOS_REGISTER_VARIABLE(   IS_SLIP )
@@ -274,7 +274,7 @@ namespace Kratos
     //for Level Set application:
     KRATOS_REGISTER_VARIABLE(   IS_DIVIDED )
 
-    KRATOS_REGISTER_3D_VARIABLE_WITH_COMPONENTS( xi_c )
+    // KRATOS_REGISTER_3D_VARIABLE_WITH_COMPONENTS( xi_c )
 
 
   }
