@@ -1,7 +1,7 @@
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 #include cotire (CMake module to hep generating precompiled header to speed-up the build process)
-include(cotire)
+# include(cotire)
 
 # ## add the include directories needed for the compilation
 # message("current dir = " ${CMAKE_CURRENT_SOURCE_DIR})
@@ -12,34 +12,35 @@ include(cotire)
 
 ## generate variables with the sources
 set( KRATOS_CORE_SOURCES
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/global_variables.cpp;
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/deprecated_variables.cpp;
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/c2c_variables.cpp;
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/cfd_variables.cpp;
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/dem_variables.cpp;
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/legacy_structural_app_vars.cpp;
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/variables.cpp;
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/integration_rules.cpp;
-	${CMAKE_CURRENT_SOURCE_DIR}/containers/variables_list_data_value_container.cpp;
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/mmio.c;
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/timer.cpp;
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/serializer.cpp;
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/kernel.cpp;
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/periodic_condition.cpp;
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/constitutive_law.cpp;
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/kratos_components.cpp;
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/model_part_io.cpp;
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/reorder_consecutive_model_part_io.cpp;
-	# ${CMAKE_CURRENT_SOURCE_DIR}/processes/calculate_signed_distance_to_3d_skin_process.cpp;
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/io.cpp;
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/model_part.cpp;
-	${CMAKE_CURRENT_SOURCE_DIR}/utilities/logger.cpp;
-	${CMAKE_CURRENT_SOURCE_DIR}/utilities/constraint_utilities.cpp;
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/kratos_exception.cpp;
-	${CMAKE_CURRENT_SOURCE_DIR}/containers/variable_data.cpp;
-	#${CMAKE_CURRENT_SOURCE_DIR}/processes/mesh_smoothing_process.cpp;
-	#${CMAKE_CURRENT_SOURCE_DIR}/processes/measure_mesh_quality_process.cpp;
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/bounding_volume_tree.cpp;
+	${CMAKE_CURRENT_SOURCE_DIR}/sources/global_variables.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/sources/deprecated_variables.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/sources/c2c_variables.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/sources/cfd_variables.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/sources/dem_variables.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/sources/legacy_structural_app_vars.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/sources/variables.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/sources/integration_rules.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/containers/variables_list_data_value_container.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/sources/mmio.c
+	${CMAKE_CURRENT_SOURCE_DIR}/sources/timer.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/sources/serializer.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/sources/kernel.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/sources/periodic_condition.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/sources/constitutive_law.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/sources/kratos_components.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/sources/model_part_io.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/sources/reorder_consecutive_model_part_io.cpp
+	# ${CMAKE_CURRENT_SOURCE_DIR}/processes/calculate_signed_distance_to_3d_skin_process.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/sources/io.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/sources/model_part.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/sources/kratos_application.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/utilities/logger.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/utilities/constraint_utilities.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/sources/kratos_exception.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/containers/variable_data.cpp
+	#${CMAKE_CURRENT_SOURCE_DIR}/processes/mesh_smoothing_process.cpp
+	#${CMAKE_CURRENT_SOURCE_DIR}/processes/measure_mesh_quality_process.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/sources/bounding_volume_tree.cpp
      )
 
 set( KRATOS_PYTHON_SOURCES
@@ -90,13 +91,13 @@ set( KRATOS_PYTHON_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/python/add_kratos_parameters_to_python.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/python/add_constraint_to_python.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/python/kratos_python.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/mpi_connectivity_preserve_modeler.cpp;
-	# ${CMAKE_CURRENT_SOURCE_DIR}/processes/mdpa_reorder_consecutive_process.cpp;
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/model_part_io.cpp;
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/reorder_consecutive_model_part_io.cpp;
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/io.cpp;
-	#${CMAKE_CURRENT_SOURCE_DIR}/utilities/logger.cpp;
-	# ${CMAKE_CURRENT_SOURCE_DIR}/sources/kratos_exception.cpp;
+	${CMAKE_CURRENT_SOURCE_DIR}/sources/mpi_connectivity_preserve_modeler.cpp
+	# ${CMAKE_CURRENT_SOURCE_DIR}/processes/mdpa_reorder_consecutive_process.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/sources/model_part_io.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/sources/reorder_consecutive_model_part_io.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/sources/io.cpp
+	#${CMAKE_CURRENT_SOURCE_DIR}/utilities/logger.cpp
+	# ${CMAKE_CURRENT_SOURCE_DIR}/sources/kratos_exception.cpp
 
      )
 
@@ -105,7 +106,7 @@ set( KRATOS_PYTHON_SOURCES
 add_library(KratosCore SHARED ${KRATOS_CORE_SOURCES})
 #target_link_libraries(KratosCore ${Boost_PYTHON_LIBRARIES} ${PYTHON_LIBRARIES} gidpost )
 target_link_libraries(KratosCore ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${PYTHON_LIBRARIES} gidpost )
-cotire(KratosCore)
+# cotire(KratosCore)
 
 if(${ADOLC_IS_AVAILABLE} MATCHES ON)
     target_link_libraries(KratosCore ${ADOL_C_LIBRARIES} )
