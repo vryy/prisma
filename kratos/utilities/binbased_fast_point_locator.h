@@ -171,7 +171,7 @@ public:
         typedef std::size_t SizeType;
 
         //ask to the container for the list of candidate elements
-        SizeType results_found = mpBinsObjectDynamic->SearchObjectsInCell(coords, result_begin, MaxNumberOfResults);
+        SizeType results_found = mpBinsObjectDynamic->SearchObjectsInCell(typename BinsObjectDynamic<Configure>::PointType{coords}, result_begin, MaxNumberOfResults);
 
         if (results_found > 0)
         {

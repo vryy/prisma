@@ -428,8 +428,12 @@ public:
     {
         const BaseType& geom_1 = *this;
         const BaseType& geom_2 = rThisGeometry;
-        return  NoDivTriTriIsect(geom_1[0].Coordinates(), geom_1[1].Coordinates() , geom_1[2].Coordinates(),
-                                 geom_2[0].Coordinates(), geom_2[1].Coordinates(),  geom_2[2].Coordinates());
+        return NoDivTriTriIsect( static_cast<Point<3, double> >(geom_1[0].Coordinates()),
+                                 static_cast<Point<3, double> >(geom_1[1].Coordinates()),
+                                 static_cast<Point<3, double> >(geom_1[2].Coordinates()),
+                                 static_cast<Point<3, double> >(geom_2[0].Coordinates()),
+                                 static_cast<Point<3, double> >(geom_2[1].Coordinates()),
+                                 static_cast<Point<3, double> >(geom_2[2].Coordinates()) );
     }
 
 

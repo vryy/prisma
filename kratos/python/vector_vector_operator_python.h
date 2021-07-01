@@ -157,14 +157,14 @@ private:
     TResultType
     add(TContainerType& ThisContainer, TOtherContainerType const& OtherContainer)
     {
-        return ThisContainer + OtherContainer;
+        return static_cast<TResultType>(ThisContainer + OtherContainer);
     }
 
     static
     TResultType
     sub(TContainerType& ThisContainer, TOtherContainerType const& OtherContainer)
     {
-        return ThisContainer - OtherContainer;
+        return static_cast<TResultType>(ThisContainer - OtherContainer);
     }
 
     static
@@ -178,14 +178,14 @@ private:
     TResultType
     radd(TContainerType& ThisContainer, TOtherContainerType const& OtherContainer)
     {
-        return OtherContainer + ThisContainer;
+        return static_cast<TResultType>(OtherContainer + ThisContainer);
     }
 
     static
     TResultType
     rsub(TContainerType& ThisContainer, TOtherContainerType const& OtherContainer)
     {
-        return OtherContainer - ThisContainer;
+        return static_cast<TResultType>(OtherContainer - ThisContainer);
     }
 
     static

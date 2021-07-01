@@ -639,7 +639,7 @@ public:
             //loop over all nodes
             for ( unsigned int i = 0; i < this->PointsNumber(); i++ )
             {
-                Point<3> dummyPoint = this->GetPoint( i ) - row( DeltaPosition, i );
+                Point<3> dummyPoint = static_cast<Point<3> >(this->GetPoint( i ) - row( DeltaPosition, i ));
                 J( 0, 0 ) += ( dummyPoint[orientation[0]] ) * ( shape_functions_gradients( i, 0 ) );
                 J( 0, 1 ) += ( dummyPoint[orientation[0]] ) * ( shape_functions_gradients( i, 1 ) );
                 J( 1, 0 ) += ( dummyPoint[orientation[1]] ) * ( shape_functions_gradients( i, 0 ) );

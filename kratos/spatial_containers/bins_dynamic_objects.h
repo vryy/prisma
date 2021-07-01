@@ -635,7 +635,7 @@ private:
             }
         }
 
-        PointType Epsilon = mMaxPoint - mMinPoint;
+        PointType Epsilon = static_cast<PointType>(mMaxPoint - mMinPoint);
 
         for(SizeType i = 0 ; i < Dimension ; i++)
         {

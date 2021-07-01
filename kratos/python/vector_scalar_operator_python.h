@@ -180,14 +180,14 @@ private:
     TResultType
     mul(TContainerType& ThisContainer, TScalarType ThisScalar)
     {
-        return ThisContainer * ThisScalar;
+        return static_cast<TResultType>(ThisContainer * ThisScalar);
     }
 
     static
     TResultType
     div(TContainerType& ThisContainer, TScalarType ThisScalar)
     {
-        return ThisContainer / ThisScalar;
+        return static_cast<TResultType>(ThisContainer / ThisScalar);
     }
 
     static
@@ -214,7 +214,7 @@ private:
     TResultType
     rmul(TContainerType& ThisContainer, TScalarType ThisScalar)
     {
-        return ThisScalar * ThisContainer;
+        return static_cast<TResultType>(ThisScalar * ThisContainer);
     }
 
     static
