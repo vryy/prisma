@@ -63,12 +63,16 @@ public:
     ///@name Life Cycle
     ///@{
 
-    /// Default constructor.
+    /// Default constructor. // DEPRECATED
     KratosApplication();
+
+    /// Constructor with application name
+    KratosApplication(const std::string& Name);
 
 
     /// Copy constructor.
     KratosApplication(KratosApplication const& rOther) :
+        mApplicationName(rOther.mApplicationName),
         mpVariableData(rOther.mpVariableData),
         mpIntVariables(rOther.mpIntVariables),
         mpUnsignedIntVariables(rOther.mpUnsignedIntVariables),
@@ -79,7 +83,7 @@ public:
         mpArray1DVariableComponents(rOther.mpArray1DVariableComponents),
         mpElements(rOther.mpElements),
         mpConditions(rOther.mpConditions),
-          mpMasterSlaveConstraints(rOther.mpMasterSlaveConstraints) {}
+        mpMasterSlaveConstraints(rOther.mpMasterSlaveConstraints) {}
 
     /// Destructor.
     virtual ~KratosApplication() {}
@@ -107,6 +111,8 @@ public:
     void RegisterCFDVariables(); //TODO: move to application
     void RegisterDEMVariables(); //TODO: move to application
     void RegisterLegacyStructuralAppVariables(); //TODO: move to application
+
+    const std::string& Name() const { return mApplicationName; }
 
     ///@}
     ///@name Access
@@ -470,7 +476,7 @@ private:
     ///@{
 
 
-
+    std::string mApplicationName;
 
 
     ///@}
