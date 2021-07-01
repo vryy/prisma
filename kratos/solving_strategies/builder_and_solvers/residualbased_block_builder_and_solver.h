@@ -4,8 +4,8 @@
 //   _|\_\_|  \__,_|\__|\___/ ____/
 //                   Multi-Physics
 //
-//  License:		 BSD License
-//					 Kratos default license: kratos/license.txt
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Riccardo Rossi
 //
@@ -228,25 +228,25 @@ public:
 #ifndef _OPENMP
         ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
 
-        for (typename ElementsArrayType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
+        for (typename ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
-        	//detect if the element is active or not. If the user did not make any choice the element
+            //detect if the element is active or not. If the user did not make any choice the element
             //is active by default
             bool element_is_active = true;
-            if( (*it)->IsDefined(ACTIVE) )
-                element_is_active = (*it)->Is(ACTIVE);
+            if( it->IsDefined(ACTIVE) )
+                element_is_active = it->Is(ACTIVE);
 
             if (element_is_active)
             {
-	            //calculate elemental contribution
-	            pScheme->CalculateSystemContributions(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
+                //calculate elemental contribution
+                pScheme->CalculateSystemContributions(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
 
-	            //assemble the elemental contribution
-	            AssembleLHS(A, LHS_Contribution, EquationId);
-	            AssembleRHS(b, RHS_Contribution, EquationId);
+                //assemble the elemental contribution
+                AssembleLHS(A, LHS_Contribution, EquationId);
+                AssembleRHS(b, RHS_Contribution, EquationId);
 
-	            // clean local elemental memory
-    	        pScheme->CleanMemory(*it);
+                // clean local elemental memory
+                pScheme->CleanMemory(*it);
             }
         }
         //double EndTime = GetTickCount();
@@ -258,22 +258,25 @@ public:
         RHS_Contribution.resize(0, false);
 
         // assemble all conditions
-        for (typename ConditionsArrayType::ptr_iterator it = ConditionsArray.ptr_begin(); it != ConditionsArray.ptr_end(); ++it)
+        for (typename ConditionsArrayType::iterator it = ConditionsArray.begin(); it != ConditionsArray.end(); ++it)
         {
-        	//detect if the element is active or not. If the user did not make any choice the element
+            //detect if the element is active or not. If the user did not make any choice the element
             //is active by default
             bool condition_is_active = true;
-            if( (*it)->IsDefined(ACTIVE) )
-                condition_is_active = (*it)->Is(ACTIVE);
+            if( it->IsDefined(ACTIVE) )
+                condition_is_active = it->Is(ACTIVE);
 
             if (condition_is_active)
             {
-	            //calculate elemental contribution
-	            pScheme->Condition_CalculateSystemContributions(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
+                //calculate elemental contribution
+                pScheme->CalculateSystemContributions(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
 
-	            //assemble the elemental contribution
-	            AssembleLHS(A, LHS_Contribution, EquationId);
-	            AssembleRHS(b, RHS_Contribution, EquationId);
+                //assemble the elemental contribution
+                AssembleLHS(A, LHS_Contribution, EquationId);
+                AssembleRHS(b, RHS_Contribution, EquationId);
+
+                // clean local conditional memory
+                pScheme->CleanMemory(*it);
             }
         }
 
@@ -331,17 +334,17 @@ public:
             //terms
             Element::EquationIdVectorType EquationId;
             ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
-            typename ElementsArrayType::ptr_iterator it_begin = pElements.ptr_begin() + element_partition[k];
-            typename ElementsArrayType::ptr_iterator it_end = pElements.ptr_begin() + element_partition[k + 1];
+            typename ElementsArrayType::iterator it_begin = pElements.begin() + element_partition[k];
+            typename ElementsArrayType::iterator it_end = pElements.begin() + element_partition[k + 1];
 
             // assemble all elements
-            for (typename ElementsArrayType::ptr_iterator it = it_begin; it != it_end; ++it)
+            for (typename ElementsArrayType::iterator it = it_begin; it != it_end; ++it)
             {
                 //detect if the element is active or not. If the user did not make any choice the element
                 //is active by default
                 bool element_is_active = true;
-                if( (*it)->IsDefined(ACTIVE) )
-                    element_is_active = (*it)->Is(ACTIVE);
+                if( it->IsDefined(ACTIVE) )
+                    element_is_active = it->Is(ACTIVE);
 
                 if(element_is_active)
                 {
@@ -373,28 +376,28 @@ public:
 
             ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
 
-            typename ConditionsArrayType::ptr_iterator it_begin = ConditionsArray.ptr_begin() + condition_partition[k];
-            typename ConditionsArrayType::ptr_iterator it_end = ConditionsArray.ptr_begin() + condition_partition[k + 1];
+            typename ConditionsArrayType::iterator it_begin = ConditionsArray.begin() + condition_partition[k];
+            typename ConditionsArrayType::iterator it_end = ConditionsArray.begin() + condition_partition[k + 1];
 
             // assemble all elements
-            for (typename ConditionsArrayType::ptr_iterator it = it_begin; it != it_end; ++it)
+            for (typename ConditionsArrayType::iterator it = it_begin; it != it_end; ++it)
             {
                 //detect if the element is active or not. If the user did not make any choice the element
                 //is active by default
                 bool condition_is_active = true;
-                if( (*it)->IsDefined(ACTIVE) )
-                    condition_is_active = (*it)->Is(ACTIVE);
+                if( it->IsDefined(ACTIVE) )
+                    condition_is_active = it->Is(ACTIVE);
 
                 if(condition_is_active)
                 {
                     //calculate elemental contribution
-                    pScheme->Condition_CalculateSystemContributions(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
+                    pScheme->CalculateSystemContributions(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
 
                     //assemble the elemental contribution
                     Assemble(A, b, LHS_Contribution, RHS_Contribution, EquationId, lock_array);
 
-                    // clean local elemental memory
-//                    pScheme->CleanMemory(*it);
+                    // clean local conditional memory
+                    pScheme->CleanMemory(*it);
                 }
             }
         }
@@ -463,45 +466,48 @@ public:
         ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
 
         // assemble all elements
-        for (typename ElementsArrayType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
+        for (typename ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
-        	//detect if the element is active or not. If the user did not make any choice the element
+            //detect if the element is active or not. If the user did not make any choice the element
             //is active by default
             bool element_is_active = true;
-            if( (*it)->IsDefined(ACTIVE) )
-                element_is_active = (*it)->Is(ACTIVE);
+            if( it->IsDefined(ACTIVE) )
+                element_is_active = it->Is(ACTIVE);
 
             if (element_is_active)
             {
-	            //calculate elemental contribution
-	            pScheme->Calculate_LHS_Contribution(*it, LHS_Contribution, EquationId, CurrentProcessInfo);
+                //calculate elemental contribution
+                pScheme->CalculateLHSContribution(*it, LHS_Contribution, EquationId, CurrentProcessInfo);
 
-	            //assemble the elemental contribution
-	            AssembleLHS(A, LHS_Contribution, EquationId);
+                //assemble the elemental contribution
+                AssembleLHS(A, LHS_Contribution, EquationId);
 
-	            // clean local elemental memory
-	            pScheme->CleanMemory(*it);
+                // clean local elemental memory
+                pScheme->CleanMemory(*it);
             }
         }
 
         LHS_Contribution.resize(0, 0, false);
 
         // assemble all conditions
-        for (typename ConditionsArrayType::ptr_iterator it = ConditionsArray.ptr_begin(); it != ConditionsArray.ptr_end(); ++it)
+        for (typename ConditionsArrayType::iterator it = ConditionsArray.begin(); it != ConditionsArray.end(); ++it)
         {
-        	//detect if the element is active or not. If the user did not make any choice the element
+            //detect if the element is active or not. If the user did not make any choice the element
             //is active by default
             bool condition_is_active = true;
-            if( (*it)->IsDefined(ACTIVE) )
-                condition_is_active = (*it)->Is(ACTIVE);
+            if( it->IsDefined(ACTIVE) )
+                condition_is_active = it->Is(ACTIVE);
 
             if (condition_is_active)
             {
-	            //calculate elemental contribution
-	            pScheme->Condition_Calculate_LHS_Contribution(*it, LHS_Contribution, EquationId, CurrentProcessInfo);
+                //calculate elemental contribution
+                pScheme->CalculateLHSContribution(*it, LHS_Contribution, EquationId, CurrentProcessInfo);
 
-	            //assemble the elemental contribution
-	            AssembleLHS(A, LHS_Contribution, EquationId);
+                //assemble the elemental contribution
+                AssembleLHS(A, LHS_Contribution, EquationId);
+
+                // clean local conditional memory
+                pScheme->CleanMemory(*it);
             }
         }
 
@@ -527,7 +533,6 @@ public:
 
         ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
 
-
         //contributions to the system
         LocalSystemMatrixType LHS_Contribution = LocalSystemMatrixType(0, 0);
 
@@ -536,44 +541,47 @@ public:
         Element::EquationIdVectorType EquationId;
 
         // assemble all elements
-        for (typename ElementsArrayType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
+        for (typename ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
-        	//detect if the element is active or not. If the user did not make any choice the element
+            //detect if the element is active or not. If the user did not make any choice the element
             //is active by default
             bool element_is_active = true;
-            if( (*it)->IsDefined(ACTIVE) )
-                element_is_active = (*it)->Is(ACTIVE);
+            if( it->IsDefined(ACTIVE) )
+                element_is_active = it->Is(ACTIVE);
 
             if (element_is_active)
             {
-	            //calculate elemental contribution
-	            pScheme->Calculate_LHS_Contribution(*it, LHS_Contribution, EquationId, CurrentProcessInfo);
+                //calculate elemental contribution
+                pScheme->CalculateLHSContribution(*it, LHS_Contribution, EquationId, CurrentProcessInfo);
 
-	            //assemble the elemental contribution
-	            AssembleLHS_CompleteOnFreeRows(A, LHS_Contribution, EquationId);
+                //assemble the elemental contribution
+                AssembleLHS_CompleteOnFreeRows(A, LHS_Contribution, EquationId);
 
-	            // clean local elemental memory
-	            pScheme->CleanMemory(*it);
+                // clean local elemental memory
+                pScheme->CleanMemory(*it);
             }
         }
 
         LHS_Contribution.resize(0, 0, false);
         // assemble all conditions
-        for (typename ConditionsArrayType::ptr_iterator it = ConditionsArray.ptr_begin(); it != ConditionsArray.ptr_end(); ++it)
+        for (typename ConditionsArrayType::iterator it = ConditionsArray.begin(); it != ConditionsArray.end(); ++it)
         {
-        	//detect if the element is active or not. If the user did not make any choice the element
+            //detect if the element is active or not. If the user did not make any choice the element
             //is active by default
             bool condition_is_active = true;
-            if( (*it)->IsDefined(ACTIVE) )
-                condition_is_active = (*it)->Is(ACTIVE);
+            if( it->IsDefined(ACTIVE) )
+                condition_is_active = it->Is(ACTIVE);
 
             if (condition_is_active)
             {
-	            //calculate elemental contribution
-	            pScheme->Condition_Calculate_LHS_Contribution(*it, LHS_Contribution, EquationId, CurrentProcessInfo);
+                //calculate elemental contribution
+                pScheme->CalculateLHSContribution(*it, LHS_Contribution, EquationId, CurrentProcessInfo);
 
-	            //assemble the elemental contribution
-	            AssembleLHS_CompleteOnFreeRows(A, LHS_Contribution, EquationId);
+                //assemble the elemental contribution
+                AssembleLHS_CompleteOnFreeRows(A, LHS_Contribution, EquationId);
+
+                // clean local conditional memory
+                pScheme->CleanMemory(*it);
             }
         }
 
@@ -683,6 +691,8 @@ public:
 
         Build(pScheme, r_model_part, A, b);
 
+        KRATOS_WATCH(A)
+
         Timer::Stop("Build");
 
         ApplyDirichletConditions(pScheme, r_model_part, A, Dx, b);
@@ -782,46 +792,46 @@ public:
         //mDofSet.clear();
 
         //double StartTime = GetTickCount();
-        for (typename ElementsArrayType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
+        for (typename ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
-        	//detect if the element is active or not. If the user did not make any choice the element
+            //detect if the element is active or not. If the user did not make any choice the element
             //is active by default
             bool element_is_active = true;
-            if( (*it)->IsDefined(ACTIVE) )
-                element_is_active = (*it)->Is(ACTIVE);
+            if( it->IsDefined(ACTIVE) )
+                element_is_active = it->Is(ACTIVE);
 
             if (element_is_active)
             {
-	            // gets list of Dof involved on every element
-	            pScheme->GetElementalDofList(*it, ElementalDofList, CurrentProcessInfo);
+                // gets list of Dof involved on every element
+                pScheme->GetDofList(*it, ElementalDofList, CurrentProcessInfo);
 
-	            //ccc = GetTickCount();
-	            for (typename Element::DofsVectorType::iterator i = ElementalDofList.begin(); i != ElementalDofList.end(); ++i)
-	            {
-	                Doftemp.push_back(*i);
-	            }
+                //ccc = GetTickCount();
+                for (typename Element::DofsVectorType::iterator i = ElementalDofList.begin(); i != ElementalDofList.end(); ++i)
+                {
+                    Doftemp.push_back(*i);
+                }
             }
         }
 
         //taking in account conditions
         ConditionsArrayType& pConditions = r_model_part.Conditions();
-        for (typename ConditionsArrayType::ptr_iterator it = pConditions.ptr_begin(); it != pConditions.ptr_end(); ++it)
+        for (typename ConditionsArrayType::iterator it = pConditions.begin(); it != pConditions.end(); ++it)
         {
-        	//detect if the condition is active or not. If the user did not make any choice the condition
+            //detect if the condition is active or not. If the user did not make any choice the condition
             //is active by default
             bool condition_is_active = true;
-            if( (*it)->IsDefined(ACTIVE) )
-                condition_is_active = (*it)->Is(ACTIVE);
+            if( it->IsDefined(ACTIVE) )
+                condition_is_active = it->Is(ACTIVE);
 
             if (condition_is_active)
             {
-	            // gets list of Dof involved on every condition
-	            pScheme->GetConditionDofList(*it, ElementalDofList, CurrentProcessInfo);
+                // gets list of Dof involved on every condition
+                pScheme->GetDofList(*it, ElementalDofList, CurrentProcessInfo);
 
-	            for (typename Element::DofsVectorType::iterator i = ElementalDofList.begin(); i != ElementalDofList.end(); ++i)
-	            {
-	                Doftemp.push_back(*i);
-	            }
+                for (typename Element::DofsVectorType::iterator i = ElementalDofList.begin(); i != ElementalDofList.end(); ++i)
+                {
+                    Doftemp.push_back(*i);
+                }
             }
         }
 
@@ -1268,7 +1278,7 @@ protected:
 
         std::size_t equation_size = A.size1();
         std::vector<std::vector<std::size_t> > indices(equation_size);
-        //				std::vector<std::vector<std::size_t> > dirichlet_indices(TSystemSpaceType::Size1(mDirichletMatrix));
+        //              std::vector<std::vector<std::size_t> > dirichlet_indices(TSystemSpaceType::Size1(mDirichletMatrix));
 
         Element::EquationIdVectorType ids(3, 0);
         for (typename ElementsContainerType::iterator i_element = rElements.begin(); i_element != rElements.end(); i_element++)
@@ -1300,7 +1310,7 @@ protected:
                         if (ids[j] < equation_size)
                         {
                             AddUnique(row_indices, ids[j]);
-                            //	indices[ids[i]].push_back(ids[j]);
+                            //  indices[ids[i]].push_back(ids[j]);
                         }
                 }
         }
@@ -1537,18 +1547,18 @@ private:
         Element::EquationIdVectorType EquationId;
 
         // assemble all elements
-        for (typename ElementsArrayType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
+        for (typename ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
                 //detect if the element is active or not. If the user did not make any choice the element
                 //is active by default
                 bool element_is_active = true;
-                if( (*it)->IsDefined(ACTIVE) )
-                    element_is_active = (*it)->Is(ACTIVE);
+                if( it->IsDefined(ACTIVE) )
+                    element_is_active = it->Is(ACTIVE);
 
                 if(element_is_active)
                 {
                     //calculate elemental Right Hand Side Contribution
-                    pScheme->Calculate_RHS_Contribution(*it, RHS_Contribution, EquationId, CurrentProcessInfo);
+                    pScheme->CalculateRHSContribution(*it, RHS_Contribution, EquationId, CurrentProcessInfo);
 
                     //assemble the elemental contribution
                     AssembleRHS(b, RHS_Contribution, EquationId);
@@ -1559,19 +1569,19 @@ private:
         RHS_Contribution.resize(0, false);
 
         // assemble all conditions
-        for (typename ConditionsArrayType::ptr_iterator it = ConditionsArray.ptr_begin(); it != ConditionsArray.ptr_end(); ++it)
+        for (typename ConditionsArrayType::iterator it = ConditionsArray.begin(); it != ConditionsArray.end(); ++it)
         {
             //detect if the element is active or not. If the user did not make any choice the element
             //is active by default
             bool condition_is_active = true;
-            if( (*it)->IsDefined(ACTIVE) )
-                condition_is_active = (*it)->Is(ACTIVE);
+            if( it->IsDefined(ACTIVE) )
+                condition_is_active = it->Is(ACTIVE);
 
             if(condition_is_active)
             {
 
                 //calculate elemental contribution
-                pScheme->Condition_Calculate_RHS_Contribution(*it, RHS_Contribution, EquationId, CurrentProcessInfo);
+                pScheme->CalculateRHSContribution(*it, RHS_Contribution, EquationId, CurrentProcessInfo);
 
                 //assemble the elemental contribution
                 AssembleRHS(b, RHS_Contribution, EquationId);
@@ -1593,7 +1603,7 @@ private:
         std::size_t* index2_vector = A.index2_data().begin();
 
         size_t left_limit = index1_vector[i];
-//	size_t right_limit = index1_vector[i+1];
+//  size_t right_limit = index1_vector[i+1];
 
         //find the first entry
         size_t last_pos = ForwardFind(EquationId[0],left_limit,index2_vector);

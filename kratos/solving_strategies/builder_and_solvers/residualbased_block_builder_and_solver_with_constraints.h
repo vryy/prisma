@@ -215,13 +215,13 @@ public:
                 if (element_is_active)
                 {
                     //calculate elemental contribution
-                    pScheme->CalculateSystemContributions(*(it.base()), LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
+                    pScheme->CalculateSystemContributions(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
 
                     //assemble the elemental contribution
                     Assemble(A, b, LHS_Contribution, RHS_Contribution, EquationId);
 
                     // clean local elemental memory
-                    pScheme->CleanMemory(*(it.base()));
+                    pScheme->CleanMemory(*it);
                 }
             }
 
@@ -239,13 +239,13 @@ public:
                 if (condition_is_active)
                 {
                     //calculate elemental contribution
-                    pScheme->Condition_CalculateSystemContributions(*(it.base()), LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
+                    pScheme->CalculateSystemContributions(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
 
                     //assemble the elemental contribution
                     Assemble(A, b, LHS_Contribution, RHS_Contribution, EquationId);
 
                     // clean local elemental memory
-                    pScheme->CleanMemory(*(it.base()));
+                    pScheme->CleanMemory(*it);
                 }
             }
         }
@@ -619,7 +619,7 @@ public:
                 auto it_elem = r_elements_array.begin() + i;
 
                 // Gets list of Dof involved on every element
-                pScheme->GetElementalDofList(*(it_elem.base()), dof_list, r_current_process_info);
+                pScheme->GetDofList(*it_elem, dof_list, r_current_process_info);
                 dofs_tmp_set.insert(dof_list.begin(), dof_list.end());
             }
 
@@ -633,7 +633,7 @@ public:
                 auto it_cond = r_conditions_array.begin() + i;
 
                 // Gets list of Dof involved on every element
-                pScheme->GetConditionDofList(*(it_cond.base()), dof_list, r_current_process_info);
+                pScheme->GetDofList(*it_cond, dof_list, r_current_process_info);
                 dofs_tmp_set.insert(dof_list.begin(), dof_list.end());
             }
 
@@ -1550,7 +1550,7 @@ private:
 
                 if(element_is_active) {
                     //calculate elemental Right Hand Side Contribution
-                    pScheme->Calculate_RHS_Contribution(*(it.base()), RHS_Contribution, EquationId, CurrentProcessInfo);
+                    pScheme->CalculateRHSContribution(*it, RHS_Contribution, EquationId, CurrentProcessInfo);
 
                     //assemble the elemental contribution
                     AssembleRHS(b, RHS_Contribution, EquationId);
@@ -1574,7 +1574,7 @@ private:
 
                 if(condition_is_active) {
                     //calculate elemental contribution
-                    pScheme->Condition_Calculate_RHS_Contribution(*(it.base()), RHS_Contribution, EquationId, CurrentProcessInfo);
+                    pScheme->CalculateRHSContribution(*it, RHS_Contribution, EquationId, CurrentProcessInfo);
 
                     //assemble the elemental contribution
                     AssembleRHS(b, RHS_Contribution, EquationId);

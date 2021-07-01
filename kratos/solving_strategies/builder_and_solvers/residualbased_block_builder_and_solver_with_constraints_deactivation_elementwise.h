@@ -543,7 +543,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
                 if (element_is_active)
                 {
                     //calculate elemental contribution
-                    pScheme->CalculateSystemContributions(*(it.base()), LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
+                    pScheme->CalculateSystemContributions(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
                     constraint_imposer.template ApplyConstraints<Element>(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
 
                     //assemble the elemental contribution
@@ -553,7 +553,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
                     this->Assemble(A, b, LHS_Contribution, RHS_Contribution, EquationId);
 #endif
                     // clean local elemental memory
-                    pScheme->CleanMemory(*(it.base()));
+                    pScheme->CleanMemory(*it);
                 }
             }
 
@@ -572,7 +572,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
                 if (condition_is_active)
                 {
                     //calculate elemental contribution
-                    pScheme->Condition_CalculateSystemContributions(*(it.base()), LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
+                    pScheme->CalculateSystemContributions(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
                     constraint_imposer.template ApplyConstraints<Condition>(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
 
                     //assemble the elemental contribution
@@ -583,7 +583,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
 #endif
 
                     // clean local elemental memory
-                    pScheme->CleanMemory(*(it.base()));
+                    pScheme->CleanMemory(*it);
                 }
             }
         }

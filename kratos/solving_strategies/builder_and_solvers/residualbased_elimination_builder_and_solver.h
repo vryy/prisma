@@ -199,7 +199,7 @@ public:
 #ifndef _OPENMP
         ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
 
-        for (typename ElementsArrayType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
+        for (typename ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
             //calculate elemental contribution
             pScheme->CalculateSystemContributions(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
@@ -220,10 +220,10 @@ public:
         RHS_Contribution.resize(0, false);
 
         // assemble all conditions
-        for (typename ConditionsArrayType::ptr_iterator it = ConditionsArray.ptr_begin(); it != ConditionsArray.ptr_end(); ++it)
+        for (typename ConditionsArrayType::iterator it = ConditionsArray.begin(); it != ConditionsArray.end(); ++it)
         {
             //calculate elemental contribution
-            pScheme->Condition_CalculateSystemContributions(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
+            pScheme->CalculateSystemContributions(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
 
             //assemble the elemental contribution
             AssembleLHS(A, LHS_Contribution, EquationId);
@@ -263,11 +263,11 @@ public:
             //terms
             Element::EquationIdVectorType EquationId;
             ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
-            typename ElementsArrayType::ptr_iterator it_begin = pElements.ptr_begin() + element_partition[k];
-            typename ElementsArrayType::ptr_iterator it_end = pElements.ptr_begin() + element_partition[k + 1];
+            typename ElementsArrayType::iterator it_begin = pElements.begin() + element_partition[k];
+            typename ElementsArrayType::iterator it_end = pElements.begin() + element_partition[k + 1];
 
             // assemble all elements
-            for (typename ElementsArrayType::ptr_iterator it = it_begin; it != it_end; ++it)
+            for (typename ElementsArrayType::iterator it = it_begin; it != it_end; ++it)
             {
 
                 //calculate elemental contribution
@@ -305,14 +305,14 @@ public:
 
             ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
 
-            typename ConditionsArrayType::ptr_iterator it_begin = ConditionsArray.ptr_begin() + condition_partition[k];
-            typename ConditionsArrayType::ptr_iterator it_end = ConditionsArray.ptr_begin() + condition_partition[k + 1];
+            typename ConditionsArrayType::iterator it_begin = ConditionsArray.begin() + condition_partition[k];
+            typename ConditionsArrayType::iterator it_end = ConditionsArray.begin() + condition_partition[k + 1];
 
             // assemble all elements
-            for (typename ConditionsArrayType::ptr_iterator it = it_begin; it != it_end; ++it)
+            for (typename ConditionsArrayType::iterator it = it_begin; it != it_end; ++it)
             {
                 //calculate elemental contribution
-                pScheme->Condition_CalculateSystemContributions(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
+                pScheme->CalculateSystemContributions(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
 
                 //assemble the elemental contribution
                 Assemble(A, b, LHS_Contribution, RHS_Contribution, EquationId, lock_array);
@@ -377,10 +377,10 @@ public:
         ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
 
         // assemble all elements
-        for (typename ElementsArrayType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
+        for (typename ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
             //calculate elemental contribution
-            pScheme->Calculate_LHS_Contribution(*it, LHS_Contribution, EquationId, CurrentProcessInfo);
+            pScheme->CalculateLHSContribution(*it, LHS_Contribution, EquationId, CurrentProcessInfo);
 
             //assemble the elemental contribution
             AssembleLHS(A, LHS_Contribution, EquationId);
@@ -392,10 +392,10 @@ public:
         LHS_Contribution.resize(0, 0, false);
 
         // assemble all conditions
-        for (typename ConditionsArrayType::ptr_iterator it = ConditionsArray.ptr_begin(); it != ConditionsArray.ptr_end(); ++it)
+        for (typename ConditionsArrayType::iterator it = ConditionsArray.begin(); it != ConditionsArray.end(); ++it)
         {
             //calculate elemental contribution
-            pScheme->Condition_Calculate_LHS_Contribution(*it, LHS_Contribution, EquationId, CurrentProcessInfo);
+            pScheme->CalculateLHSContribution(*it, LHS_Contribution, EquationId, CurrentProcessInfo);
 
             //assemble the elemental contribution
             AssembleLHS(A, LHS_Contribution, EquationId);
@@ -434,10 +434,10 @@ public:
         Element::EquationIdVectorType EquationId;
 
         // assemble all elements
-        for (typename ElementsArrayType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
+        for (typename ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
             //calculate elemental contribution
-            pScheme->Calculate_LHS_Contribution(*it, LHS_Contribution, EquationId, CurrentProcessInfo);
+            pScheme->CalculateLHSContribution(*it, LHS_Contribution, EquationId, CurrentProcessInfo);
 
             //assemble the elemental contribution
             AssembleLHS_CompleteOnFreeRows(A, LHS_Contribution, EquationId);
@@ -448,13 +448,16 @@ public:
 
         LHS_Contribution.resize(0, 0, false);
         // assemble all conditions
-        for (typename ConditionsArrayType::ptr_iterator it = ConditionsArray.ptr_begin(); it != ConditionsArray.ptr_end(); ++it)
+        for (typename ConditionsArrayType::iterator it = ConditionsArray.begin(); it != ConditionsArray.end(); ++it)
         {
             //calculate elemental contribution
-            pScheme->Condition_Calculate_LHS_Contribution(*it, LHS_Contribution, EquationId, CurrentProcessInfo);
+            pScheme->CalculateLHSContribution(*it, LHS_Contribution, EquationId, CurrentProcessInfo);
 
             //assemble the elemental contribution
             AssembleLHS_CompleteOnFreeRows(A, LHS_Contribution, EquationId);
+
+            // clean local conditional memory
+            pScheme->CleanMemory(*it);
         }
 
 
@@ -645,10 +648,10 @@ public:
         Element::EquationIdVectorType EquationId;
 
         // assemble all elements
-        for (typename ElementsArrayType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
+        for (typename ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
             //calculate elemental Right Hand Side Contribution
-            pScheme->Calculate_RHS_Contribution(*it, RHS_Contribution, EquationId, CurrentProcessInfo);
+            pScheme->CalculateRHSContribution(*it, RHS_Contribution, EquationId, CurrentProcessInfo);
 
             //assemble the elemental contribution
             AssembleRHS(b, RHS_Contribution, EquationId);
@@ -658,10 +661,10 @@ public:
         RHS_Contribution.resize(0, false);
 
         // assemble all conditions
-        for (typename ConditionsArrayType::ptr_iterator it = ConditionsArray.ptr_begin(); it != ConditionsArray.ptr_end(); ++it)
+        for (typename ConditionsArrayType::iterator it = ConditionsArray.begin(); it != ConditionsArray.end(); ++it)
         {
             //calculate elemental contribution
-            pScheme->Condition_Calculate_RHS_Contribution(*it, RHS_Contribution, EquationId, CurrentProcessInfo);
+            pScheme->CalculateRHSContribution(*it, RHS_Contribution, EquationId, CurrentProcessInfo);
 
             //assemble the elemental contribution
             AssembleRHS(b, RHS_Contribution, EquationId);
@@ -697,11 +700,11 @@ public:
         //mDofSet.clear();
 
         //double StartTime = GetTickCount();
-        for (typename ElementsArrayType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
+        for (typename ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
             // gets list of Dof involved on every element
             //aaa = GetTickCount();
-            pScheme->GetElementalDofList(*it, ElementalDofList, CurrentProcessInfo);
+            pScheme->GetDofList(*it, ElementalDofList, CurrentProcessInfo);
             //bbb += GetTickCount() - aaa;
             /*KRATOS_WATCH((*it)->Id());
             std::cout << "node ids" << std::endl;
@@ -728,10 +731,10 @@ public:
 
         //taking in account conditions
         ConditionsArrayType& pConditions = r_model_part.Conditions();
-        for (typename ConditionsArrayType::ptr_iterator it = pConditions.ptr_begin(); it != pConditions.ptr_end(); ++it)
+        for (typename ConditionsArrayType::iterator it = pConditions.begin(); it != pConditions.end(); ++it)
         {
             // gets list of Dof involved on every element
-            pScheme->GetConditionDofList(*it, ElementalDofList, CurrentProcessInfo);
+            pScheme->GetDofList(*it, ElementalDofList, CurrentProcessInfo);
 
             //ccc = GetTickCount();
             for (typename Element::DofsVectorType::iterator i = ElementalDofList.begin(); i != ElementalDofList.end(); ++i)

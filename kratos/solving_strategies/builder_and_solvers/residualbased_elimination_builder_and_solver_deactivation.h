@@ -64,6 +64,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "includes/define.h"
 #include "includes/matrix_market_interface.h"
 #include "includes/kratos_flags.h"
+#include "includes/deprecated_variables.h"
 #include "utilities/timer.h"
 #include "utilities/openmp_utils.h"
 #include "solving_strategies/builder_and_solvers/builder_and_solver.h"
@@ -345,16 +346,16 @@ public:
         // assemble all elements
 #ifndef _OPENMP
         ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
-        for (typename ElementsArrayType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
+        for (typename ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
-            if( !(*it)->GetValue( IS_INACTIVE ) || (*it)->Is( ACTIVE ) )
+            if( !it->GetValue( IS_INACTIVE ) || it->Is( ACTIVE ) )
             {
                 //calculate elemental contribution
                 pScheme->CalculateSystemContributions(*it,LHS_Contribution,RHS_Contribution,EquationId,CurrentProcessInfo);
 
                 #if defined(ENABLE_LOG) && defined(QUERY_EQUATION_ID_AT_BUILD)
                 std::stringstream ss;
-                ss << "Element " << (*it)->Id() << " is accounted for Build, EquationId:";
+                ss << "Element " << it->Id() << " is accounted for Build, EquationId:";
                 for(unsigned int i = 0; i < EquationId.size(); ++i)
                     ss << " " << EquationId[i];
                 ss << std::endl;
@@ -378,16 +379,16 @@ public:
         RHS_Contribution.resize(0, false);
 
         // assemble all conditions
-        for (typename ConditionsArrayType::ptr_iterator it = ConditionsArray.ptr_begin(); it != ConditionsArray.ptr_end(); ++it)
+        for (typename ConditionsArrayType::iterator it = ConditionsArray.begin(); it != ConditionsArray.end(); ++it)
         {
-            if( !(*it)->GetValue( IS_INACTIVE ) || (*it)->Is( ACTIVE ) )
+            if( !it->GetValue( IS_INACTIVE ) || it->Is( ACTIVE ) )
             {
                 //calculate elemental contribution
-                pScheme->Condition_CalculateSystemContributions(*it,LHS_Contribution,RHS_Contribution,EquationId,CurrentProcessInfo);
+                pScheme->CalculateSystemContributions(*it,LHS_Contribution,RHS_Contribution,EquationId,CurrentProcessInfo);
 
                 #if defined(ENABLE_LOG) && defined(QUERY_EQUATION_ID_AT_BUILD)
                 std::stringstream ss;
-                ss << "Condition " << (*it)->Id() << " is accounted for Build, EquationId:";
+                ss << "Condition " << it->Id() << " is accounted for Build, EquationId:";
                 for(unsigned int i = 0; i < EquationId.size(); ++i)
                     ss << " " << EquationId[i];
                 ss << std::endl;
@@ -409,11 +410,11 @@ public:
         std::set<std::size_t> ActiveIdSet;
         std::set<std::size_t> InactiveIdSet;
         ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
-        for (typename ElementsArrayType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
+        for (typename ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
-            (*it)->EquationIdVector(EquationId, CurrentProcessInfo);
+            it->EquationIdVector(EquationId, CurrentProcessInfo);
 
-            if( !(*it)->GetValue( IS_INACTIVE ) || (*it)->Is( ACTIVE ) )
+            if( !it->GetValue( IS_INACTIVE ) || it->Is( ACTIVE ) )
             {
                 // for active elements, the equation id set is stored
                 for(unsigned int i = 0; i < EquationId.size(); ++i)
@@ -425,7 +426,7 @@ public:
             else
             // for IS_INACTIVE elements, the EquationId is stored to modify the diagonal later on
             {
-                (*it)->EquationIdVector(EquationId, CurrentProcessInfo);
+                it->EquationIdVector(EquationId, CurrentProcessInfo);
                 for(unsigned int i = 0; i < EquationId.size(); ++i)
                 {
                     if(EquationId[i] < BaseType::mEquationSystemSize)
@@ -434,11 +435,11 @@ public:
             }
         }
 
-        for (typename ConditionsArrayType::ptr_iterator it = ConditionsArray.ptr_begin(); it != ConditionsArray.ptr_end(); ++it)
+        for (typename ConditionsArrayType::iterator it = ConditionsArray.begin(); it != ConditionsArray.end(); ++it)
         {
-            (*it)->EquationIdVector(EquationId, CurrentProcessInfo);
+            it->EquationIdVector(EquationId, CurrentProcessInfo);
 
-            if( !(*it)->GetValue( IS_INACTIVE ) || (*it)->Is( ACTIVE ) )
+            if( !it->GetValue( IS_INACTIVE ) || it->Is( ACTIVE ) )
             {
                 // for active conditions, the equation id set is stored
                 for(unsigned int i = 0; i < EquationId.size(); ++i)
@@ -450,7 +451,7 @@ public:
             else
             // for IS_INACTIVE conditions, the EquationId is stored to modify the diagonal later on
             {
-                (*it)->EquationIdVector(EquationId, CurrentProcessInfo);
+                it->EquationIdVector(EquationId, CurrentProcessInfo);
                 for(unsigned int i = 0; i < EquationId.size(); ++i)
                 {
                     if(EquationId[i] < BaseType::mEquationSystemSize)
@@ -538,18 +539,18 @@ public:
             //terms
             Element::EquationIdVectorType EquationId;
             ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
-            typename ElementsArrayType::ptr_iterator it_begin = pElements.ptr_begin() + element_partition[k];
-            typename ElementsArrayType::ptr_iterator it_end = pElements.ptr_begin() + element_partition[k+1];
+            typename ElementsArrayType::iterator it_begin = pElements.ptr_begin() + element_partition[k];
+            typename ElementsArrayType::iterator it_end = pElements.ptr_begin() + element_partition[k+1];
 
             // assemble all elements
-            for (typename ElementsArrayType::ptr_iterator it = it_begin; it != it_end; ++it)
+            for (typename ElementsArrayType::iterator it = it_begin; it != it_end; ++it)
             {
                 #ifdef MEASURE_TIME_CUT_CELL
-                if((*it)->GetValue(CUT_STATUS_var) == -1)
+                if(it->GetValue(CUT_STATUS_var) == -1)
                     Timer::Start("Build_Cut_Element");
                 #endif
 
-                if( !(*it)->GetValue( IS_INACTIVE ) || (*it)->Is( ACTIVE ) )
+                if( !it->GetValue( IS_INACTIVE ) || it->Is( ACTIVE ) )
                 {
                     //calculate elemental contribution
                     pScheme->CalculateSystemContributions(*it,LHS_Contribution,RHS_Contribution,EquationId,CurrentProcessInfo);
@@ -564,10 +565,10 @@ public:
                         KRATOS_WATCH(norm_elem_r)
                         KRATOS_WATCH(LHS_Contribution)
                         KRATOS_WATCH(RHS_Contribution)
-                        std::cout << "type of element: " << typeid(*(*it)).name() << std::endl;
-                        std::cout << "element Properties " << (*it)->GetProperties().Id() << ": " << (*it)->GetProperties() << std::endl;
-                        KRATOS_WATCH(*(*it))
-                        KRATOS_THROW_ERROR(std::logic_error, "NaN is detected at element", (*it)->Id())
+                        std::cout << "type of element: " << typeid((*it)).name() << std::endl;
+                        std::cout << "element Properties " << it->GetProperties().Id() << ": " << it->GetProperties() << std::endl;
+                        KRATOS_WATCH((*it))
+                        KRATOS_THROW_ERROR(std::logic_error, "NaN is detected at element", it->Id())
                     }
                     #endif
 
@@ -575,7 +576,7 @@ public:
                     // {
                     //     if (EquationId[i] == 0)
                     //     {
-                    //         std::cout << "Element " << (*it)->Id() << " contributes " << RHS_Contribution(i) << " to row " << EquationId[i] << std::endl;
+                    //         std::cout << "Element " << it->Id() << " contributes " << RHS_Contribution(i) << " to row " << EquationId[i] << std::endl;
                     //         std::cout << "EquationId:";
                     //         for (int i = 0; i < EquationId.size(); ++i)
                     //             std::cout << " " << EquationId[i];
@@ -588,12 +589,12 @@ public:
 //                    KRATOS_WATCH(RHS_Contribution);
                     #ifdef EXPORT_LOCAL_LHS_MATRIX
                     std::stringstream lhs_filename;
-                    lhs_filename << "ke_" << mStepCounter << "_" << mLocalCounter << "_" << (*it)->Id() << ".mm";
+                    lhs_filename << "ke_" << mStepCounter << "_" << mLocalCounter << "_" << it->Id() << ".mm";
                     CompressedMatrix tmp_lhs = LHS_Contribution;
                     WriteMatrixMarketMatrix(lhs_filename.str().c_str(), tmp_lhs, false);
 
                     std::stringstream eqid_filename;
-                    eqid_filename << "eq_" << mStepCounter << "_" << mLocalCounter << "_" << (*it)->Id() << ".txt";
+                    eqid_filename << "eq_" << mStepCounter << "_" << mLocalCounter << "_" << it->Id() << ".txt";
                     std::ofstream eqfid;
                     eqfid.open(eqid_filename.str().c_str());
                     for (std::size_t i = 0; i < EquationId.size(); ++i)
@@ -603,7 +604,7 @@ public:
 
                     #if defined(ENABLE_LOG) && defined(QUERY_EQUATION_ID_AT_BUILD)
                     std::stringstream ss;
-                    ss << "Element " << (*it)->Id() << " is accounted for Build, EquationId:";
+                    ss << "Element " << it->Id() << " is accounted for Build, EquationId:";
                     for(unsigned int i = 0; i < EquationId.size(); ++i)
                         ss << " " << EquationId[i];
                     ss << std::endl;
@@ -628,7 +629,7 @@ public:
                 }
 
                 #ifdef MEASURE_TIME_CUT_CELL
-                if((*it)->GetValue(CUT_STATUS_var) == -1)
+                if(it->GetValue(CUT_STATUS_var) == -1)
                     Timer::Stop("Build_Cut_Element");
                 #endif
             }
@@ -652,17 +653,17 @@ public:
 
             ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
 
-            typename ConditionsArrayType::ptr_iterator it_begin = ConditionsArray.ptr_begin() + condition_partition[k];
-            typename ConditionsArrayType::ptr_iterator it_end = ConditionsArray.ptr_begin() + condition_partition[k+1];
+            typename ConditionsArrayType::iterator it_begin = ConditionsArray.ptr_begin() + condition_partition[k];
+            typename ConditionsArrayType::iterator it_end = ConditionsArray.ptr_begin() + condition_partition[k+1];
 
             // assemble all conditions
-            for (typename ConditionsArrayType::ptr_iterator it = it_begin; it != it_end; ++it)
+            for (typename ConditionsArrayType::iterator it = it_begin; it != it_end; ++it)
             {
-                if( !(*it)->GetValue( IS_INACTIVE ) || (*it)->Is( ACTIVE ) )
+                if( !it->GetValue( IS_INACTIVE ) || it->Is( ACTIVE ) )
                 {
-//                    std::cout << "Condition " << (*it)->Id() << " is considerred, type: " << typeid(*(*it)).name() << std::endl;
+//                    std::cout << "Condition " << it->Id() << " is considerred, type: " << typeid((*it)).name() << std::endl;
                     //calculate elemental contribution
-                    pScheme->Condition_CalculateSystemContributions(*it,LHS_Contribution,RHS_Contribution,EquationId,CurrentProcessInfo);
+                    pScheme->CalculateSystemContributions(*it,LHS_Contribution,RHS_Contribution,EquationId,CurrentProcessInfo);
 
                     #ifdef DETECT_NAN_AT_BUILD
                     double norm_cond_k = norm_frobenius(LHS_Contribution);
@@ -672,10 +673,10 @@ public:
                     {
                         KRATOS_WATCH(norm_cond_k)
                         KRATOS_WATCH(norm_cond_r)
-                        std::cout << "type of condition: " << typeid(*(*it)).name() << std::endl;
-                        std::cout << "condition Properties " << (*it)->GetProperties().Id() << ": " << (*it)->GetProperties() << std::endl;
-                        KRATOS_WATCH(*(*it))
-                        KRATOS_THROW_ERROR(std::logic_error, "NaN is detected at condition", (*it)->Id())
+                        std::cout << "type of condition: " << typeid((*it)).name() << std::endl;
+                        std::cout << "condition Properties " << it->GetProperties().Id() << ": " << it->GetProperties() << std::endl;
+                        KRATOS_WATCH((*it))
+                        KRATOS_THROW_ERROR(std::logic_error, "NaN is detected at condition", it->Id())
                     }
                     #endif
 
@@ -683,7 +684,7 @@ public:
                     // {
                     //     if (EquationId[i] == 0)
                     //     {
-                    //         std::cout << "Condition " << (*it)->Id() << " contributes " << RHS_Contribution(i) << " to row " << EquationId[i] << std::endl;
+                    //         std::cout << "Condition " << it->Id() << " contributes " << RHS_Contribution(i) << " to row " << EquationId[i] << std::endl;
                     //         std::cout << "EquationId:";
                     //         for (int i = 0; i < EquationId.size(); ++i)
                     //             std::cout << " " << EquationId[i];
@@ -694,7 +695,7 @@ public:
 
                     #if defined(ENABLE_LOG) && defined(QUERY_EQUATION_ID_AT_BUILD)
                     std::stringstream ss;
-                    ss << "Condition " << (*it)->Id() << " is accounted for Build, EquationId:";
+                    ss << "Condition " << it->Id() << " is accounted for Build, EquationId:";
                     for(unsigned int i = 0; i < EquationId.size(); ++i)
                         ss << " " << EquationId[i];
                     ss << std::endl;
@@ -716,8 +717,8 @@ public:
 
                     //update the global diagonal sum
                     DiagonalSum += LocalDiagonalSum;
-//                    std::cout << "Condition " << (*it)->Id() << " rhs: " << RHS_Contribution << std::endl;
-//                    std::cout << "Condition " << (*it)->Id() << " is assembled" << std::endl;
+//                    std::cout << "Condition " << it->Id() << " rhs: " << RHS_Contribution << std::endl;
+//                    std::cout << "Condition " << it->Id() << " is assembled" << std::endl;
                 }
             }
         }
@@ -893,12 +894,12 @@ public:
         ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
 
         // assemble all elements
-        for (typename ElementsArrayType::ptr_iterator it=pElements.ptr_begin(); it!=pElements.ptr_end(); ++it)
+        for (typename ElementsArrayType::iterator it=pElements.begin(); it!=pElements.end(); ++it)
         {
-            if( !(*it)->GetValue( IS_INACTIVE ) || (*it)->Is( ACTIVE ) )
+            if( !it->GetValue( IS_INACTIVE ) || it->Is( ACTIVE ) )
             {
                 //calculate elemental contribution
-                pScheme->Calculate_LHS_Contribution(*it,LHS_Contribution,EquationId,CurrentProcessInfo);
+                pScheme->CalculateLHSContribution(*it,LHS_Contribution,EquationId,CurrentProcessInfo);
 
                 //assemble the elemental contribution
                 AssembleLHS(A,LHS_Contribution,EquationId);
@@ -911,12 +912,12 @@ public:
         LHS_Contribution.resize(0,0,false);
 
         // assemble all conditions
-        for (typename ConditionsArrayType::ptr_iterator it=ConditionsArray.ptr_begin(); it!=ConditionsArray.ptr_end(); ++it)
+        for (typename ConditionsArrayType::iterator it=ConditionsArray.begin(); it!=ConditionsArray.end(); ++it)
         {
-            if( !(*it)->GetValue( IS_INACTIVE ) || (*it)->Is( ACTIVE ) )
+            if( !it->GetValue( IS_INACTIVE ) || it->Is( ACTIVE ) )
             {
                 //calculate elemental contribution
-                pScheme->Condition_Calculate_LHS_Contribution(*it,LHS_Contribution,EquationId,CurrentProcessInfo);
+                pScheme->CalculateLHSContribution(*it,LHS_Contribution,EquationId,CurrentProcessInfo);
 
                 //assemble the elemental contribution
                 AssembleLHS(A,LHS_Contribution,EquationId);
@@ -955,12 +956,12 @@ public:
         Element::EquationIdVectorType EquationId;
 
         // assemble all elements
-        for (typename ElementsArrayType::ptr_iterator it=pElements.ptr_begin(); it!=pElements.ptr_end(); ++it)
+        for (typename ElementsArrayType::iterator it=pElements.begin(); it!=pElements.end(); ++it)
         {
-            if( !(*it)->GetValue( IS_INACTIVE ) || (*it)->Is( ACTIVE ) )
+            if( !it->GetValue( IS_INACTIVE ) || it->Is( ACTIVE ) )
             {
                 //calculate elemental contribution
-                pScheme->Calculate_LHS_Contribution(*it,LHS_Contribution,EquationId,CurrentProcessInfo);
+                pScheme->CalculateLHSContribution(*it,LHS_Contribution,EquationId,CurrentProcessInfo);
 
                 //assemble the elemental contribution
                 AssembleLHS_CompleteOnFreeRows(A,LHS_Contribution,EquationId);
@@ -972,12 +973,12 @@ public:
 
         LHS_Contribution.resize(0,0,false);
         // assemble all conditions
-        for (typename ConditionsArrayType::ptr_iterator it=ConditionsArray.ptr_begin(); it!=ConditionsArray.ptr_end(); ++it)
+        for (typename ConditionsArrayType::iterator it=ConditionsArray.begin(); it!=ConditionsArray.end(); ++it)
         {
-            if( !(*it)->GetValue( IS_INACTIVE ) || (*it)->Is( ACTIVE ) )
+            if( !it->GetValue( IS_INACTIVE ) || it->Is( ACTIVE ) )
             {
                 //calculate elemental contribution
-                pScheme->Condition_Calculate_LHS_Contribution(*it,LHS_Contribution,EquationId,CurrentProcessInfo);
+                pScheme->CalculateLHSContribution(*it,LHS_Contribution,EquationId,CurrentProcessInfo);
 
                 //assemble the elemental contribution
                 AssembleLHS_CompleteOnFreeRows(A,LHS_Contribution,EquationId);
@@ -1175,10 +1176,10 @@ public:
         Element::EquationIdVectorType EquationId;
 
         // assemble all elements
-        for (typename ElementsArrayType::ptr_iterator it=pElements.ptr_begin(); it!=pElements.ptr_end(); ++it)
+        for (typename ElementsArrayType::iterator it=pElements.begin(); it!=pElements.end(); ++it)
         {
             //calculate elemental Right Hand Side Contribution
-            pScheme->Calculate_RHS_Contribution(*it,RHS_Contribution,EquationId,CurrentProcessInfo);
+            pScheme->CalculateRHSContribution(*it,RHS_Contribution,EquationId,CurrentProcessInfo);
 
             //assemble the elemental contribution
             AssembleRHS(b,RHS_Contribution,EquationId);
@@ -1188,10 +1189,10 @@ public:
         RHS_Contribution.resize(0,false);
 
         // assemble all conditions
-        for (typename ConditionsArrayType::ptr_iterator it=ConditionsArray.ptr_begin(); it!=ConditionsArray.ptr_end(); ++it)
+        for (typename ConditionsArrayType::iterator it=ConditionsArray.begin(); it!=ConditionsArray.end(); ++it)
         {
             //calculate elemental contribution
-            pScheme->Condition_Calculate_RHS_Contribution(*it,RHS_Contribution,EquationId,CurrentProcessInfo);
+            pScheme->CalculateRHSContribution(*it,RHS_Contribution,EquationId,CurrentProcessInfo);
 
             //assemble the elemental contribution
             AssembleRHS(b,RHS_Contribution,EquationId);
@@ -1231,12 +1232,12 @@ public:
         #ifndef _OPENMP
             Element::EquationIdVectorType EquationId;
             // assemble all elements
-            for (typename ElementsArrayType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
+            for (typename ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
             {
-                if( !(*it)->GetValue( IS_INACTIVE ) || (*it)->Is( ACTIVE ) )
+                if( !it->GetValue( IS_INACTIVE ) || it->Is( ACTIVE ) )
                 {
                     //calculate elemental Right Hand Side Contribution
-                    pScheme->Calculate_RHS_Contribution(*it,RHS_Contribution,EquationId,CurrentProcessInfo);
+                    pScheme->CalculateRHSContribution(*it,RHS_Contribution,EquationId,CurrentProcessInfo);
 
                     //assemble the elemental contribution
                     AssembleRHSreactions(b,RHS_Contribution,EquationId);
@@ -1258,15 +1259,15 @@ public:
                 //vector containing the localization in the system of the different terms
                 Element::EquationIdVectorType EquationId;
                 ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
-                typename ElementsArrayType::ptr_iterator it_begin = pElements.ptr_begin() + element_partition[k];
-                typename ElementsArrayType::ptr_iterator it_end = pElements.ptr_begin() + element_partition[k + 1];
+                typename ElementsArrayType::iterator it_begin = pElements.ptr_begin() + element_partition[k];
+                typename ElementsArrayType::iterator it_end = pElements.ptr_begin() + element_partition[k + 1];
 
-                for (typename ElementsArrayType::ptr_iterator it = it_begin; it != it_end; ++it)
+                for (typename ElementsArrayType::iterator it = it_begin; it != it_end; ++it)
                 {
-                    if( !(*it)->GetValue( IS_INACTIVE ) || (*it)->Is( ACTIVE ) )
+                    if( !it->GetValue( IS_INACTIVE ) || it->Is( ACTIVE ) )
                     {
                         //calculate elemental Right Hand Side Contribution
-                        pScheme->Calculate_RHS_Contribution(*it,RHS_Contribution,EquationId,CurrentProcessInfo);
+                        pScheme->CalculateRHSContribution(*it,RHS_Contribution,EquationId,CurrentProcessInfo);
 
                         //assemble the elemental contribution
                         AssembleRHSreactions(b,RHS_Contribution,EquationId);
@@ -1304,16 +1305,16 @@ public:
 
         ElementsArrayType& pElements = r_model_part.Elements();
         std::size_t num_active_elements = 0;
-        for (typename ElementsArrayType::ptr_iterator it=pElements.ptr_begin(); it!=pElements.ptr_end(); ++it)
+        for (typename ElementsArrayType::iterator it=pElements.begin(); it!=pElements.end(); ++it)
         {
             // gets list of Dof involved on every element
-            pScheme->GetElementalDofList(*it,DofList,CurrentProcessInfo);
+            pScheme->GetDofList(*it,DofList,CurrentProcessInfo);
 
             for(typename Element::DofsVectorType::iterator i = DofList.begin() ; i != DofList.end() ; ++i)
                 mAllDofs.push_back(*i);
 
             #ifndef INCLUDE_INACTIVE_ELEMENTS_IN_SETUP_DOFSET
-            if( !(*it)->GetValue( IS_INACTIVE ) || (*it)->Is( ACTIVE ) )
+            if( !it->GetValue( IS_INACTIVE ) || it->Is( ACTIVE ) )
             {
             #endif
                 for(typename Element::DofsVectorType::iterator i = DofList.begin() ; i != DofList.end() ; ++i)
@@ -1329,16 +1330,16 @@ public:
         //taking in account conditions
         ConditionsArrayType& pConditions = r_model_part.Conditions();
         std::size_t num_active_conditions = 0;
-        for (typename ConditionsArrayType::ptr_iterator it=pConditions.ptr_begin(); it!=pConditions.ptr_end(); ++it)
+        for (typename ConditionsArrayType::iterator it=pConditions.begin(); it!=pConditions.end(); ++it)
         {
             // gets list of Dof involved on every condition
-            pScheme->GetConditionDofList(*it,DofList,CurrentProcessInfo);
+            pScheme->GetDofList(*it,DofList,CurrentProcessInfo);
 
             for(typename Element::DofsVectorType::iterator i = DofList.begin() ; i != DofList.end() ; ++i)
                 mAllDofs.push_back(*i);
 
             #ifndef INCLUDE_INACTIVE_ELEMENTS_IN_SETUP_DOFSET
-            if( !(*it)->GetValue( IS_INACTIVE ) || (*it)->Is( ACTIVE ) )
+            if( !it->GetValue( IS_INACTIVE ) || it->Is( ACTIVE ) )
             {
             #endif
                 for(typename Element::DofsVectorType::iterator i = DofList.begin() ; i != DofList.end() ; ++i)
@@ -1671,6 +1672,7 @@ public:
             {
                 i -= systemsize;
                 (*it2)->GetSolutionStepReactionValue() = ReactionsVector[i];
+                // std::cout << "node " << (*it2)->Id() << " is assigned reaction value " << (*it2)->GetSolutionStepReactionValue() << std::endl;
             }
             else
             {
@@ -1977,10 +1979,10 @@ protected:
                 if ( i_global < BaseType::mEquationSystemSize ) //on "free" DOFs
                 {
                     // ASSEMBLING THE SYSTEM VECTOR
-//                    #pragma omp atomic update
-                    {
+                    #pragma omp atomic update
+                    // {
                         b[i_global] += RHS_Contribution[i_local];
-                    }
+                    // }
                 }
             }
         }
@@ -1993,18 +1995,18 @@ protected:
                 if ( i_global < BaseType::mEquationSystemSize ) //on "free" DOFs
                 {
                     // ASSEMBLING THE SYSTEM VECTOR
-//                    #pragma omp atomic update
-                    {
+                    #pragma omp atomic update
+                    // {
                         b[i_global] += RHS_Contribution[i_local];
-                    }
+                    // }
                 }
                 else //on "fixed" DOFs
                 {
                     // Assembling the Vector of REACTIONS
-//                    #pragma omp atomic update
-                    {
+                    #pragma omp atomic update
+                    // {
                         ReactionsVector[i_global-BaseType::mEquationSystemSize] -= RHS_Contribution[i_local];
-                    }
+                    // }
                 }
             }
         }

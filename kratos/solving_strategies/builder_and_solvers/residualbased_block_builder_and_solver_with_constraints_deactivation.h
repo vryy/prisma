@@ -221,13 +221,13 @@ public:
                 if (element_is_active)
                 {
                     //calculate elemental contribution
-                    pScheme->CalculateSystemContributions(*(it.base()), LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
+                    pScheme->CalculateSystemContributions(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
 
                     //assemble the elemental contribution
                     Assemble(A, b, LHS_Contribution, RHS_Contribution, EquationId);
 
                     // clean local elemental memory
-                    pScheme->CleanMemory(*(it.base()));
+                    pScheme->CleanMemory(*it);
                 }
             }
 
@@ -245,13 +245,13 @@ public:
                 if (condition_is_active)
                 {
                     //calculate elemental contribution
-                    pScheme->Condition_CalculateSystemContributions(*(it.base()), LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
+                    pScheme->CalculateSystemContributions(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
 
                     //assemble the elemental contribution
                     Assemble(A, b, LHS_Contribution, RHS_Contribution, EquationId);
 
                     // clean local elemental memory
-                    pScheme->CleanMemory(*(it.base()));
+                    pScheme->CleanMemory(*it);
                 }
             }
         }
@@ -663,10 +663,10 @@ public:
         ElementsArrayType& r_elements_array = rModelPart.Elements();
         const std::size_t number_of_elements = r_elements_array.size();
         bool element_is_active;
-        for(typename ElementsArrayType::ptr_iterator it = r_elements_array.ptr_begin(); it != r_elements_array.ptr_end(); ++it)
+        for(typename ElementsArrayType::iterator it = r_elements_array.begin(); it != r_elements_array.end(); ++it)
         {
             // Gets list of Dof involved on every element
-            pScheme->GetElementalDofList((*it), dof_list, r_current_process_info);
+            pScheme->GetDofList(*it, dof_list, r_current_process_info);
 
             for(typename DofsVectorType::iterator i = dof_list.begin() ; i != dof_list.end() ; ++i)
             {
@@ -678,8 +678,8 @@ public:
             }
 
             element_is_active = true;
-            if( (*it)->IsDefined(ACTIVE) ) {
-                element_is_active = (*it)->Is(ACTIVE);
+            if( it->IsDefined(ACTIVE) ) {
+                element_is_active = it->Is(ACTIVE);
             }
 
             if (element_is_active)
@@ -699,10 +699,10 @@ public:
         ConditionsArrayType& r_conditions_array = rModelPart.Conditions();
         const std::size_t number_of_conditions = r_conditions_array.size();
         bool condition_is_active;
-        for(typename ConditionsArrayType::ptr_iterator it = r_conditions_array.ptr_begin(); it != r_conditions_array.ptr_end(); ++it)
+        for(typename ConditionsArrayType::iterator it = r_conditions_array.begin(); it != r_conditions_array.end(); ++it)
         {
             // Gets list of Dof involved on every condition
-            pScheme->GetConditionDofList((*it), dof_list, r_current_process_info);
+            pScheme->GetDofList(*it, dof_list, r_current_process_info);
 
             for(typename DofsVectorType::iterator i = dof_list.begin() ; i != dof_list.end() ; ++i)
             {
@@ -714,8 +714,8 @@ public:
             }
 
             condition_is_active = true;
-            if( (*it)->IsDefined(ACTIVE) ) {
-                condition_is_active = (*it)->Is(ACTIVE);
+            if( it->IsDefined(ACTIVE) ) {
+                condition_is_active = it->Is(ACTIVE);
             }
 
             if (condition_is_active)
@@ -1442,18 +1442,18 @@ protected:
         Element::EquationIdVectorType ids(3, 0);
 
         bool element_is_active;
-        for(typename ElementsArrayType::ptr_iterator it = r_elements_array.ptr_begin();
-                it != r_elements_array.ptr_end(); ++it)
+        for(typename ElementsArrayType::iterator it = r_elements_array.begin();
+                it != r_elements_array.end(); ++it)
         {
             element_is_active = true;
-            if( (*it)->IsDefined(ACTIVE) ) {
-                element_is_active = (*it)->Is(ACTIVE);
+            if( it->IsDefined(ACTIVE) ) {
+                element_is_active = it->Is(ACTIVE);
             }
 
             if (!element_is_active)
                 continue;
 
-            (*it)->EquationIdVector(ids, CurrentProcessInfo);
+            it->EquationIdVector(ids, CurrentProcessInfo);
             for (std::size_t i = 0; i < ids.size(); i++) {
                 if (ids[i] < BaseType::mEquationSystemSize)
                 {
@@ -1464,18 +1464,18 @@ protected:
         }
 
         bool condition_is_active;
-        for(typename ConditionsArrayType::ptr_iterator it = r_conditions_array.ptr_begin();
-                it != r_conditions_array.ptr_end(); ++it)
+        for(typename ConditionsArrayType::iterator it = r_conditions_array.begin();
+                it != r_conditions_array.end(); ++it)
         {
             condition_is_active = true;
-            if( (*it)->IsDefined(ACTIVE) ) {
-                condition_is_active = (*it)->Is(ACTIVE);
+            if( it->IsDefined(ACTIVE) ) {
+                condition_is_active = it->Is(ACTIVE);
             }
 
             if (!condition_is_active)
                 continue;
 
-            (*it)->EquationIdVector(ids, CurrentProcessInfo);
+            it->EquationIdVector(ids, CurrentProcessInfo);
             for (std::size_t i = 0; i < ids.size(); i++) {
                 if (ids[i] < BaseType::mEquationSystemSize)
                 {
@@ -1655,7 +1655,7 @@ private:
 
                 if(element_is_active) {
                     //calculate elemental Right Hand Side Contribution
-                    pScheme->Calculate_RHS_Contribution(*(it.base()), RHS_Contribution, EquationId, CurrentProcessInfo);
+                    pScheme->CalculateRHSContribution(*it, RHS_Contribution, EquationId, CurrentProcessInfo);
 
                     //assemble the elemental contribution
                     AssembleRHS(b, RHS_Contribution, EquationId);
@@ -1679,7 +1679,7 @@ private:
 
                 if(condition_is_active) {
                     //calculate elemental contribution
-                    pScheme->Condition_Calculate_RHS_Contribution(*(it.base()), RHS_Contribution, EquationId, CurrentProcessInfo);
+                    pScheme->CalculateRHSContribution(*it, RHS_Contribution, EquationId, CurrentProcessInfo);
 
                     //assemble the elemental contribution
                     AssembleRHS(b, RHS_Contribution, EquationId);
@@ -1693,17 +1693,6 @@ private:
 
     //******************************************************************************************
     //******************************************************************************************
-
-    inline void CreatePartition(unsigned int number_of_threads, const int number_of_rows, vector<unsigned int>& partitions)
-    {
-        partitions.resize(number_of_threads + 1);
-        int partition_size = number_of_rows / number_of_threads;
-        partitions[0] = 0;
-        partitions[number_of_threads] = number_of_rows;
-        for (unsigned int i = 1; i < number_of_threads; i++) {
-            partitions[i] = partitions[i - 1] + partition_size;
-        }
-    }
 
     inline void AssembleRowContribution(TSystemMatrixType& A, const Matrix& Alocal, const unsigned int i, const unsigned int i_local, Element::EquationIdVectorType& EquationId)
     {
