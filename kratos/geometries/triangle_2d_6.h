@@ -320,12 +320,12 @@ public:
     ///@name Operations
     ///@{
 
-    typename BaseType::Pointer Create( PointsArrayType const& ThisPoints ) const
+    typename BaseType::Pointer Create( PointsArrayType const& ThisPoints ) const override
     {
         return typename BaseType::Pointer( new Triangle2D6( ThisPoints ) );
     }
 
-    virtual Geometry< Point<3> >::Pointer Clone() const
+    Geometry< Point<3> >::Pointer Clone() const override
     {
         Geometry< Point<3> >::PointsArrayType NewPoints;
 
@@ -347,7 +347,7 @@ public:
      * @param rResult a Matrix object that will be overwritten by the result
      * @return the local coordinates of all nodes
      */
-    virtual Matrix& PointsLocalCoordinates( Matrix& rResult ) const
+    Matrix& PointsLocalCoordinates( Matrix& rResult ) const override
     {
         rResult.resize( 6, 2,false );
         noalias( rResult ) = ZeroMatrix( 6, 2 );
@@ -367,7 +367,7 @@ public:
     }
 
     //lumping factors for the calculation of the lumped mass matrix
-    virtual Vector& LumpingFactors( Vector& rResult ) const
+    Vector& LumpingFactors( Vector& rResult ) const override
     {
         if(rResult.size() != 6)
             rResult.resize( 6, false );
@@ -398,7 +398,7 @@ public:
      * :TODO: could be replaced by something more suitable
      * (comment by janosch)
      */
-    virtual double Length() const
+    double Length() const override
     {
         return sqrt( fabs( Area() ) );
     }
@@ -418,7 +418,7 @@ public:
      * :TODO: could be replaced by something more suitable
      * (comment by janosch)
      */
-    virtual double Area() const
+    double Area() const override
     {
 
         Vector temp;
@@ -449,7 +449,7 @@ public:
      * :TODO: could be replaced by something more suitable
      * (comment by janosch)
      */
-    virtual double DomainSize() const
+    double DomainSize() const override
     {
         return fabs( this->DeterminantOfJacobian( PointType() ) ) * 0.5;
     }
@@ -457,7 +457,7 @@ public:
     /**
      * Returns whether given local point is inside the Geometry
      */
-    virtual bool IsInside( const CoordinatesArrayType& rPoint )
+    bool IsInside( const CoordinatesArrayType& rPoint ) const override
     {
         const double zero = 1E-8;
         if( ( rPoint[0] >= (0.0-zero) ) && ( rPoint[0] <= 1.0 + zero ) )
@@ -484,8 +484,7 @@ public:
      *
      * @return the value of the shape function at the given point
      */
-    virtual double ShapeFunctionValue( IndexType ShapeFunctionIndex,
-                                       const CoordinatesArrayType& rPoint ) const
+    double ShapeFunctionValue( IndexType ShapeFunctionIndex, const CoordinatesArrayType& rPoint ) const override
     {
 
         double thirdCoord = 1 - rPoint[0] - rPoint[1];
@@ -525,7 +524,7 @@ public:
      * @see PrintData()
      * @see PrintInfo()
      */
-    virtual std::string Info() const
+    std::string Info() const override
     {
         return "2 dimensional triangle with six nodes in 2D space";
     }
@@ -536,7 +535,7 @@ public:
      * @see PrintData()
      * @see Info()
      */
-    virtual void PrintInfo( std::ostream& rOStream ) const
+    void PrintInfo( std::ostream& rOStream ) const override
     {
         rOStream << "2 dimensional triangle with six nodes in 2D space";
     }
@@ -555,7 +554,7 @@ public:
      * :TODO: needs to be reviewed because it is not properly implemented yet
      * (comment by janosch)
      */
-    virtual void PrintData( std::ostream& rOStream ) const
+    void PrintData( std::ostream& rOStream ) const override
     {
         PrintInfo( rOStream );
         BaseType::PrintData( rOStream );
@@ -575,7 +574,7 @@ public:
     @see Edges()
     @see Edge()
      */
-    virtual SizeType EdgesNumber() const
+    SizeType EdgesNumber() const override
     {
         return 3;
     }
@@ -591,7 +590,7 @@ public:
     @see EdgesNumber()
     @see Edge()
      */
-    virtual GeometriesArrayType Edges( void )
+    GeometriesArrayType Edges( void ) const override
     {
         GeometriesArrayType edges = GeometriesArrayType();
 
@@ -652,8 +651,7 @@ public:
      * @return the gradients of all shape functions
      * \f$ \frac{\partial N^i}{\partial \xi_j} \f$
      */
-    virtual Matrix& ShapeFunctionsLocalGradients( Matrix& rResult,
-            const CoordinatesArrayType& rPoint ) const
+    Matrix& ShapeFunctionsLocalGradients( Matrix& rResult, const CoordinatesArrayType& rPoint ) const override
     {
         rResult.resize( 6, 2 ,false);
         double thirdCoord = 1 - rPoint[0] - rPoint[1];
@@ -687,28 +685,28 @@ public:
      * shape functions in given point
      * @param rPoint the given point the gradients are calculated in
      */
-    virtual Matrix& ShapeFunctionsGradients( Matrix& rResult, CoordinatesArrayType& rPoint )
-    {
-        rResult.resize( 6, 2 ,false);
-        double thirdCoord = 1 - rPoint[0] - rPoint[1];
-        double thirdCoord_DX = -1;
-        double thirdCoord_DY = -1;
+    // Matrix& ShapeFunctionsGradients( Matrix& rResult, CoordinatesArrayType& rPoint ) const override
+    // {
+    //     rResult.resize( 6, 2 ,false);
+    //     double thirdCoord = 1 - rPoint[0] - rPoint[1];
+    //     double thirdCoord_DX = -1;
+    //     double thirdCoord_DY = -1;
 
-        noalias( rResult ) = ZeroMatrix( 6, 2 );
-        rResult( 0, 0 ) = ( 4 * thirdCoord - 1 ) * thirdCoord_DX;
-        rResult( 0, 1 ) = ( 4 * thirdCoord - 1 ) * thirdCoord_DY;
-        rResult( 1, 0 ) =  4 * rPoint[0] - 1;
-        rResult( 1, 1 ) =  0;
-        rResult( 2, 0 ) =  0;
-        rResult( 2, 1 ) =  4 * rPoint[1] - 1;
-        rResult( 3, 0 ) =  4 * thirdCoord_DX * rPoint[0] + 4 * thirdCoord;
-        rResult( 3, 1 ) =  4 * thirdCoord_DY * rPoint[0];
-        rResult( 4, 0 ) =  4 * rPoint[1];
-        rResult( 4, 1 ) =  4 * rPoint[0];
-        rResult( 5, 0 ) =  4 * rPoint[1] * thirdCoord_DX;
-        rResult( 5, 1 ) =  4 * rPoint[1] * thirdCoord_DY + 4 * thirdCoord;
-        return rResult;
-    }
+    //     noalias( rResult ) = ZeroMatrix( 6, 2 );
+    //     rResult( 0, 0 ) = ( 4 * thirdCoord - 1 ) * thirdCoord_DX;
+    //     rResult( 0, 1 ) = ( 4 * thirdCoord - 1 ) * thirdCoord_DY;
+    //     rResult( 1, 0 ) =  4 * rPoint[0] - 1;
+    //     rResult( 1, 1 ) =  0;
+    //     rResult( 2, 0 ) =  0;
+    //     rResult( 2, 1 ) =  4 * rPoint[1] - 1;
+    //     rResult( 3, 0 ) =  4 * thirdCoord_DX * rPoint[0] + 4 * thirdCoord;
+    //     rResult( 3, 1 ) =  4 * thirdCoord_DY * rPoint[0];
+    //     rResult( 4, 0 ) =  4 * rPoint[1];
+    //     rResult( 4, 1 ) =  4 * rPoint[0];
+    //     rResult( 5, 0 ) =  4 * rPoint[1] * thirdCoord_DX;
+    //     rResult( 5, 1 ) =  4 * rPoint[1] * thirdCoord_DY + 4 * thirdCoord;
+    //     return rResult;
+    // }
 
     /**
      * returns the second order derivatives of all shape functions
@@ -716,7 +714,7 @@ public:
      * @param rResult a third order tensor which contains the second derivatives
      * @param rPoint the given point the second order derivatives are calculated in
      */
-    virtual ShapeFunctionsSecondDerivativesType& ShapeFunctionsSecondDerivatives( ShapeFunctionsSecondDerivativesType& rResult, const CoordinatesArrayType& rPoint ) const
+    ShapeFunctionsSecondDerivativesType& ShapeFunctionsSecondDerivatives( ShapeFunctionsSecondDerivativesType& rResult, const CoordinatesArrayType& rPoint ) const override
     {
         if ( rResult.size() != this->PointsNumber() )
         {
@@ -767,7 +765,7 @@ public:
      * @param rResult a fourth order tensor which contains the third derivatives
      * @param rPoint the given point the third order derivatives are calculated in
      */
-    virtual ShapeFunctionsThirdDerivativesType& ShapeFunctionsThirdDerivatives( ShapeFunctionsThirdDerivativesType& rResult, const CoordinatesArrayType& rPoint ) const
+    ShapeFunctionsThirdDerivativesType& ShapeFunctionsThirdDerivatives( ShapeFunctionsThirdDerivativesType& rResult, const CoordinatesArrayType& rPoint ) const override
     {
         if ( rResult.size() != this->PointsNumber() )
         {
@@ -837,12 +835,12 @@ private:
 
     friend class Serializer;
 
-    virtual void save( Serializer& rSerializer ) const
+    void save( Serializer& rSerializer ) const override
     {
         KRATOS_SERIALIZE_SAVE_BASE_CLASS( rSerializer, PointsArrayType );
     }
 
-    virtual void load( Serializer& rSerializer )
+    void load( Serializer& rSerializer ) override
     {
         KRATOS_SERIALIZE_LOAD_BASE_CLASS( rSerializer, PointsArrayType );
     }

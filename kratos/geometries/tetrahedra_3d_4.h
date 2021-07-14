@@ -285,12 +285,12 @@ public:
      * Operations
      */
 
-    typename BaseType::Pointer Create(PointsArrayType const& ThisPoints) const
+    typename BaseType::Pointer Create(PointsArrayType const& ThisPoints) const override
     {
         return typename BaseType::Pointer(new Tetrahedra3D4(ThisPoints));
     }
 
-    virtual Geometry< Point<3> >::Pointer Clone() const
+    Geometry< Point<3> >::Pointer Clone() const override
     {
         Geometry< Point<3> >::PointsArrayType NewPoints;
         //making a copy of the nodes TO POINTS (not Nodes!!!)
@@ -305,7 +305,7 @@ public:
     }
 
     //lumping factors for the calculation of the lumped mass matrix
-    virtual Vector& LumpingFactors(Vector& rResult) const
+    Vector& LumpingFactors(Vector& rResult) const override
     {
         if(rResult.size() != 4)
             rResult.resize(4, false);
@@ -333,7 +333,7 @@ public:
      *
      * :TODO: might be necessary to reimplement
      */
-    virtual double Length() const
+    double Length() const override
     {
         const double param = 2.0396489026555;  //12/raiz(2);
         return  param * pow(Volume(), 0.33333333333333); //sqrt(fabs( DeterminantOfJacobian(PointType())));
@@ -353,7 +353,7 @@ public:
      *
      * :TODO: might be necessary to reimplement
      */
-    virtual double Area() const
+    double Area() const override
     {
         return this->Volume();
     }
@@ -373,7 +373,7 @@ public:
      * :TODO: might be necessary to reimplement
      */
 
-    virtual double Volume() const //closed formula for the linear triangle
+    double Volume() const  override //closed formula for the linear triangle
     {
         const double onesixth = 1.0/6.0;
 
@@ -399,7 +399,7 @@ public:
     }
 
 
-    virtual double DomainSize() const
+    double DomainSize() const override
     {
 
         return Volume();
@@ -411,7 +411,7 @@ public:
     * @param rResult a Matrix that will be overwritten by the results
     * @return the coordinates of all points of the current geometry
     */
-    virtual Matrix& PointsLocalCoordinates( Matrix& rResult ) const
+    Matrix& PointsLocalCoordinates( Matrix& rResult ) const override
     {
         if(rResult.size1()!= 4 || rResult.size2()!= 3)
             rResult.resize(4, 3, false);
@@ -435,7 +435,7 @@ public:
     /**
      * Returns whether local arbitrary point is inside the Geometry
      */
-    virtual bool IsInside( const CoordinatesArrayType& rPoint )
+    bool IsInside( const CoordinatesArrayType& rPoint ) const override
     {
         if( rPoint[0] >= 0.0-1.0e-8 && rPoint[0] <= 1.0+1.0e-8 )
             if( rPoint[1] >= 0.0-1.0e-8 && rPoint[1] <= 1.0 +1.0e-8)
@@ -452,12 +452,12 @@ public:
     @see Edge()
      */
     // will be used by refinement algorithm, thus uncommented. janosch.
-    virtual SizeType EdgesNumber() const
+    SizeType EdgesNumber() const override
     {
         return 6;
     }
 
-    virtual SizeType FacesNumber() const
+    SizeType FacesNumber() const override
     {
         return 4;
     }
@@ -468,7 +468,7 @@ public:
     @see EdgesNumber()
     @see Edge()
      */
-    virtual GeometriesArrayType Edges(void)
+    GeometriesArrayType Edges(void) const override
     {
         GeometriesArrayType edges = GeometriesArrayType();
         typedef typename Geometry<TPointType>::Pointer EdgePointerType;
@@ -494,7 +494,7 @@ public:
         return edges;
     }
 
-    virtual GeometriesArrayType Faces(void)
+    GeometriesArrayType Faces(void) const override
     {
         GeometriesArrayType faces = GeometriesArrayType();
         typedef typename Geometry<TPointType>::Pointer FacePointerType;
@@ -519,7 +519,7 @@ public:
 
 
     //Connectivities of faces required
-    virtual void NumberNodesInFaces (boost::numeric::ublas::vector<unsigned int>& NumberNodesInFaces) const
+    void NumberNodesInFaces (boost::numeric::ublas::vector<unsigned int>& NumberNodesInFaces) const override
     {
         NumberNodesInFaces.resize(4, false);
         // Linear Tetrahedra have elements of 3 nodes as faces
@@ -530,7 +530,7 @@ public:
 
     }
 
-    virtual void NodesInFaces (boost::numeric::ublas::matrix<unsigned int>& NodesInFaces) const
+    void NodesInFaces (boost::numeric::ublas::matrix<unsigned int>& NodesInFaces) const override
     {
         NodesInFaces.resize(4, 4, false);
         NodesInFaces(0,0)=0;//face or other node
@@ -571,8 +571,7 @@ public:
      * @return the value of the shape function at the given point
      * TODO: TO BE VERIFIED
      */
-    virtual double ShapeFunctionValue( IndexType ShapeFunctionIndex,
-                                       const CoordinatesArrayType& rPoint) const
+    double ShapeFunctionValue( IndexType ShapeFunctionIndex, const CoordinatesArrayType& rPoint) const override
     {
         switch( ShapeFunctionIndex )
         {
@@ -599,7 +598,7 @@ public:
      * @return the gradients of all shape functions
      * \f$ \frac{\partial N^i}{\partial \xi_j} \f$
      */
-    virtual Matrix& ShapeFunctionsLocalGradients( Matrix& rResult, const CoordinatesArrayType& rPoint ) const
+    Matrix& ShapeFunctionsLocalGradients( Matrix& rResult, const CoordinatesArrayType& rPoint ) const override
     {
         if(rResult.size1() != this->PointsNumber() || rResult.size2() != this->LocalSpaceDimension())
             rResult.resize(this->PointsNumber(),this->LocalSpaceDimension(),false);
@@ -624,9 +623,7 @@ public:
      *
      * :TODO: TESTING!!!
      */
-    virtual ShapeFunctionsGradientsType& ShapeFunctionsIntegrationPointsGradients(
-        ShapeFunctionsGradientsType& rResult,
-        IntegrationMethod ThisMethod) const
+    ShapeFunctionsGradientsType& ShapeFunctionsIntegrationPointsGradients( ShapeFunctionsGradientsType& rResult, IntegrationMethod ThisMethod) const override
     {
         const unsigned int integration_points_number =
             msGeometryData.IntegrationPointsNumber(ThisMethod);
@@ -675,10 +672,7 @@ public:
         return rResult;
     }
 
-    virtual ShapeFunctionsGradientsType& ShapeFunctionsIntegrationPointsGradients(
-        ShapeFunctionsGradientsType& rResult
-        , Vector& determinants_of_jacobian
-        , IntegrationMethod ThisMethod) const
+    ShapeFunctionsGradientsType& ShapeFunctionsIntegrationPointsGradients( ShapeFunctionsGradientsType& rResult, Vector& determinants_of_jacobian, IntegrationMethod ThisMethod) const override
     {
         const unsigned int integration_points_number =
             msGeometryData.IntegrationPointsNumber(ThisMethod);
@@ -740,7 +734,7 @@ public:
 
 
     /// detect if two tetrahedra are intersected
-    virtual bool HasIntersection( const BaseType& rThisGeometry)
+    bool HasIntersection( const BaseType& rThisGeometry) const override
     {
 
         array_1d<Plane, 4>  plane;
@@ -765,15 +759,15 @@ public:
     }
 
 
-    virtual bool HasIntersection(const Point<3, double>& rLowPoint, const Point<3, double>& rHighPoint)
+    bool HasIntersection(const Point<3, double>& rLowPoint, const Point<3, double>& rHighPoint) const override
     {
-        return true;
+        return false;
     }
 
 
     void SplitAndDecompose(
         const BaseType& tetra, Plane& plane,
-        std::vector<BaseType>& inside)
+        std::vector<BaseType>& inside) const
     {
 
         // Determine on which side of the plane the points of the tetrahedron lie.
@@ -924,7 +918,7 @@ public:
     }
 
 
-    void GetPlanes(array_1d<Plane, 4>& plane)
+    void GetPlanes(array_1d<Plane, 4>& plane) const
     {
         const BaseType& geom_1 = *this;
         array_1d<double, 3> edge10 = geom_1[1].Coordinates() - geom_1[0].Coordinates();
@@ -970,7 +964,7 @@ public:
      * @see PrintData()
      * @see PrintInfo()
      */
-    virtual std::string Info() const
+    std::string Info() const override
     {
         return "3 dimensional tetrahedra with four nodes in 3D space";
     }
@@ -982,7 +976,7 @@ public:
      * @see PrintData()
      * @see Info()
      */
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << "3 dimensional tetrahedra with four nodes in 3D space";
     }
@@ -996,7 +990,7 @@ public:
      * @see PrintInfo()
      * @see Info()
      */
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
         BaseType::PrintData(rOStream);
         std::cout << std::endl;
@@ -1026,12 +1020,12 @@ private:
 
     friend class Serializer;
 
-    virtual void save(Serializer& rSerializer) const
+    void save(Serializer& rSerializer) const override
     {
         KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, BaseType );
     }
 
-    virtual void load(Serializer& rSerializer)
+    void load(Serializer& rSerializer) override
     {
         KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, BaseType );
     }

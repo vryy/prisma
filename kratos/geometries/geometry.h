@@ -529,14 +529,14 @@ public:
 
 
 
-    virtual bool HasIntersection( const GeometryType& ThisGeometry )
+    virtual bool HasIntersection( const GeometryType& ThisGeometry ) const
     {
         KRATOS_THROW_ERROR( std::logic_error, "Calling base class HasIntersection method instead of derived class one. Please check the definition of derived class." , *this );
         return false;
     }
 
     /// Interseciones con la geometrias y cajas en 3D
-    virtual bool HasIntersection( const Point<3, double>& rLowPoint, const Point<3, double>& rHighPoint )
+    virtual bool HasIntersection( const Point<3, double>& rLowPoint, const Point<3, double>& rHighPoint ) const
     {
         KRATOS_THROW_ERROR( std::logic_error, "Calling base class HasIntersection method instead of derived class one. Please check the definition of derived class." , *this );
         return false;
@@ -696,7 +696,7 @@ public:
     * Returns the local coordinates of a given arbitrary point
     */
     virtual CoordinatesArrayType& PointLocalCoordinates( CoordinatesArrayType& rResult,
-            const CoordinatesArrayType& rPoint )
+            const CoordinatesArrayType& rPoint ) const
     {
         Matrix J = ZeroMatrix( LocalSpaceDimension(), LocalSpaceDimension() );
 
@@ -742,7 +742,7 @@ public:
     * Returns the local coordinates of a given arbitrary point
     */
     virtual CoordinatesArrayType& PointLocalCoordinates( CoordinatesArrayType& rResult,
-            const CoordinatesArrayType& rPoint, Matrix& DeltaPosition )
+            const CoordinatesArrayType& rPoint, Matrix& DeltaPosition ) const
     {
         Matrix J = ZeroMatrix( LocalSpaceDimension(), LocalSpaceDimension() );
 
@@ -787,7 +787,7 @@ public:
     /**
      * Returns whether given local point is inside the Geometry
     */
-    virtual bool IsInside( const CoordinatesArrayType& rPoint )
+    virtual bool IsInside( const CoordinatesArrayType& rPoint ) const
     {
         KRATOS_THROW_ERROR( std::logic_error,
                             "Calling base class IsInside method instead of derived class one. Please check the definition of derived class." , *this );
@@ -798,7 +798,7 @@ public:
      * Returns whether given arbitrary point is inside the Geometry and the respective
      * local point for the given global point
     */
-    virtual bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult )
+    virtual bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult ) const
     {
         this->PointLocalCoordinates( rResult, rPoint );
 
@@ -809,7 +809,7 @@ public:
      * Returns whether given arbitrary point is inside the Geometry and the respective
      * local point for the given global point
     */
-    virtual bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult, Matrix& DeltaPosition )
+    virtual bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult, Matrix& DeltaPosition ) const
     {
         this->PointLocalCoordinates( rResult, rPoint, DeltaPosition );
 
@@ -839,7 +839,7 @@ public:
     * @return default integration method
     */
 
-    IntegrationMethod GetDefaultIntegrationMethod()
+    IntegrationMethod GetDefaultIntegrationMethod() const
     {
         return mpGeometryData->DefaultIntegrationMethod();
     }
@@ -892,7 +892,7 @@ public:
     @see Edge()
     */
     // will be used by refinement algorithm, thus uncommented. janosch.
-    virtual GeometriesArrayType Edges( void )
+    virtual GeometriesArrayType Edges( void ) const
     {
         KRATOS_THROW_ERROR( std::logic_error,
                             "Calling base class Edges method instead of derived class one. Please check the definition of derived class." , *this );
@@ -942,7 +942,7 @@ public:
      * @see Edges
      * @see FacesNumber
      */
-    virtual GeometriesArrayType Faces( void )
+    virtual GeometriesArrayType Faces( void ) const
     {
         KRATOS_THROW_ERROR( std::logic_error,
                             "Calling base class Faces method instead of derived class one. Please check the definition of derived class." , *this );
@@ -1072,10 +1072,10 @@ public:
     ///@name Jacobian
     ///@{
 
-    virtual CoordinatesArrayType& GlobalCoordinates( CoordinatesArrayType& rResult, CoordinatesArrayType const& LocalCoordinates )
+    virtual CoordinatesArrayType& GlobalCoordinates( CoordinatesArrayType& rResult, CoordinatesArrayType const& LocalCoordinates ) const
     {
-		if (rResult.size() != 3)
-			rResult.resize(3, false);
+        if (rResult.size() != 3)
+            rResult.resize(3, false);
         noalias( rResult ) = ZeroVector( 3 );
 
         Vector N( this->size() );
@@ -1087,10 +1087,10 @@ public:
         return rResult;
     }
 
-    virtual CoordinatesArrayType& GlobalCoordinates( CoordinatesArrayType& rResult, CoordinatesArrayType const& LocalCoordinates, Matrix& DeltaPosition )
+    virtual CoordinatesArrayType& GlobalCoordinates( CoordinatesArrayType& rResult, CoordinatesArrayType const& LocalCoordinates, Matrix& DeltaPosition ) const
     {
-		if (rResult.size() != 3)
-			rResult.resize(3, false);
+        if (rResult.size() != 3)
+            rResult.resize(3, false);
         noalias( rResult ) = ZeroVector( 3 );
 
         Vector N( this->size() );

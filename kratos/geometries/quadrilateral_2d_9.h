@@ -313,12 +313,12 @@ public:
     /**
      * Operations
      */
-    typename BaseType::Pointer Create( PointsArrayType const& ThisPoints ) const
+    typename BaseType::Pointer Create( PointsArrayType const& ThisPoints ) const override
     {
         return typename BaseType::Pointer( new Quadrilateral2D9( ThisPoints ) );
     }
 
-    virtual Geometry< Point<3> >::Pointer Clone() const
+    Geometry< Point<3> >::Pointer Clone() const override
     {
         Geometry< Point<3> >::PointsArrayType NewPoints;
         //making a copy of the nodes TO POINTS (not Nodes!!!)
@@ -338,7 +338,7 @@ public:
     /**
      * lumping factors for the calculation of the lumped mass matrix
      */
-    virtual Vector& LumpingFactors( Vector& rResult ) const
+    Vector& LumpingFactors( Vector& rResult ) const override
     {
         if(rResult.size() != 9)
             rResult.resize( 9, false );
@@ -372,7 +372,7 @@ public:
      * @see Volume()
      * @see DomainSize()
      */
-    virtual double Length() const
+    double Length() const override
     {
         return sqrt( fabs( this->DeterminantOfJacobian( PointType() ) ) );
     }
@@ -392,7 +392,7 @@ public:
      * @see Volume()
      * @see DomainSize()
      */
-    virtual double Area() const
+    double Area() const override
     {
 
         Vector temp;
@@ -426,7 +426,7 @@ public:
      * @see Area()
      * @see Volume()
      */
-    virtual double DomainSize() const
+    double DomainSize() const override
     {
         return fabs( this->DeterminantOfJacobian( PointType() ) ) * 0.5;
     }
@@ -434,7 +434,7 @@ public:
     /**
      * Returns whether given local point is inside the Geometry
      */
-    virtual bool IsInside( const CoordinatesArrayType& rPoint )
+    bool IsInside( const CoordinatesArrayType& rPoint ) const override
     {
         if ( fabs( rPoint[0] ) < 1 + 1.0e-8 )
             if ( fabs( rPoint[1] ) < 1 + 1.0e-8 )
@@ -453,7 +453,7 @@ public:
     @see Edges()
     @see Edge()
      */
-    virtual SizeType EdgesNumber() const
+    SizeType EdgesNumber() const override
     {
         return 4;
     }
@@ -469,7 +469,7 @@ public:
      * @see EdgesNumber()
      * @see Edge()
      */
-    virtual GeometriesArrayType Edges( void )
+    GeometriesArrayType Edges( void ) const override
     {
         GeometriesArrayType edges = GeometriesArrayType();
         edges.push_back( EdgeType( this->pGetPoint( 0 ), this->pGetPoint( 4 ), this->pGetPoint( 1 ) ) );
@@ -495,8 +495,7 @@ public:
      *
      * @return the value of the shape function at the given point
      */
-    virtual double ShapeFunctionValue( IndexType ShapeFunctionIndex,
-                                       const CoordinatesArrayType& rPoint ) const
+    double ShapeFunctionValue( IndexType ShapeFunctionIndex, const CoordinatesArrayType& rPoint ) const override
     {
         double fx1 = 0.5 * ( rPoint[0] - 1 ) * rPoint[0];
         double fx2 = 0.5 * ( rPoint[0] + 1 ) * rPoint[0];
@@ -545,7 +544,7 @@ public:
      * @see PrintData()
      * @see PrintInfo()
      */
-    virtual std::string Info() const
+    std::string Info() const override
     {
         return "2 dimensional quadrilateral with nine nodes in 2D space";
     }
@@ -556,7 +555,7 @@ public:
      * @see PrintData()
      * @see Info()
      */
-    virtual void PrintInfo( std::ostream& rOStream ) const
+    void PrintInfo( std::ostream& rOStream ) const override
     {
         rOStream << "2 dimensional quadrilateral with nine nodes in 2D space";
     }
@@ -570,7 +569,7 @@ public:
      * @see PrintInfo()
      * @see Info()
      */
-    virtual void PrintData( std::ostream& rOStream ) const
+    void PrintData( std::ostream& rOStream ) const override
     {
         BaseType::PrintData( rOStream );
         std::cout << std::endl;
@@ -629,8 +628,7 @@ public:
      * @return the gradients of all shape functions
      * \f$ \frac{\partial N^i}{\partial \xi_j} \f$
      */
-    virtual Matrix& ShapeFunctionsLocalGradients( Matrix& rResult,
-            const CoordinatesArrayType& rPoint ) const
+    Matrix& ShapeFunctionsLocalGradients( Matrix& rResult, const CoordinatesArrayType& rPoint ) const override
     {
         double fx1 = 0.5 * ( rPoint[0] - 1 ) * rPoint[0];
         double fx2 = 0.5 * ( rPoint[0] + 1 ) * rPoint[0];
@@ -675,7 +673,7 @@ public:
      * @param rResult a Matrix object that will be overwritten by the result
      * @return the local coordinates of all nodes
      */
-    virtual Matrix& PointsLocalCoordinates( Matrix& rResult ) const
+    Matrix& PointsLocalCoordinates( Matrix& rResult ) const override
     {
         rResult.resize( 9, 2, false );
         noalias( rResult ) = ZeroMatrix( 9, 2 );
@@ -708,45 +706,45 @@ public:
      * with the gradients for all shape functions in given point
      * @param rPoint the given point the gradients are calculated in
      */
-    virtual Matrix& ShapeFunctionsGradients( Matrix& rResult, PointType& rPoint )
-    {
-        double fx1 = 0.5 * ( rPoint.X() - 1 ) * rPoint.X();
-        double fx2 = 0.5 * ( rPoint.X() + 1 ) * rPoint.X();
-        double fx3 = 1 - rPoint.X() * rPoint.X();
-        double fy1 = 0.5 * ( rPoint.Y() - 1 ) * rPoint.Y();
-        double fy2 = 0.5 * ( rPoint.Y() + 1 ) * rPoint.Y();
-        double fy3 = 1 - rPoint.Y() * rPoint.Y();
+    // Matrix& ShapeFunctionsGradients( Matrix& rResult, PointType& rPoint ) const override
+    // {
+    //     double fx1 = 0.5 * ( rPoint.X() - 1 ) * rPoint.X();
+    //     double fx2 = 0.5 * ( rPoint.X() + 1 ) * rPoint.X();
+    //     double fx3 = 1 - rPoint.X() * rPoint.X();
+    //     double fy1 = 0.5 * ( rPoint.Y() - 1 ) * rPoint.Y();
+    //     double fy2 = 0.5 * ( rPoint.Y() + 1 ) * rPoint.Y();
+    //     double fy3 = 1 - rPoint.Y() * rPoint.Y();
 
-        double gx1 = 0.5 * ( 2 * rPoint.X() - 1 );
-        double gx2 = 0.5 * ( 2 * rPoint.X() + 1 );
-        double gx3 = -2.0 * rPoint.X();
-        double gy1 = 0.5 * ( 2 * rPoint.Y() - 1 );
-        double gy2 = 0.5 * ( 2 * rPoint.Y() + 1 );
-        double gy3 = -2.0 * rPoint.Y();
+    //     double gx1 = 0.5 * ( 2 * rPoint.X() - 1 );
+    //     double gx2 = 0.5 * ( 2 * rPoint.X() + 1 );
+    //     double gx3 = -2.0 * rPoint.X();
+    //     double gy1 = 0.5 * ( 2 * rPoint.Y() - 1 );
+    //     double gy2 = 0.5 * ( 2 * rPoint.Y() + 1 );
+    //     double gy3 = -2.0 * rPoint.Y();
 
-        rResult.resize( 9, 2, false );
-        noalias( rResult ) = ZeroMatrix( 9, 2 );
-        rResult( 0, 0 ) = gx1 * fy1;
-        rResult( 0, 1 ) = fx1 * gy1;
-        rResult( 1, 0 ) = gx2 * fy1;
-        rResult( 1, 1 ) = fx2 * gy1;
-        rResult( 2, 0 ) = gx2 * fy2;
-        rResult( 2, 1 ) = fx2 * gy2;
-        rResult( 3, 0 ) = gx1 * fy2;
-        rResult( 3, 1 ) = fx1 * gy2;
-        rResult( 4, 0 ) = gx3 * fy1;
-        rResult( 4, 1 ) = fx3 * gy1;
-        rResult( 5, 0 ) = gx2 * fy3;
-        rResult( 5, 1 ) = fx2 * gy3;
-        rResult( 6, 0 ) = gx3 * fy2;
-        rResult( 6, 1 ) = fx3 * gy2;
-        rResult( 7, 0 ) = gx1 * fy3;
-        rResult( 7, 1 ) = fx1 * gy3;
-        rResult( 8, 0 ) = gx3 * fy3;
-        rResult( 8, 1 ) = fx3 * gy3;
+    //     rResult.resize( 9, 2, false );
+    //     noalias( rResult ) = ZeroMatrix( 9, 2 );
+    //     rResult( 0, 0 ) = gx1 * fy1;
+    //     rResult( 0, 1 ) = fx1 * gy1;
+    //     rResult( 1, 0 ) = gx2 * fy1;
+    //     rResult( 1, 1 ) = fx2 * gy1;
+    //     rResult( 2, 0 ) = gx2 * fy2;
+    //     rResult( 2, 1 ) = fx2 * gy2;
+    //     rResult( 3, 0 ) = gx1 * fy2;
+    //     rResult( 3, 1 ) = fx1 * gy2;
+    //     rResult( 4, 0 ) = gx3 * fy1;
+    //     rResult( 4, 1 ) = fx3 * gy1;
+    //     rResult( 5, 0 ) = gx2 * fy3;
+    //     rResult( 5, 1 ) = fx2 * gy3;
+    //     rResult( 6, 0 ) = gx3 * fy2;
+    //     rResult( 6, 1 ) = fx3 * gy2;
+    //     rResult( 7, 0 ) = gx1 * fy3;
+    //     rResult( 7, 1 ) = fx1 * gy3;
+    //     rResult( 8, 0 ) = gx3 * fy3;
+    //     rResult( 8, 1 ) = fx3 * gy3;
 
-        return rResult;
-    }
+    //     return rResult;
+    // }
 
     /**
      * returns the second order derivatives of all shape functions
@@ -754,7 +752,7 @@ public:
      * @param rResult a third order tensor which contains the second derivatives
      * @param rPoint the given point the second order derivatives are calculated in
      */
-    virtual ShapeFunctionsSecondDerivativesType& ShapeFunctionsSecondDerivatives( ShapeFunctionsSecondDerivativesType& rResult, const CoordinatesArrayType& rPoint ) const
+    ShapeFunctionsSecondDerivativesType& ShapeFunctionsSecondDerivatives( ShapeFunctionsSecondDerivativesType& rResult, const CoordinatesArrayType& rPoint ) const override
     {
         if ( rResult.size() != this->PointsNumber() )
         {
@@ -845,7 +843,7 @@ public:
     * @param rResult a fourth order tensor which contains the third derivatives
     * @param rPoint the given point the third order derivatives are calculated in
      */
-    virtual ShapeFunctionsThirdDerivativesType& ShapeFunctionsThirdDerivatives( ShapeFunctionsThirdDerivativesType& rResult, const CoordinatesArrayType& rPoint ) const
+    ShapeFunctionsThirdDerivativesType& ShapeFunctionsThirdDerivatives( ShapeFunctionsThirdDerivativesType& rResult, const CoordinatesArrayType& rPoint ) const override
     {
 
         if ( rResult.size() != this->PointsNumber() )
@@ -1001,12 +999,12 @@ private:
 
     friend class Serializer;
 
-    virtual void save( Serializer& rSerializer ) const
+    void save( Serializer& rSerializer ) const override
     {
         KRATOS_SERIALIZE_SAVE_BASE_CLASS( rSerializer, PointsArrayType );
     }
 
-    virtual void load( Serializer& rSerializer )
+    void load( Serializer& rSerializer ) override
     {
         KRATOS_SERIALIZE_LOAD_BASE_CLASS( rSerializer, PointsArrayType );
     }

@@ -311,12 +311,12 @@ public:
     ///@name Operations
     ///@{
 
-    typename BaseType::Pointer Create( PointsArrayType const& ThisPoints ) const
+    typename BaseType::Pointer Create( PointsArrayType const& ThisPoints ) const override
     {
         return typename BaseType::Pointer( new Triangle2D3( ThisPoints ) );
     }
 
-    virtual Geometry< Point<3> >::Pointer Clone() const
+    Geometry< Point<3> >::Pointer Clone() const override
     {
         Geometry< Point<3> >::PointsArrayType NewPoints;
 
@@ -338,7 +338,7 @@ public:
      * @param rResult a Matrix object that will be overwritten by the result
      * @return the local coordinates of all nodes
      */
-    virtual Matrix& PointsLocalCoordinates( Matrix& rResult ) const
+    Matrix& PointsLocalCoordinates( Matrix& rResult ) const override
     {
         rResult = ZeroMatrix( 3, 2 );
         rResult( 0, 0 ) =  0.0;
@@ -351,7 +351,7 @@ public:
     }
 
     //lumping factors for the calculation of the lumped mass matrix
-    virtual Vector& LumpingFactors( Vector& rResult ) const
+    Vector& LumpingFactors( Vector& rResult ) const override
     {
         if(rResult.size() != 3)
             rResult.resize( 3, false );
@@ -382,7 +382,7 @@ public:
      * :TODO: could be replaced by something more suitable
      * (comment by janosch)
      */
-    virtual double Length() const
+    double Length() const override
     {
         //return sqrt(fabs( DeterminantOfJacobian(PointType()))*0.5);
         double length = 0.000;
@@ -406,7 +406,7 @@ public:
      * :TODO: could be replaced by something more suitable
      * (comment by janosch)
      */
-    virtual double Area() const
+    double Area() const override
     {
         const PointType& p0 = this->operator [](0);
         const PointType& p1 = this->operator [](1);
@@ -424,7 +424,7 @@ public:
 
 
     /// detect if two triangle are intersected
-    virtual bool HasIntersection( const BaseType& rThisGeometry )
+    bool HasIntersection( const BaseType& rThisGeometry ) const override
     {
         const BaseType& geom_1 = *this;
         const BaseType& geom_2 = rThisGeometry;
@@ -438,7 +438,7 @@ public:
 
 
     /// detect if  triangle and box are intersected
-    virtual bool HasIntersection( const Point<3, double>& rLowPoint, const Point<3, double>& rHighPoint )
+    bool HasIntersection( const Point<3, double>& rLowPoint, const Point<3, double>& rHighPoint ) const override
     {
         //return true;
         const BaseType& geom_1 = *this;
@@ -483,7 +483,7 @@ public:
      * :TODO: could be replaced by something more suitable
      * (comment by janosch)
      */
-    virtual double DomainSize() const
+    double DomainSize() const override
     {
         return this->Area();
     }
@@ -491,7 +491,7 @@ public:
     /**
      * Returns whether given local point is inside the Geometry
      */
-    virtual bool IsInside( const CoordinatesArrayType& rPoint )
+    bool IsInside( const CoordinatesArrayType& rPoint ) const override
     {
         const double zero = 1E-8;
         if( ( rPoint[0] >= (0.0-zero) ) && ( rPoint[0] <= 1.0 + zero ) )
@@ -512,13 +512,13 @@ public:
     @see Edges()
     @see Edge()
      */
-    virtual SizeType EdgesNumber() const
+    SizeType EdgesNumber() const override
     {
         return 3;
     }
 
 
-    virtual SizeType FacesNumber() const
+    SizeType FacesNumber() const override
     {
         return 3;
     }
@@ -535,7 +535,7 @@ public:
     @see EdgesNumber()
     @see Edge()
      */
-    virtual GeometriesArrayType Edges( void )
+    GeometriesArrayType Edges( void ) const override
     {
         GeometriesArrayType edges = GeometriesArrayType();
 
@@ -548,7 +548,7 @@ public:
 
 
     //Connectivities of faces required
-    virtual void NumberNodesInFaces (boost::numeric::ublas::vector<unsigned int>& NumberNodesInFaces) const
+    void NumberNodesInFaces (boost::numeric::ublas::vector<unsigned int>& NumberNodesInFaces) const override
     {
         if(NumberNodesInFaces.size() != 3 )
             NumberNodesInFaces.resize(3);
@@ -559,7 +559,7 @@ public:
 
     }
 
-    virtual void NodesInFaces (boost::numeric::ublas::matrix<unsigned int>& NodesInFaces) const
+    void NodesInFaces (boost::numeric::ublas::matrix<unsigned int>& NodesInFaces) const override
     {
         if(NodesInFaces.size1() != 3 || NodesInFaces.size2() != 3)
             NodesInFaces.resize(3,3);
@@ -596,8 +596,7 @@ public:
      *
      * @return the value of the shape function at the given point
      */
-    virtual double ShapeFunctionValue( IndexType ShapeFunctionIndex,
-                                       const CoordinatesArrayType& rPoint ) const
+    double ShapeFunctionValue( IndexType ShapeFunctionIndex, const CoordinatesArrayType& rPoint ) const override
     {
         switch ( ShapeFunctionIndex )
         {
@@ -629,9 +628,7 @@ public:
      * @return the gradients of all shape functions with regard to the global coordinates
 
     */
-    virtual ShapeFunctionsGradientsType& ShapeFunctionsIntegrationPointsGradients(
-        ShapeFunctionsGradientsType& rResult,
-        IntegrationMethod ThisMethod ) const
+    ShapeFunctionsGradientsType& ShapeFunctionsIntegrationPointsGradients( ShapeFunctionsGradientsType& rResult, IntegrationMethod ThisMethod ) const override
     {
         const unsigned int integration_points_number =
             msGeometryData.IntegrationPointsNumber( ThisMethod );
@@ -671,10 +668,7 @@ public:
         return rResult;
     }
 
-    virtual ShapeFunctionsGradientsType& ShapeFunctionsIntegrationPointsGradients(
-        ShapeFunctionsGradientsType& rResult,
-        Vector& determinants_of_jacobian,
-        IntegrationMethod ThisMethod ) const
+    ShapeFunctionsGradientsType& ShapeFunctionsIntegrationPointsGradients( ShapeFunctionsGradientsType& rResult, Vector& determinants_of_jacobian, IntegrationMethod ThisMethod ) const override
     {
         const unsigned int integration_points_number =
             msGeometryData.IntegrationPointsNumber( ThisMethod );
@@ -732,7 +726,7 @@ public:
      * @see PrintData()
      * @see PrintInfo()
      */
-    virtual std::string Info() const
+    std::string Info() const override
     {
         return "2 dimensional triangle with three nodes in 2D space";
     }
@@ -743,7 +737,7 @@ public:
      * @see PrintData()
      * @see Info()
      */
-    virtual void PrintInfo( std::ostream& rOStream ) const
+    void PrintInfo( std::ostream& rOStream ) const override
     {
         rOStream << "2 dimensional triangle with three nodes in 2D space";
     }
@@ -762,7 +756,7 @@ public:
      * :TODO: needs to be reviewed because it is not properly implemented yet
      * (comment by janosch)
      */
-    virtual void PrintData( std::ostream& rOStream ) const
+    void PrintData( std::ostream& rOStream ) const override
     {
         PrintInfo( rOStream );
         BaseType::PrintData( rOStream );
@@ -823,8 +817,7 @@ public:
      * @return the gradients of all shape functions
      * \f$ \frac{\partial N^i}{\partial \xi_j} \f$
      */
-    virtual Matrix& ShapeFunctionsLocalGradients( Matrix& rResult,
-            const CoordinatesArrayType& rPoint ) const
+    Matrix& ShapeFunctionsLocalGradients( Matrix& rResult, const CoordinatesArrayType& rPoint ) const override
     {
         rResult = ZeroMatrix( 3, 2 );
         rResult( 0, 0 ) = -1.0;
@@ -847,17 +840,17 @@ public:
      * shape functions in given point
      * @param rPoint the given point the gradients are calculated in
      */
-    virtual Matrix& ShapeFunctionsGradients( Matrix& rResult, PointType& rPoint )
-    {
-        rResult = ZeroMatrix( 3, 2 );
-        rResult( 0, 0 ) = -1.0;
-        rResult( 0, 1 ) = -1.0;
-        rResult( 1, 0 ) =  1.0;
-        rResult( 1, 1 ) =  0.0;
-        rResult( 2, 0 ) =  0.0;
-        rResult( 2, 1 ) =  1.0;
-        return rResult;
-    }
+    // Matrix& ShapeFunctionsGradients( Matrix& rResult, PointType& rPoint ) const override
+    // {
+    //     rResult = ZeroMatrix( 3, 2 );
+    //     rResult( 0, 0 ) = -1.0;
+    //     rResult( 0, 1 ) = -1.0;
+    //     rResult( 1, 0 ) =  1.0;
+    //     rResult( 1, 1 ) =  0.0;
+    //     rResult( 2, 0 ) =  0.0;
+    //     rResult( 2, 1 ) =  1.0;
+    //     return rResult;
+    // }
 
     /**
      * returns the second order derivatives of all shape functions
@@ -865,7 +858,7 @@ public:
      * @param rResult a third order tensor which contains the second derivatives
      * @param rPoint the given point the second order derivatives are calculated in
      */
-    virtual ShapeFunctionsSecondDerivativesType& ShapeFunctionsSecondDerivatives( ShapeFunctionsSecondDerivativesType& rResult, const CoordinatesArrayType& rPoint ) const
+    ShapeFunctionsSecondDerivativesType& ShapeFunctionsSecondDerivatives( ShapeFunctionsSecondDerivativesType& rResult, const CoordinatesArrayType& rPoint ) const override
     {
         if ( rResult.size() != this->PointsNumber() )
         {
@@ -905,7 +898,7 @@ public:
      * @param rResult a fourth order tensor which contains the third derivatives
      * @param rPoint the given point the third order derivatives are calculated in
      */
-    virtual ShapeFunctionsThirdDerivativesType& ShapeFunctionsThirdDerivatives( ShapeFunctionsThirdDerivativesType& rResult, const CoordinatesArrayType& rPoint ) const
+    ShapeFunctionsThirdDerivativesType& ShapeFunctionsThirdDerivatives( ShapeFunctionsThirdDerivativesType& rResult, const CoordinatesArrayType& rPoint ) const override
     {
         if ( rResult.size() != this->PointsNumber() )
         {
@@ -968,13 +961,13 @@ private:
 
     friend class Serializer;
 
-    virtual void save( Serializer& rSerializer ) const
+    void save( Serializer& rSerializer ) const override
     {
 
         KRATOS_SERIALIZE_SAVE_BASE_CLASS( rSerializer, PointsArrayType );
     }
 
-    virtual void load( Serializer& rSerializer )
+    void load( Serializer& rSerializer ) override
     {
         KRATOS_SERIALIZE_LOAD_BASE_CLASS( rSerializer, PointsArrayType );
     }
@@ -1156,7 +1149,7 @@ private:
                            const Point<3,double>& V2,
                            const Point<3,double>& U0,
                            const Point<3,double>& U1,
-                           const Point<3,double>& U2)
+                           const Point<3,double>& U2) const
     {
         short index;
         double d1,d2;
@@ -1287,7 +1280,7 @@ private:
 
 
 // sort so that a<=b //
-    void Sort(double& a, double& b)
+    void Sort(double& a, double& b) const
     {
         if(a>b)
         {
@@ -1314,7 +1307,7 @@ private:
                                 double& C,
                                 double& X0,
                                 double& X1
-                              )
+                              ) const
     {
         if(D0D1>0.00)
         {
@@ -1379,7 +1372,7 @@ private:
                            const Point<3,double>& V2,
                            const Point<3,double>& U0,
                            const Point<3,double>& U1,
-                           const Point<3,double>& U2)
+                           const Point<3,double>& U2) const
     {
         array_1d<double, 3 > A;
         short i0,i1;
@@ -1442,7 +1435,7 @@ private:
                                 const Point<3,double>& V1,
                                 const Point<3,double>&U0,
                                 const Point<3,double>&U1,
-                                const Point<3,double>&U2)
+                                const Point<3,double>&U2) const
     {
 
         double Ax,Ay,Bx,By,Cx,Cy,e,d,f;
@@ -1481,7 +1474,7 @@ private:
                         const short& i1,
                         const Point<3,double>&V0,
                         const Point<3,double>&U0,
-                        const Point<3,double>&U1)
+                        const Point<3,double>&U1) const
     {
         Bx=U0[i0]-U1[i0];
         By=U0[i1]-U1[i1];
@@ -1519,7 +1512,7 @@ private:
                       const Point<3,double>& V0,
                       const Point<3,double>& U0,
                       const Point<3,double>& U1,
-                      const Point<3,double>& U2)
+                      const Point<3,double>& U2) const
     {
         double a,b,c,d0,d1,d2;
         // is T1 completly inside T2? //
@@ -1550,7 +1543,7 @@ private:
 //*************************************************************************************
 
 
-    inline bool TriBoxOverlap(Point<3, double>& boxcenter, Point<3, double>& boxhalfsize, std::vector< Point<3, double> >& triverts)
+    inline bool TriBoxOverlap(Point<3, double>& boxcenter, Point<3, double>& boxhalfsize, std::vector< Point<3, double> >& triverts) const
     {
 
         /*    use separating axis theorem to test overlap between triangle and box */
@@ -1650,7 +1643,7 @@ private:
                     const double& x1,
                     const double& x2,
                     double& min,
-                    double& max)
+                    double& max) const
     {
         min = max = x0;
         if(x1<min) min=x1;
@@ -1662,7 +1655,7 @@ private:
 //*************************************************************************************
 //*************************************************************************************
 
-    bool planeBoxOverlap(const array_1d<double,3 >& normal,  const double& d, const array_1d<double,3 >& maxbox)
+    bool planeBoxOverlap(const array_1d<double,3 >& normal,  const double& d, const array_1d<double,3 >& maxbox) const
     {
         int q;
         array_1d<double,3 >  vmin,vmax;
@@ -1695,7 +1688,7 @@ private:
                                array_1d<double,3 >& v0,
                                array_1d<double,3 >& v2,
                                Point<3, double>& boxhalfsize
-                              )
+                              ) const
     {
         p0 = a*v0[1] - b*v0[2];
         p2 = a*v2[1] - b*v2[2];
@@ -1721,7 +1714,7 @@ private:
                               array_1d<double,3 >& v0,
                               array_1d<double,3 >& v1,
                               Point<3, double>& boxhalfsize
-                             )
+                             ) const
     {
         p0 = a*v0[1] - b*v0[2];
         p1 = a*v1[1] - b*v1[2];
@@ -1750,7 +1743,7 @@ private:
                                array_1d<double,3 >& v0,
                                array_1d<double,3 >& v2,
                                Point<3, double>& boxhalfsize
-                              )
+                              ) const
     {
 
         p0 = -a*v0[0] + b*v0[2];
@@ -1777,7 +1770,7 @@ private:
                               array_1d<double,3 >& v0,
                               array_1d<double,3 >& v1,
                               Point<3, double>& boxhalfsize
-                             )
+                             ) const
 
     {
         p0 = -a*v0[0] + b*v0[2];

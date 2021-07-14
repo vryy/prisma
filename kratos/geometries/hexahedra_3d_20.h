@@ -338,12 +338,12 @@ public:
      * Operations
      */
 
-    typename BaseType::Pointer Create( PointsArrayType const& ThisPoints ) const
+    typename BaseType::Pointer Create( PointsArrayType const& ThisPoints ) const override
     {
         return typename BaseType::Pointer( new Hexahedra3D20( ThisPoints ) );
     }
 
-    virtual Geometry< Point<3> >::Pointer Clone() const
+    Geometry< Point<3> >::Pointer Clone() const override
     {
         Geometry< Point<3> >::PointsArrayType NewPoints;
         //making a copy of the nodes TO POINTS (not Nodes!!!)
@@ -363,9 +363,9 @@ public:
     /**
      */
     //lumping factors for the calculation of the lumped mass matrix
-    virtual Vector& LumpingFactors( Vector& rResult ) const
+    Vector& LumpingFactors( Vector& rResult ) const override
     {
-	    if(rResult.size() != 20)
+        if(rResult.size() != 20)
             rResult.resize( 20, false );
 
         for ( int i = 0; i < 8; i++ ) rResult[i] = -1.00 / 8.00;
@@ -395,7 +395,7 @@ public:
      *
      * :TODO: might need to be changed to be useful!
      */
-    virtual double Length() const
+    double Length() const override
     {
         return sqrt( fabs( this->DeterminantOfJacobian( PointType() ) ) );
     }
@@ -413,7 +413,7 @@ public:
      *
      * :TODO: might need to be changed to be useful!
      */
-    virtual double Area() const
+    double Area() const override
     {
          return Volume(); 
          
@@ -421,7 +421,7 @@ public:
 
 
 
-    virtual double Volume() const //Not a closed formula for a hexahedra
+    double Volume() const override //Not a closed formula for a hexahedra
     {
 
         Vector temp;
@@ -454,7 +454,7 @@ public:
      *
      * :TODO: might need to be changed to be useful!
      */
-    virtual double DomainSize() const
+    double DomainSize() const override
     {
         return Volume();
     }
@@ -462,7 +462,7 @@ public:
     /**
      * Returns whether given local point is inside the Geometry
      */
-    virtual bool IsInside( const CoordinatesArrayType& rPoint )
+    bool IsInside( const CoordinatesArrayType& rPoint ) const override
     {
         if ( fabs( rPoint[0] ) < 1 + 1.0e-8 )
             if ( fabs( rPoint[1] ) < 1 + 1.0e-8 )
@@ -484,12 +484,12 @@ public:
     @see Edge()
      */
     // will be used by refinement algorithm, thus uncommented. janosch.
-    virtual SizeType EdgesNumber() const
+    SizeType EdgesNumber() const override
     {
         return 12;
     }
 
-    virtual SizeType FacesNumber() const
+    SizeType FacesNumber() const override
     {
         return 6;
     }
@@ -500,7 +500,7 @@ public:
     @see EdgesNumber()
     @see Edge()
      */
-    virtual GeometriesArrayType Edges( void )
+    GeometriesArrayType Edges( void ) const override
     {
         // TODO - hbui - this is wrong - fix it
         GeometriesArrayType edges = GeometriesArrayType();
@@ -561,7 +561,7 @@ public:
         return edges;
     }
 
-    virtual GeometriesArrayType Faces( void )
+    GeometriesArrayType Faces( void ) const override
     {
         // TODO - hbui - this is wrong - fix it
         GeometriesArrayType faces = GeometriesArrayType();
@@ -638,8 +638,7 @@ public:
      * @return the value of the shape function at the given point
      * TODO: implemented but not yet tested
      */
-    virtual double ShapeFunctionValue( IndexType ShapeFunctionIndex,
-                                       const CoordinatesArrayType& rPoint ) const
+    double ShapeFunctionValue( IndexType ShapeFunctionIndex, const CoordinatesArrayType& rPoint ) const override
     {
         switch ( ShapeFunctionIndex )
         {
@@ -734,7 +733,7 @@ public:
      * @see PrintData()
      * @see PrintInfo()
      */
-    virtual std::string Info() const
+    std::string Info() const override
     {
         return "3 dimensional hexahedra with 20 nodes and quadratic shape functions in 3D space";
     }
@@ -746,7 +745,7 @@ public:
      * @see PrintData()
      * @see Info()
      */
-    virtual void PrintInfo( std::ostream& rOStream ) const
+    void PrintInfo( std::ostream& rOStream ) const override
     {
         rOStream << "3 dimensional hexahedra with 20 nodes and quadratic shape functions in 3D space";
     }
@@ -760,7 +759,7 @@ public:
      * @see PrintInfo()
      * @see Info()
      */
-    virtual void PrintData( std::ostream& rOStream ) const
+    void PrintData( std::ostream& rOStream ) const override
     {
         BaseType::PrintData( rOStream );
         std::cout << std::endl;
@@ -780,8 +779,7 @@ public:
      * @return the gradients of all shape functions
      * \f$ \frac{\partial N^i}{\partial \xi_j} \f$
      */
-    virtual Matrix& ShapeFunctionsLocalGradients( Matrix& result,
-            const CoordinatesArrayType& rPoint ) const
+    Matrix& ShapeFunctionsLocalGradients( Matrix& result, const CoordinatesArrayType& rPoint ) const override
     {
         //setting up result matrix
         if ( result.size1() != 20 || result.size2() != 3 )
@@ -959,13 +957,13 @@ private:
 
     friend class Serializer;
 
-    virtual void save( Serializer& rSerializer ) const
+    void save( Serializer& rSerializer ) const override
     {
 
         KRATOS_SERIALIZE_SAVE_BASE_CLASS( rSerializer, BaseType );
     }
 
-    virtual void load( Serializer& rSerializer )
+    void load( Serializer& rSerializer ) override
     {
         KRATOS_SERIALIZE_LOAD_BASE_CLASS( rSerializer, BaseType );
     }
