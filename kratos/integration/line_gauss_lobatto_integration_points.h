@@ -24,7 +24,6 @@ namespace Kratos
 class KRATOS_API(KRATOS_CORE) LineGaussLobattoIntegrationPoints1
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(LineGaussLobattoIntegrationPoints1);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 1;
@@ -64,7 +63,6 @@ private:
 class KRATOS_API(KRATOS_CORE) LineGaussLobattoIntegrationPoints2
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(LineGaussLobattoIntegrationPoints2);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 1;
@@ -105,7 +103,6 @@ private:
 class KRATOS_API(KRATOS_CORE) LineGaussLobattoIntegrationPoints3
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(LineGaussLobattoIntegrationPoints3);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 1;
@@ -148,7 +145,6 @@ private:
 class KRATOS_API(KRATOS_CORE) LineGaussLobattoIntegrationPoints4
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(LineGaussLobattoIntegrationPoints4);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 1;
@@ -192,7 +188,6 @@ private:
 class KRATOS_API(KRATOS_CORE) LineGaussLobattoIntegrationPoints5
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(LineGaussLobattoIntegrationPoints5);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 1;
@@ -237,7 +232,6 @@ private:
 class KRATOS_API(KRATOS_CORE) LineGaussLobattoIntegrationPoints6
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(LineGaussLobattoIntegrationPoints6);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 1;
@@ -278,11 +272,36 @@ private:
 
 }; // Class LineGaussLobattoIntegrationPoints6
 
-
 ///@}
 ///@name Type Definitions
 ///@{
 
+template<int TDegree>
+class KRATOS_API(KRATOS_CORE) LineGaussLobattoIntegrationPoints;
+
+template<>
+class KRATOS_API(KRATOS_CORE) LineGaussLobattoIntegrationPoints<1> : public LineGaussLobattoIntegrationPoints1
+{};
+
+template<>
+class KRATOS_API(KRATOS_CORE) LineGaussLobattoIntegrationPoints<2> : public LineGaussLobattoIntegrationPoints2
+{};
+
+template<>
+class KRATOS_API(KRATOS_CORE) LineGaussLobattoIntegrationPoints<3> : public LineGaussLobattoIntegrationPoints3
+{};
+
+template<>
+class KRATOS_API(KRATOS_CORE) LineGaussLobattoIntegrationPoints<4> : public LineGaussLobattoIntegrationPoints4
+{};
+
+template<>
+class KRATOS_API(KRATOS_CORE) LineGaussLobattoIntegrationPoints<5> : public LineGaussLobattoIntegrationPoints5
+{};
+
+template<>
+class KRATOS_API(KRATOS_CORE) LineGaussLobattoIntegrationPoints<6> : public LineGaussLobattoIntegrationPoints6
+{};
 
 ///@}
 ///@name Input and output

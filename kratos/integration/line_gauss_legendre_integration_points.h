@@ -19,10 +19,10 @@
 
 namespace Kratos
 {
+
 class KRATOS_API(KRATOS_CORE) LineGaussLegendreIntegrationPoints1
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(LineGaussLegendreIntegrationPoints1);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 1;
@@ -63,7 +63,6 @@ private:
 class KRATOS_API(KRATOS_CORE) LineGaussLegendreIntegrationPoints2
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(LineGaussLegendreIntegrationPoints2);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 1;
@@ -104,7 +103,6 @@ private:
 class KRATOS_API(KRATOS_CORE) LineGaussLegendreIntegrationPoints3
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(LineGaussLegendreIntegrationPoints3);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 1;
@@ -147,7 +145,6 @@ private:
 class KRATOS_API(KRATOS_CORE) LineGaussLegendreIntegrationPoints4
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(LineGaussLegendreIntegrationPoints4);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 1;
@@ -191,7 +188,6 @@ private:
 class KRATOS_API(KRATOS_CORE) LineGaussLegendreIntegrationPoints5
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(LineGaussLegendreIntegrationPoints5);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 1;
@@ -236,7 +232,6 @@ private:
 class KRATOS_API(KRATOS_CORE) LineGaussLegendreIntegrationPoints6
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(LineGaussLegendreIntegrationPoints6);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 1;
@@ -282,7 +277,6 @@ private:
 class KRATOS_API(KRATOS_CORE) LineGaussLegendreIntegrationPoints7
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(LineGaussLegendreIntegrationPoints7);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 1;
@@ -329,7 +323,6 @@ private:
 class KRATOS_API(KRATOS_CORE) LineGaussLegendreIntegrationPoints8
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(LineGaussLegendreIntegrationPoints8);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 1;
@@ -377,7 +370,6 @@ private:
 class KRATOS_API(KRATOS_CORE) LineGaussLegendreIntegrationPoints9
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(LineGaussLegendreIntegrationPoints9);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 1;
@@ -426,7 +418,6 @@ private:
 class KRATOS_API(KRATOS_CORE) LineGaussLegendreIntegrationPoints10
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(LineGaussLegendreIntegrationPoints10);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 1;
@@ -471,13 +462,55 @@ private:
 
 }; // Class LineGaussLegendreIntegrationPoints10
 
-
 ///@name Kratos Globals
 ///@{
 
 ///@}
 ///@name Type Definitions
 ///@{
+
+template<int TDegree>
+class KRATOS_API(KRATOS_CORE) LineGaussLegendreIntegrationPoints;
+
+template<>
+class KRATOS_API(KRATOS_CORE) LineGaussLegendreIntegrationPoints<1> : public LineGaussLegendreIntegrationPoints1
+{};
+
+template<>
+class KRATOS_API(KRATOS_CORE) LineGaussLegendreIntegrationPoints<2> : public LineGaussLegendreIntegrationPoints2
+{};
+
+template<>
+class KRATOS_API(KRATOS_CORE) LineGaussLegendreIntegrationPoints<3> : public LineGaussLegendreIntegrationPoints3
+{};
+
+template<>
+class KRATOS_API(KRATOS_CORE) LineGaussLegendreIntegrationPoints<4> : public LineGaussLegendreIntegrationPoints4
+{};
+
+template<>
+class KRATOS_API(KRATOS_CORE) LineGaussLegendreIntegrationPoints<5> : public LineGaussLegendreIntegrationPoints5
+{};
+
+template<>
+class KRATOS_API(KRATOS_CORE) LineGaussLegendreIntegrationPoints<6> : public LineGaussLegendreIntegrationPoints6
+{};
+
+template<>
+class KRATOS_API(KRATOS_CORE) LineGaussLegendreIntegrationPoints<7> : public LineGaussLegendreIntegrationPoints7
+{};
+
+template<>
+class KRATOS_API(KRATOS_CORE) LineGaussLegendreIntegrationPoints<8> : public LineGaussLegendreIntegrationPoints8
+{};
+
+template<>
+class KRATOS_API(KRATOS_CORE) LineGaussLegendreIntegrationPoints<9> : public LineGaussLegendreIntegrationPoints9
+{};
+
+template<>
+class KRATOS_API(KRATOS_CORE) LineGaussLegendreIntegrationPoints<10> : public LineGaussLegendreIntegrationPoints10
+{};
 
 ///@}
 ///@name  Enum's
@@ -507,5 +540,4 @@ private:
 }  // namespace Kratos.
 
 #endif // KRATOS_LINE_GAUSS_LEGENDRE_INTEGRATION_POINTS_H_INCLUDED  defined 
-
 

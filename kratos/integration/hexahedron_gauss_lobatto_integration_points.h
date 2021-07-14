@@ -26,7 +26,6 @@ namespace Kratos
 class KRATOS_API(KRATOS_CORE) HexahedronGaussLobattoIntegrationPoints1
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(HexahedronGaussLobattoIntegrationPoints1);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 3;
@@ -65,7 +64,6 @@ private:
 class KRATOS_API(KRATOS_CORE) HexahedronGaussLobattoIntegrationPoints2
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(HexahedronGaussLobattoIntegrationPoints2);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 3;
@@ -113,7 +111,6 @@ private:
 class KRATOS_API(KRATOS_CORE) HexahedronGaussLobattoIntegrationPoints3
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(HexahedronGaussLobattoIntegrationPoints3);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 3;
@@ -187,7 +184,6 @@ private:
 class KRATOS_API(KRATOS_CORE) HexahedronGaussLobattoIntegrationPoints4
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(HexahedronGaussLobattoIntegrationPoints3);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 3;
@@ -305,7 +301,6 @@ private:
 class KRATOS_API(KRATOS_CORE) HexahedronGaussLobattoIntegrationPoints5
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(HexahedronGaussLobattoIntegrationPoints5);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 3;
@@ -493,7 +488,6 @@ private:
 class KRATOS_API(KRATOS_CORE) HexahedronGaussLobattoIntegrationPoints6
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(HexahedronGaussLobattoIntegrationPoints6);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 3;
@@ -783,7 +777,6 @@ private:
 class KRATOS_API(KRATOS_CORE) HexahedronGaussLobattoIntegrationPoints7
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(HexahedronGaussLobattoIntegrationPoints7);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 3;
@@ -1213,7 +1206,6 @@ private:
 class KRATOS_API(KRATOS_CORE) HexahedronGaussLobattoIntegrationPoints8
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(HexahedronGaussLobattoIntegrationPoints8);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 3;
@@ -1827,7 +1819,6 @@ private:
 class KRATOS_API(KRATOS_CORE) HexahedronGaussLobattoIntegrationPoints9
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(HexahedronGaussLobattoIntegrationPoints9);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 3;
@@ -2675,7 +2666,6 @@ private:
 class KRATOS_API(KRATOS_CORE) HexahedronGaussLobattoIntegrationPoints10
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(HexahedronGaussLobattoIntegrationPoints10);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 3;
@@ -3809,6 +3799,52 @@ private:
     static IntegrationPointsArrayType msIntegrationPoints;
 
 }; // Class HexahedronGaussLobattoIntegrationPoints10
+
+///@name Type Definitions
+///@{
+
+template<int TDegree>
+class KRATOS_API(KRATOS_CORE) HexahedronGaussLobattoIntegrationPoints;
+
+template<>
+class KRATOS_API(KRATOS_CORE) HexahedronGaussLobattoIntegrationPoints<1> : public HexahedronGaussLobattoIntegrationPoints1
+{};
+
+template<>
+class KRATOS_API(KRATOS_CORE) HexahedronGaussLobattoIntegrationPoints<2> : public HexahedronGaussLobattoIntegrationPoints2
+{};
+
+template<>
+class KRATOS_API(KRATOS_CORE) HexahedronGaussLobattoIntegrationPoints<3> : public HexahedronGaussLobattoIntegrationPoints3
+{};
+
+template<>
+class KRATOS_API(KRATOS_CORE) HexahedronGaussLobattoIntegrationPoints<4> : public HexahedronGaussLobattoIntegrationPoints4
+{};
+
+template<>
+class KRATOS_API(KRATOS_CORE) HexahedronGaussLobattoIntegrationPoints<5> : public HexahedronGaussLobattoIntegrationPoints5
+{};
+
+template<>
+class KRATOS_API(KRATOS_CORE) HexahedronGaussLobattoIntegrationPoints<6> : public HexahedronGaussLobattoIntegrationPoints6
+{};
+
+template<>
+class KRATOS_API(KRATOS_CORE) HexahedronGaussLobattoIntegrationPoints<7> : public HexahedronGaussLobattoIntegrationPoints7
+{};
+
+template<>
+class KRATOS_API(KRATOS_CORE) HexahedronGaussLobattoIntegrationPoints<8> : public HexahedronGaussLobattoIntegrationPoints8
+{};
+
+template<>
+class KRATOS_API(KRATOS_CORE) HexahedronGaussLobattoIntegrationPoints<9> : public HexahedronGaussLobattoIntegrationPoints9
+{};
+
+template<>
+class KRATOS_API(KRATOS_CORE) HexahedronGaussLobattoIntegrationPoints<10> : public HexahedronGaussLobattoIntegrationPoints10
+{};
 
 }
 

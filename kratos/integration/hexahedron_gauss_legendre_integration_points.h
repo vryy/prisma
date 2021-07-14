@@ -24,7 +24,6 @@ namespace Kratos
 class KRATOS_API(KRATOS_CORE) HexahedronGaussLegendreIntegrationPoints1
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(HexahedronGaussLegendreIntegrationPoints1);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 3;
@@ -63,7 +62,6 @@ private:
 class KRATOS_API(KRATOS_CORE) HexahedronGaussLegendreIntegrationPoints2
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(HexahedronGaussLegendreIntegrationPoints2);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 3;
@@ -110,7 +108,6 @@ private:
 class KRATOS_API(KRATOS_CORE) HexahedronGaussLegendreIntegrationPoints3
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(HexahedronGaussLegendreIntegrationPoints3);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 3;
@@ -186,7 +183,6 @@ private:
 class KRATOS_API(KRATOS_CORE) HexahedronGaussLegendreIntegrationPoints4
 {
 public:
-   KRATOS_CLASS_POINTER_DEFINITION(HexahedronGaussLegendreIntegrationPoints4);
    typedef std::size_t SizeType;
 
    static const unsigned int Dimension = 3;
@@ -1787,6 +1783,40 @@ private:
 ///@name Type Definitions
 ///@{
 
+template<int TDegree>
+class KRATOS_API(KRATOS_CORE) HexahedronGaussLegendreIntegrationPoints;
+
+template<>
+class KRATOS_API(KRATOS_CORE) HexahedronGaussLegendreIntegrationPoints<1> : public HexahedronGaussLegendreIntegrationPoints1
+{};
+
+template<>
+class KRATOS_API(KRATOS_CORE) HexahedronGaussLegendreIntegrationPoints<2> : public HexahedronGaussLegendreIntegrationPoints2
+{};
+
+template<>
+class KRATOS_API(KRATOS_CORE) HexahedronGaussLegendreIntegrationPoints<3> : public HexahedronGaussLegendreIntegrationPoints3
+{};
+
+template<>
+class KRATOS_API(KRATOS_CORE) HexahedronGaussLegendreIntegrationPoints<4> : public HexahedronGaussLegendreIntegrationPoints4
+{};
+
+template<>
+class KRATOS_API(KRATOS_CORE) HexahedronGaussLegendreIntegrationPoints<5> : public HexahedronGaussLegendreIntegrationPoints5
+{};
+
+template<>
+class KRATOS_API(KRATOS_CORE) HexahedronGaussLegendreIntegrationPoints<6> : public HexahedronGaussLegendreIntegrationPoints6
+{};
+
+template<>
+class KRATOS_API(KRATOS_CORE) HexahedronGaussLegendreIntegrationPoints<7> : public HexahedronGaussLegendreIntegrationPoints7
+{};
+
+template<>
+class KRATOS_API(KRATOS_CORE) HexahedronGaussLegendreIntegrationPoints<8> : public HexahedronGaussLegendreIntegrationPoints8
+{};
 
 ///@}
 ///@name Input and output

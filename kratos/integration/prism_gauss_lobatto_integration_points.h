@@ -24,7 +24,6 @@ namespace Kratos
 class KRATOS_API(KRATOS_CORE) PrismGaussLobattoIntegrationPoints1
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(PrismGaussLobattoIntegrationPoints1);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 3;
@@ -65,7 +64,6 @@ private:
 class KRATOS_API(KRATOS_CORE) PrismGaussLobattoIntegrationPoints2
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(PrismGaussLobattoIntegrationPoints2);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 3;

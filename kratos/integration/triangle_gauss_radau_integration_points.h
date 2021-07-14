@@ -25,7 +25,6 @@ namespace Kratos
 class KRATOS_API(KRATOS_CORE) TriangleGaussRadauIntegrationPoints1
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(TriangleGaussRadauIntegrationPoints1);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 2;
@@ -67,7 +66,6 @@ private:
 class KRATOS_API(KRATOS_CORE) TriangleGaussRadauIntegrationPoints2
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(TriangleGaussRadauIntegrationPoints2);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 2;
@@ -110,7 +108,6 @@ private:
 class KRATOS_API(KRATOS_CORE) TriangleGaussRadauIntegrationPoints3
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(TriangleGaussRadauIntegrationPoints3);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 2;
@@ -155,7 +152,6 @@ private:
 class KRATOS_API(KRATOS_CORE) TriangleGaussRadauIntegrationPoints4
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(TriangleGaussRadauIntegrationPoints4);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 2;
@@ -201,7 +197,6 @@ private:
 class KRATOS_API(KRATOS_CORE) TriangleGaussRadauIntegrationPoints5
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(TriangleGaussRadauIntegrationPoints5);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 2;
@@ -255,7 +250,6 @@ private:
 class KRATOS_API(KRATOS_CORE) TriangleGaussRadauIntegrationPoints6
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(TriangleGaussRadauIntegrationPoints6);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 2;

@@ -25,7 +25,6 @@ namespace Kratos
 class KRATOS_API(KRATOS_CORE) TetrahedronGaussLegendreIntegrationPoints1
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(TetrahedronGaussLegendreIntegrationPoints1);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 3;
@@ -64,7 +63,6 @@ private:
 class KRATOS_API(KRATOS_CORE) TetrahedronGaussLegendreIntegrationPoints2
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(TetrahedronGaussLegendreIntegrationPoints2);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 3;
@@ -106,7 +104,6 @@ private:
 class KRATOS_API(KRATOS_CORE) TetrahedronGaussLegendreIntegrationPoints3
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(TetrahedronGaussLegendreIntegrationPoints3);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 3;
@@ -152,7 +149,6 @@ private:
 class KRATOS_API(KRATOS_CORE) TetrahedronGaussLegendreIntegrationPoints4
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(TetrahedronGaussLegendreIntegrationPoints4);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 3;
@@ -205,7 +201,6 @@ private:
 class KRATOS_API(KRATOS_CORE) TetrahedronGaussLegendreIntegrationPoints5
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(TetrahedronGaussLegendreIntegrationPoints4);
     typedef std::size_t SizeType;
 
     static const unsigned int Dimension = 3;
