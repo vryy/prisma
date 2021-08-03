@@ -397,7 +397,9 @@ public:
      */
     double Length() const override
     {
-        return sqrt( fabs( this->DeterminantOfJacobian( PointType() ) ) );
+        double length = 0.000;
+        length = cbrt( fabs( Area() ) );
+        return length;
     }
 
     /**

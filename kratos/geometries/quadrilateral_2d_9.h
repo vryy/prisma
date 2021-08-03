@@ -374,7 +374,9 @@ public:
      */
     double Length() const override
     {
-        return sqrt( fabs( this->DeterminantOfJacobian( PointType() ) ) );
+        double length = 0.000;
+        length = sqrt( fabs( Area() ) );
+        return length;
     }
 
     /**
@@ -428,7 +430,7 @@ public:
      */
     double DomainSize() const override
     {
-        return fabs( this->DeterminantOfJacobian( PointType() ) ) * 0.5;
+        return Area();
     }
 
     /**

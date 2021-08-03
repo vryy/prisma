@@ -356,7 +356,7 @@ public:
      */
     double Length() const override
     {
-        return sqrt( fabs( DeterminantOfJacobian( PointType() ) ) );
+        return std::sqrt( Area() );
     }
 
     /**
@@ -377,26 +377,24 @@ public:
      */
     double Area() const override
     {
-        Vector d = this->Points()[2] - this->Points()[0];
-        return( sqrt( d[0]*d[0] + d[1]*d[1] + d[2]*d[2] ) );
+        Vector temp;
+        DeterminantOfJacobian( temp, msGeometryData.DefaultIntegrationMethod() );
+        const IntegrationPointsArrayType& integration_points = this->IntegrationPoints( msGeometryData.DefaultIntegrationMethod() );
+        double A = 0.00;
+
+        for ( unsigned int i = 0; i < integration_points.size(); i++ )
+        {
+            A += temp[i] * integration_points[i].Weight();
+        }
+
+        //KRATOS_WATCH(temp)
+        return A;
     }
 
 
     double Volume() const override
     {
-
-        Vector temp;
-        DeterminantOfJacobian( temp, msGeometryData.DefaultIntegrationMethod() );
-        const IntegrationPointsArrayType& integration_points = this->IntegrationPoints( msGeometryData.DefaultIntegrationMethod() );
-        double Volume = 0.00;
-
-        for ( unsigned int i = 0; i < integration_points.size(); i++ )
-        {
-            Volume += temp[i] * integration_points[i].Weight();
-        }
-
-        //KRATOS_WATCH(temp)
-        return Volume;
+        return Area();
     }
 
 
@@ -417,7 +415,7 @@ public:
      */
     double DomainSize() const override
     {
-        return fabs( DeterminantOfJacobian( PointType() ) ) * 0.5;
+        return Area();
     }
 
     /**

@@ -365,8 +365,7 @@ public:
      */
     virtual double Length() const
     {
-        Vector d = this->Points()[2] - this->Points()[0];
-        return( sqrt( d[0]*d[0] + d[1]*d[1] + d[2]*d[2] ) );
+        return std::sqrt( Area() );
     }
 
     /**
@@ -386,15 +385,24 @@ public:
      */
     virtual double Area() const
     {
-        Vector d = this->Points()[2] - this->Points()[0];
-        return( sqrt( d[0]*d[0] + d[1]*d[1] + d[2]*d[2] ) );
+        Vector temp;
+        DeterminantOfJacobian( temp, msGeometryData.DefaultIntegrationMethod() );
+        const IntegrationPointsArrayType& integration_points = this->IntegrationPoints( msGeometryData.DefaultIntegrationMethod() );
+        double A = 0.00;
+
+        for ( unsigned int i = 0; i < integration_points.size(); i++ )
+        {
+            A += temp[i] * integration_points[i].Weight();
+        }
+
+        //KRATOS_WATCH(temp)
+        return A;
     }
 
 
     virtual double Volume() const
     {
-        Vector d = this->Points()[2] - this->Points()[0];
-        return( sqrt( d[0]*d[0] + d[1]*d[1] + d[2]*d[2] ) );
+        return Area();
     }
 
 
@@ -416,7 +424,7 @@ public:
      */
     virtual double DomainSize() const
     {
-        return fabs( DeterminantOfJacobian( PointType() ) ) * 0.5;
+        return Area();
     }
 
     /**

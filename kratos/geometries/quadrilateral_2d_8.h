@@ -363,9 +363,9 @@ public:
      */
     double Length() const override
     {
-        array_1d<double,3> point;
-        point[0] = 1.0/3.0; point[1] = 1.0/3.0; point[2] = 1.0/3.0;
-        return sqrt( fabs( this->DeterminantOfJacobian( point ) ) );
+        double length = 0.000;
+        length = sqrt( fabs( Area() ) );
+        return length;
     }
 
     /**
@@ -421,7 +421,7 @@ public:
      */
     double DomainSize() const override
     {
-        return fabs( this->DeterminantOfJacobian( PointType() ) ) * 0.5;
+        return Area();
     }
 
     /**
