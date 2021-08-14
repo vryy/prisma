@@ -342,6 +342,11 @@ public:
         return *mpNodes;
     }
 
+    const NodesContainerType& Nodes() const
+    {
+        return *mpNodes;
+    }
+
     typename NodesContainerType::Pointer pNodes()
     {
         return mpNodes;

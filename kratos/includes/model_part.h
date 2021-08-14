@@ -399,6 +399,11 @@ public:
         return GetMesh(ThisIndex).Nodes();
     }
 
+    const NodesContainerType& Nodes(IndexType ThisIndex = 0) const
+    {
+        return GetMesh(ThisIndex).Nodes();
+    }
+
     NodesContainerType::Pointer pNodes(IndexType ThisIndex = 0)
     {
         return GetMesh(ThisIndex).pNodes();
