@@ -49,7 +49,6 @@
 #include "geometries/point.h"
 #include "geometries/point_2d.h"
 #include "geometries/point_3d.h"
-#include "geometries/sphere_3d_1.h"
 #include "geometries/triangle_2d_3.h"
 #include "geometries/triangle_2d_6.h"
 #include "geometries/triangle_3d_3.h"

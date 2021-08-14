@@ -5,12 +5,12 @@
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 //
-// 	-	Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-// 	-	Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
-// 		in the documentation and/or other materials provided with the distribution.
-// 	-	All advertising materials mentioning features or use of this software must display the following acknowledgement:
-// 			This product includes Kratos Multi-Physics technology.
-// 	-	Neither the name of the CIMNE nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+//  -   Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+//  -   Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
+//      in the documentation and/or other materials provided with the distribution.
+//  -   All advertising materials mentioning features or use of this software must display the following acknowledgement:
+//          This product includes Kratos Multi-Physics technology.
+//  -   Neither the name of the CIMNE nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
 // THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
@@ -43,7 +43,7 @@
 #include "add_model_part_to_python.h"
 #include "add_io_to_python.h"
 #include "add_mesh_to_python.h"
-#include "add_modeler_to_python.h"
+// #include "add_modeler_to_python.h"
 #include "add_kernel_to_python.h"
 #include "add_kratos_application_to_python.h"
 //#include "add_equation_systems_to_python.h"
@@ -78,8 +78,8 @@ namespace Python
 
 char const* greet()
 {
-	std::stringstream header;
-	header << "Hello, I am Kratos Multi-Physics " << KRATOS_VERSION <<" ;-)"; 
+    std::stringstream header;
+    header << "Hello, I am Kratos Multi-Physics " << KRATOS_VERSION <<" ;-)"; 
     return header.str().c_str();
 }
 
@@ -114,10 +114,10 @@ BOOST_PYTHON_MODULE(Kratos)
     AddNodeToPython();
     AddPropertiesToPython();
     AddMeshToPython();
-    AddModelerToPython();
+    // AddModelerToPython();
     AddKernelToPython();
     AddKratosApplicationToPython();
-//	AddEquationSystemsToPython();
+//  AddEquationSystemsToPython();
     AddLinearSolversToPython();
     AddStrategiesToPython();
     AddUtilitiesToPython();

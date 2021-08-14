@@ -74,7 +74,6 @@ set( KRATOS_PYTHON_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/python/add_zero_matrix_to_python.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/python/add_matrix_to_python.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/python/add_mesh_to_python.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/python/add_modeler_to_python.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/python/vectorial_spaces_python.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/python/add_properties_to_python.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/python/add_node_to_python.cpp
@@ -91,7 +90,7 @@ set( KRATOS_PYTHON_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/python/add_kratos_parameters_to_python.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/python/add_constraint_to_python.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/python/kratos_python.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/mpi_connectivity_preserve_modeler.cpp
+	# ${CMAKE_CURRENT_SOURCE_DIR}/sources/mpi_connectivity_preserve_modeler.cpp
 	# ${CMAKE_CURRENT_SOURCE_DIR}/processes/mdpa_reorder_consecutive_process.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/sources/model_part_io.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/sources/reorder_consecutive_model_part_io.cpp

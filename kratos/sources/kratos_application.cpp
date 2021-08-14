@@ -41,7 +41,6 @@
 #include "geometries/point.h"
 #include "geometries/point_2d.h"
 #include "geometries/point_3d.h"
-#include "geometries/sphere_3d_1.h"
 #include "geometries/triangle_2d_3.h"
 #include "geometries/triangle_2d_6.h"
 #include "geometries/triangle_3d_3.h"
@@ -596,10 +595,6 @@ namespace Kratos
 
       Point3D<Node<3> > Point3DPrototype( Element::GeometryType::PointsArrayType( 1, Node<3>() ) );
       Serializer::Register( "Point3D", Point3DPrototype );
-
-      //Sphere
-      Sphere3D1<Node<3> > Sphere3D1Prototype( Element::GeometryType::PointsArrayType( 1, Node<3>() ) );
-      Serializer::Register( "Sphere3D1", Sphere3D1Prototype );
 
       //Lines:
       Line2D<Node<3> > Line2DPrototype( Element::GeometryType::PointsArrayType( 2, Node<3>() ) );
