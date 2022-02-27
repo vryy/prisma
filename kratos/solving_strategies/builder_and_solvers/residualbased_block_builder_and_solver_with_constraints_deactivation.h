@@ -596,7 +596,39 @@ public:
         KRATOS_TRY
 
         BuildRHS(pScheme, rModelPart, b);
-        SystemSolve(A, Dx, b);
+
+        Timer::Stop("Build");
+
+        if(rModelPart.MasterSlaveConstraints().size() != 0) {
+            Timer::Start("ApplyRHSConstraints");
+            ApplyRHSConstraints(pScheme,b,rModelPart);
+            Timer::Stop("ApplyRHSConstraints");
+        }
+
+        ApplyDirichletConditions(pScheme, rModelPart, A, Dx, b);
+
+        if ( this->GetEchoLevel() == 3)
+        {
+            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraints: " << "Before the solution of the system" << "\nSystem Matrix = " << A << "\nUnknowns vector = " << Dx << "\nRHS vector = " << b << std::endl;
+        }
+
+        const double start_solve = OpenMPUtils::GetCurrentTime();
+        Timer::Start("Solve");
+
+        SystemSolveWithPhysics(A, Dx, b, rModelPart);
+
+        Timer::Stop("Solve");
+        const double stop_solve = OpenMPUtils::GetCurrentTime();
+
+        if (this->GetEchoLevel() >=1 && rModelPart.GetCommunicator().MyPID() == 0)
+        {
+            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraints: " << "System solve time: " << stop_solve - start_solve << std::endl;
+        }
+
+        if ( this->GetEchoLevel() == 3)
+        {
+            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraints: " << "After the solution of the system" << "\nSystem Matrix = " << A << "\nUnknowns vector = " << Dx << "\nRHS vector = " << b << std::endl;
+        }
 
         KRATOS_CATCH("")
     }
@@ -1277,66 +1309,74 @@ protected:
         // We clear the set
         mInactiveSlaveDofs.clear();
 
-        for (int i_const = 0; i_const < number_of_constraints; ++i_const) {
-            auto it_const = rModelPart.MasterSlaveConstraints().begin() + i_const;
+        #pragma omp parallel firstprivate(transformation_matrix, constant_vector, slave_equation_ids, master_equation_ids)
+        {
+            #pragma omp for schedule(guided, 512)
+            for (int i_const = 0; i_const < number_of_constraints; ++i_const) {
+                auto it_const = rModelPart.MasterSlaveConstraints().begin() + i_const;
 
-            // Detect if the constraint is active or not. If the user did not make any choice the constraint
-            // It is active by default
-            bool constraint_is_active = true;
-            if (it_const->IsDefined(ACTIVE))
-                constraint_is_active = it_const->Is(ACTIVE);
+                // Detect if the constraint is active or not. If the user did not make any choice the constraint
+                // It is active by default
+                bool constraint_is_active = true;
+                if (it_const->IsDefined(ACTIVE))
+                    constraint_is_active = it_const->Is(ACTIVE);
 
-            it_const->EquationIdVector(slave_equation_ids, master_equation_ids, r_current_process_info);
+                it_const->EquationIdVector(slave_equation_ids, master_equation_ids, r_current_process_info);
 
-            // here have to disable the constraint that has inactive master dof
-            // this happens because when the elements are deactivated, certain master nodes will disappear
-            // , so the corresponding constraint will be invalidated
-            for (auto &eq_id : master_equation_ids) {
-                if (eq_id >= BaseType::mEquationSystemSize) {
-                    constraint_is_active = false;
-                    break;
-                }
-            }
-// KRATOS_WATCH(it_const->Id())
-            if (constraint_is_active) {
-                it_const->CalculateLocalSystem(transformation_matrix, constant_vector, r_current_process_info);
-
-// KRATOS_WATCH(__LINE__)
-// KRATOS_WATCH(BaseType::mEquationSystemSize)
-// KRATOS_WATCH(mT.size1())
-// KRATOS_WATCH(mT.size2())
-// KRATOS_WATCH(mConstantVector.size())
-// std::cout << "slave_equation_ids:";
-// for (IndexType i = 0; i < slave_equation_ids.size(); ++i)
-//     std::cout << " " << slave_equation_ids[i];
-// std::cout << std::endl;
-// std::cout << "master_equation_ids:";
-// for (IndexType i = 0; i < master_equation_ids.size(); ++i)
-//     std::cout << " " << master_equation_ids[i];
-// std::cout << std::endl;
-                for (IndexType i = 0; i < slave_equation_ids.size(); ++i) {
-                    const IndexType i_global = slave_equation_ids[i];
-
-                    if (i_global < BaseType::mEquationSystemSize)
-                    {
-                        // Assemble matrix row
-                        AssembleRowContribution(mT, transformation_matrix, i_global, i, master_equation_ids);
-
-                        // Assemble constant vector
-                        const double constant_value = constant_vector[i];
-                        double& r_value = mConstantVector[i_global];
-                        r_value += constant_value;
+                // here have to disable the constraint that has inactive master dof
+                // this happens because when the elements are deactivated, certain master nodes will disappear
+                // , so the corresponding constraint will be invalidated
+                for (auto &eq_id : master_equation_ids) {
+                    if (eq_id >= BaseType::mEquationSystemSize) {
+                        constraint_is_active = false;
+                        break;
                     }
                 }
-            } else { // Taking into account inactive constraints
-// KRATOS_WATCH(__LINE__)
-                for (auto &eq_id : slave_equation_ids) {
-                    if (eq_id < BaseType::mEquationSystemSize) {
-                        mInactiveSlaveDofs.insert(eq_id);
+    // KRATOS_WATCH(it_const->Id())
+                if (constraint_is_active) {
+                    it_const->CalculateLocalSystem(transformation_matrix, constant_vector, r_current_process_info);
+
+    // KRATOS_WATCH(__LINE__)
+    // KRATOS_WATCH(BaseType::mEquationSystemSize)
+    // KRATOS_WATCH(mT.size1())
+    // KRATOS_WATCH(mT.size2())
+    // KRATOS_WATCH(mConstantVector.size())
+    // std::cout << "slave_equation_ids:";
+    // for (IndexType i = 0; i < slave_equation_ids.size(); ++i)
+    //     std::cout << " " << slave_equation_ids[i];
+    // std::cout << std::endl;
+    // std::cout << "master_equation_ids:";
+    // for (IndexType i = 0; i < master_equation_ids.size(); ++i)
+    //     std::cout << " " << master_equation_ids[i];
+    // std::cout << std::endl;
+                    for (IndexType i = 0; i < slave_equation_ids.size(); ++i) {
+                        const IndexType i_global = slave_equation_ids[i];
+
+                        if (i_global < BaseType::mEquationSystemSize)
+                        {
+                            // Assemble matrix row
+                            AssembleRowContribution(mT, transformation_matrix, i_global, i, master_equation_ids);
+
+                            // Assemble constant vector
+                            const double constant_value = constant_vector[i];
+                            double& r_value = mConstantVector[i_global];
+                            #pragma omp atomic
+                            r_value += constant_value;
+                        }
                     }
+                } else { // Taking into account inactive constraints
+    // KRATOS_WATCH(__LINE__)
+                    for (auto &eq_id : slave_equation_ids) {
+                        if (eq_id < BaseType::mEquationSystemSize) {
+                            #pragma omp critical
+                            {
+                                mInactiveSlaveDofs.insert(eq_id);
+                            }
+                        }
+                    }
+                    // mInactiveSlaveDofs.insert(slave_equation_ids.begin(), slave_equation_ids.end());
+    // KRATOS_WATCH(__LINE__)
                 }
-                // mInactiveSlaveDofs.insert(slave_equation_ids.begin(), slave_equation_ids.end());
-// KRATOS_WATCH(__LINE__)
             }
         }
 
@@ -1351,7 +1391,9 @@ protected:
             mConstantVector[eq_id] = 0.0;
             mT(eq_id, eq_id) = 1.0;
         }
+
         // fixing the constraint transformation matrix if there's a dof that's a slave in one constraint and a master in another constraint.
+        // TODO to be reviewed
         for (int k = 0; k < static_cast<int>(mSlaveIds.size()); ++k)
         {
             const IndexType slave_equation_id = mSlaveIds[k];
@@ -1368,6 +1410,65 @@ protected:
                 }
             }
         }
+
+        KRATOS_CATCH("")
+    }
+
+    void ApplyRHSConstraints(
+        typename TSchemeType::Pointer pScheme,
+        TSystemVectorType& rb,
+        ModelPart& rModelPart)
+    {
+        KRATOS_TRY
+
+        if (rModelPart.MasterSlaveConstraints().size() != 0) {
+            double time_begin = OpenMPUtils::GetCurrentTime();
+            double time_end, time_1, time_2, time_3, time_4;
+
+            BuildMasterSlaveConstraints(rModelPart);
+
+            time_end = OpenMPUtils::GetCurrentTime();
+            time_1 = time_end - time_begin;
+            time_begin = time_end;
+
+            // We compute the transposed matrix of the global relation matrix
+            TSystemMatrixType T_transpose_matrix(mT.size2(), mT.size1());
+            SparseMatrixMultiplicationUtility::TransposeMatrix<TSystemMatrixType, TSystemMatrixType>(T_transpose_matrix, mT, 1.0);
+
+            time_end = OpenMPUtils::GetCurrentTime();
+            time_2 = time_end - time_begin;
+            time_begin = time_end;
+
+            TSystemVectorType b_modified(rb.size());
+            TSparseSpace::Mult(T_transpose_matrix, rb, b_modified);
+            TSparseSpace::Copy(b_modified, rb);
+            b_modified.resize(0, false); //free memory
+
+            time_end = OpenMPUtils::GetCurrentTime();
+            time_3 = time_end - time_begin;
+            time_begin = time_end;
+
+            // Apply diagonal values on slaves
+            // #pragma omp parallel for
+            for (int i = 0; i < static_cast<int>(mSlaveIds.size()); ++i) {
+                const IndexType slave_equation_id = mSlaveIds[i];
+                if (mInactiveSlaveDofs.find(slave_equation_id) == mInactiveSlaveDofs.end()) {
+                    rb[slave_equation_id] = 0.0;
+                }
+            }
+
+            time_end = OpenMPUtils::GetCurrentTime();
+            time_4 = time_end - time_begin;
+
+            if (this->GetEchoLevel() >= 1 && rModelPart.GetCommunicator().MyPID() == 0)
+            {
+                std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation: " << "Apply RHS Constraints time: ("
+                          << time_1 << ", " << time_2 << ", " << time_3 << ", " << time_4 << ")"
+                          << ", total = " << time_1 + time_2 + time_3 + time_4
+                          << std::endl;
+            }
+        }
+
         KRATOS_CATCH("")
     }
 

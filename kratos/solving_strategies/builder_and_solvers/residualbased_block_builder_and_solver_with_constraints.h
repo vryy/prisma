@@ -519,7 +519,43 @@ public:
         KRATOS_TRY
 
         BuildRHS(pScheme, rModelPart, b);
-        SystemSolve(A, Dx, b);
+
+        Timer::Stop("Build");
+
+        if(rModelPart.MasterSlaveConstraints().size() != 0) {
+            Timer::Start("ApplyRHSConstraints");
+            KRATOS_WATCH(mMasterIds.size())
+            KRATOS_WATCH(mT.size1())
+            KRATOS_WATCH(mT.size2())
+            if (mMasterIds.size() != mT.size1())
+                ApplyRHSConstraints(pScheme,b,rModelPart);
+            Timer::Stop("ApplyRHSConstraints");
+        }
+
+        ApplyDirichletConditions(pScheme, rModelPart, A, Dx, b);
+
+        if ( this->GetEchoLevel() == 3)
+        {
+            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraints: " << "Before the solution of the system" << "\nSystem Matrix = " << A << "\nUnknowns vector = " << Dx << "\nRHS vector = " << b << std::endl;
+        }
+
+        const double start_solve = OpenMPUtils::GetCurrentTime();
+        Timer::Start("Solve");
+
+        SystemSolveWithPhysics(A, Dx, b, rModelPart);
+
+        Timer::Stop("Solve");
+        const double stop_solve = OpenMPUtils::GetCurrentTime();
+
+        if (this->GetEchoLevel() >=1 && rModelPart.GetCommunicator().MyPID() == 0)
+        {
+            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraints: " << "System solve time: " << stop_solve - start_solve << std::endl;
+        }
+
+        if ( this->GetEchoLevel() == 3)
+        {
+            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraints: " << "After the solution of the system" << "\nSystem Matrix = " << A << "\nUnknowns vector = " << Dx << "\nRHS vector = " << b << std::endl;
+        }
 
         KRATOS_CATCH("")
     }
@@ -1261,23 +1297,84 @@ protected:
             mConstantVector[eq_id] = 0.0;
             mT(eq_id, eq_id) = 1.0;
         }
-        // fixing the constraint transformation matrix if there's a dof that's a slave in one constraint and a master in another constraint.
-        for (int k = 0; k < static_cast<int>(mSlaveIds.size()); ++k)
-        {
-            const IndexType slave_equation_id = mSlaveIds[k];
-            for (int i = 0; i < static_cast<int>(mT.size1()); ++i)
-            {
-                if (mT(i,slave_equation_id) != 0)
-                {
-                    std::cout << "ATTENTION! ResidualBasedBlockBuilderAndSolverWithConstraints. constraint slave is used as master for another constraint!" << std::endl;
-                    for (int j = 0; j < static_cast<int>(mT.size2()); ++j)
-                    {
-                        mT(i,j) = mT(i,j) + mT(i,slave_equation_id) * mT(slave_equation_id,j);
-                    }
-                    mT(i,slave_equation_id) = 0;
+
+        // // fixing the constraint transformation matrix if there's a dof that's a slave in one constraint and a master in another constraint.
+        // TODO to be reviewed
+        // for (int k = 0; k < static_cast<int>(mSlaveIds.size()); ++k)
+        // {
+        //     const IndexType slave_equation_id = mSlaveIds[k];
+        //     for (int i = 0; i < static_cast<int>(mT.size1()); ++i)
+        //     {
+        //         if (mT(i,slave_equation_id) != 0)
+        //         {
+        //             std::cout << "ATTENTION! ResidualBasedBlockBuilderAndSolverWithConstraints. constraint slave is used as master for another constraint!" << std::endl;
+        //             for (int j = 0; j < static_cast<int>(mT.size2()); ++j)
+        //             {
+        //                 mT(i,j) = mT(i,j) + mT(i,slave_equation_id) * mT(slave_equation_id,j);
+        //             }
+        //             mT(i,slave_equation_id) = 0;
+        //         }
+        //     }
+        // }
+
+        KRATOS_CATCH("")
+    }
+
+    void ApplyRHSConstraints(
+        typename TSchemeType::Pointer pScheme,
+        TSystemVectorType& rb,
+        ModelPart& rModelPart)
+    {
+        KRATOS_TRY
+
+        if (rModelPart.MasterSlaveConstraints().size() != 0) {
+            double time_begin = OpenMPUtils::GetCurrentTime();
+            double time_end, time_1, time_2, time_3, time_4;
+
+            BuildMasterSlaveConstraints(rModelPart);
+
+            time_end = OpenMPUtils::GetCurrentTime();
+            time_1 = time_end - time_begin;
+            time_begin = time_end;
+
+            // We compute the transposed matrix of the global relation matrix
+            TSystemMatrixType T_transpose_matrix(mT.size2(), mT.size1());
+            SparseMatrixMultiplicationUtility::TransposeMatrix<TSystemMatrixType, TSystemMatrixType>(T_transpose_matrix, mT, 1.0);
+
+            time_end = OpenMPUtils::GetCurrentTime();
+            time_2 = time_end - time_begin;
+            time_begin = time_end;
+
+            TSystemVectorType b_modified(rb.size());
+            TSparseSpace::Mult(T_transpose_matrix, rb, b_modified);
+            TSparseSpace::Copy(b_modified, rb);
+            b_modified.resize(0, false); //free memory
+
+            time_end = OpenMPUtils::GetCurrentTime();
+            time_3 = time_end - time_begin;
+            time_begin = time_end;
+
+            // Apply diagonal values on slaves
+            // #pragma omp parallel for
+            for (int i = 0; i < static_cast<int>(mSlaveIds.size()); ++i) {
+                const IndexType slave_equation_id = mSlaveIds[i];
+                if (mInactiveSlaveDofs.find(slave_equation_id) == mInactiveSlaveDofs.end()) {
+                    rb[slave_equation_id] = 0.0;
                 }
             }
+
+            time_end = OpenMPUtils::GetCurrentTime();
+            time_4 = time_end - time_begin;
+
+            if (this->GetEchoLevel() >= 1 && rModelPart.GetCommunicator().MyPID() == 0)
+            {
+                std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraints: " << "Apply RHS Constraints time: ("
+                          << time_1 << ", " << time_2 << ", " << time_3 << ", " << time_4 << ")"
+                          << ", total = " << time_1 + time_2 + time_3 + time_4
+                          << std::endl;
+            }
         }
+
         KRATOS_CATCH("")
     }
 

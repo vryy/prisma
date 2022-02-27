@@ -161,6 +161,25 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
             BaseType::Build(pScheme, rModelPart, A, b);
     }
 
+    /**
+     * @brief Function to perform the build of the RHS. The vector could be sized as the total number
+     * of dofs or as the number of unrestrained ones
+     * @param pScheme The integration scheme considered
+     * @param rModelPart The model part of the problem to solve
+     * @param A The LHS matrix
+     * @param b The RHS vector
+     */
+    void BuildRHS(
+        typename TSchemeType::Pointer pScheme,
+        ModelPart &rModelPart,
+        TSystemVectorType &b) // override
+    {
+        if(mGlobalMasterSlaveConstraints.size() > 0)
+            BuildRHSWithConstraints(pScheme, rModelPart, b);
+        else
+            BaseType::BuildRHS(pScheme, rModelPart, b);
+    }
+
 
     /**
      * @brief Function to perform the building and solving phase at the same time.
@@ -183,6 +202,30 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
             BuildAndSolveWithConstraints(pScheme, rModelPart, A, Dx, b);
         else
             BaseType::BuildAndSolve(pScheme, rModelPart, A, Dx, b);
+    }
+
+
+    /**
+     * @brief Function to perform the building and solving phase at the same time.
+     * @details It is ideally the fastest and safer function to use when it is possible to solve
+     * just after building
+     * @param pScheme The integration scheme considered
+     * @param rModelPart The model part of the problem to solve
+     * @param A The LHS matrix
+     * @param Dx The Unknowns vector
+     * @param b The RHS vector
+     */
+    void BuildRHSAndSolve(
+        typename TSchemeType::Pointer pScheme,
+        ModelPart &rModelPart,
+        TSystemMatrixType &A,
+        TSystemVectorType &Dx,
+        TSystemVectorType &b) // override
+    {
+        if(mGlobalMasterSlaveConstraints.size() > 0)
+            BuildRHSAndSolveWithConstraints(pScheme, rModelPart, A, Dx, b);
+        else
+            BaseType::BuildRHSAndSolve(pScheme, rModelPart, A, Dx, b);
     }
 
 
@@ -425,7 +468,6 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
     }
 
 
-
     void BuildAndSolveWithConstraints(
         typename TSchemeType::Pointer pScheme,
         ModelPart &rModelPart,
@@ -447,6 +489,69 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
         Timer::Start("Build");
 
         Build(pScheme, rModelPart, A, b);
+
+        Timer::Stop("Build");
+
+        this->ApplyDirichletConditions(pScheme, rModelPart, A, Dx, b);
+
+        if (this->GetEchoLevel() > 3)
+        {
+            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise: " << "Before the solution of the system"
+                      << "\nSystem Matrix = " << A << "\nUnknowns vector = " << Dx << "\nRHS vector = " << b << std::endl;
+        }
+
+        const double start_solve = OpenMPUtils::GetCurrentTime();
+
+        Timer::Start("Solve");
+        this->SystemSolveWithPhysics(A, Dx, b, rModelPart);
+        Timer::Stop("Solve");
+        const double stop_solve = OpenMPUtils::GetCurrentTime();
+
+        const double start_reconstruct_slaves = OpenMPUtils::GetCurrentTime();
+        ReconstructSlaveSolutionAfterSolve(rModelPart, A, Dx, b);
+        const double stop_reconstruct_slaves = OpenMPUtils::GetCurrentTime();
+
+        if (this->GetEchoLevel() >= 1 && rModelPart.GetCommunicator().MyPID() == 0)
+        {
+            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise: " << "Reconstruct slaves time: " << stop_reconstruct_slaves - start_reconstruct_slaves << std::endl;
+        }
+
+        if (this->GetEchoLevel() >= 1 && rModelPart.GetCommunicator().MyPID() == 0)
+        {
+            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise: " << "System solve time: " << stop_solve - start_solve << std::endl;
+        }
+
+        if (this->GetEchoLevel() > 3)
+        {
+            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise: " << "After the solution of the system"
+                      << "\nSystem Matrix = " << A << "\nUnknowns vector = " << Dx << "\nRHS vector = " << b << std::endl;
+        }
+
+        KRATOS_CATCH("")
+    }
+
+
+    void BuildRHSAndSolveWithConstraints(
+        typename TSchemeType::Pointer pScheme,
+        ModelPart &rModelPart,
+        TSystemMatrixType &A,
+        TSystemVectorType &Dx,
+        TSystemVectorType &b)
+    {
+        KRATOS_TRY
+
+        const double start_update_constraints = OpenMPUtils::GetCurrentTime();
+        this->UpdateConstraintsForBuilding(rModelPart);
+        const double stop_update_constraints = OpenMPUtils::GetCurrentTime();
+
+        if (this->GetEchoLevel() >= 1 && rModelPart.GetCommunicator().MyPID() == 0)
+        {
+            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise: " << "Constraints update time : " << stop_update_constraints - start_update_constraints << std::endl;
+        }
+
+        Timer::Start("Build");
+
+        BuildRHS(pScheme, rModelPart, b);
 
         Timer::Stop("Build");
 
@@ -580,6 +685,118 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
                     this->Assemble(A, b, LHS_Contribution, RHS_Contribution, EquationId, BaseType::mlock_array);
 #else
                     this->Assemble(A, b, LHS_Contribution, RHS_Contribution, EquationId);
+#endif
+
+                    // clean local elemental memory
+                    pScheme->CleanMemory(*it);
+                }
+            }
+        }
+
+        const double stop_build = OpenMPUtils::GetCurrentTime();
+        if (this->GetEchoLevel() >= 1 && rModelPart.GetCommunicator().MyPID() == 0)
+        {
+            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise: " << "Build time: " << stop_build - start_build << std::endl;
+        }
+
+        if (this->GetEchoLevel() > 2 && rModelPart.GetCommunicator().MyPID() == 0)
+        {
+            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise: " << "Finished parallel building" << std::endl;
+        }
+
+        KRATOS_CATCH("")
+    }
+
+    /*
+    * This function is exactly same as the BuildWithConstraint() function except that the local stiffness matrix is not assembled to the global one.
+    * Hence, one must make sure that the stiffness provided by element must be constant in a time step
+    */
+    void BuildRHSWithConstraints(
+        typename TSchemeType::Pointer pScheme,
+        ModelPart &rModelPart,
+        TSystemVectorType &b)
+    {
+        KRATOS_TRY
+
+        if (!pScheme)
+            KRATOS_THROW_ERROR(std::logic_error, "No scheme provided!", "");
+
+        ConstraintImposerType constraint_imposer(mGlobalMasterSlaveConstraints);
+
+        // Getting the elements from the model
+        const int nelements = static_cast<int>(rModelPart.Elements().size());
+
+        // Getting the array of the conditions
+        const int nconditions = static_cast<int>(rModelPart.Conditions().size());
+
+        ProcessInfo &CurrentProcessInfo = rModelPart.GetProcessInfo();
+        const ModelPart::ElementsContainerType::iterator el_begin = rModelPart.ElementsBegin();
+        const ModelPart::ConditionsContainerType::iterator cond_begin = rModelPart.ConditionsBegin();
+
+        //contributions to the system
+        LocalSystemMatrixType LHS_Contribution = LocalSystemMatrixType(0, 0);
+        LocalSystemVectorType RHS_Contribution = LocalSystemVectorType(0);
+
+        //vector containing the localization in the system of the different
+        //terms
+        Element::EquationIdVectorType EquationId;
+
+        // assemble all elements
+        double start_build = OpenMPUtils::GetCurrentTime();
+
+#pragma omp parallel firstprivate(nelements, nconditions, LHS_Contribution, RHS_Contribution, EquationId, constraint_imposer)
+        {
+#pragma omp for schedule(guided, 512) nowait
+            for (int k = 0; k < nelements; k++)
+            {
+                ModelPart::ElementsContainerType::iterator it = el_begin + k;
+
+                //detect if the element is active or not. If the user did not make any choice the element
+                //is active by default
+                bool element_is_active = true;
+                if ((it)->IsDefined(ACTIVE))
+                    element_is_active = (it)->Is(ACTIVE);
+
+                if (element_is_active)
+                {
+                    //calculate elemental contribution
+                    pScheme->CalculateSystemContributions(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
+                    constraint_imposer.template ApplyConstraints<Element>(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
+
+                    //assemble the elemental contribution
+#ifdef USE_LOCKS_IN_ASSEMBLY
+                    this->AssembleRHS(b, RHS_Contribution, EquationId, BaseType::mlock_array);
+#else
+                    this->AssembleRHS(b, RHS_Contribution, EquationId);
+#endif
+                    // clean local elemental memory
+                    pScheme->CleanMemory(*it);
+                }
+            }
+
+//#pragma omp parallel for firstprivate(nconditions, LHS_Contribution, RHS_Contribution, EquationId ) schedule(dynamic, 1024)
+#pragma omp for schedule(guided, 512)
+            for (int k = 0; k < nconditions; k++)
+            {
+                ModelPart::ConditionsContainerType::iterator it = cond_begin + k;
+
+                //detect if the element is active or not. If the user did not make any choice the element
+                //is active by default
+                bool condition_is_active = true;
+                if ((it)->IsDefined(ACTIVE))
+                    condition_is_active = (it)->Is(ACTIVE);
+
+                if (condition_is_active)
+                {
+                    //calculate elemental contribution
+                    pScheme->CalculateSystemContributions(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
+                    constraint_imposer.template ApplyConstraints<Condition>(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
+
+                    //assemble the elemental contribution
+#ifdef USE_LOCKS_IN_ASSEMBLY
+                    this->AssembleRHS(b, RHS_Contribution, EquationId, BaseType::mlock_array);
+#else
+                    this->AssembleRHS(b, RHS_Contribution, EquationId);
 #endif
 
                     // clean local elemental memory
