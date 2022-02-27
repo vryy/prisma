@@ -393,7 +393,7 @@ public:
     typedef Geometry<NodeType> GeometryType;
     typedef NodeType::PointType PointType;
 
-    virtual void Partition(ContainerType& rAllConditions,
+    virtual void Partition(const ContainerType& rAllConditions,
                            const kDOP& rBoundingVolume,
                            ContainerType& rOutputSet1,
                            ContainerType& rOutputSet2) const
@@ -443,15 +443,15 @@ public:
     ~SimpleBoundingVolumePartitioner() {}
 
     /// REF: https://github.com/brandonpelfrey/Fast-BVH
-    virtual void Partition(ContainerType& rAllConditions,
-                           const kDOP& rBoundingVolume,
-                           ContainerType& rOutputSet1,
-                           ContainerType& rOutputSet2) const
+    void Partition(const ContainerType& rAllConditions,
+                   const kDOP& rBoundingVolume,
+                   ContainerType& rOutputSet1,
+                   ContainerType& rOutputSet2) const final
     {
         // for simplest case, if there is only one segment, then output 1 is set straightforward
         if(rAllConditions.size() == 1)
         {
-            for(typename ContainerType::ptr_iterator it = rAllConditions.ptr_begin(); it != rAllConditions.ptr_end(); ++it)
+            for(typename ContainerType::ptr_const_iterator it = rAllConditions.ptr_begin(); it != rAllConditions.ptr_end(); ++it)
                 rOutputSet1.push_back(*it);
         }
 
@@ -459,7 +459,7 @@ public:
         if(rAllConditions.size() == 2)
         {
             int cnt = 0;
-            for(typename ContainerType::ptr_iterator it = rAllConditions.ptr_begin(); it != rAllConditions.ptr_end(); ++it)
+            for(typename ContainerType::ptr_const_iterator it = rAllConditions.ptr_begin(); it != rAllConditions.ptr_end(); ++it)
             {
                 if(cnt == 0)
                     rOutputSet1.push_back(*it);
@@ -486,7 +486,7 @@ public:
             Median[0] = 0.0;
             Median[1] = 0.0;
             Median[2] = 0.0;
-            for(typename ContainerType::ptr_iterator it = rAllConditions.ptr_begin(); it != rAllConditions.ptr_end(); ++it)
+            for(typename ContainerType::ptr_const_iterator it = rAllConditions.ptr_begin(); it != rAllConditions.ptr_end(); ++it)
             {
                 this->ComputeCentroid((*it)->GetGeometry(), C);
                 Median[0] += C[0];
@@ -498,7 +498,7 @@ public:
             Median[2] /= rAllConditions.size();
 
             // divide each geometry in the InputSet to each of OutputSet
-            for(typename ContainerType::ptr_iterator it = rAllConditions.ptr_begin(); it != rAllConditions.ptr_end(); ++it)
+            for(typename ContainerType::ptr_const_iterator it = rAllConditions.ptr_begin(); it != rAllConditions.ptr_end(); ++it)
             {
                 this->ComputeCentroid((*it)->GetGeometry(), C);
                 double v = 0.0;
@@ -539,14 +539,14 @@ public:
     LineRegressionVolumePartitioner() {}
     ~LineRegressionVolumePartitioner() {}
 
-    virtual void Partition(ContainerType& rAllConditions,
-                           const kDOP& rBoundingVolume,
-                           ContainerType& rOutputSet1,
-                           ContainerType& rOutputSet2) const
+    void Partition(const ContainerType& rAllConditions,
+                   const kDOP& rBoundingVolume,
+                   ContainerType& rOutputSet1,
+                   ContainerType& rOutputSet2) const final
     {
         // firstly extract all the nodes of the providing geometry
         std::set<std::size_t> NodeIds;
-        for(typename ContainerType::ptr_iterator it = rAllConditions.ptr_begin(); it != rAllConditions.ptr_end(); ++it)
+        for(typename ContainerType::ptr_const_iterator it = rAllConditions.ptr_begin(); it != rAllConditions.ptr_end(); ++it)
             for(std::size_t j = 0; j < (*it)->GetGeometry().size(); ++j)
                 NodeIds.insert((*it)->GetGeometry()[j].Id());
 
@@ -602,7 +602,7 @@ public:
     virtual ~BoundingVolumeTree()
     {}
 
-    void BuildTreeTopDown(ContainerType& rAllConditions, const BoundingVolumePartitioner<TFrame, ContainerType>& rPartitioner)
+    void BuildTreeTopDown(const ContainerType& rAllConditions, const BoundingVolumePartitioner<TFrame, ContainerType>& rPartitioner)
     {
         mGeometryIds.clear();
         mpBV->Initialize();
@@ -637,7 +637,7 @@ public:
         this->UpdateTree(r_model_part.Conditions());
     }
 
-    void UpdateTree(ContainerType& rAllConditions)
+    void UpdateTree(const ContainerType& rAllConditions)
     {
         if((mpLeft != NULL) && (mpRight != NULL))
         {
@@ -649,13 +649,16 @@ public:
         {
             mpBV->Initialize();
             for(std::set<std::size_t>::iterator it = mGeometryIds.begin(); it != mGeometryIds.end(); ++it)
-                mpBV->InsertGeometry<TFrame>(rAllConditions(*it)->GetGeometry());
+            {
+                auto it2 = rAllConditions.find(*it);
+                mpBV->InsertGeometry<TFrame>(it2->GetGeometry());
+            }
         }
     }
 
-    void AddGeometryFrom(ContainerType& rAllConditions)
+    void AddGeometryFrom(const ContainerType& rAllConditions)
     {
-        for(typename ContainerType::ptr_iterator it = rAllConditions.ptr_begin(); it != rAllConditions.ptr_end(); ++it)
+        for(typename ContainerType::ptr_const_iterator it = rAllConditions.ptr_begin(); it != rAllConditions.ptr_end(); ++it)
         {
             mpBV->InsertGeometry<TFrame>((*it)->GetGeometry());
             mGeometryIds.insert((*it)->Id());
