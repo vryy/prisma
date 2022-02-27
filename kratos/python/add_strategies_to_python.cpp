@@ -90,7 +90,7 @@ namespace Kratos
 
         //ADDED BY PAOLO (next two)
 
-        double Dot(SparseSpaceType& dummy, SparseSpaceType::VectorType& rX, SparseSpaceType::VectorType& rY)
+        double Dot(SparseSpaceType& dummy, const SparseSpaceType::VectorType& rX, const SparseSpaceType::VectorType& rY)
         {
             return dummy.Dot(rX, rY);
         }
@@ -158,7 +158,7 @@ namespace Kratos
             dummy.Clear(x);
         }
 
-        double TwoNorm(SparseSpaceType& dummy, SparseSpaceType::VectorType& x)
+        double TwoNorm(SparseSpaceType& dummy, const SparseSpaceType::VectorType& x)
         {
             return dummy.TwoNorm(x);
         }
@@ -166,6 +166,16 @@ namespace Kratos
         void UnaliasedAdd(SparseSpaceType& dummy, SparseSpaceType::VectorType& x, const double A, const SparseSpaceType::VectorType& rY) // x+= a*Y
         {
             dummy.UnaliasedAdd(x, A, rY);
+        }
+
+        void CopyVector(SparseSpaceType& dummy, SparseSpaceType::VectorType const& rX, SparseSpaceType::VectorType& rY)
+        {
+            dummy.Copy(rX, rY);
+        }
+
+        void CopyMatrix(SparseSpaceType& dummy, SparseSpaceType::MatrixType const& rX, SparseSpaceType::MatrixType& rY)
+        {
+            dummy.Copy(rX, rY);
         }
 
         void MoveMesh(Scheme< SparseSpaceType, LocalSpaceType >& dummy, ModelPart::NodesContainerType& rNodes)
@@ -495,6 +505,8 @@ namespace Kratos
                     .def("SetToZeroMatrix", SetToZeroMatrix)
                     .def("SetToZeroVector", SetToZeroVector)
                     .def("TwoNorm", TwoNorm)
+                    .def("Copy", CopyVector)
+                    .def("Copy", CopyMatrix)
                     //the dot product of two vectors
                     .def("Dot", Dot)
                     //the matrix-vector multiplication
