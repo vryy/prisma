@@ -1,10 +1,10 @@
-//    |  /           | 
-//    ' /   __| _` | __|  _ \   __| 
+//    |  /           |
+//    ' /   __| _` | __|  _ \   __|
 //    . \  |   (   | |   (   |\__ \.
-//   _|\_\_|  \__,_|\__|\___/ ____/ 
-//                   Multi-Physics  
+//   _|\_\_|  \__,_|\__|\___/ ____/
+//                   Multi-Physics
 //
-//  License:		 BSD License 
+//  License:		 BSD License
 //					 Kratos default license: kratos/license.txt
 //
 //  Main authors:    Riccardo Rossi
@@ -38,14 +38,14 @@ namespace Kratos
     KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, COMPUTE_STRESS,              1 );
     KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, COMPUTE_CONSTITUTIVE_TENSOR, 2 );
     KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, COMPUTE_STRAIN_ENERGY,       3 );
-      
+
     KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, ISOCHORIC_TENSOR_ONLY,       4 );
     KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, VOLUMETRIC_TENSOR_ONLY,      5 );
-      
+
     KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, TOTAL_TENSOR,                6 );
-      
+
     KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, FINALIZE_MATERIAL_RESPONSE,  7 );
-  
+
 
     /**
      * Flags related to the Features of the Contitutive Law
@@ -70,7 +70,7 @@ namespace Kratos
     {
     }
 
- 
+
     /**
      * Clone function (has to be implemented by any derived class)
      * @return a pointer to a new instance of this constitutive law
@@ -96,7 +96,7 @@ namespace Kratos
      * returns the size of the strain vector of the current constitutive law
      * NOTE: this function HAS TO BE IMPLEMENTED by any derived class
      */
-    ConstitutiveLaw::SizeType ConstitutiveLaw::GetStrainSize()
+    ConstitutiveLaw::SizeType ConstitutiveLaw::GetStrainSize() const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Called the virtual function for GetStrainSize", "");
     }
@@ -376,6 +376,93 @@ namespace Kratos
     }
 
     /**
+     * @brief Calculates the value of a specified variable (bool)
+     * @param rParameterValues the needed parameters for the CL calculation
+     * @param rThisVariable the variable to be returned
+     * @param rValue a reference to the returned value
+     * @param rValue output: the value of the specified variable
+     */
+    bool& ConstitutiveLaw::CalculateValue(Parameters& rParameterValues, const Variable<bool>& rThisVariable, bool& rValue)
+    {
+        return rValue;
+    }
+
+    /**
+     * @brief Calculates the value of a specified variable (int)
+     * @param rParameterValues the needed parameters for the CL calculation
+     * @param rThisVariable the variable to be returned
+     * @param rValue a reference to the returned value
+     * @param rValue output: the value of the specified variable
+     */
+    int& ConstitutiveLaw::CalculateValue(Parameters& rParameterValues, const Variable<int>& rThisVariable, int& rValue)
+    {
+        return rValue;
+    }
+
+    /**
+     * returns the value of a specified variable (double)
+     * @param rParameterValues the needed parameters for the CL calculation
+     * @param rThisVariable the variable to be returned
+     * @param rValue a reference to the returned value
+     * @param rValue output: the value of the specified variable
+     */
+    double& ConstitutiveLaw::CalculateValue(Parameters& rParameterValues, const Variable<double>& rThisVariable, double& rValue)
+    {
+        return rValue;
+    }
+
+    /**
+     * returns the value of a specified variable (Vector)
+     * @param rParameterValues the needed parameters for the CL calculation
+     * @param rThisVariable the variable to be returned
+     * @param rValue a reference to the returned value
+     * @param rValue output: the value of the specified variable
+     */
+    Vector& ConstitutiveLaw::CalculateValue(Parameters& rParameterValues, const Variable<Vector>& rThisVariable, Vector& rValue)
+    {
+        return rValue;
+    }
+
+    /**
+     * returns the value of a specified variable (Matrix)
+     * @param rParameterValues the needed parameters for the CL calculation
+     * @param rThisVariable the variable to be returned
+     * @param rValue a reference to the returned value
+     * @param rValue output: the value of the specified variable
+     */
+    Matrix& ConstitutiveLaw::CalculateValue(Parameters& rParameterValues, const Variable<Matrix>& rThisVariable, Matrix& rValue)
+    {
+        return rValue;
+    }
+
+    /**
+     * returns the value of a specified variable (array of 3 components)
+     * @param rParameterValues the needed parameters for the CL calculation
+     * @param rThisVariable the variable to be returned
+     * @param rValue a reference to the returned value
+     * @param rValue output: the value of the specified variable
+     */
+    array_1d<double, 3 > & ConstitutiveLaw::CalculateValue(Parameters& rParameterValues, const Variable<array_1d<double, 3 > >& rVariable,
+            array_1d<double, 3 > & rValue)
+    {
+        return rValue;
+    }
+
+
+      /**
+     * returns the value of a specified variable (array of 6 components)
+     * @param rParameterValues the needed parameters for the CL calculation
+     * @param rThisVariable the variable to be returned
+     * @param rValue a reference to the returned value
+     * @param rValue output: the value of the specified variable
+     */
+    array_1d<double, 6 > & ConstitutiveLaw::CalculateValue(Parameters& rParameterValues, const Variable<array_1d<double, 6 > >& rVariable,
+            array_1d<double, 6 > & rValue)
+    {
+        return rValue;
+    }
+
+    /**
      * Is called to check whether the provided material parameters in the Properties
      * match the requirements of current constitutive model.
      * @param rMaterialProperties the current Properties to be validated against.
@@ -383,7 +470,7 @@ namespace Kratos
      * NOTE: this has to implemented by each constitutive model. Returns false in base class since
      * no valid implementation is contained here.
      */
-     bool ConstitutiveLaw::ValidateInput(const Properties& rMaterialProperties)
+    bool ConstitutiveLaw::ValidateInput(const Properties& rMaterialProperties)
     {
         return false;
     }
@@ -401,7 +488,7 @@ namespace Kratos
      * returns the stress measure of this constitutive law (by default 1st Piola-Kirchhoff stress in voigt notation)
      * @return the expected stress measure
      */
-     ConstitutiveLaw::StressMeasure ConstitutiveLaw::GetStressMeasure()
+    ConstitutiveLaw::StressMeasure ConstitutiveLaw::GetStressMeasure()
     {
         return StressMeasure_PK1;
     }
@@ -411,7 +498,7 @@ namespace Kratos
      * NOTE: by default, all constitutive models should be formulated in total strains
      * @return true, if formulated in incremental strains/stresses, false otherwise
      */
-     bool ConstitutiveLaw::IsIncremental()
+    bool ConstitutiveLaw::IsIncremental()
     {
         return false;
     }
@@ -424,7 +511,7 @@ namespace Kratos
      * @param rElementGeometry the geometry of the current element
      * @param rShapeFunctionsValues the shape functions values in the current integration point
      */
-     void ConstitutiveLaw::InitializeMaterial(const Properties& rMaterialProperties,
+    void ConstitutiveLaw::InitializeMaterial(const Properties& rMaterialProperties,
                                     const GeometryType& rElementGeometry,
                                     const Vector& rShapeFunctionsValues)
     {
@@ -506,16 +593,16 @@ namespace Kratos
 	{
 	case StressMeasure_PK1:         CalculateMaterialResponsePK1(rValues);
 	  break;
-      
+
 	case StressMeasure_PK2:         CalculateMaterialResponsePK2(rValues);
 	  break;
-	  
+
 	case StressMeasure_Kirchhoff: 	CalculateMaterialResponseKirchhoff(rValues);
 	  break;
 
 	case StressMeasure_Cauchy:	CalculateMaterialResponseCauchy(rValues);
 	  break;
-	  
+
 	default:
 	  KRATOS_THROW_ERROR(std::logic_error, " Stress Measure not Defined ", "");
 	  break;
@@ -565,7 +652,7 @@ namespace Kratos
     }
 
 
-    
+
     /**
      * Updates the material response,  called by the element in FinalizeSolutionStep.
      * @see Parameters
@@ -578,16 +665,16 @@ namespace Kratos
 	{
 	case StressMeasure_PK1:         FinalizeMaterialResponsePK1(rValues);
 	  break;
-      
+
 	case StressMeasure_PK2:         FinalizeMaterialResponsePK2(rValues);
 	  break;
-	  
+
 	case StressMeasure_Kirchhoff: 	FinalizeMaterialResponseKirchhoff(rValues);
 	  break;
 
 	case StressMeasure_Cauchy:	FinalizeMaterialResponseCauchy(rValues);
 	  break;
-	  
+
 	default:
 	  KRATOS_THROW_ERROR(std::logic_error, " Stress Measure not Defined ", "");
 	  break;
@@ -689,20 +776,20 @@ namespace Kratos
 
       switch(rStrainInitial)
 	{
-        case StrainMeasure_GreenLagrange:         
+        case StrainMeasure_GreenLagrange:
 
 	  switch(rStrainFinal)
 	    {
-	    case StrainMeasure_GreenLagrange:         
+	    case StrainMeasure_GreenLagrange:
 	      break;
-	      
+
 	    case StrainMeasure_Almansi:
 	      {
-	      Matrix StrainMatrix = MathUtils<double>::StrainVectorToTensor( rStrainVector ); 
-	      
+	      Matrix StrainMatrix = MathUtils<double>::StrainVectorToTensor( rStrainVector );
+
 	      CoVariantPushForward (StrainMatrix,rF);  //Almansi
 
-	      rStrainVector = MathUtils<double>::StrainTensorToVector( StrainMatrix , rStrainVector.size() ); 
+	      rStrainVector = MathUtils<double>::StrainTensorToVector( StrainMatrix , rStrainVector.size() );
 	      }
 	      break;
 
@@ -713,31 +800,31 @@ namespace Kratos
 	    case StrainMeasure_Hencky_Spatial:
 	      KRATOS_THROW_ERROR(std::logic_error,"Hencky strain has no transformation coded", "");
 	      break;
-	      	      
+
 	    default:
 	      KRATOS_THROW_ERROR(std::logic_error,"FINAL STRAIN NOT DEFINED in StrainTransformation", "");
 	      break;
 	    }
-	  
+
 	  break;
 
-	case StrainMeasure_Almansi: 
+	case StrainMeasure_Almansi:
 
 	  switch(rStrainFinal)
 	    {
-	    case StrainMeasure_GreenLagrange:        
+	    case StrainMeasure_GreenLagrange:
 	      {
-	      Matrix StrainMatrix = MathUtils<double>::StrainVectorToTensor( rStrainVector ); 
-	      
+	      Matrix StrainMatrix = MathUtils<double>::StrainVectorToTensor( rStrainVector );
+
 	      CoVariantPullBack (StrainMatrix,rF);  //GreenLagrange
 
-	      rStrainVector = MathUtils<double>::StrainTensorToVector( StrainMatrix , rStrainVector.size() ); 
+	      rStrainVector = MathUtils<double>::StrainTensorToVector( StrainMatrix , rStrainVector.size() );
 	      }
 	      break;
-	      
+
 	    case StrainMeasure_Almansi:
 	      break;
-	      
+
 	    case StrainMeasure_Hencky_Material:
     	      KRATOS_THROW_ERROR(std::logic_error,"Hencky strain has no transformation coded", "");
 	      break;
@@ -777,7 +864,7 @@ namespace Kratos
      * @param rStressMatrix the stress tensor in matrix which its stress measure will be changed
      * @param rF the DeformationGradientF matrix between the configurations
      * @param rdetF the determinant of the DeformationGradientF matrix between the configurations
-     * @param rStressInitial the measure of stress of the given  rStressMatrix 
+     * @param rStressInitial the measure of stress of the given  rStressMatrix
      * @param rStressFinal the measure of stress of the returned rStressMatrix
      */
      Matrix& ConstitutiveLaw::TransformStresses (Matrix& rStressMatrix,
@@ -793,7 +880,7 @@ namespace Kratos
       StressVector=TransformStresses(StressVector,rF,rdetF,rStressInitial,rStressFinal);
 
       rStressMatrix = MathUtils<double>::StressVectorToTensor( StressVector );
-      
+
       return rStressMatrix;
     }
 
@@ -812,21 +899,21 @@ namespace Kratos
 						 StressMeasure rStressInitial,
 						 StressMeasure rStressFinal)
     {
-      
+
       switch(rStressInitial)
 	{
-        case StressMeasure_PK1:         
+        case StressMeasure_PK1:
 
 	  TransformPK1Stresses(rStressVector,rF,rdetF,rStressFinal);
-	  
+
 	  break;
 
-	case StressMeasure_PK2: 
+	case StressMeasure_PK2:
 
 	  TransformPK2Stresses(rStressVector,rF,rdetF,rStressFinal);
 
 	  break;
-	  
+
 	case StressMeasure_Kirchhoff:
 
 	  TransformKirchhoffStresses(rStressVector,rF,rdetF,rStressFinal);
@@ -838,7 +925,7 @@ namespace Kratos
 	  TransformCauchyStresses(rStressVector,rF,rdetF,rStressFinal);
 
 	  break;
-	  
+
 	default:
 	  KRATOS_THROW_ERROR(std::logic_error,"INITIAL STRESS NOT DEFINED in StressTransformation", "");
 	  break;
@@ -866,29 +953,29 @@ namespace Kratos
 
        switch(rStressFinal)
 	 {
-	 case StressMeasure_PK1:         
+	 case StressMeasure_PK1:
 	   break;
-	      
+
 	 case StressMeasure_PK2:
 	   {
 	   Matrix StressMatrix = MathUtils<double>::StressVectorToTensor( rStressVector );
 	   Matrix InvF ( size , size );
 	   double J;
 	   MathUtils<double>::InvertMatrix( rF, InvF , J );
-	      
+
 	   StressMatrix = prod( InvF, StressMatrix ); //PK2
 
-	   rStressVector = MathUtils<double>::StressTensorToVector( StressMatrix, rStressVector.size() ); 
+	   rStressVector = MathUtils<double>::StressTensorToVector( StressMatrix, rStressVector.size() );
 	   }
 	   break;
-	      
+
 	 case StressMeasure_Kirchhoff:
 	   {
 	   Matrix StressMatrix = MathUtils<double>::StressVectorToTensor( rStressVector );
 	   Matrix InvF ( size , size );
 	   double J;
 	   MathUtils<double>::InvertMatrix( rF, InvF , J );
-	      
+
 	   StressMatrix = prod( InvF, StressMatrix ); //PK2
 
 	   ContraVariantPushForward (StressMatrix,rF); //Kirchhoff
@@ -896,24 +983,24 @@ namespace Kratos
 	   rStressVector = MathUtils<double>::StressTensorToVector( StressMatrix , rStressVector.size() );
 	   }
 	   break;
-	      
+
 	 case StressMeasure_Cauchy:
 	   {
 	   Matrix StressMatrix = MathUtils<double>::StressVectorToTensor( rStressVector );
 	   Matrix InvF ( size , size );
 	   double J;
 	   MathUtils<double>::InvertMatrix( rF, InvF , J );
-	      
+
 	   StressMatrix = prod( InvF, StressMatrix ); //PK2
 
 	   ContraVariantPushForward (StressMatrix,rF); //Kirchhoff
 
 	   StressMatrix/=J; //Cauchy
-	      
-	   rStressVector = MathUtils<double>::StressTensorToVector( StressMatrix, rStressVector.size() ); 
+
+	   rStressVector = MathUtils<double>::StressTensorToVector( StressMatrix, rStressVector.size() );
 	   }
 	   break;
-	      
+
 	 default:
 	   KRATOS_THROW_ERROR(std::logic_error,"FINAL STRESS NOT DEFINED in StressTransformation", "");
 	   break;
@@ -939,44 +1026,44 @@ namespace Kratos
 
        switch(rStressFinal)
 	 {
-	 case StressMeasure_PK1:        
+	 case StressMeasure_PK1:
 	   {
 	   Matrix StressMatrix = MathUtils<double>::StressVectorToTensor( rStressVector );
 
 	   StressMatrix = prod( rF, StressMatrix ); //PK1
 
-	   rStressVector = MathUtils<double>::StressTensorToVector( StressMatrix , rStressVector.size() ); 
+	   rStressVector = MathUtils<double>::StressTensorToVector( StressMatrix , rStressVector.size() );
 	   }
 	   break;
-	      
+
 	 case StressMeasure_PK2:
 	   break;
-	      
+
 	 case StressMeasure_Kirchhoff:
 	   {
 	   Matrix StressMatrix = MathUtils<double>::StressVectorToTensor( rStressVector );
 
 	   ContraVariantPushForward (StressMatrix,rF); //Kirchhoff
 
-	   rStressVector = MathUtils<double>::StressTensorToVector( StressMatrix , rStressVector.size() ); 
+	   rStressVector = MathUtils<double>::StressTensorToVector( StressMatrix , rStressVector.size() );
 	   }
 	   break;
-	      
+
 	 case StressMeasure_Cauchy:
 	   {
-	     
+
 	   Matrix StressMatrix = MathUtils<double>::StressVectorToTensor( rStressVector );
-     
+
 	   ContraVariantPushForward (StressMatrix,rF); //Kirchhoff
 
 	   if(rdetF!=0)
 	     StressMatrix/=rdetF; //Cauchy
-	      
-	   rStressVector = MathUtils<double>::StressTensorToVector( StressMatrix , rStressVector.size() ); 
+
+	   rStressVector = MathUtils<double>::StressTensorToVector( StressMatrix , rStressVector.size() );
 
 	   }
 	   break;
-	      
+
 	 default:
 	   KRATOS_THROW_ERROR(std::logic_error,"FINAL STRESS NOT DEFINED in StressTransformation", "");
 	   break;
@@ -1001,7 +1088,7 @@ namespace Kratos
 
 	switch(rStressFinal)
 	  {
-	  case StressMeasure_PK1:        
+	  case StressMeasure_PK1:
 	    {
 	    Matrix StressMatrix = MathUtils<double>::StressVectorToTensor( rStressVector );
 
@@ -1009,30 +1096,30 @@ namespace Kratos
 
 	    StressMatrix = prod( rF, StressMatrix ); //PK1
 
-	    rStressVector = MathUtils<double>::StressTensorToVector( StressMatrix , rStressVector.size() ); 
+	    rStressVector = MathUtils<double>::StressTensorToVector( StressMatrix , rStressVector.size() );
 	    }
 	    break;
-	      
+
 	  case StressMeasure_PK2:
 	    {
 	    Matrix StressMatrix = MathUtils<double>::StressVectorToTensor( rStressVector );
 
 	    ContraVariantPullBack (StressMatrix,rF);  //PK2
 
-	    rStressVector = MathUtils<double>::StressTensorToVector( StressMatrix , rStressVector.size() ); 
+	    rStressVector = MathUtils<double>::StressTensorToVector( StressMatrix , rStressVector.size() );
 	    }
 	    break;
-	      
+
 	  case StressMeasure_Kirchhoff:
 	    break;
-	      
+
 	  case StressMeasure_Cauchy:
 	    {
 	    if(rdetF!=0)
 	      rStressVector/=rdetF; //Cauchy
 	    }
 	    break;
-	      
+
 	  default:
 	    KRATOS_THROW_ERROR(std::logic_error,"FINAL STRESS NOT DEFINED in StressTransformation", "");
 	    break;
@@ -1057,7 +1144,7 @@ namespace Kratos
 
 	switch(rStressFinal)
 	  {
-	  case StressMeasure_PK1:        
+	  case StressMeasure_PK1:
 	    {
 	    rStressVector*=rdetF; //Kirchhoff
 
@@ -1066,11 +1153,11 @@ namespace Kratos
 	    ContraVariantPullBack (StressMatrix,rF);  //PK2
 
 	    StressMatrix = prod( rF, StressMatrix ); //PK1
-	      
-	    rStressVector = MathUtils<double>::StressTensorToVector( StressMatrix , rStressVector.size() ); 
+
+	    rStressVector = MathUtils<double>::StressTensorToVector( StressMatrix , rStressVector.size() );
 	    }
 	    break;
-	      
+
 	  case StressMeasure_PK2:
 	    {
 	    rStressVector*=rdetF; //Kirchhoff
@@ -1079,19 +1166,19 @@ namespace Kratos
 
 	    ContraVariantPullBack (StressMatrix,rF);  //PK2
 
-	    rStressVector = MathUtils<double>::StressTensorToVector( StressMatrix , rStressVector.size() ); 
+	    rStressVector = MathUtils<double>::StressTensorToVector( StressMatrix , rStressVector.size() );
 	    }
 	    break;
-	      
+
 	  case StressMeasure_Kirchhoff:
 
 	    rStressVector*=rdetF; //Kirchhoff
 
 	    break;
-	      
+
 	  case StressMeasure_Cauchy:
 	    break;
-	      
+
 	  default:
 	    KRATOS_THROW_ERROR(std::logic_error,"FINAL STRESS NOT DEFINED in StressTransformation", "");
 	    break;
@@ -1104,7 +1191,7 @@ namespace Kratos
 
     /**
      * Methods to transform Constitutive Matrices:
-     * @param rConstitutiveMatrix the constitutive matrix 
+     * @param rConstitutiveMatrix the constitutive matrix
      * @param rF the DeformationGradientF matrix between the configurations
      */
 
@@ -1117,7 +1204,7 @@ namespace Kratos
       Matrix OriginalConstitutiveMatrix = rConstitutiveMatrix;
 
       rConstitutiveMatrix.clear();
-    
+
       Matrix InverseF ( 3, 3 );
       double detF = 0;
       MathUtils<double>::InvertMatrix( rF, InverseF, detF);
@@ -1135,7 +1222,7 @@ namespace Kratos
       Matrix OriginalConstitutiveMatrix = rConstitutiveMatrix;
 
       rConstitutiveMatrix.clear();
-    
+
       ConstitutiveMatrixTransformation( rConstitutiveMatrix, OriginalConstitutiveMatrix , rF );
     }
 
@@ -1182,10 +1269,10 @@ namespace Kratos
     {
       unsigned int size = rF.size1(); //WorkingSpaceDimension();
       Matrix temp ( size , size );
-      
+
       noalias( temp )     = prod( rF, rMatrix );
       noalias( rMatrix )  = prod( temp, trans( rF ) );
-	
+
     }
 
     /**
@@ -1200,18 +1287,18 @@ namespace Kratos
       Matrix InvF ( size , size );
       double J;
       MathUtils<double>::InvertMatrix( rF, InvF , J );
-    
+
       Matrix temp ( size , size );
 
       noalias( temp )    = prod( InvF, rMatrix );
-      noalias( rMatrix ) = prod( temp, trans( InvF ) );     
+      noalias( rMatrix ) = prod( temp, trans( InvF ) );
     }
-     
+
     /**
      * This method performs a co-variant push-forward between to tensors
      * i.e. Green-Lagrange strain to Almansi strain
-     */       
-      
+     */
+
     void ConstitutiveLaw::CoVariantPushForward( Matrix& rMatrix,
 			       const Matrix& rF)      //i.e. Green-Lagrange strain to Almansi strain
     {
@@ -1219,9 +1306,9 @@ namespace Kratos
       Matrix InvF ( size , size );
       double J;
       MathUtils<double>::InvertMatrix( rF, InvF , J );
-      
+
       Matrix temp ( size , size );
-      
+
       noalias( temp )     = prod( trans( InvF ), rMatrix );
       noalias( rMatrix )  = prod( temp, InvF );
     }
@@ -1234,13 +1321,13 @@ namespace Kratos
     void ConstitutiveLaw::CoVariantPullBack( Matrix& rMatrix,
 			    const Matrix& rF)         //i.e. Almansi strain to Green-Lagrange strain
     {
-      
+
       unsigned int size = rF.size1(); //WorkingSpaceDimension();
       Matrix temp ( size , size );
-      
+
       noalias( temp )     = prod( trans( rF ), rMatrix );
       noalias( rMatrix )  = prod( temp, rF );
-      
+
     }
 
 
@@ -1253,7 +1340,7 @@ namespace Kratos
     {
       unsigned int size = rOriginalConstitutiveMatrix.size1();
       if(  size == 6 ){
-            
+
 	for(unsigned int i=0; i<6; i++)
 	  {
 	    for(unsigned int j=0; j<6; j++)
@@ -1304,7 +1391,7 @@ namespace Kratos
 							   const Matrix & rF,
 							   const unsigned int& a, const unsigned int& b,
 							   const unsigned int& c, const unsigned int& d)
-      
+
     {
 
       rCabcd = 0;
@@ -1334,7 +1421,7 @@ namespace Kratos
 
 
     /**
-     * This method gets the constitutive tensor components 
+     * This method gets the constitutive tensor components
      * from a consitutive matrix supplied in voigt notation
      */
     double& ConstitutiveLaw::GetConstitutiveComponent(double & rCabcd,
@@ -1344,7 +1431,7 @@ namespace Kratos
     {
       // matrix indices
       unsigned int k=0, l= 0;
- 
+
       unsigned int size = rConstitutiveMatrix.size1();
 
       if( size == 3 ){
@@ -1359,7 +1446,7 @@ namespace Kratos
 	      }
 	    }
 	    else{
-	      if( (this->msIndexVoigt2D3C[i][0] == a && this->msIndexVoigt2D3C[i][1] == b) || 
+	      if( (this->msIndexVoigt2D3C[i][0] == a && this->msIndexVoigt2D3C[i][1] == b) ||
 		  (this->msIndexVoigt2D3C[i][1] == a && this->msIndexVoigt2D3C[i][0] == b) ){
 		k = i;
 		break;
@@ -1377,7 +1464,7 @@ namespace Kratos
 	      }
 	    }
 	    else{
-	      if( (this->msIndexVoigt2D3C[i][0] == c && this->msIndexVoigt2D3C[i][1] == d) || 
+	      if( (this->msIndexVoigt2D3C[i][0] == c && this->msIndexVoigt2D3C[i][1] == d) ||
 		  (this->msIndexVoigt2D3C[i][1] == c && this->msIndexVoigt2D3C[i][0] == d) ){
 		l = i;
 		break;
@@ -1399,7 +1486,7 @@ namespace Kratos
 	      }
 	    }
 	    else{
-	      if( (this->msIndexVoigt2D4C[i][0] == a && this->msIndexVoigt2D4C[i][1] == b) || 
+	      if( (this->msIndexVoigt2D4C[i][0] == a && this->msIndexVoigt2D4C[i][1] == b) ||
 		  (this->msIndexVoigt2D4C[i][1] == a && this->msIndexVoigt2D4C[i][0] == b) ){
 		k = i;
 		break;
@@ -1417,7 +1504,7 @@ namespace Kratos
 	      }
 	    }
 	    else{
-	      if( (this->msIndexVoigt2D4C[i][0] == c && this->msIndexVoigt2D4C[i][1] == d) || 
+	      if( (this->msIndexVoigt2D4C[i][0] == c && this->msIndexVoigt2D4C[i][1] == d) ||
 		  (this->msIndexVoigt2D4C[i][1] == c && this->msIndexVoigt2D4C[i][0] == d) ){
 		l = i;
 		break;
@@ -1438,7 +1525,7 @@ namespace Kratos
 	      }
 	    }
 	    else{
-	      if( (this->msIndexVoigt3D6C[i][0] == a && this->msIndexVoigt3D6C[i][1] == b) || 
+	      if( (this->msIndexVoigt3D6C[i][0] == a && this->msIndexVoigt3D6C[i][1] == b) ||
 		  (this->msIndexVoigt3D6C[i][1] == a && this->msIndexVoigt3D6C[i][0] == b) ){
 		k = i;
 		break;
@@ -1456,7 +1543,7 @@ namespace Kratos
 	      }
 	    }
 	    else{
-	      if( (this->msIndexVoigt3D6C[i][0] == c && this->msIndexVoigt3D6C[i][1] == d) || 
+	      if( (this->msIndexVoigt3D6C[i][0] == c && this->msIndexVoigt3D6C[i][1] == d) ||
 		  (this->msIndexVoigt3D6C[i][1] == c && this->msIndexVoigt3D6C[i][0] == d) ){
 		l = i;
 		break;
@@ -1464,9 +1551,9 @@ namespace Kratos
 	    }
 	  }
       }
-    
+
       rCabcd = rConstitutiveMatrix(k,l);
-    
+
       return rCabcd;
     }
 
