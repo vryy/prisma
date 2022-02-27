@@ -169,13 +169,13 @@ public:
     Performing the update of the solution.
     */
     //***************************************************************************
-    virtual void Update(
+    void Update(
         ModelPart& r_model_part,
         DofsArrayType& rDofSet,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
         TSystemVectorType& b
-    )
+    ) final
     {
         KRATOS_TRY
 
@@ -196,12 +196,12 @@ public:
     - managing variables to be kept constant over the time step
     (for example time-Scheme constants depending on the actual time step)
      */
-    virtual void InitializeSolutionStep(
+    void InitializeSolutionStep(
         ModelPart& r_model_part,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
         TSystemVectorType& b
-    )
+    ) final
     {
         KRATOS_TRY
         //initialize solution step for all of the elements
@@ -240,11 +240,12 @@ public:
       take care: the elemental function with the same name is NOT called here.
       The function is called in the builder for memory efficiency
      */
-    virtual void InitializeNonLinIteration(
+    void InitializeNonLinIteration(
         ModelPart& r_model_part,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
-        TSystemVectorType& b)
+        TSystemVectorType& b
+    ) final
     {
         KRATOS_TRY
         ElementsArrayType& pElements = r_model_part.Elements();
@@ -280,11 +281,12 @@ public:
     function to be called when it is needed to finalize an iteration.
     it is designed to be called at the end of each non linear iteration
      */
-    virtual void FinalizeNonLinIteration(
+    void FinalizeNonLinIteration(
         ModelPart& r_model_part,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
-        TSystemVectorType& b)
+        TSystemVectorType& b
+    ) final
     {
         KRATOS_TRY
 
@@ -321,11 +323,12 @@ public:
     function called once at the end of a solution step, after convergence is reached if
     an iterative process is needed
      */
-    virtual void FinalizeSolutionStep(
+    void FinalizeSolutionStep(
         ModelPart& rModelPart,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
-        TSystemVectorType& b)
+        TSystemVectorType& b
+    ) final
     {
         KRATOS_TRY
         //finalizes solution step for all of the elements
@@ -389,18 +392,18 @@ public:
     this function calculates at the same time the contribution to the LHS and to the RHS
     of the system
     */
-    virtual void CalculateSystemContributions(
-        Element::Pointer rCurrentElement,
+    void CalculateSystemContributions(
+        Element& rCurrentElement,
         LocalSystemMatrixType& LHS_Contribution,
         LocalSystemVectorType& RHS_Contribution,
         Element::EquationIdVectorType& EquationId,
-        ProcessInfo& CurrentProcessInfo
-    )
+        const ProcessInfo& CurrentProcessInfo
+    ) final
     {
         KRATOS_TRY
 
-        (rCurrentElement)->CalculateLocalSystem(LHS_Contribution,RHS_Contribution,CurrentProcessInfo);
-        (rCurrentElement)->EquationIdVector(EquationId,CurrentProcessInfo);
+        rCurrentElement.CalculateLocalSystem(LHS_Contribution,RHS_Contribution,CurrentProcessInfo);
+        rCurrentElement.EquationIdVector(EquationId,CurrentProcessInfo);
 
         KRATOS_CATCH("")
     }
@@ -408,32 +411,34 @@ public:
 
     //***************************************************************************
     //***************************************************************************
-    virtual void Calculate_RHS_Contribution(
-        Element::Pointer rCurrentElement,
+    void CalculateRHSContribution(
+        Element& rCurrentElement,
         LocalSystemVectorType& RHS_Contribution,
         Element::EquationIdVectorType& EquationId,
-        ProcessInfo& CurrentProcessInfo)
+        const ProcessInfo& CurrentProcessInfo
+    ) final
     {
         KRATOS_TRY
 
-        (rCurrentElement)->CalculateRightHandSide(RHS_Contribution,CurrentProcessInfo);
-        (rCurrentElement)->EquationIdVector(EquationId,CurrentProcessInfo);
+        rCurrentElement.CalculateRightHandSide(RHS_Contribution,CurrentProcessInfo);
+        rCurrentElement.EquationIdVector(EquationId,CurrentProcessInfo);
 
         KRATOS_CATCH("")
     }
 
     //***************************************************************************
     //***************************************************************************
-    virtual void Calculate_LHS_Contribution(
-        Element::Pointer rCurrentElement,
+    void CalculateLHSContribution(
+        Element& rCurrentElement,
         LocalSystemMatrixType& LHS_Contribution,
         Element::EquationIdVectorType& EquationId,
-        ProcessInfo& CurrentProcessInfo)
+        const ProcessInfo& CurrentProcessInfo
+    ) final
     {
         KRATOS_TRY
 
-        (rCurrentElement)->CalculateLeftHandSide(LHS_Contribution,CurrentProcessInfo);
-        (rCurrentElement)->EquationIdVector(EquationId,CurrentProcessInfo);
+        rCurrentElement.CalculateLeftHandSide(LHS_Contribution,CurrentProcessInfo);
+        rCurrentElement.EquationIdVector(EquationId,CurrentProcessInfo);
 
         KRATOS_CATCH("")
     }
@@ -442,31 +447,33 @@ public:
     /** functions totally analogous to the precedent but applied to
     the "condition" objects
     */
-    virtual void Condition_CalculateSystemContributions(
-        Condition::Pointer rCurrentCondition,
+    void CalculateSystemContributions(
+        Condition& rCurrentCondition,
         LocalSystemMatrixType& LHS_Contribution,
         LocalSystemVectorType& RHS_Contribution,
         Element::EquationIdVectorType& EquationId,
-        ProcessInfo& CurrentProcessInfo)
+        const ProcessInfo& CurrentProcessInfo
+    ) final
     {
         KRATOS_TRY
 
-        (rCurrentCondition)->CalculateLocalSystem(LHS_Contribution,RHS_Contribution,CurrentProcessInfo);
-        (rCurrentCondition)->EquationIdVector(EquationId,CurrentProcessInfo);
+        rCurrentCondition.CalculateLocalSystem(LHS_Contribution,RHS_Contribution,CurrentProcessInfo);
+        rCurrentCondition.EquationIdVector(EquationId,CurrentProcessInfo);
 
         KRATOS_CATCH("")
     }
 
-    virtual void Condition_Calculate_RHS_Contribution(
-        Condition::Pointer rCurrentCondition,
+    void CalculateRHSContribution(
+        Condition& rCurrentCondition,
         LocalSystemVectorType& RHS_Contribution,
         Element::EquationIdVectorType& EquationId,
-        ProcessInfo& CurrentProcessInfo)
+        const ProcessInfo& CurrentProcessInfo
+    ) final
     {
         KRATOS_TRY
 
-        (rCurrentCondition)->CalculateRightHandSide(RHS_Contribution,CurrentProcessInfo);
-        (rCurrentCondition)->EquationIdVector(EquationId,CurrentProcessInfo);
+        rCurrentCondition.CalculateRightHandSide(RHS_Contribution,CurrentProcessInfo);
+        rCurrentCondition.EquationIdVector(EquationId,CurrentProcessInfo);
 
         KRATOS_CATCH("")
     }
