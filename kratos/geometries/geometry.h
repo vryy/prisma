@@ -698,38 +698,57 @@ public:
     virtual CoordinatesArrayType& PointLocalCoordinates( CoordinatesArrayType& rResult,
             const CoordinatesArrayType& rPoint ) const
     {
+        if (this->WorkingSpaceDimension() != this->LocalSpaceDimension())
+            KRATOS_THROW_ERROR(std::logic_error, "Attention, the Point Local Coordinates must be specialized for the current geometry", "");
+
         Matrix J = ZeroMatrix( LocalSpaceDimension(), LocalSpaceDimension() );
 
-        if ( rResult.size() != LocalSpaceDimension() )
-            rResult.resize( LocalSpaceDimension(), false );
-
         //starting with xi = 0
-        rResult = ZeroVector( LocalSpaceDimension() );
+        rResult.clear();
 
         Vector DeltaXi = ZeroVector( LocalSpaceDimension() );
 
         CoordinatesArrayType CurrentGlobalCoords( ZeroVector( 3 ) );
 
         //Newton iteration:
-        double tol = 1.0e-8;
+        constexpr double tol = 1.0e-8;
 
-        int maxiter = 1000;
+        constexpr int maxiter = 1000;
+
+        constexpr double max_norm_xi = 30.0;
+
+        double norm_dxi;
 
         for ( int k = 0; k < maxiter; k++ )
         {
-            CurrentGlobalCoords = ZeroVector( 3 );
+            CurrentGlobalCoords.clear();
+            DeltaXi.clear();
             GlobalCoordinates( CurrentGlobalCoords, rResult );
             noalias( CurrentGlobalCoords ) = rPoint - CurrentGlobalCoords;
             InverseOfJacobian( J, rResult );
-            noalias( DeltaXi ) = prod( J, CurrentGlobalCoords );
-            noalias( rResult ) += DeltaXi;
-
-            if ( MathUtils<double>::Norm3( DeltaXi ) > 30 )
+            for(unsigned int i = 0; i < LocalSpaceDimension(); i++)
             {
+                for(unsigned int j = 0; j < LocalSpaceDimension(); j++)
+                {
+                    DeltaXi[i] += J(i,j)*CurrentGlobalCoords[j];
+                }
+                rResult[i] += DeltaXi[i];
+            }
+
+            norm_dxi = norm_2(DeltaXi);
+
+            if ( norm_dxi > max_norm_xi )
+            {
+                KRATOS_WATCH(rPoint)
+                KRATOS_WATCH(rResult)
+                KRATOS_WATCH(CurrentGlobalCoords)
+                KRATOS_WATCH(DeltaXi)
+                KRATOS_WATCH(J)
+                KRATOS_THROW_ERROR(std::logic_error, "Computation of point local coordinates fails at step", k)
                 break;
             }
 
-            if ( MathUtils<double>::Norm3( DeltaXi ) < tol )
+            if ( norm_dxi < tol )
             {
                 break;
             }
@@ -744,38 +763,57 @@ public:
     virtual CoordinatesArrayType& PointLocalCoordinates( CoordinatesArrayType& rResult,
             const CoordinatesArrayType& rPoint, Matrix& DeltaPosition ) const
     {
+        if (this->WorkingSpaceDimension() != this->LocalSpaceDimension())
+            KRATOS_THROW_ERROR(std::logic_error, "Attention, the Point Local Coordinates must be specialized for the current geometry", "");
+
         Matrix J = ZeroMatrix( LocalSpaceDimension(), LocalSpaceDimension() );
 
-        if ( rResult.size() != LocalSpaceDimension() )
-            rResult.resize( LocalSpaceDimension(), false );
-
         //starting with xi = 0
-        rResult = ZeroVector( LocalSpaceDimension() );
+        rResult.clear();
 
         Vector DeltaXi = ZeroVector( LocalSpaceDimension() );
 
         CoordinatesArrayType CurrentGlobalCoords( ZeroVector( 3 ) );
 
         //Newton iteration:
-        double tol = 1.0e-8;
+        constexpr double tol = 1.0e-8;
 
-        int maxiter = 1000;
+        constexpr int maxiter = 1000;
+
+        constexpr double max_norm_xi = 30.0;
+
+        double norm_dxi;
 
         for ( int k = 0; k < maxiter; k++ )
         {
-            CurrentGlobalCoords = ZeroVector( 3 );
+            CurrentGlobalCoords.clear();
+            DeltaXi.clear();
             GlobalCoordinates( CurrentGlobalCoords, rResult, DeltaPosition );
             noalias( CurrentGlobalCoords ) = rPoint - CurrentGlobalCoords;
             InverseOfJacobian( J, rResult, DeltaPosition );
-            noalias( DeltaXi ) = prod( J, CurrentGlobalCoords );
-            noalias( rResult ) += DeltaXi;
-
-            if ( MathUtils<double>::Norm3( DeltaXi ) > 30 )
+            for(unsigned int i = 0; i < LocalSpaceDimension(); i++)
             {
+                for(unsigned int j = 0; j < LocalSpaceDimension(); j++)
+                {
+                    DeltaXi[i] += J(i,j)*CurrentGlobalCoords[j];
+                }
+                rResult[i] += DeltaXi[i];
+            }
+
+            norm_dxi = norm_2(DeltaXi);
+
+            if ( norm_dxi > max_norm_xi )
+            {
+                KRATOS_WATCH(rPoint)
+                KRATOS_WATCH(rResult)
+                KRATOS_WATCH(CurrentGlobalCoords)
+                KRATOS_WATCH(DeltaXi)
+                KRATOS_WATCH(J)
+                KRATOS_THROW_ERROR(std::logic_error, "Computation of point local coordinates fails at step", k)
                 break;
             }
 
-            if ( MathUtils<double>::Norm3( DeltaXi ) < tol )
+            if ( norm_dxi < tol )
             {
                 break;
             }

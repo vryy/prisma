@@ -734,6 +734,20 @@ public:
         return rResult;
     }
 
+    /**
+     * returns the local coordinates of all nodes of the current geometry
+     * @param rResult a Matrix object that will be overwritten by the result
+     * @return the local coordinates of all nodes
+     */
+    Matrix& PointsLocalCoordinates( Matrix& rResult ) const override
+    {
+        if (rResult.size1() != 2 || rResult.size2() != 1)
+            rResult.resize( 2, 1, false );
+        rResult( 0, 0 ) = -1.0;
+        rResult( 1, 0 ) =  1.0;
+        return rResult;
+    }
+
     /** Turn back information as a string.
 
     @return String contains information about this geometry.

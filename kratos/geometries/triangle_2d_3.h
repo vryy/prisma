@@ -340,7 +340,8 @@ public:
      */
     Matrix& PointsLocalCoordinates( Matrix& rResult ) const override
     {
-        rResult = ZeroMatrix( 3, 2 );
+        if (rResult.size1() != 3 || rResult.size2() != 2)
+            rResult.resize( 3, 2, false );
         rResult( 0, 0 ) =  0.0;
         rResult( 0, 1 ) =  0.0;
         rResult( 1, 0 ) =  1.0;

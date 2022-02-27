@@ -196,6 +196,7 @@ public:
     {
         return GeometryData::Kratos_Point;
     }
+
     GeometryData::KratosGeometryType GetGeometryType() const final
     {
         return GeometryData::Kratos_Point2D;
@@ -249,7 +250,7 @@ public:
         return typename BaseType::Pointer(new Point2D(ThisPoints));
     }
 
-    virtual Geometry< Point<3> >::Pointer Clone() const
+    Geometry< Point<3> >::Pointer Clone() const override
     {
         Geometry< Point<3> >::PointsArrayType NewPoints;
 
@@ -285,7 +286,7 @@ public:
     @see Volume()
     @see DomainSize()
     */
-    virtual double Length() const
+    double Length() const override
     {
         return 0.00;
     }
@@ -301,7 +302,7 @@ public:
     @see Volume()
     @see DomainSize()
     */
-    virtual double Area() const
+    double Area() const override
     {
         return 0.00;
     }
@@ -317,7 +318,7 @@ public:
     @see Area()
     @see Volume()
     */
-    virtual double DomainSize() const
+    double DomainSize() const override
     {
         return 0.00;
     }
@@ -499,7 +500,7 @@ public:
     /** EdgesNumber
     @return SizeType containes number of this geometry edges.
     */
-    virtual SizeType EdgesNumber() const
+    SizeType EdgesNumber() const override
     {
         return 1;
     }
@@ -508,13 +509,10 @@ public:
     ///@name Shape Function
     ///@{
 
-    //  virtual double ShapeFunctionValue(IndexType ShapeFunctionIndex,
-    //                                        const CoordinatesArrayType& rPoint) const
-    // {
-    //	    KRATOS_THROW_ERROR(std::logic_error,
-    //  "This method is not implemented yet!" , *this);
-    //   return 0;
-    //      }
+    double ShapeFunctionValue(IndexType ShapeFunctionIndex, const CoordinatesArrayType& rPoint) const override
+    {
+        return 1.0;
+    }
 
 
 
@@ -534,7 +532,7 @@ public:
     @see PrintData()
     @see PrintInfo()
     */
-    virtual std::string Info() const
+    std::string Info() const override
     {
         return "a point load in 2D space";
     }
@@ -545,7 +543,7 @@ public:
     @see PrintData()
     @see Info()
     */
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << "a point load in 2D space";
     }
@@ -558,7 +556,7 @@ public:
     @see PrintInfo()
     @see Info()
     */
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
         rOStream << "a point load in 2D space";
     }

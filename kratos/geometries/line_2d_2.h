@@ -813,8 +813,8 @@ public:
      */
     Matrix& PointsLocalCoordinates( Matrix& rResult ) const override
     {
-        rResult.resize( 2, 1 );
-        noalias( rResult ) = ZeroMatrix( 2, 1 );
+        if (rResult.size1() != 2 || rResult.size2() != 1)
+            rResult.resize( 2, 1, false );
         rResult( 0, 0 ) = -1.0;
         rResult( 1, 0 ) =  1.0;
         return rResult;

@@ -677,8 +677,8 @@ public:
      */
     Matrix& PointsLocalCoordinates( Matrix& rResult ) const override
     {
-        rResult.resize( 9, 2, false );
-        noalias( rResult ) = ZeroMatrix( 9, 2 );
+        if (rResult.size1() != 9 || rResult.size2() != 2)
+            rResult.resize( 9, 2, false );
         rResult( 0, 0 ) = -1.0;
         rResult( 0, 1 ) = -1.0;
         rResult( 1, 0 ) =  1.0;
