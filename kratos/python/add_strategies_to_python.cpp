@@ -430,6 +430,7 @@ namespace Kratos
 
             //Builder and Solver
             class_< BuilderAndSolverType::DofsArrayType, boost::noncopyable > ("DofsArrayType", init<>());
+            BuilderAndSolverType::DofsArrayType&(BuilderAndSolverType::*BuilderAndSolver_GetDofSet)() = &BuilderAndSolverType::GetDofSet;
 
             class_< BuilderAndSolverType, boost::noncopyable > ("BuilderAndSolver", init<LinearSolverType::Pointer > ())
                     .def("SetCalculateReactionsFlag", &BuilderAndSolverType::SetCalculateReactionsFlag)
@@ -447,7 +448,7 @@ namespace Kratos
                     .def("BuildRHSAndSolve", &BuilderAndSolverType::BuildRHSAndSolve)
                     .def("ApplyDirichletConditions", &BuilderAndSolverType::ApplyDirichletConditions)
                     .def("SetUpDofSet", &BuilderAndSolverType::SetUpDofSet)
-                    .def("GetDofSet", &BuilderAndSolverType::GetDofSet, return_internal_reference<>())
+                    .def("GetDofSet", BuilderAndSolver_GetDofSet, return_internal_reference<>())
                     .def("SetUpSystem", &BuilderAndSolverType::SetUpSystem)
                     .def("ResizeAndInitializeVectors", &BuilderAndSolver_ResizeAndInitializeVectors1<BuilderAndSolverType>)
                     .def("ResizeAndInitializeVectors", &BuilderAndSolver_ResizeAndInitializeVectors2<BuilderAndSolverType>)

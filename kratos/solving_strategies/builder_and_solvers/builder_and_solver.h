@@ -123,86 +123,6 @@ public:
     typedef PointerVectorSet<Element, IndexedObject> ElementsContainerType;
 
 
-    /**
-     * This struct is used in the component wise calculation only
-     * is defined here and is used to declare a member variable in the component wise builder and solver
-     * private pointers can only be accessed by means of set and get functions
-     * this allows to set and not copy the Element_Variables and Condition_Variables
-     * which will be asked and set by another strategy object
-     */
-
-    struct GlobalSystemComponents
-    {
-    private:
-
-      //elements
-      std::vector<TSystemMatrixType> *mpLHS_Element_Components;
-      const std::vector< Variable< LocalSystemMatrixType > > *mpLHS_Element_Variables;
-
-      std::vector<TSystemVectorType> *mpRHS_Element_Components;
-      const std::vector< Variable< LocalSystemVectorType > > *mpRHS_Element_Variables;
-      
-      //conditions
-      std::vector<TSystemMatrixType> *mpLHS_Condition_Components;
-      const std::vector< Variable< LocalSystemMatrixType > > *mpLHS_Condition_Variables;
-
-      std::vector<TSystemVectorType> *mpRHS_Condition_Components;
-      const std::vector< Variable< LocalSystemVectorType > > *mpRHS_Condition_Variables;
-      
-    public:
-      
-      void Initialize()
-      {
-	mpLHS_Element_Components = NULL;
-	mpLHS_Element_Variables  = NULL;
-
-	mpRHS_Element_Components = NULL;
-	mpRHS_Element_Variables  = NULL;
-
-	mpLHS_Condition_Components = NULL;
-	mpLHS_Condition_Variables  = NULL;
-
-	mpRHS_Condition_Components = NULL;
-	mpRHS_Condition_Variables  = NULL;
-      }
-
-      //setting pointer variables
-
-      //elements
-      void SetLHS_Element_Components ( std::vector<TSystemMatrixType>& rLHS_Element_Components ) { mpLHS_Element_Components = &rLHS_Element_Components; };
-      void SetLHS_Element_Variables     ( const std::vector< Variable< LocalSystemMatrixType > >& rLHS_Element_Variables ) { mpLHS_Element_Variables = &rLHS_Element_Variables; };
-      void SetRHS_Element_Components ( std::vector<TSystemVectorType>& rRHS_Element_Components ) { mpRHS_Element_Components = &rRHS_Element_Components; };
-      void SetRHS_Element_Variables     ( const std::vector< Variable< LocalSystemVectorType > >& rRHS_Element_Variables ) { mpRHS_Element_Variables = &rRHS_Element_Variables; };
-
-      bool Are_LHS_Element_Components_Set() { if( mpLHS_Element_Variables == NULL ) return false; else return true; };
-      bool Are_RHS_Element_Components_Set() { if( mpRHS_Element_Variables == NULL ) return false; else return true; };
-
-      //conditions
-      void SetLHS_Condition_Components ( std::vector<TSystemMatrixType>& rLHS_Condition_Components ) { mpLHS_Condition_Components = &rLHS_Condition_Components; };
-      void SetLHS_Condition_Variables     ( const std::vector< Variable< LocalSystemMatrixType > >& rLHS_Condition_Variables ) { mpLHS_Condition_Variables = &rLHS_Condition_Variables; };
-      void SetRHS_Condition_Components ( std::vector<TSystemVectorType>& rRHS_Condition_Components ) { mpRHS_Condition_Components = &rRHS_Condition_Components; };
-      void SetRHS_Condition_Variables     ( const std::vector< Variable< LocalSystemVectorType > >& rRHS_Condition_Variables ) { mpRHS_Condition_Variables = &rRHS_Condition_Variables; };
-
-      bool Are_LHS_Condition_Components_Set() { if( mpLHS_Condition_Variables == NULL ) return false; else return true; };
-      bool Are_RHS_Condition_Components_Set() { if( mpRHS_Condition_Variables == NULL ) return false; else return true; };
-
-      //getting pointer variables
-
-      //elements
-      std::vector<TSystemMatrixType>& GetLHS_Element_Components() { return *mpLHS_Element_Components; };
-      const std::vector< Variable< LocalSystemMatrixType > >& GetLHS_Element_Variables() { return *mpLHS_Element_Variables; };
-      std::vector<TSystemVectorType>& GetRHS_Element_Components() { return *mpRHS_Element_Components; };
-      const std::vector< Variable< LocalSystemVectorType > >& GetRHS_Element_Variables() { return *mpRHS_Element_Variables; };
-
-      //conditions
-      std::vector<TSystemMatrixType>& GetLHS_Condition_Components() { return *mpLHS_Condition_Components; };
-      const std::vector< Variable< LocalSystemMatrixType > >& GetLHS_Condition_Variables() { return *mpLHS_Condition_Variables; };
-      std::vector<TSystemVectorType>& GetRHS_Condition_Components() { return *mpRHS_Condition_Components; };
-      const std::vector< Variable< LocalSystemVectorType > >& GetRHS_Condition_Variables() { return *mpRHS_Condition_Variables; };
-
-    };
-
-
     //pointer definition
 
     KRATOS_CLASS_POINTER_DEFINITION(BuilderAndSolver);
@@ -243,23 +163,18 @@ public:
     /**
      * Component wise components Get method
      */
-    virtual GlobalSystemComponents& GetGlobalSystemComponents()
-    {
-      KRATOS_THROW_ERROR(std::logic_error, "Asking for Global Components to the BUIDER and SOlVER base class which is not component wise and not contains this member variable","")
-    }
-
 
     void SetCalculateReactionsFlag(bool flag)
     {
         mCalculateReactionsFlag = flag;
     }
 
-    bool GetCalculateReactionsFlag()
+    bool GetCalculateReactionsFlag() const
     {
         return mCalculateReactionsFlag;
     }
 
-    bool GetDofSetIsInitializedFlag()
+    bool GetDofSetIsInitializedFlag() const
     {
         return mDofSetIsInitialized;
     }
@@ -274,17 +189,17 @@ public:
         mReshapeMatrixFlag = flag;
     }
 
-    bool GetReshapeMatrixFlag()
+    bool GetReshapeMatrixFlag() const
     {
         return mReshapeMatrixFlag;
     }
 
-    unsigned int GetEquationSystemSize()
+    unsigned int GetEquationSystemSize() const
     {
         return mEquationSystemSize;
     }
 
-    typename TLinearSolver::Pointer GetLinearSystemSolver()
+    typename TLinearSolver::Pointer GetLinearSystemSolver() const
     {
       return mpLinearSystemSolver;
     }
@@ -450,6 +365,14 @@ public:
             allows to get the list of Dofs from the element
      */
     virtual DofsArrayType& GetDofSet()
+    {
+        return mDofSet;
+    }
+
+    /**
+            allows to get the list of Dofs from the element
+     */
+    virtual const DofsArrayType& GetDofSet() const
     {
         return mDofSet;
     }

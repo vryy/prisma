@@ -254,6 +254,8 @@ void  AddParallelStrategiesToPython()
 
     class_< ParallelBuilderAndSolverType::DofsArrayType, boost::noncopyable >("ParallelDofsArrayType",	init<>() );
 
+    ParallelBuilderAndSolverType::DofsArrayType&(ParallelBuilderAndSolverType::*ParallelBuilderAndSolver_GetDofSet)() = &ParallelBuilderAndSolverType::GetDofSet;
+
     class_< ParallelBuilderAndSolverType, boost::noncopyable >("ParallelBuilderAndSolver",	init<ParallelLinearSolverType::Pointer>() )
     .def("SetCalculateReactionsFlag", &ParallelBuilderAndSolverType::SetCalculateReactionsFlag )
     .def("GetCalculateReactionsFlag", &ParallelBuilderAndSolverType::GetCalculateReactionsFlag )
@@ -270,7 +272,7 @@ void  AddParallelStrategiesToPython()
     .def("BuildRHSAndSolve", &ParallelBuilderAndSolverType::BuildRHSAndSolve )
     .def("ApplyDirichletConditions", &ParallelBuilderAndSolverType::ApplyDirichletConditions )
     .def("SetUpDofSet", &ParallelBuilderAndSolverType::SetUpDofSet )
-    .def("GetDofSet", &ParallelBuilderAndSolverType::GetDofSet, return_internal_reference<>() )
+    .def("GetDofSet", ParallelBuilderAndSolver_GetDofSet, return_internal_reference<>() )
     .def("SetUpSystem", &ParallelBuilderAndSolverType::SetUpSystem )
     .def("ResizeAndInitializeVectors", &BuilderAndSolver_ResizeAndInitializeVectors1<ParallelBuilderAndSolverType>)
     .def("ResizeAndInitializeVectors", &BuilderAndSolver_ResizeAndInitializeVectors2<ParallelBuilderAndSolverType>)
