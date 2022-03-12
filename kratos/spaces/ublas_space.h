@@ -2,13 +2,13 @@
 //    ' /   __| _` | __|  _ \   __|
 //    . \  |   (   | |   (   |\__ `
 //   _|\_\_|  \__,_|\__|\___/ ____/
-//                   Multi-Physics 
+//                   Multi-Physics
 //
-//  License:		 BSD License 
+//  License:		 BSD License
 //					 Kratos default license: kratos/license.txt
 //
 //  Main authors:    Riccardo Rossi
-//                    
+//
 //
 
 #if !defined(KRATOS_UBLAS_SPACE_H_INCLUDED )
@@ -224,7 +224,7 @@ public:
 #ifndef _OPENMP
         rY.assign(rX);
 #else
-        
+
         const int size = rX.size();
         if (rY.size() != static_cast<unsigned int>(size))
             rY.resize(size, false);
@@ -248,7 +248,7 @@ public:
 
         vector< TDataType > partial_results(number_of_threads);
 
-        #pragma omp parallel for 
+        #pragma omp parallel for
         for (int i = 0; i < number_of_threads; i++)
         {
             partial_results[i] = std::inner_product(rX.data().begin() + partition[i],
@@ -270,6 +270,67 @@ public:
     static double TwoNorm(VectorType const& rX)
     {
         return sqrt(Dot(rX, rX));
+    }
+
+    static TDataType TwoNorm(const Matrix& rA) // Frobenious norm
+    {
+        TDataType aux_sum = TDataType();
+        #pragma omp parallel for reduction(+:aux_sum)
+        for (int i=0; i<static_cast<int>(rA.size1()); ++i) {
+            for (int j=0; j<static_cast<int>(rA.size2()); ++j) {
+                aux_sum += std::pow(rA(i,j),2);
+            }
+        }
+        return std::sqrt(aux_sum);
+    }
+
+    static TDataType TwoNorm(const compressed_matrix<TDataType> & rA) // Frobenious norm
+    {
+        TDataType aux_sum = TDataType();
+
+        const auto& r_values = rA.value_data();
+
+        #pragma omp parallel for reduction(+:aux_sum)
+        for (int i=0; i<static_cast<int>(r_values.size()); ++i) {
+            aux_sum += std::pow(r_values[i] , 2);
+        }
+        return std::sqrt(aux_sum);
+    }
+
+    /**
+     * This method computes the Jacobi norm
+     * @param rA The matrix to compute the Jacobi norm
+     * @return aux_sum: The Jacobi norm
+     */
+    static TDataType JacobiNorm(const Matrix& rA)
+    {
+        TDataType aux_sum = TDataType();
+        #pragma omp parallel for reduction(+:aux_sum)
+        for (int i=0; i<static_cast<int>(rA.size1()); ++i) {
+            for (int j=0; j<static_cast<int>(rA.size2()); ++j) {
+                if (i != j) {
+                    aux_sum += std::abs(rA(i,j));
+                }
+            }
+        }
+        return aux_sum;
+    }
+
+    static TDataType JacobiNorm(const compressed_matrix<TDataType>& rA)
+    {
+        TDataType aux_sum = TDataType();
+
+        typedef typename compressed_matrix<TDataType>::const_iterator1 t_it_1;
+        typedef typename compressed_matrix<TDataType>::const_iterator2 t_it_2;
+
+        for (t_it_1 it_1 = rA.begin1(); it_1 != rA.end1(); ++it_1) {
+            for (t_it_2 it_2 = it_1.begin(); it_2 != it_1.end(); ++it_2) {
+                if (it_2.index1() != it_2.index2()) {
+                    aux_sum += std::abs(*it_2);
+                }
+            }
+        }
+        return aux_sum;
     }
 
     static void Mult(Matrix& rA, VectorType& rX, VectorType& rY)
@@ -472,6 +533,10 @@ public:
         return inner_prod(row(rA, i), rX);
     }
 
+    static void SetValue(VectorType& rX, IndexType i, TDataType value)
+    {
+        rX[i] = value;
+    }
 
     /// rX = A
 
@@ -501,11 +566,6 @@ public:
         pX->clear();
         pX->resize(0, false);
     }
-
-    /*	static void Clear(MatrixType& rA)
-            {rA.clear();}
-
-    static void Clear(VectorType& rX) {rX.clear();}*/
 
     template<class TOtherMatrixType>
     inline static void ClearData(TOtherMatrixType& rA)
@@ -656,7 +716,7 @@ public:
 
     //***********************************************************************
 
-    inline static bool IsDistributed()
+    inline static constexpr bool IsDistributed()
     {
         return false;
     }
@@ -685,14 +745,14 @@ public:
         // Use full namespace in call to make sure we are not calling this function recursively
         return Kratos::WriteMatrixMarketMatrix(FileName,M,Symmetric);
     }
-    
+
     template< class VectorType >
     static bool WriteMatrixMarketVector(const char *FileName, VectorType& V)
     {
         // Use full namespace in call to make sure we are not calling this function recursively
         return Kratos::WriteMatrixMarketVector(FileName,V);
     }
-    
+
     ///@}
     ///@name Friends
     ///@{
@@ -895,6 +955,6 @@ private:
 
 } // namespace Kratos.
 
-#endif // KRATOS_UBLAS_SPACE_H_INCLUDED  defined 
+#endif // KRATOS_UBLAS_SPACE_H_INCLUDED  defined
 
 
