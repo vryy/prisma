@@ -250,17 +250,17 @@ public:
     ///@name Access
     ///@{
 
-    virtual int MyPID()
+    virtual int MyPID() const
     {
         return 0;
     }
 
-    virtual int TotalProcesses()
+    virtual int TotalProcesses() const
     {
         return 1;
     }
 
-    SizeType GetNumberOfColors()
+    SizeType GetNumberOfColors() const
     {
         return mNumberOfColors;
     }
@@ -491,15 +491,15 @@ public:
         return mInterfaceMeshes;
     }
 
-    std::size_t GetLastNodeId()
+    IndexType GetLastNodeId() const
     {
-        return GetLastNodeId(this->LocalMesh());
+        return this->GetLastNodeId(this->LocalMesh());
     }
 
-    virtual std::size_t GetLastNodeId(MeshType& rMesh)
+    virtual IndexType GetLastNodeId(const MeshType& rMesh) const
     {
-        std::size_t lastNodeId = 0;
-        for(typename NodesContainerType::iterator it = rMesh.Nodes().begin();
+        IndexType lastNodeId = 0;
+        for(typename NodesContainerType::const_iterator it = rMesh.Nodes().begin();
                 it != rMesh.Nodes().end(); ++it)
         {
             if(it->Id() > lastNodeId)
@@ -509,37 +509,37 @@ public:
         return lastNodeId;
     }
 
-    std::size_t GetLastElementId()
+    IndexType GetLastElementId() const
     {
-        return GetLastElementId(this->LocalMesh());
+        return this->GetLastElementId(this->LocalMesh());
     }
 
-    virtual std::size_t GetLastElementId(MeshType& rMesh)
+    virtual IndexType GetLastElementId(const MeshType& rMesh) const
     {
-        std::size_t lastElementId = 0;
-        for(typename ElementsContainerType::ptr_iterator it = rMesh.Elements().ptr_begin();
-                it != rMesh.Elements().ptr_end(); ++it)
+        IndexType lastElementId = 0;
+        for(typename ElementsContainerType::const_iterator it = rMesh.Elements().begin();
+                it != rMesh.Elements().end(); ++it)
         {
-            if((*it)->Id() > lastElementId)
-                lastElementId = (*it)->Id();
+            if(it->Id() > lastElementId)
+                lastElementId = it->Id();
         }
 
         return lastElementId;
     }
 
-    std::size_t GetLastConditionId()
+    IndexType GetLastConditionId() const
     {
-        return GetLastConditionId(this->LocalMesh());
+        return this->GetLastConditionId(this->LocalMesh());
     }
 
-    virtual std::size_t GetLastConditionId(MeshType& rMesh)
+    virtual IndexType GetLastConditionId(const MeshType& rMesh) const
     {
-        std::size_t lastCondId = 0;
-        for(typename ConditionsContainerType::ptr_iterator it = rMesh.Conditions().ptr_begin();
-                it != rMesh.Conditions().ptr_end(); ++it)
+        IndexType lastCondId = 0;
+        for(typename ConditionsContainerType::const_iterator it = rMesh.Conditions().begin();
+                it != rMesh.Conditions().end(); ++it)
         {
-            if((*it)->Id() > lastCondId)
-                lastCondId = (*it)->Id();
+            if(it->Id() > lastCondId)
+                lastCondId = it->Id();
         }
 
         return lastCondId;
@@ -549,14 +549,14 @@ public:
     ///@name Operations
     ///@{
 
-    virtual void Barrier()
+    virtual void Barrier() const
     {
         /*#if defined(KRATOS_USING_MPI )
                 std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;
         #endif*/
     }
 
-    virtual bool SumAll(int& rValue)
+    virtual bool SumAll(int& rValue) const
     {
         // #if defined(KRATOS_USING_MPI )
         // 	std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;
@@ -564,7 +564,7 @@ public:
         return true;
     }
 
-    virtual bool SumAll(double& rValue)
+    virtual bool SumAll(double& rValue) const
     {
         // #if defined(KRATOS_USING_MPI )
         // 	std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;
@@ -572,7 +572,7 @@ public:
         return true;
     }
 
-    virtual bool MinAll(int& rValue)
+    virtual bool MinAll(int& rValue) const
     {
         // #if defined(KRATOS_USING_MPI )
         // 	std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;
@@ -580,7 +580,7 @@ public:
         return true;
     }
 
-    virtual bool MinAll(double& rValue)
+    virtual bool MinAll(double& rValue) const
     {
         // #if defined(KRATOS_USING_MPI )
         // 	std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;
@@ -588,15 +588,7 @@ public:
         return true;
     }
 
-    virtual bool MaxAll(int& rValue)
-    {
-        /*#if defined(KRATOS_USING_MPI )
-                std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;
-        #endif*/
-        return true;
-    }
-
-    virtual bool MaxAll(unsigned long& rValue)
+    virtual bool MaxAll(int& rValue) const
     {
         /*#if defined(KRATOS_USING_MPI )
                 std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;
@@ -604,7 +596,15 @@ public:
         return true;
     }
 
-    virtual bool MaxAll(double& rValue)
+    virtual bool MaxAll(unsigned long& rValue) const
+    {
+        /*#if defined(KRATOS_USING_MPI )
+                std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;
+        #endif*/
+        return true;
+    }
+
+    virtual bool MaxAll(double& rValue) const
     {
         // #if defined(KRATOS_USING_MPI )
         // 	std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;

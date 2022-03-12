@@ -212,7 +212,7 @@ public:
     {
     }
 
-    virtual Communicator::Pointer Create()
+    Communicator::Pointer Create() override
     {
         KRATOS_TRY
 
@@ -233,14 +233,14 @@ public:
         return *this;
     }
 
-    int MyPID()
+    int MyPID() const override
     {
         int rank;
         MPI_Comm_rank(mComm, &rank);
         return rank;
     }
 
-    int TotalProcesses()
+    int TotalProcesses() const override
     {
         int nproc;
         MPI_Comm_size(mComm, &nproc);
@@ -248,35 +248,35 @@ public:
 
     }
 
-    virtual std::size_t GetLastNodeId(MeshType& rMesh)
+    IndexType GetLastNodeId(const MeshType& rMesh) const override
     {
-        std::size_t lastNodeId = BaseType::GetLastNodeId(rMesh);
+        IndexType lastNodeId = BaseType::GetLastNodeId(rMesh);
 
         unsigned long tmp = static_cast<unsigned long>(lastNodeId);
         this->MaxAll(tmp);
 
-        return static_cast<std::size_t>(tmp);
+        return static_cast<IndexType>(tmp);
     }
 
-    virtual std::size_t GetLastElementId(MeshType& rMesh)
+    IndexType GetLastElementId(const MeshType& rMesh) const override
     {
-        std::size_t lastElementId = BaseType::GetLastElementId(rMesh);
+        IndexType lastElementId = BaseType::GetLastElementId(rMesh);
 
         unsigned long tmp = static_cast<unsigned long>(lastElementId);
         this->MaxAll(tmp);
 
-        return static_cast<std::size_t>(tmp);
+        return static_cast<IndexType>(tmp);
     }
 
 
-    virtual std::size_t GetLastConditionId(MeshType& rMesh)
+    IndexType GetLastConditionId(const MeshType& rMesh) const override
     {
-        std::size_t lastCondId = BaseType::GetLastConditionId(rMesh);
+        IndexType lastCondId = BaseType::GetLastConditionId(rMesh);
 
         unsigned long tmp = static_cast<unsigned long>(lastCondId);
         this->MaxAll(tmp);
 
-        return static_cast<std::size_t>(tmp);
+        return static_cast<IndexType>(tmp);
     }
 
     ///@}
@@ -293,56 +293,56 @@ public:
         MPI_Barrier(mComm);
     }
 
-    virtual bool SumAll(int& rValue)
+    bool SumAll(int& rValue) const override
     {
         int local_value = rValue;
         MPI_Allreduce(&local_value, &rValue, 1, MPI_INT, MPI_SUM, mComm);
         return true;
     }
 
-    virtual bool SumAll(double& rValue)
+    bool SumAll(double& rValue) const override
     {
         double local_value = rValue;
         MPI_Allreduce(&local_value, &rValue, 1, MPI_DOUBLE, MPI_SUM, mComm);
         return true;
     }
 
-    virtual bool MinAll(int& rValue)
+    bool MinAll(int& rValue) const override
     {
         int local_value = rValue;
         MPI_Allreduce(&local_value, &rValue, 1, MPI_INT, MPI_MIN, mComm);
         return true;
     }
 
-    virtual bool MinAll(double& rValue)
+    bool MinAll(double& rValue) const override
     {
         double local_value = rValue;
         MPI_Allreduce(&local_value, &rValue, 1, MPI_DOUBLE, MPI_MIN, mComm);
         return true;
     }
 
-    virtual bool MaxAll(int& rValue)
+    bool MaxAll(int& rValue) const override
     {
         int local_value = rValue;
         MPI_Allreduce(&local_value, &rValue, 1, MPI_INT, MPI_MAX, mComm);
         return true;
     }
 
-    virtual bool MaxAll(unsigned long& rValue)
+    bool MaxAll(unsigned long& rValue) const override
     {
         unsigned long local_value = rValue;
         MPI_Allreduce(&local_value, &rValue, 1, MPI_UNSIGNED_LONG, MPI_MAX, mComm);
         return true;
     }
 
-    virtual bool MaxAll(double& rValue)
+    bool MaxAll(double& rValue) const override
     {
         double local_value = rValue;
         MPI_Allreduce(&local_value, &rValue, 1, MPI_DOUBLE, MPI_MAX, mComm);
         return true;
     }
 
-    virtual bool SynchronizeElementalIds()
+    bool SynchronizeElementalIds() override
     {
         int rank;
         MPI_Comm_rank(mComm, &rank);
@@ -402,7 +402,7 @@ public:
         return true;
     }
 
-    virtual bool SynchronizeNodalSolutionStepsData()
+    bool SynchronizeNodalSolutionStepsData() override
     {
         int rank;
         MPI_Comm_rank(mComm, &rank);
@@ -486,7 +486,7 @@ public:
         return true;
     }
 
-    virtual bool SynchronizeDofs()
+    bool SynchronizeDofs() override
     {
         int rank;
         MPI_Comm_rank(mComm, &rank);
@@ -553,105 +553,105 @@ public:
         return true;
     }
 
-    virtual bool SynchronizeVariable(Variable<int> const& ThisVariable)
+    bool SynchronizeVariable(Variable<int> const& ThisVariable) override
     {
         SynchronizeVariable<int,int>(ThisVariable);
         return true;
     }
 
-    virtual bool SynchronizeVariable(Variable<double> const& ThisVariable)
+    bool SynchronizeVariable(Variable<double> const& ThisVariable) override
     {
         SynchronizeVariable<double,double>(ThisVariable);
         return true;
     }
 
-    virtual bool SynchronizeVariable(Variable<array_1d<double, 3 > > const& ThisVariable)
+    bool SynchronizeVariable(Variable<array_1d<double, 3 > > const& ThisVariable) override
     {
         SynchronizeVariable<array_1d<double, 3 >,double >(ThisVariable);
         return true;
     }
 
-    virtual bool SynchronizeVariable(Variable<Vector> const& ThisVariable)
+    bool SynchronizeVariable(Variable<Vector> const& ThisVariable) override
     {
         SynchronizeVariable<Vector,double>(ThisVariable);
         return true;
     }
 
-    virtual bool SynchronizeVariable(Variable<Matrix> const& ThisVariable)
+    bool SynchronizeVariable(Variable<Matrix> const& ThisVariable) override
     {
         SynchronizeVariable<Matrix,double>(ThisVariable);
         return true;
     }
 
     // This function is for test and will be changed. Pooyan.
-    virtual bool SynchronizeCurrentDataToMin(Variable<double> const& ThisVariable)
+    bool SynchronizeCurrentDataToMin(Variable<double> const& ThisVariable) override
     {
         SynchronizeMinThisVariable<double,double>(ThisVariable);
         return true;
 
     }
 
-    virtual bool AssembleCurrentData(Variable<int> const& ThisVariable)
+    bool AssembleCurrentData(Variable<int> const& ThisVariable) override
     {
         AssembleThisVariable<int,int>(ThisVariable);
         return true;
     }
 
-    virtual bool AssembleCurrentData(Variable<double> const& ThisVariable)
+    bool AssembleCurrentData(Variable<double> const& ThisVariable) override
     {
         AssembleThisVariable<double,double>(ThisVariable);
         return true;
     }
 
-    virtual bool AssembleCurrentData(Variable<array_1d<double, 3 > > const& ThisVariable)
+    bool AssembleCurrentData(Variable<array_1d<double, 3 > > const& ThisVariable) override
     {
         AssembleThisVariable<array_1d<double,3>,double>(ThisVariable);
         return true;
     }
 
-    virtual bool AssembleCurrentData(Variable<Vector> const& ThisVariable)
+    bool AssembleCurrentData(Variable<Vector> const& ThisVariable) override
     {
         AssembleThisVariable<Vector,double>(ThisVariable);
         return true;
     }
 
-    virtual bool AssembleCurrentData(Variable<Matrix> const& ThisVariable)
+    bool AssembleCurrentData(Variable<Matrix> const& ThisVariable) override
     {
         AssembleThisVariable<Matrix,double>(ThisVariable);
         return true;
     }
 
-    virtual bool AssembleNonHistoricalData(Variable<int> const& ThisVariable)
+    bool AssembleNonHistoricalData(Variable<int> const& ThisVariable) override
     {
         AssembleThisNonHistoricalVariable<int,int>(ThisVariable);
         return true;
     }
 
-    virtual bool AssembleNonHistoricalData(Variable<double> const& ThisVariable)
+    bool AssembleNonHistoricalData(Variable<double> const& ThisVariable) override
     {
         AssembleThisNonHistoricalVariable<double,double>(ThisVariable);
         return true;
     }
 
-    virtual bool AssembleNonHistoricalData(Variable<array_1d<double, 3 > > const& ThisVariable)
+    bool AssembleNonHistoricalData(Variable<array_1d<double, 3 > > const& ThisVariable) override
     {
         AssembleThisNonHistoricalVariable<array_1d<double,3>,double>(ThisVariable);
         return true;
     }
 
-    virtual bool AssembleNonHistoricalData(Variable<vector<array_1d<double,3> > > const& ThisVariable)
+    bool AssembleNonHistoricalData(Variable<vector<array_1d<double,3> > > const& ThisVariable) override
     {
         AssembleThisNonHistoricalVariable<vector<array_1d<double,3> >,double>(ThisVariable);
         return true;
     }
 
-    virtual bool AssembleNonHistoricalData(Variable<Vector> const& ThisVariable)
+    bool AssembleNonHistoricalData(Variable<Vector> const& ThisVariable) override
     {
         AssembleThisNonHistoricalVariable<Vector,double>(ThisVariable);
         return true;
     }
 
-    virtual bool AssembleNonHistoricalData(Variable<Matrix> const& ThisVariable)
+    bool AssembleNonHistoricalData(Variable<Matrix> const& ThisVariable) override
     {
         AssembleThisNonHistoricalVariable<Matrix,double>(ThisVariable);
         return true;
@@ -659,37 +659,37 @@ public:
 
     /////////////////////////////////////////////////////////////////////////////
 
-    virtual bool SynchronizeElementalNonHistoricalVariable(Variable<int> const& ThisVariable)
+    bool SynchronizeElementalNonHistoricalVariable(Variable<int> const& ThisVariable) override
     {
         SynchronizeElementalNonHistoricalVariable<int,int>(ThisVariable);
         return true;
     }
 
-    virtual bool SynchronizeElementalNonHistoricalVariable(Variable<double> const& ThisVariable)
+    bool SynchronizeElementalNonHistoricalVariable(Variable<double> const& ThisVariable) override
     {
         SynchronizeElementalNonHistoricalVariable<double,double>(ThisVariable);
         return true;
     }
 
-    virtual bool SynchronizeElementalNonHistoricalVariable(Variable<array_1d<double, 3 > > const& ThisVariable)
+    bool SynchronizeElementalNonHistoricalVariable(Variable<array_1d<double, 3 > > const& ThisVariable) override
     {
         SynchronizeElementalNonHistoricalVariable<array_1d<double,3>,double>(ThisVariable);
         return true;
     }
 
-    virtual bool SynchronizeElementalNonHistoricalVariable(Variable<vector<array_1d<double,3> > > const& ThisVariable)
+    bool SynchronizeElementalNonHistoricalVariable(Variable<vector<array_1d<double,3> > > const& ThisVariable) override
     {
         SynchronizeElementalNonHistoricalVariable<vector<array_1d<double,3> >,double>(ThisVariable);
         return true;
     }
 
-    virtual bool SynchronizeElementalNonHistoricalVariable(Variable<Vector> const& ThisVariable)
+    bool SynchronizeElementalNonHistoricalVariable(Variable<Vector> const& ThisVariable) override
     {
         SynchronizeElementalNonHistoricalVariable<Vector,double>(ThisVariable);
         return true;
     }
 
-    virtual bool SynchronizeElementalNonHistoricalVariable(Variable<Matrix> const& ThisVariable)
+    bool SynchronizeElementalNonHistoricalVariable(Variable<Matrix> const& ThisVariable) override
     {
         SynchronizeElementalNonHistoricalVariable<Matrix,double>(ThisVariable);
         return true;
@@ -702,7 +702,7 @@ public:
      * @param SendObjects: list of objects to be send.      SendObjects[i] -> Objects to   process i
      * @param RecvObjects: list of objects to be received.  RecvObjects[i] -> objects from process i
      **/
-    virtual bool TransferObjects(std::vector<NodesContainerType>& SendObjects, std::vector<NodesContainerType>& RecvObjects)
+    bool TransferObjects(std::vector<NodesContainerType>& SendObjects, std::vector<NodesContainerType>& RecvObjects) override
     {
         Kratos::Serializer particleSerializer;
         AsyncSendAndReceiveObjects<NodesContainerType>(SendObjects,RecvObjects,particleSerializer);
@@ -714,7 +714,7 @@ public:
     * @param SendObjects: list of objects to be send.      SendObjects[i] -> Objects to   process i
     * @param RecvObjects: list of objects to be received.  RecvObjects[i] -> objects from process i
     **/
-    virtual bool TransferObjects(std::vector<ElementsContainerType>& SendObjects, std::vector<ElementsContainerType>& RecvObjects)
+    bool TransferObjects(std::vector<ElementsContainerType>& SendObjects, std::vector<ElementsContainerType>& RecvObjects) override
     {
         Kratos::Serializer particleSerializer;
         AsyncSendAndReceiveObjects<ElementsContainerType>(SendObjects,RecvObjects,particleSerializer);
@@ -726,7 +726,7 @@ public:
     * @param SendObjects: list of objects to be send.      SendObjects[i] -> Objects to   process i
     * @param RecvObjects: list of objects to be received.  RecvObjects[i] -> objects from process i
     **/
-    virtual bool TransferObjects(std::vector<ConditionsContainerType>& SendObjects, std::vector<ConditionsContainerType>& RecvObjects)
+    bool TransferObjects(std::vector<ConditionsContainerType>& SendObjects, std::vector<ConditionsContainerType>& RecvObjects) override
     {
         Kratos::Serializer particleSerializer;
         AsyncSendAndReceiveObjects<ConditionsContainerType>(SendObjects,RecvObjects,particleSerializer);
@@ -738,7 +738,7 @@ public:
      * @param SendObjects: list of objects to be send.      SendObjects[i] -> Objects to   process i
      * @param RecvObjects: list of objects to be received.  RecvObjects[i] -> objects from process i
      **/
-    virtual bool TransferObjects(std::vector<NodesContainerType>& SendObjects, std::vector<NodesContainerType>& RecvObjects,Kratos::Serializer& particleSerializer)
+    bool TransferObjects(std::vector<NodesContainerType>& SendObjects, std::vector<NodesContainerType>& RecvObjects,Kratos::Serializer& particleSerializer) override
     {
         AsyncSendAndReceiveObjects<NodesContainerType>(SendObjects,RecvObjects,particleSerializer);
         return true;
@@ -749,7 +749,7 @@ public:
     * @param SendObjects: list of objects to be send.      SendObjects[i] -> Objects to   process i
     * @param RecvObjects: list of objects to be received.  RecvObjects[i] -> objects from process i
     **/
-    virtual bool TransferObjects(std::vector<ElementsContainerType>& SendObjects, std::vector<ElementsContainerType>& RecvObjects,Kratos::Serializer& particleSerializer)
+    bool TransferObjects(std::vector<ElementsContainerType>& SendObjects, std::vector<ElementsContainerType>& RecvObjects,Kratos::Serializer& particleSerializer) override
     {
         AsyncSendAndReceiveObjects<ElementsContainerType>(SendObjects,RecvObjects,particleSerializer);
         return true;
@@ -760,7 +760,7 @@ public:
     * @param SendObjects: list of objects to be send.      SendObjects[i] -> Objects to   process i
     * @param RecvObjects: list of objects to be received.  RecvObjects[i] -> objects from process i
     **/
-    virtual bool TransferObjects(std::vector<ConditionsContainerType>& SendObjects, std::vector<ConditionsContainerType>& RecvObjects,Kratos::Serializer& particleSerializer)
+    bool TransferObjects(std::vector<ConditionsContainerType>& SendObjects, std::vector<ConditionsContainerType>& RecvObjects,Kratos::Serializer& particleSerializer) override
     {
         AsyncSendAndReceiveObjects<ConditionsContainerType>(SendObjects,RecvObjects,particleSerializer);
         return true;
@@ -784,21 +784,21 @@ public:
 
     /// Turn back information as a string.
 
-    virtual std::string Info() const
+    std::string Info() const override
     {
         return "MPICommunicator";
     }
 
     /// Print information about this object.
 
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << Info();
     }
 
     /// Print object's data.
 
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
         for (IndexType i = 0; i < mLocalMeshes.size(); i++)
         {
