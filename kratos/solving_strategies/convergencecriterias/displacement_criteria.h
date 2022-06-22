@@ -207,6 +207,12 @@ KRATOS_WATCH(mReferenceDispNorm)
             }
             else
             {
+                if (this->GetEchoLevel() == 1)
+                    std::cout << "Convergence is not yet achieved, (Obtained tol = " << ratio
+                              << ") ? (Expected ratio = " << mRatioTolerance << ")"
+                              << " ; (Absolute tol = " << AbsoluteNorm
+                              << ") ? (AlwaysConvergedNorm = " << mAlwaysConvergedNorm << ")"
+                              << std::endl;
                 return false;
             }
         }
