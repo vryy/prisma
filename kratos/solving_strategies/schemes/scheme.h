@@ -141,9 +141,9 @@ public:
     typedef typename TDenseSpace::VectorType LocalSystemVectorType;
     typedef Dof<double> TDofType;
 
-    typedef PointerVectorSet<TDofType, SetIdentityFunction<TDofType> > DofsArrayType;
-    typedef typename PointerVectorSet<TDofType, IndexedObject>::iterator DofIterator;
-    typedef typename PointerVectorSet<TDofType, IndexedObject>::const_iterator DofConstantIterator;
+    typedef ModelPart::DofsArrayType DofsArrayType;
+    typedef typename DofsArrayType::iterator DofIterator;
+    typedef typename DofsArrayType::const_iterator DofConstantIterator;
 
     typedef ModelPart::ElementsContainerType ElementsArrayType;
     typedef ModelPart::ConditionsContainerType ConditionsArrayType;
@@ -171,16 +171,16 @@ public:
 
       std::vector<LocalSystemVectorType> *mpRHS_Element_Components;
       const std::vector< Variable< LocalSystemVectorType > > *mpRHS_Element_Variables;
-      
+
       //conditions
       std::vector<LocalSystemMatrixType> *mpLHS_Condition_Components;
       const std::vector< Variable< LocalSystemMatrixType > > *mpLHS_Condition_Variables;
 
       std::vector<LocalSystemVectorType> *mpRHS_Condition_Components;
       const std::vector< Variable< LocalSystemVectorType > > *mpRHS_Condition_Variables;
-      
+
     public:
-      
+
       void Initialize()
       {
     mpLHS_Element_Components = NULL;
@@ -275,7 +275,7 @@ public:
     /*@{ */
 
     /**
-     * Clone 
+     * Clone
      */
     virtual Pointer Clone()
     {
@@ -562,7 +562,7 @@ public:
         }
         KRATOS_CATCH("")
     }
-    
+
     virtual void InitializeNonLinearIteration(Condition::Pointer rCurrentCondition,
         ProcessInfo& CurrentProcessInfo)
     {
@@ -835,6 +835,26 @@ public:
     /**@name Friends */
     /*@{ */
 
+    ///@}
+    ///@name Input and output
+    ///@{
+
+    /// Turn back information as a string.
+    virtual std::string Info() const
+    {
+        return "Scheme";
+    }
+
+    /// Print information about this object.
+    virtual void PrintInfo(std::ostream& rOStream) const
+    {
+        rOStream << Info();
+    }
+
+    /// Print object's data.
+    virtual void PrintData(std::ostream& rOStream) const
+    {
+    }
 
     /*@} */
 
