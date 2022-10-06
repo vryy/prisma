@@ -1247,7 +1247,7 @@ public:
             int number_of_threads = omp_get_max_threads();
             boost::numeric::ublas::vector<unsigned int> element_partition;
             OpenMPUtils::CreatePartition(number_of_threads, pElements.size(), element_partition);
-            KRATOS_WATCH( number_of_threads );
+            std::cout << "number_of_threads for BuildRHSreactions: " << number_of_threads << std::endl;
 
             #pragma omp parallel for
             for(unsigned int k = 0; k < number_of_threads; ++k)
