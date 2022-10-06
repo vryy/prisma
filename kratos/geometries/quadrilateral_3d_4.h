@@ -522,7 +522,8 @@ public:
     }
 
 
-    CoordinatesArrayType& PointLocalCoordinates( CoordinatesArrayType& rResult, const CoordinatesArrayType& rPoint ) const override
+    CoordinatesArrayType& PointLocalCoordinates( CoordinatesArrayType& rResult, const CoordinatesArrayType& rPoint,
+        const bool& force_error = true ) const override
     {
         boost::numeric::ublas::bounded_matrix<double,3,4> X;
         boost::numeric::ublas::bounded_matrix<double,3,2> DN;
@@ -581,9 +582,12 @@ public:
 
             if ( norm_2( DeltaXi ) > 300 )
             {
-                res[0] = 0.0;
-                res[1] = 0.0;
-                std::cout << "detJ =" << det_j << "DeltaX = " << DeltaXi << " stopping calculation and assigning the baricenter" << std::endl;
+                if (force_error)
+                {
+                    std::stringstream ss;
+                    ss << "detJ =" << det_j << "DeltaX = " << DeltaXi << " stopping calculation at iteration " << k;
+                    KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+                }
                 break;
                 //KRATOS_THROW_ERROR(std::logic_error,"computation of local coordinates failed at iteration",k)
             }
@@ -597,7 +601,8 @@ public:
         return( rResult );
     }
 
-    CoordinatesArrayType& PointLocalCoordinates( CoordinatesArrayType& rResult, const CoordinatesArrayType& rPoint, Matrix& DeltaPosition ) const override
+    CoordinatesArrayType& PointLocalCoordinates( CoordinatesArrayType& rResult, const CoordinatesArrayType& rPoint, Matrix& DeltaPosition,
+        const bool& force_error = true ) const override
     {
         boost::numeric::ublas::bounded_matrix<double,3,4> X;
         boost::numeric::ublas::bounded_matrix<double,3,2> DN;
@@ -656,9 +661,12 @@ public:
 
             if ( norm_2( DeltaXi ) > 300 )
             {
-                res[0] = 0.0;
-                res[1] = 0.0;
-                std::cout << "detJ =" << det_j << "DeltaX = " << DeltaXi << " stopping calculation and assigning the baricenter" << std::endl;
+                if (force_error)
+                {
+                    std::stringstream ss;
+                    ss << "detJ =" << det_j << "DeltaX = " << DeltaXi << " stopping calculation at iteration " << k;
+                    KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+                }
                 break;
                 //KRATOS_THROW_ERROR(std::logic_error,"computation of local coordinates failed at iteration",k)
             }
