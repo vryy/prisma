@@ -2,53 +2,46 @@
 //    ' /   __| _` | __|  _ \   __|
 //    . \  |   (   | |   (   |\__ `
 //   _|\_\_|  \__,_|\__|\___/ ____/
-//                   Multi-Physics 
+//                   Multi-Physics
 //
-//  License:		 BSD License 
+//  License:		 BSD License
 //					 Kratos default license: kratos/license.txt
 //
-//  Main authors:    Carlos Roig
-//                   Pooyan Dadvand 
+//  Main authors:   Pooyan Dadvand
+//
 //
 
+#include <sstream>
 
-// System includes
-
-
-// External includes 
-
-
-// Project includes
-#include "includes/define.h"
 #include "includes/kratos_exception.h"
 
 
 namespace Kratos
 {
 
-	KratosException::KratosException() 
-		: std::exception(), mWhat("Unknown Error"), mWhere("Unknown origin"), mMessage("Unknown Error")
+	KratosException::KratosException()
+		: std::exception(), mMessage("Unknown Error")
+		, mCallStack()
 	{
-		mWhat.append("\n");
-		mWhat.append(mWhere);
+		update_what();
 	}
 
-	KratosException::KratosException(const std::string& rWhat ) 
-		: std::exception(), mWhat(rWhat), mWhere("Unknown origin"), mMessage(rWhat)
+	KratosException::KratosException(const std::string& rWhat )
+		: std::exception(), mMessage(rWhat), mCallStack()
 	{
-		mWhat.append("\n");
-		mWhat.append(mWhere);
+		update_what();
 	}
 
-	KratosException::KratosException(const std::string& rWhat, const std::string& rWhere) 
-		: std::exception(), mWhat(rWhat), mWhere(rWhere), mMessage(rWhat)
+	KratosException::KratosException(const std::string& rWhat, const CodeLocation& Location)
+		: std::exception(), mMessage(rWhat), mCallStack()
+
 	{
-		mWhat.append("\n");
-		mWhat.append(mWhere);
+		add_to_call_stack(Location);
+		update_what();
 	}
 
-	KratosException::KratosException(const KratosException& rOther) 
-		: std::exception(rOther), mWhat(rOther.mWhat), mWhere(rOther.mWhere), mMessage(rOther.mMessage)
+	KratosException::KratosException(const KratosException& Other)
+		: std::exception(Other), mMessage(Other.mMessage), mWhat(Other.mWhat), mCallStack(Other.mCallStack)
 	{
 	}
 
@@ -60,17 +53,28 @@ namespace Kratos
 	void KratosException::append_message(std::string const& rMessage)
 	{
 		mMessage.append(rMessage);
-		mWhat = mMessage;
-		mWhat.append("\n");
-		mWhat.append(mWhere);
+		update_what();
 	}
 
-	void KratosException::append_where(std::string const& rWhere)
+	void KratosException::add_to_call_stack(CodeLocation const& TheLocation)
 	{
-		mWhere.append("\n");
-		mWhere.append(rWhere);
-		mWhat.append("\n");
-		mWhat.append(rWhere);
+		mCallStack.push_back(TheLocation);
+		update_what();
+	}
+
+	void KratosException::update_what(){
+		std::stringstream buffer;
+		buffer << mMessage << std::endl;
+		if(mCallStack.empty())
+			buffer << "in Unknown Location";
+		else
+		{
+			buffer << "in " << mCallStack[0] << std::endl;
+			for(auto i = mCallStack.begin() + 1; i!= mCallStack.end(); i++)
+				buffer << "   " << *i << std::endl;
+		}
+		mWhat = buffer.str();
+
 	}
 
     const char* KratosException::what() const throw() //noexcept
@@ -78,9 +82,11 @@ namespace Kratos
 		return mWhat.c_str();
 	}
 
-	const std::string& KratosException::where() const
+	const CodeLocation KratosException::where() const
 	{
-		return mWhere;
+		if(mCallStack.empty())
+			return CodeLocation("Unknown File", "Unknown Location", 0);
+		return mCallStack[0];
 	}
 
 	const std::string& KratosException::message() const
@@ -92,7 +98,7 @@ namespace Kratos
 	{
 		return "KratosException";
 	}
-      
+
       /// Print information about this object.
     void KratosException::PrintInfo(std::ostream& rOStream) const
 	{
@@ -101,8 +107,16 @@ namespace Kratos
       /// Print object's data.
     void KratosException::PrintData(std::ostream& rOStream) const
 	{
-		rOStream << "Error: " << mWhat << std::endl;
-		rOStream << "   in: " << mWhere;
+		rOStream << "Error: " << mMessage << std::endl;
+		rOStream << "   in: " << where();
+	}
+
+
+	KratosException& KratosException::operator << (CodeLocation const& TheLocation)
+	{
+		add_to_call_stack(TheLocation);
+
+		return *this;
 	}
 
 	/// input stream function
@@ -112,17 +126,7 @@ namespace Kratos
 		return rIStream;
 	}
 
-	/// output stream function
-  /*	inline std::ostream& operator << (std::ostream& rOStream,
-		const KratosException& rThis)
-	{
-		rThis.PrintInfo(rOStream);
-		rOStream << std::endl;
-		rThis.PrintData(rOStream);
 
-		return rOStream;
-	}
-  */
 	/// char stream function
     KratosException& KratosException::operator << (const char * rString)
 	{
@@ -141,6 +145,14 @@ namespace Kratos
         return *this;
 	}
 
+	std::ostream& operator << (std::ostream& rOStream, const KratosException& rThis)
+	{
+		rThis.PrintInfo(rOStream);
+		rOStream << std::endl;
+		rThis.PrintData(rOStream);
+
+		return rOStream;
+	}
+
+
 }  // namespace Kratos.
-
-

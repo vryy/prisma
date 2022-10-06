@@ -36,8 +36,10 @@ set( KRATOS_CORE_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/sources/kratos_application.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/utilities/logger.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/utilities/constraint_utilities.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/sources/code_location.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/sources/kratos_exception.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/containers/variable_data.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/containers/model.cpp
 	#${CMAKE_CURRENT_SOURCE_DIR}/processes/mesh_smoothing_process.cpp
 	#${CMAKE_CURRENT_SOURCE_DIR}/processes/measure_mesh_quality_process.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/sources/bounding_volume_tree.cpp
@@ -46,6 +48,7 @@ set( KRATOS_CORE_SOURCES
 set( KRATOS_PYTHON_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/python/add_banded_matrix_to_python.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/python/add_model_part_to_python.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/python/add_model_to_python.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/python/add_compressed_matrix_to_python.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/python/add_constant_matrix_to_python.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/python/add_points_to_python.cpp

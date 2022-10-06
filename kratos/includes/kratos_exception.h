@@ -2,287 +2,192 @@
 //    ' /   __| _` | __|  _ \   __|
 //    . \  |   (   | |   (   |\__ `
 //   _|\_\_|  \__,_|\__|\___/ ____/
-//                   Multi-Physics 
+//                   Multi-Physics
 //
-//  License:		 BSD License 
-//					 Kratos default license: kratos/license.txt
+//  License:     BSD License
+//           Kratos default license: kratos/license.txt
 //
 //  Main authors:    Pooyan Dadvand
-//                    
 //
-	           
+//
 
-#if !defined(KRATOS_KRATOS_EXCEPTION_H_INCLUDED )
-#define  KRATOS_KRATOS_EXCEPTION_H_INCLUDED
-
-
+#if !defined(KRATOS_EXCEPTION_H_INCLUDED )
+#define  KRATOS_EXCEPTION_H_INCLUDED
 
 // System includes
 #include <stdexcept>
 #include <string>
-#include <iostream> 
+#include <iostream>
+#include <sstream>
+#include <vector>
 
-
-// External includes 
-
+// External includes
 
 // Project includes
-
+#include "includes/kratos_export_api.h"
+#include "includes/code_location.h"
+#include "utilities/stl_vector_io.h"
 
 namespace Kratos
 {
-  ///@addtogroup Kratos
-  ///@{
+///@addtogroup KratosCore
+///@{
 
-  ///@name Kratos Macros
-  ///@{ 
+///@name Kratos Classes
+///@{
 
-  ///@} 
-  ///@name Kratos Globals
-  ///@{ 
-  
-  ///@} 
-  ///@name Type Definitions
-  ///@{ 
-  
-  ///@} 
-  ///@name  Enum's
-  ///@{
-      
-  ///@}
-  ///@name  Functions 
-  ///@{
-      
-  ///@}
-  ///@name Kratos Classes
-  ///@{
-  
-  /// Short class definition.
-  /** Detail class definition.
-  */
-  class KRATOS_API(KRATOS_CORE) KratosException : public std::exception
+/**
+ * @class KratosException
+ * @ingroup KratosCore
+ * @brief Extends the std::exception class with more information about error location
+ * @details This class extends the std::exception providing the where method which gives the location of the error.
+    In order to have such information it is recommended to use it via KRATOS_ERROR macro.
+ * @author Pooyan Dadvand
+*/
+class KRATOS_API(KRATOS_CORE) KratosException
+    : public std::exception
+{
+public:
+    ///@name Type Definitions
+    ///@{
+
+    ///@}
+    ///@name Life Cycle
+    ///@{
+
+    /// Default constructor.
+    KratosException();
+
+    explicit KratosException(const std::string& rWhat );
+
+    KratosException(const std::string& rWhat, const CodeLocation& Location);
+
+    /// Copy constructor.
+    KratosException(KratosException const& Other);
+
+    /// Destructor.
+    ~KratosException() noexcept override;
+
+
+    ///@}
+    ///@name Operators
+    ///@{
+
+    /// Assignment operator is deleted.
+    KratosException& operator=(KratosException const& rOther) = delete;
+
+    /// Code Location stream function to add callers to call stack
+    KratosException& operator << (CodeLocation const& TheLocation);
+
+    /// string stream function
+    template<class StreamValueType>
+    KratosException& operator << (StreamValueType const& rValue)
     {
-    public:
-      ///@name Type Definitions
-      ///@{
-      
- 
-      ///@}
-      ///@name Life Cycle 
-      ///@{ 
-      
-      /// Default constructor.
-	  KratosException();
+        std::stringstream buffer;
+        buffer << rValue;
 
-	  KratosException(const std::string& rWhat );
+        append_message(buffer.str());
 
-      KratosException(const std::string& rWhat, const std::string& rWhere);
-	  
-	  /// Copy constructor.
-      KratosException(KratosException const& rOther);
+        return *this;
+    }
 
-      /// Destructor.
-      virtual ~KratosException() throw(); //noexcept; // noexcept(true);
-      
+    /// Manipulator stream function
+    KratosException& operator << (std::ostream& (*pf)(std::ostream&));
+    /// char stream function
+    KratosException& operator << (const char * rString);
 
-      ///@}
-      ///@name Operators 
-      ///@{
-      
-      /// string stream function
-      template<class StreamValueType>
-      KratosException& operator << (StreamValueType const& rValue)
-      {
-          std::stringstream buffer;
-          buffer << rValue;
+    ///@}
+    ///@name Operations
+    ///@{
 
-          append_message(buffer.str());
+    void append_message(std::string const& rMessage);
 
-          return *this;
-      }
+    void add_to_call_stack(CodeLocation const& TheLocation);
 
-      /// Manipulator stream function
-    //  template<class StreamValueType>
-      KratosException& operator << (std::ostream& (*pf)(std::ostream&));
-      /// char stream function
-      KratosException& operator << (const char * rString);
 
-      ///@}
-      ///@name Operations
-      ///@{
+    ///@}
+    ///@name Access
+    ///@{
 
-	  void append_message(std::string const& rWhat);
+    /// The overide of the base class what method
+    /** This method returns the entire message with where information
+    */
 
-	  void append_where(std::string const& rWhere);
-      
-      
-      ///@}
-      ///@name Access
-      ///@{ 
+    const char* what() const noexcept override;
 
-	  /// The overide of the base class what method
-	  /** This method returns the entire message with where information
-	  */
+    const std::string& message() const;
 
-      const char* what() const throw () /*noexcept*/; // Todo: I should change this after switching to c++11. Pooyan.
+    const CodeLocation where() const;
 
-	  const std::string& message() const;
+    ///@}
+    ///@name Input and output
+    ///@{
 
-	  const std::string& where() const;
+    /// Turn back information as a string.
+    virtual std::string Info() const;
 
-      
-      ///@}
-      ///@name Inquiry
-      ///@{
-      
-      
-      ///@}      
-      ///@name Input and output
-      ///@{
+    /// Print information about this object.
+    virtual void PrintInfo(std::ostream& rOStream) const;
 
-      /// Turn back information as a string.
-      virtual std::string Info() const;
-      
-      /// Print information about this object.
-      virtual void PrintInfo(std::ostream& rOStream) const;
+    /// Print object's data.
+    virtual void PrintData(std::ostream& rOStream) const;
 
-      /// Print object's data.
-      virtual void PrintData(std::ostream& rOStream) const;
-      
-            
-      ///@}      
-      ///@name Friends
-      ///@{
-      
-            
-      ///@}
-      
-    protected:
-      ///@name Protected static Member Variables 
-      ///@{ 
-        
-        
-      ///@} 
-      ///@name Protected member Variables 
-      ///@{ 
-        
-        
-      ///@} 
-      ///@name Protected Operators
-      ///@{ 
-        
-        
-      ///@} 
-      ///@name Protected Operations
-      ///@{ 
-        
-        
-      ///@} 
-      ///@name Protected  Access 
-      ///@{ 
-        
-        
-      ///@}      
-      ///@name Protected Inquiry 
-      ///@{ 
-        
-        
-      ///@}    
-      ///@name Protected LifeCycle 
-      ///@{ 
-      
-            
-      ///@}
-      
-    private:
-      ///@name Static Member Variables 
-      ///@{ 
-        
-        
-      ///@} 
-      ///@name Member Variables 
-      ///@{ 
 
-		std::string mWhat;
-		std::string mWhere;
-		std::string mMessage;
-        
-        
-      ///@} 
-      ///@name Private Operators
-      ///@{ 
-        
-        
-      ///@} 
-      ///@name Private Operations
-      ///@{ 
-        
-        
-      ///@} 
-      ///@name Private  Access 
-      ///@{ 
-        
-        
-      ///@}    
-      ///@name Private Inquiry 
-      ///@{ 
-        
-        
-      ///@}    
-      ///@name Un accessible methods 
-      ///@{ 
-      
-      /// Assignment operator.
-      KratosException& operator=(KratosException const& rOther);
+    ///@}
 
-        
-      ///@}    
-        
-    }; // Class KratosException 
+private:
+    ///@name Member Variables
+    ///@{
 
-  ///@} 
-  
-  ///@name Type Definitions       
-  ///@{ 
-  
-  
-  ///@} 
-  ///@name Input and output 
-  ///@{ 
-        
- 
-  /// input stream function
-  std::istream& operator >> (std::istream& rIStream, 
-  				    KratosException& rThis);
+    std::string mMessage;
+    std::string mWhat;
+    std::vector<CodeLocation> mCallStack;
 
-  /// output stream function
-  //std::ostream& operator << (std::ostream& rOStream,
-  //	  const KratosException& rThis);
+    ///@}
+    ///@name private operations
+    ///@{
 
-//  /// string stream function
-//  template<class StreamValueType>
-//  KratosException operator << (KratosException rThis, StreamValueType const& rValue)
-//  {
-//	  std::stringstream buffer;
-//	  buffer << rValue;
+    void update_what();
 
-//	  rThis.append_message(buffer.str());
+    ///@}
 
-//	  return rThis;
-//  }
+}; // Class KratosException
 
-//  /// Manipulator stream function
-////  template<class StreamValueType>
-//  KRATOS_API(KRATOS_CORE) KratosException operator << (KratosException rThis, std::ostream& (*pf)(std::ostream&));
-//  /// char stream function
-//  KRATOS_API(KRATOS_CORE) KratosException operator << (KratosException rThis, const char * rString);
+///@}
 
-  ///@}
+///@name Kratos Macros
+///@{
 
-  ///@} addtogroup block
+#define KRATOS_ERROR throw Kratos::KratosException("Error: ", KRATOS_CODE_LOCATION)
+#define KRATOS_ERROR_IF(conditional) if(conditional) KRATOS_ERROR
+#define KRATOS_ERROR_IF_NOT(conditional) if(!(conditional)) KRATOS_ERROR
+
+#ifdef KRATOS_DEBUG
+#define KRATOS_DEBUG_ERROR KRATOS_ERROR
+#define KRATOS_DEBUG_ERROR_IF(conditional) KRATOS_ERROR_IF(conditional)
+#define KRATOS_DEBUG_ERROR_IF_NOT(conditional)  KRATOS_ERROR_IF_NOT(conditional)
+#else
+#define KRATOS_DEBUG_ERROR if(false) KRATOS_ERROR
+#define KRATOS_DEBUG_ERROR_IF(conditional) if(false) KRATOS_ERROR_IF(conditional)
+#define KRATOS_DEBUG_ERROR_IF_NOT(conditional) if(false) KRATOS_ERROR_IF_NOT(conditional)
+#endif
+///@}
+///@name Input and output
+///@{
+
+
+/// input stream function
+std::istream& operator >> (std::istream& rIStream,
+                KratosException& rThis);
+
+/// output stream function
+KRATOS_API(KRATOS_CORE) std::ostream& operator << (std::ostream& rOStream, const KratosException& rThis);
+
+
+///@}
+
+///@} addtogroup block
 
 }  // namespace Kratos.
 
-#endif // KRATOS_KRATOS_EXCEPTION_H_INCLUDED  defined 
-
-
+#endif // KRATOS_EXCEPTION_H_INCLUDED  defined
