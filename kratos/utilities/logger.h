@@ -45,15 +45,12 @@ namespace Kratos
 
 #define KRATOS_HERE Logger::CleanFunctionName(BOOST_CURRENT_FUNCTION , __FILE__ , __LINE__)
 
-#define KRATOS_ERROR throw KratosException("Error: ", KRATOS_HERE)   
-
 #define KRATOS_TIME_STAMP "[" << KratosLogUtils::GetInstance().CurrentDateTime() << "]"
 #define KRATOS_PROCESS_ID "[PID=" << getpid() << "]"
 
 #define KRATOS_ERROR_STAMP_DETAIL(file,line,function) "ERROR:" << KRATOS_HERE
 #define KRATOS_ERROR_STAMP KRATOS_ERROR_STAMP_DETAIL(__FILE__,__LINE__,KRATOS_LOG_FILTER(BOOST_CURRENT_FUNCTION))
 
-//#define KRATOS_ERROR throw KratosException();  
   ///@} 
   ///@name Type Definitions
   ///@{ 

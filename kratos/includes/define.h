@@ -130,18 +130,12 @@ KRATOS_CATCH_WITH_BLOCK(MoreInfo,{})
 catch(ExceptionType& e)                                        \
 {                                                              \
 Block                                                          \
-std::stringstream buffer;                                      \
-buffer << "\nwhile executing : " << KRATOS_HERE << MoreInfo ; \
-throw KratosException(e.what(), buffer.str());                             \
+KRATOS_ERROR << e.what();                             \
 }
 
 #define KRATOS_THROW_ERROR(ExceptionType, ErrorMessage, MoreInfo)    \
 {                                                              \
-std::stringstream kratos_error_buffer_where_12345;                                      \
-std::stringstream kratos_error_buffer_what_12345;                                      \
-kratos_error_buffer_where_12345 << KRATOS_HERE << std::endl; \
-kratos_error_buffer_what_12345 << ErrorMessage << " " << MoreInfo; \
-throw KratosException(kratos_error_buffer_what_12345.str(), kratos_error_buffer_where_12345.str());                             \
+KRATOS_ERROR << ErrorMessage << MoreInfo << std::endl;          \
 }
 
 #define KRATOS_CATCH_WITH_BLOCK(MoreInfo,Block) \

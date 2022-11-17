@@ -434,7 +434,8 @@ public:
         return false;
     }
 
-    CoordinatesArrayType& PointLocalCoordinates( CoordinatesArrayType& rResult, const CoordinatesArrayType& rPoint ) const override
+    CoordinatesArrayType& PointLocalCoordinates( CoordinatesArrayType& rResult, const CoordinatesArrayType& rPoint,
+            const bool& force_error = true ) const override
     {
         boost::numeric::ublas::bounded_matrix<double,3,3> X;
         boost::numeric::ublas::bounded_matrix<double,3,2> DN;
@@ -493,7 +494,9 @@ public:
 
             if ( k>0 && norm_2( DeltaXi ) > 30 )
             {
-                KRATOS_THROW_ERROR(std::logic_error,"computation of local coordinates failed at iteration",k)
+                if (force_error)
+                    KRATOS_THROW_ERROR(std::logic_error,"computation of local coordinates failed at iteration ", k)
+                break;
             }
 
             if ( norm_2( DeltaXi ) < tol )
@@ -505,7 +508,8 @@ public:
         return( rResult );
     }
 
-    CoordinatesArrayType& PointLocalCoordinates( CoordinatesArrayType& rResult, const CoordinatesArrayType& rPoint, Matrix& DeltaPosition ) const override
+    CoordinatesArrayType& PointLocalCoordinates( CoordinatesArrayType& rResult, const CoordinatesArrayType& rPoint,
+            Matrix& DeltaPosition, const bool& force_error = true ) const override
     {
         boost::numeric::ublas::bounded_matrix<double,3,3> X;
         boost::numeric::ublas::bounded_matrix<double,3,2> DN;
@@ -564,7 +568,9 @@ public:
 
             if ( k>0 && norm_2( DeltaXi ) > 30 )
             {
-                KRATOS_THROW_ERROR(std::logic_error,"computation of local coordinates failed at iteration",k)
+                if (force_error)
+                    KRATOS_THROW_ERROR(std::logic_error,"computation of local coordinates failed at iteration ", k)
+                break;
             }
 
             if ( norm_2( DeltaXi ) < tol )

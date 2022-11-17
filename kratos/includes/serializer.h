@@ -373,6 +373,7 @@ public:
     KRATOS_SERIALIZATION_DIRECT_LOAD(unsigned int)
     KRATOS_SERIALIZATION_DIRECT_LOAD(std::string)
     KRATOS_SERIALIZATION_DIRECT_LOAD(Matrix)
+    KRATOS_SERIALIZATION_DIRECT_LOAD(SymmetricMatrix)
     KRATOS_SERIALIZATION_DIRECT_LOAD(long long)
 //#ifdef  _WIN32 // work around for windows int64_t error
 //    KRATOS_SERIALIZATION_DIRECT_LOAD(__int64)
@@ -540,6 +541,7 @@ public:
     KRATOS_SERIALIZATION_DIRECT_SAVE(std::string)
 //        KRATOS_SERIALIZATION_DIRECT_SAVE(Vector)
     KRATOS_SERIALIZATION_DIRECT_SAVE(Matrix)
+    KRATOS_SERIALIZATION_DIRECT_SAVE(SymmetricMatrix)
     KRATOS_SERIALIZATION_DIRECT_SAVE(long long)
 //#ifdef  _WIN32 // work around for windows int64_t error
 //    KRATOS_SERIALIZATION_DIRECT_SAVE(__int64)
@@ -1006,6 +1008,20 @@ private:
     template<class TDataType>
     void read(boost::numeric::ublas::matrix<TDataType>& rData)
     {
+        read_matrix(rData);
+    }
+
+    template<class TDataType>
+    void read(boost::numeric::ublas::symmetric_matrix<TDataType>& rData)
+    {
+        read_matrix(rData);
+    }
+
+    template<class TMatrixType>
+    void read_matrix(TMatrixType& rData)
+    {
+        typedef typename TMatrixType::value_type TDataType;
+
         KRATOS_SERIALIZER_MODE_BINARY
 
         SizeType size1;
@@ -1038,6 +1054,20 @@ private:
     template<class TDataType>
     void write(boost::numeric::ublas::matrix<TDataType> const& rData)
     {
+        write_matrix(rData);
+    }
+
+    template<class TDataType>
+    void write(boost::numeric::ublas::symmetric_matrix<TDataType> const& rData)
+    {
+        write_matrix(rData);
+    }
+
+    template<class TMatrixType>
+    void write_matrix(TMatrixType const& rData)
+    {
+        typedef typename TMatrixType::value_type TDataType;
+
         KRATOS_SERIALIZER_MODE_BINARY
 
         SizeType rData_size1 = rData.size1();

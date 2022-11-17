@@ -393,6 +393,17 @@ public:
         return p_clone;
     }
 
+    /**
+    * @brief GeometryData contains all information about dimensions
+    *        and has a set of precomputed values for integration points
+    *        and shape functions, including derivatives.
+    * @return the geometry data of a certain geometry class.
+    */
+    GeometryData const& GetGeometryData() const
+    {
+        return *mpGeometryData;
+    }
+
     #ifdef ENABLE_BEZIER_GEOMETRY
     // Initialize this geometry
     virtual void Initialize(IntegrationMethod ThisMethod)
@@ -696,7 +707,7 @@ public:
     * Returns the local coordinates of a given arbitrary point
     */
     virtual CoordinatesArrayType& PointLocalCoordinates( CoordinatesArrayType& rResult,
-            const CoordinatesArrayType& rPoint ) const
+            const CoordinatesArrayType& rPoint, const bool& force_error = true ) const
     {
         if (this->WorkingSpaceDimension() != this->LocalSpaceDimension())
             KRATOS_THROW_ERROR(std::logic_error, "Attention, the Point Local Coordinates must be specialized for the current geometry", "");
@@ -739,12 +750,15 @@ public:
 
             if ( norm_dxi > max_norm_xi )
             {
-                KRATOS_WATCH(rPoint)
-                KRATOS_WATCH(rResult)
-                KRATOS_WATCH(CurrentGlobalCoords)
-                KRATOS_WATCH(DeltaXi)
-                KRATOS_WATCH(J)
-                KRATOS_THROW_ERROR(std::logic_error, "Computation of point local coordinates fails at step", k)
+                if (force_error)
+                {
+                    KRATOS_WATCH(rPoint)
+                    KRATOS_WATCH(rResult)
+                    KRATOS_WATCH(CurrentGlobalCoords)
+                    KRATOS_WATCH(DeltaXi)
+                    KRATOS_WATCH(J)
+                    KRATOS_THROW_ERROR(std::logic_error, "Computation of point local coordinates fails at iteration ", k)
+                }
                 break;
             }
 
@@ -761,7 +775,7 @@ public:
     * Returns the local coordinates of a given arbitrary point
     */
     virtual CoordinatesArrayType& PointLocalCoordinates( CoordinatesArrayType& rResult,
-            const CoordinatesArrayType& rPoint, Matrix& DeltaPosition ) const
+            const CoordinatesArrayType& rPoint, Matrix& DeltaPosition, const bool& force_error = true ) const
     {
         if (this->WorkingSpaceDimension() != this->LocalSpaceDimension())
             KRATOS_THROW_ERROR(std::logic_error, "Attention, the Point Local Coordinates must be specialized for the current geometry", "");
@@ -804,12 +818,15 @@ public:
 
             if ( norm_dxi > max_norm_xi )
             {
-                KRATOS_WATCH(rPoint)
-                KRATOS_WATCH(rResult)
-                KRATOS_WATCH(CurrentGlobalCoords)
-                KRATOS_WATCH(DeltaXi)
-                KRATOS_WATCH(J)
-                KRATOS_THROW_ERROR(std::logic_error, "Computation of point local coordinates fails at step", k)
+                if (force_error)
+                {
+                    KRATOS_WATCH(rPoint)
+                    KRATOS_WATCH(rResult)
+                    KRATOS_WATCH(CurrentGlobalCoords)
+                    KRATOS_WATCH(DeltaXi)
+                    KRATOS_WATCH(J)
+                    KRATOS_THROW_ERROR(std::logic_error, "Computation of point local coordinates fails at iteration ", k)
+                }
                 break;
             }
 
@@ -838,7 +855,7 @@ public:
     */
     virtual bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult ) const
     {
-        this->PointLocalCoordinates( rResult, rPoint );
+        this->PointLocalCoordinates( rResult, rPoint, false );
 
         return this->IsInside(rResult);
     }
@@ -849,7 +866,7 @@ public:
     */
     virtual bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult, Matrix& DeltaPosition ) const
     {
-        this->PointLocalCoordinates( rResult, rPoint, DeltaPosition );
+        this->PointLocalCoordinates( rResult, rPoint, DeltaPosition, false );
 
         return this->IsInside(rResult);
     }

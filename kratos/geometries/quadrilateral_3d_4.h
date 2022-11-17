@@ -348,7 +348,7 @@ public:
     Vector& LumpingFactors( Vector& rResult ) const override
     {
         if(rResult.size() != 4)
-   	        rResult.resize( 4, false );
+            rResult.resize( 4, false );
         std::fill( rResult.begin(), rResult.end(), 1.00 / 4.00 );
         return rResult;
     }
@@ -403,60 +403,60 @@ public:
         /*Vector d = this->Points()[2] - this->Points()[0];
         return( sqrt( d[0]*d[0] + d[1]*d[1] + d[2]*d[2] ) );*/
 
-		// New - 24/01/2014 - Massimo Petracca
-		// the following procedure calculates the area of a general
-		// quadrilateral (flat or warped) using the parametric representation
-		// of ruled hyperbolic paraboloid surface.
-		// the integration of the normal is then performed with a 2x2 gauss quadrature
-		// in the U-V domain [0,1].
-		// results explicitly written after symbolic calculation.
+        // New - 24/01/2014 - Massimo Petracca
+        // the following procedure calculates the area of a general
+        // quadrilateral (flat or warped) using the parametric representation
+        // of ruled hyperbolic paraboloid surface.
+        // the integration of the normal is then performed with a 2x2 gauss quadrature
+        // in the U-V domain [0,1].
+        // results explicitly written after symbolic calculation.
 
-		const TPointType& p1 = this->Points()[0];
-		const TPointType& p2 = this->Points()[1];
-		const TPointType& p3 = this->Points()[2];
-		const TPointType& p4 = this->Points()[3];
+        const TPointType& p1 = this->Points()[0];
+        const TPointType& p2 = this->Points()[1];
+        const TPointType& p3 = this->Points()[2];
+        const TPointType& p4 = this->Points()[3];
 
-		double p1x = p1.X();
-		double p1y = p1.Y();
-		double p1z = p1.Z();
+        double p1x = p1.X();
+        double p1y = p1.Y();
+        double p1z = p1.Z();
 
-		double p2x = p2.X();
-		double p2y = p2.Y();
-		double p2z = p2.Z();
+        double p2x = p2.X();
+        double p2y = p2.Y();
+        double p2z = p2.Z();
 
-		double p3x = p3.X();
-		double p3y = p3.Y();
-		double p3z = p3.Z();
+        double p3x = p3.X();
+        double p3y = p3.Y();
+        double p3z = p3.Z();
 
-		double p4x = p4.X();
-		double p4y = p4.Y();
-		double p4z = p4.Z();
+        double p4x = p4.X();
+        double p4y = p4.Y();
+        double p4z = p4.Z();
 
-		double pos = 0.5 + 0.5 / std::sqrt(3.0);
-		double w = 0.25;
+        double pos = 0.5 + 0.5 / std::sqrt(3.0);
+        double w = 0.25;
 
-		double C1  = pos*(p1z - p2z + p3z - p4z);
-		double C2  = pos*(p1y - p2y + p3y - p4y);
-		double C3  = pos*(p1x - p2x + p3x - p4x);
-		double C4  = C1 - p1z + p2z;
-		double C5  = C1 + p1z - p2z;
-		double C6  = C2 + p1y - p2y;
-		double C7  = C2 - p1y + p2y;
-		double C8  = C3 - p1x + p2x;
-		double C9  = C3 + p1x - p2x;
-		double C10 = C1 - p1z + p4z;
-		double C11 = C2 - p1y + p4y;
-		double C12 = C3 - p1x + p4x;
-		double C13 = C1 + p1z - p4z;
-		double C14 = C2 + p1y - p4y;
-		double C15 = C3 + p1x - p4x;
+        double C1  = pos*(p1z - p2z + p3z - p4z);
+        double C2  = pos*(p1y - p2y + p3y - p4y);
+        double C3  = pos*(p1x - p2x + p3x - p4x);
+        double C4  = C1 - p1z + p2z;
+        double C5  = C1 + p1z - p2z;
+        double C6  = C2 + p1y - p2y;
+        double C7  = C2 - p1y + p2y;
+        double C8  = C3 - p1x + p2x;
+        double C9  = C3 + p1x - p2x;
+        double C10 = C1 - p1z + p4z;
+        double C11 = C2 - p1y + p4y;
+        double C12 = C3 - p1x + p4x;
+        double C13 = C1 + p1z - p4z;
+        double C14 = C2 + p1y - p4y;
+        double C15 = C3 + p1x - p4x;
 
-		return w * (
-			std::sqrt( std::pow(C4*C11 - C7*C10, 2) + std::pow(C4*C12 - C8*C10, 2) + std::pow(C7*C12 - C8*C11, 2)) + 
-			std::sqrt( std::pow(C5*C11 - C6*C10, 2) + std::pow(C5*C12 - C9*C10, 2) + std::pow(C6*C12 - C9*C11, 2)) + 
-			std::sqrt( std::pow(C4*C14 - C7*C13, 2) + std::pow(C4*C15 - C8*C13, 2) + std::pow(C7*C15 - C8*C14, 2)) + 
-			std::sqrt( std::pow(C5*C14 - C6*C13, 2) + std::pow(C5*C15 - C9*C13, 2) + std::pow(C6*C15 - C9*C14, 2))
-			);
+        return w * (
+            std::sqrt( std::pow(C4*C11 - C7*C10, 2) + std::pow(C4*C12 - C8*C10, 2) + std::pow(C7*C12 - C8*C11, 2)) +
+            std::sqrt( std::pow(C5*C11 - C6*C10, 2) + std::pow(C5*C12 - C9*C10, 2) + std::pow(C6*C12 - C9*C11, 2)) +
+            std::sqrt( std::pow(C4*C14 - C7*C13, 2) + std::pow(C4*C15 - C8*C13, 2) + std::pow(C7*C15 - C8*C14, 2)) +
+            std::sqrt( std::pow(C5*C14 - C6*C13, 2) + std::pow(C5*C15 - C9*C13, 2) + std::pow(C6*C15 - C9*C14, 2))
+            );
     }
 
     /** This method calculates and returns length, area or volume of
@@ -475,19 +475,19 @@ public:
      */
     double DomainSize() const override
     {
-		// Old
+        // Old
 
         //return fabs( DeterminantOfJacobian( PointType() ) ) * 0.5;
 
-		// New - 24/01/2014 - Massimo Petracca
+        // New - 24/01/2014 - Massimo Petracca
 
-		return Area();
+        return Area();
     }
 
 
     double Volume() const override
     {
-		// Old
+        // Old
 
         //Vector temp;
         //DeterminantOfJacobian( temp, msGeometryData.DefaultIntegrationMethod() );
@@ -502,9 +502,9 @@ public:
         ////KRATOS_WATCH(temp)
         //return Volume;
 
-		// New - 24/01/2014 - Massimo Petracca
+        // New - 24/01/2014 - Massimo Petracca
 
-		return Area();
+        return Area();
     }
 
 
@@ -522,7 +522,8 @@ public:
     }
 
 
-    CoordinatesArrayType& PointLocalCoordinates( CoordinatesArrayType& rResult, const CoordinatesArrayType& rPoint ) const override
+    CoordinatesArrayType& PointLocalCoordinates( CoordinatesArrayType& rResult, const CoordinatesArrayType& rPoint,
+        const bool& force_error = true ) const override
     {
         boost::numeric::ublas::bounded_matrix<double,3,4> X;
         boost::numeric::ublas::bounded_matrix<double,3,2> DN;
@@ -581,9 +582,12 @@ public:
 
             if ( norm_2( DeltaXi ) > 300 )
             {
-                res[0] = 0.0;
-                res[1] = 0.0;
-                std::cout << "detJ =" << det_j << "DeltaX = " << DeltaXi << " stopping calculation and assigning the baricenter" << std::endl;
+                if (force_error)
+                {
+                    std::stringstream ss;
+                    ss << "detJ =" << det_j << "DeltaX = " << DeltaXi << " stopping calculation at iteration " << k;
+                    KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+                }
                 break;
                 //KRATOS_THROW_ERROR(std::logic_error,"computation of local coordinates failed at iteration",k)
             }
@@ -597,7 +601,8 @@ public:
         return( rResult );
     }
 
-    CoordinatesArrayType& PointLocalCoordinates( CoordinatesArrayType& rResult, const CoordinatesArrayType& rPoint, Matrix& DeltaPosition ) const override
+    CoordinatesArrayType& PointLocalCoordinates( CoordinatesArrayType& rResult, const CoordinatesArrayType& rPoint, Matrix& DeltaPosition,
+        const bool& force_error = true ) const override
     {
         boost::numeric::ublas::bounded_matrix<double,3,4> X;
         boost::numeric::ublas::bounded_matrix<double,3,2> DN;
@@ -656,9 +661,12 @@ public:
 
             if ( norm_2( DeltaXi ) > 300 )
             {
-                res[0] = 0.0;
-                res[1] = 0.0;
-                std::cout << "detJ =" << det_j << "DeltaX = " << DeltaXi << " stopping calculation and assigning the baricenter" << std::endl;
+                if (force_error)
+                {
+                    std::stringstream ss;
+                    ss << "detJ =" << det_j << "DeltaX = " << DeltaXi << " stopping calculation at iteration " << k;
+                    KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+                }
                 break;
                 //KRATOS_THROW_ERROR(std::logic_error,"computation of local coordinates failed at iteration",k)
             }
@@ -753,7 +761,7 @@ public:
      * point index of given integration method.
      *
      * @param DeltaPosition Matrix with the nodes position increment which describes
-     * the configuration where the jacobian has to be calculated.     
+     * the configuration where the jacobian has to be calculated.
      *
      * @see DeterminantOfJacobian
      * @see InverseOfJacobian
@@ -1715,5 +1723,5 @@ GeometryData Quadrilateral3D4<TPointType>::msGeometryData(
 );
 }// namespace Kratos.
 
-#endif // KRATOS_QUADRILATERAL_3D_4_H_INCLUDED  defined 
+#endif // KRATOS_QUADRILATERAL_3D_4_H_INCLUDED  defined
 

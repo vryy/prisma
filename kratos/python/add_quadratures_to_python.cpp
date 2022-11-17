@@ -34,16 +34,16 @@
 namespace Kratos
 {
 
-template<class TStream, std::size_t TDimension>
-TStream& operator << (TStream& rOStream,
-                      std::vector<IntegrationPoint<TDimension> > const & rThis)
-{
-    typename std::vector<IntegrationPoint<TDimension> >::size_type i;
-    for(i = 0 ; i < rThis.size() - 1 ; i++)
-        rOStream << rThis[i] << " , " << std::endl;
-    rOStream << rThis[i];
-    return rOStream;
-}
+// template<class TStream, std::size_t TDimension>
+// TStream& operator << (TStream& rOStream,
+//                       std::vector<IntegrationPoint<TDimension> > const & rThis)
+// {
+//     typename std::vector<IntegrationPoint<TDimension> >::size_type i;
+//     for(i = 0 ; i < rThis.size() - 1 ; i++)
+//         rOStream << rThis[i] << " , " << std::endl;
+//     // rOStream << rThis[i];
+//     return rOStream;
+// }
 
 namespace Python
 {
