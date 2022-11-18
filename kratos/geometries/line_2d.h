@@ -198,11 +198,12 @@ public:
 
     GeometryData::KratosGeometryFamily GetGeometryFamily() const final
     {
-        return GeometryData::Kratos_Linear;
+        return GeometryData::KratosGeometryFamily::Kratos_Linear;
     }
+
     GeometryData::KratosGeometryType GetGeometryType() const final
     {
-        return GeometryData::Kratos_Line2D2;
+        return GeometryData::KratosGeometryType::Kratos_Line2D2;
     }
 
     ///@}
@@ -253,7 +254,7 @@ public:
         return typename BaseType::Pointer(new Line2D(ThisPoints));
     }
 
-    virtual Geometry< Point<3> >::Pointer Clone() const
+    Geometry< Point<3> >::Pointer Clone() const override
     {
         Geometry< Point<3> >::PointsArrayType NewPoints;
 
@@ -269,9 +270,9 @@ public:
     }
 
     //lumping factors for the calculation of the lumped mass matrix
-    virtual Vector& LumpingFactors(Vector& rResult) const
+    Vector& LumpingFactors(Vector& rResult) const override
     {
-	if(rResult.size() != 2)
+    if(rResult.size() != 2)
            rResult.resize(2, false);
         rResult[0] = 0.5;
         rResult[1] = 0.5;
@@ -294,16 +295,16 @@ public:
     @see Volume()
     @see DomainSize()
     */
-    virtual double Length() const
+    double Length() const override
     {
-        
+
         const TPointType& point0 = BaseType::GetPoint(0);
         const TPointType& point1 = BaseType::GetPoint(1);
         const double lx = point0.X() - point1.X();
         const double ly = point0.Y() - point1.Y();
-        
+
         const double length = lx * lx + ly * ly;
-        
+
         return sqrt( length );
     }
 
@@ -318,7 +319,7 @@ public:
     @see Volume()
     @see DomainSize()
     */
-    virtual double Area() const
+    double Area() const override
     {
         return 0.00;
     }
@@ -334,15 +335,15 @@ public:
     @see Area()
     @see Volume()
     */
-    virtual double DomainSize() const
+    double DomainSize() const override
     {
         const TPointType& point0 = BaseType::GetPoint(0);
         const TPointType& point1 = BaseType::GetPoint(1);
         const double lx = point0.X() - point1.X();
         const double ly = point0.Y() - point1.Y();
-        
+
         const double length = lx * lx + ly * ly;
-        
+
         return sqrt( length );
     }
 
@@ -367,10 +368,10 @@ public:
     @see DeterminantOfJacobian
     @see InverseOfJacobian
     */
-    virtual JacobiansType& Jacobian(JacobiansType& rResult, IntegrationMethod ThisMethod) const
+    JacobiansType& Jacobian(JacobiansType& rResult, IntegrationMethod ThisMethod) const override
     {
         Matrix jacobian(2,1);
-        jacobian(0,0)=(BaseType::GetPoint(1).X()-BaseType::GetPoint(0).X())*0.5;	//on the Gauss points (J is	constant at	each element)
+        jacobian(0,0)=(BaseType::GetPoint(1).X()-BaseType::GetPoint(0).X())*0.5;    //on the Gauss points (J is constant at each element)
         jacobian(1,0)=(BaseType::GetPoint(1).Y()-BaseType::GetPoint(0).Y())*0.5;
 
         if(rResult.size() != BaseType::IntegrationPointsNumber(ThisMethod))
@@ -395,15 +396,15 @@ public:
     point index of given integration method.
 
     @param DeltaPosition Matrix with the nodes position increment which describes
-    the configuration where the jacobian has to be calculated.     
+    the configuration where the jacobian has to be calculated.
 
     @see DeterminantOfJacobian
     @see InverseOfJacobian
     */
-    virtual JacobiansType& Jacobian(JacobiansType& rResult, IntegrationMethod ThisMethod, Matrix & DeltaPosition ) const
+    JacobiansType& Jacobian(JacobiansType& rResult, IntegrationMethod ThisMethod, Matrix & DeltaPosition ) const override
     {
         Matrix jacobian(2,1);
-        jacobian(0,0)=(BaseType::GetPoint(1).X() - DeltaPosition(1,0) - BaseType::GetPoint(0).X() - DeltaPosition(0,0))*0.5;	//on the Gauss points (J is	constant at	each element)
+        jacobian(0,0)=(BaseType::GetPoint(1).X() - DeltaPosition(1,0) - BaseType::GetPoint(0).X() - DeltaPosition(0,0))*0.5;    //on the Gauss points (J is constant at each element)
         jacobian(1,0)=(BaseType::GetPoint(1).Y() - DeltaPosition(1,1) - BaseType::GetPoint(0).Y() - DeltaPosition(0,1))*0.5;
 
         if(rResult.size() != BaseType::IntegrationPointsNumber(ThisMethod))
@@ -433,10 +434,10 @@ public:
     @see DeterminantOfJacobian
     @see InverseOfJacobian
     */
-    virtual Matrix& Jacobian(Matrix& rResult, IndexType IntegrationPointIndex, IntegrationMethod ThisMethod) const
+    Matrix& Jacobian(Matrix& rResult, IndexType IntegrationPointIndex, IntegrationMethod ThisMethod) const override
     {
         Matrix jacobian(2,1);
-        jacobian(0,0)=(BaseType::GetPoint(1).X()-BaseType::GetPoint(0).X())*0.5;	//on the Gauss points (J is	constant at	each element)
+        jacobian(0,0)=(BaseType::GetPoint(1).X()-BaseType::GetPoint(0).X())*0.5;    //on the Gauss points (J is constant at each element)
         jacobian(1,0)=(BaseType::GetPoint(1).Y()-BaseType::GetPoint(0).Y())*0.5;
         return rResult;
     }
@@ -452,10 +453,10 @@ public:
     @see DeterminantOfJacobian
     @see InverseOfJacobian
     */
-    virtual Matrix& Jacobian(Matrix& rResult, const CoordinatesArrayType& rPoint) const
+    Matrix& Jacobian(Matrix& rResult, const CoordinatesArrayType& rPoint) const override
     {
         Matrix jacobian(2,1);
-        jacobian(0,0)=(BaseType::GetPoint(1).X()-BaseType::GetPoint(0).X())*0.5;	//on the Gauss points (J is	constant at	each element)
+        jacobian(0,0)=(BaseType::GetPoint(1).X()-BaseType::GetPoint(0).X())*0.5;    //on the Gauss points (J is constant at each element)
         jacobian(1,0)=(BaseType::GetPoint(1).Y()-BaseType::GetPoint(0).Y())*0.5;
         return rResult;
     }
@@ -471,7 +472,7 @@ public:
     @see Jacobian
     @see InverseOfJacobian
     */
-    virtual Vector& DeterminantOfJacobian(Vector& rResult, IntegrationMethod ThisMethod) const
+    Vector& DeterminantOfJacobian(Vector& rResult, IntegrationMethod ThisMethod) const override
     {
         KRATOS_THROW_ERROR(std::logic_error, "Jacobian is not square" , "");
     }
@@ -494,7 +495,7 @@ public:
     @see Jacobian
     @see InverseOfJacobian
     */
-    virtual double DeterminantOfJacobian(IndexType IntegrationPointIndex, IntegrationMethod ThisMethod) const
+    double DeterminantOfJacobian(IndexType IntegrationPointIndex, IntegrationMethod ThisMethod) const override
     {
         KRATOS_THROW_ERROR(std::logic_error, "Jacobian is not square" , "");
     }
@@ -511,7 +512,7 @@ public:
     @see DeterminantOfJacobian
     @see InverseOfJacobian
     */
-    virtual double DeterminantOfJacobian(const CoordinatesArrayType& rPoint) const
+    double DeterminantOfJacobian(const CoordinatesArrayType& rPoint) const override
     {
         KRATOS_THROW_ERROR(std::logic_error, "Jacobian is not square" , "");
     }
@@ -531,7 +532,7 @@ public:
     @see Jacobian
     @see DeterminantOfJacobian
     */
-    virtual JacobiansType& InverseOfJacobian(JacobiansType& rResult, IntegrationMethod ThisMethod) const
+    JacobiansType& InverseOfJacobian(JacobiansType& rResult, IntegrationMethod ThisMethod) const override
     {
         KRATOS_THROW_ERROR(std::logic_error, "Jacobian is not square" , "");
     }
@@ -553,7 +554,7 @@ public:
     @see Jacobian
     @see DeterminantOfJacobian
     */
-    virtual Matrix& InverseOfJacobian(Matrix& rResult, IndexType IntegrationPointIndex, IntegrationMethod ThisMethod) const
+    Matrix& InverseOfJacobian(Matrix& rResult, IndexType IntegrationPointIndex, IntegrationMethod ThisMethod) const override
     {
         KRATOS_THROW_ERROR(std::logic_error, "Jacobian is not square" , "");
     }
@@ -569,7 +570,7 @@ public:
     @see DeterminantOfJacobian
     @see InverseOfJacobian
     */
-    virtual Matrix& InverseOfJacobian(Matrix& rResult, const CoordinatesArrayType& rPoint) const
+    Matrix& InverseOfJacobian(Matrix& rResult, const CoordinatesArrayType& rPoint) const override
     {
         KRATOS_THROW_ERROR(std::logic_error, "Jacobian is not square" , "");
     }
@@ -578,7 +579,7 @@ public:
     /** EdgesNumber
     @return SizeType containes number of this geometry edges.
     */
-    virtual SizeType EdgesNumber() const
+    SizeType EdgesNumber() const override
     {
         return 2;
     }
@@ -587,8 +588,8 @@ public:
     ///@name Shape Function
     ///@{
 
-    virtual double ShapeFunctionValue(IndexType ShapeFunctionIndex,
-                                      const CoordinatesArrayType& rPoint) const
+    double ShapeFunctionValue(IndexType ShapeFunctionIndex,
+                                      const CoordinatesArrayType& rPoint) const override
     {
         KRATOS_THROW_ERROR(std::logic_error,
                      "This method is not implemented yet!" , *this);
@@ -597,7 +598,7 @@ public:
 
 
 
-    virtual ShapeFunctionsGradientsType& ShapeFunctionsIntegrationPointsGradients(ShapeFunctionsGradientsType& rResult, IntegrationMethod ThisMethod) const
+    ShapeFunctionsGradientsType& ShapeFunctionsIntegrationPointsGradients(ShapeFunctionsGradientsType& rResult, IntegrationMethod ThisMethod) const override
     {
         KRATOS_THROW_ERROR(std::logic_error, "Jacobian is not square" , "");
     }
@@ -613,7 +614,7 @@ public:
     @see PrintData()
     @see PrintInfo()
     */
-    virtual std::string Info() const
+    std::string Info() const override
     {
         return "1 dimensional line in 2D space";
     }
@@ -624,7 +625,7 @@ public:
     @see PrintData()
     @see Info()
     */
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << "1 dimensional line in 2D space";
     }
@@ -637,7 +638,7 @@ public:
     @see PrintInfo()
     @see Info()
     */
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
         BaseType::PrintData(rOStream);
         std::cout << std::endl;
@@ -707,12 +708,12 @@ private:
 
     friend class Serializer;
 
-    virtual void save( Serializer& rSerializer ) const
+    void save( Serializer& rSerializer ) const override
     {
         KRATOS_SERIALIZE_SAVE_BASE_CLASS( rSerializer, PointsArrayType );
     }
 
-    virtual void load( Serializer& rSerializer )
+    void load( Serializer& rSerializer ) override
     {
         KRATOS_SERIALIZE_LOAD_BASE_CLASS( rSerializer, PointsArrayType );
     }
@@ -732,7 +733,7 @@ private:
     static Matrix CalculateShapeFunctionsIntegrationPointsValues(typename BaseType::IntegrationMethod ThisMethod)
     {
         const IntegrationPointsContainerType& all_integration_points = AllIntegrationPoints();
-        const IntegrationPointsArrayType& IntegrationPoints = all_integration_points[ThisMethod];
+        const IntegrationPointsArrayType& IntegrationPoints = all_integration_points[static_cast<int>(ThisMethod)];
         int integration_points_number = IntegrationPoints.size();
         Matrix N(integration_points_number,2);
         for(int it_gp = 0; it_gp < integration_points_number; it_gp++)
@@ -748,13 +749,13 @@ private:
     static ShapeFunctionsGradientsType CalculateShapeFunctionsIntegrationPointsLocalGradients(typename BaseType::IntegrationMethod ThisMethod)
     {
         const IntegrationPointsContainerType& all_integration_points = AllIntegrationPoints();
-        const IntegrationPointsArrayType& IntegrationPoints = all_integration_points[ThisMethod];
+        const IntegrationPointsArrayType& IntegrationPoints = all_integration_points[static_cast<int>(ThisMethod)];
         ShapeFunctionsGradientsType DN_De(IntegrationPoints.size());
         std::fill(DN_De.begin(), DN_De.end(), Matrix(2,1));
 
         for(unsigned int it_gp = 0; it_gp < IntegrationPoints.size(); it_gp++)
         {
-            //	double e = IntegrationPoints[it_gp].X();
+            //  double e = IntegrationPoints[it_gp].X();
             DN_De[it_gp](0,0) = -0.5;
             DN_De[it_gp](1,0) =  0.5;
         }
@@ -776,9 +777,9 @@ private:
     static const ShapeFunctionsValuesContainerType AllShapeFunctionsValues()
     {
         ShapeFunctionsValuesContainerType shape_functions_values = {{
-                Line2D<TPointType>::CalculateShapeFunctionsIntegrationPointsValues(GeometryData::GI_GAUSS_1),
-                Line2D<TPointType>::CalculateShapeFunctionsIntegrationPointsValues(GeometryData::GI_GAUSS_2),
-                Line2D<TPointType>::CalculateShapeFunctionsIntegrationPointsValues(GeometryData::GI_GAUSS_3)
+                Line2D<TPointType>::CalculateShapeFunctionsIntegrationPointsValues(GeometryData::IntegrationMethod::GI_GAUSS_1),
+                Line2D<TPointType>::CalculateShapeFunctionsIntegrationPointsValues(GeometryData::IntegrationMethod::GI_GAUSS_2),
+                Line2D<TPointType>::CalculateShapeFunctionsIntegrationPointsValues(GeometryData::IntegrationMethod::GI_GAUSS_3)
             }
         };
         return shape_functions_values;
@@ -786,9 +787,9 @@ private:
     static const ShapeFunctionsLocalGradientsContainerType AllShapeFunctionsLocalGradients()
     {
         ShapeFunctionsLocalGradientsContainerType shape_functions_local_gradients = {{
-                Line2D<TPointType>::CalculateShapeFunctionsIntegrationPointsLocalGradients(GeometryData::GI_GAUSS_1),
-                Line2D<TPointType>::CalculateShapeFunctionsIntegrationPointsLocalGradients(GeometryData::GI_GAUSS_2),
-                Line2D<TPointType>::CalculateShapeFunctionsIntegrationPointsLocalGradients(GeometryData::GI_GAUSS_3)
+                Line2D<TPointType>::CalculateShapeFunctionsIntegrationPointsLocalGradients(GeometryData::IntegrationMethod::GI_GAUSS_1),
+                Line2D<TPointType>::CalculateShapeFunctionsIntegrationPointsLocalGradients(GeometryData::IntegrationMethod::GI_GAUSS_2),
+                Line2D<TPointType>::CalculateShapeFunctionsIntegrationPointsLocalGradients(GeometryData::IntegrationMethod::GI_GAUSS_3)
             }
         };
         return shape_functions_local_gradients;
@@ -850,41 +851,41 @@ inline std::ostream& operator << (std::ostream& rOStream,
 
 //   template<class TPointType>
 //   const typename Line2D<TPointType>::IntegrationPointsContainerType Line2D<TPointType>::msIntegrationPoints = {
-// 	  Quadrature<LineGaussLegendreIntegrationPoints<1>, 2, IntegrationPoint<3> >::GenerateIntegrationPoints(),
-// 	  Quadrature<LineGaussLegendreIntegrationPoints<2>, 2, IntegrationPoint<3> >::GenerateIntegrationPoints(),
-// 	  Quadrature<LineGaussLegendreIntegrationPoints<3>, 2, IntegrationPoint<3> >::GenerateIntegrationPoints()
+//    Quadrature<LineGaussLegendreIntegrationPoints<1>, 2, IntegrationPoint<3> >::GenerateIntegrationPoints(),
+//    Quadrature<LineGaussLegendreIntegrationPoints<2>, 2, IntegrationPoint<3> >::GenerateIntegrationPoints(),
+//    Quadrature<LineGaussLegendreIntegrationPoints<3>, 2, IntegrationPoint<3> >::GenerateIntegrationPoints()
 //   };
 
 
 //   template<class TPointType>
 //   const typename Line2D<TPointType>::ShapeFunctionsValuesContainerType
 //   Line2D<TPointType>::msShapeFunctionsValues = {
-// 	  Line2D<TPointType>::CalculateShapeFunctionsIntegrationPointsValues(GeometryData::GI_GAUSS_1),
-// 	  Line2D<TPointType>::CalculateShapeFunctionsIntegrationPointsValues(GeometryData::GI_GAUSS_2),
-// 	  Line2D<TPointType>::CalculateShapeFunctionsIntegrationPointsValues(GeometryData::GI_GAUSS_3)
+//    Line2D<TPointType>::CalculateShapeFunctionsIntegrationPointsValues(GeometryData::IntegrationMethod::GI_GAUSS_1),
+//    Line2D<TPointType>::CalculateShapeFunctionsIntegrationPointsValues(GeometryData::IntegrationMethod::GI_GAUSS_2),
+//    Line2D<TPointType>::CalculateShapeFunctionsIntegrationPointsValues(GeometryData::IntegrationMethod::GI_GAUSS_3)
 //   };
 
 
 //template<class TPointType>
 //const typename GeometryData::ShapeFunctionsLocalGradientsContainerType
 //Line2D<TPointType>::msShapeFunctionsLocalGradients = {
-// Line2D<TPointType>::CalculateShapeFunctionsIntegrationPointsLocalGradients(GeometryData::GI_GAUSS_1),
-// Line2D<TPointType>::CalculateShapeFunctionsIntegrationPointsLocalGradients(GeometryData::GI_GAUSS_2),
-// Line2D<TPointType>::CalculateShapeFunctionsIntegrationPointsLocalGradients(GeometryData::GI_GAUSS_3)
+// Line2D<TPointType>::CalculateShapeFunctionsIntegrationPointsLocalGradients(GeometryData::IntegrationMethod::GI_GAUSS_1),
+// Line2D<TPointType>::CalculateShapeFunctionsIntegrationPointsLocalGradients(GeometryData::IntegrationMethod::GI_GAUSS_2),
+// Line2D<TPointType>::CalculateShapeFunctionsIntegrationPointsLocalGradients(GeometryData::IntegrationMethod::GI_GAUSS_3)
 //};
 
 template<class TPointType>
 const GeometryData Line2D<TPointType>::msGeometryData(2,
         2,
         1,
-        GeometryData::GI_GAUSS_1,
+        GeometryData::IntegrationMethod::GI_GAUSS_1,
         Line2D<TPointType>::AllIntegrationPoints(),
         Line2D<TPointType>::AllShapeFunctionsValues(),
         AllShapeFunctionsLocalGradients());
 
 }  // namespace Kratos.
 
-#endif // KRATOS_LINE_2D_H_INCLUDED  defined 
+#endif // KRATOS_LINE_2D_H_INCLUDED  defined
 
 
 

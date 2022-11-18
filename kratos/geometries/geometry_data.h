@@ -67,13 +67,21 @@ public:
     - GI_GAUSS_4 gaussian integration with order 4.
     - GI_GAUSS_5 gaussian integration with order 5.
     */
-    enum IntegrationMethod {GI_GAUSS_1, GI_GAUSS_2, GI_GAUSS_3, GI_GAUSS_4, GI_GAUSS_5,
-//                            GI_GAUSS_6, GI_GAUSS_7, GI_GAUSS_8, GI_GAUSS_9, GI_GAUSS_10,
-                            GI_EXTENDED_GAUSS_1, GI_EXTENDED_GAUSS_2, GI_EXTENDED_GAUSS_3, GI_EXTENDED_GAUSS_4, GI_EXTENDED_GAUSS_5,
-                            NumberOfIntegrationMethods
-                           };
+    enum class IntegrationMethod {
+        GI_GAUSS_1,
+        GI_GAUSS_2,
+        GI_GAUSS_3,
+        GI_GAUSS_4,
+        GI_GAUSS_5,
+        GI_EXTENDED_GAUSS_1,
+        GI_EXTENDED_GAUSS_2,
+        GI_EXTENDED_GAUSS_3,
+        GI_EXTENDED_GAUSS_4,
+        GI_EXTENDED_GAUSS_5,
+        NumberOfIntegrationMethods
+    };
 
-    enum KratosGeometryFamily
+    enum class KratosGeometryFamily
     {
         Kratos_NoElement,
         Kratos_Point,
@@ -89,7 +97,7 @@ public:
         Kratos_generic_family
     };
 
-    enum KratosGeometryType
+    enum class KratosGeometryType
     {
         Kratos_generic_type,
         Kratos_Hexahedra3D20,
@@ -179,17 +187,17 @@ public:
     integration points related to different integration method
     implemented in geometry.
     */
-    typedef boost::array<IntegrationPointsArrayType, NumberOfIntegrationMethods> IntegrationPointsContainerType;
+    typedef boost::array<IntegrationPointsArrayType, static_cast<int>(IntegrationMethod::NumberOfIntegrationMethods)> IntegrationPointsContainerType;
 
     /** A third order tensor used as shape functions' values
     continer.
     */
-    typedef boost::array<Matrix, NumberOfIntegrationMethods> ShapeFunctionsValuesContainerType;
+    typedef boost::array<Matrix, static_cast<int>(IntegrationMethod::NumberOfIntegrationMethods)> ShapeFunctionsValuesContainerType;
 
     /** A fourth order tensor used as shape functions' local
     gradients container in geometry data.
     */
-    typedef boost::array<boost::numeric::ublas::vector<Matrix>, NumberOfIntegrationMethods> ShapeFunctionsLocalGradientsContainerType;
+    typedef boost::array<boost::numeric::ublas::vector<Matrix>, static_cast<int>(IntegrationMethod::NumberOfIntegrationMethods)> ShapeFunctionsLocalGradientsContainerType;
 
     /** A third order tensor to hold shape functions'
     gradients. ShapefunctionsLocalGradients function return this
@@ -205,9 +213,9 @@ public:
      */
     typedef boost::numeric::ublas::vector<boost::numeric::ublas::vector<Matrix> > ShapeFunctionsThirdDerivativesType;
 
-    typedef boost::array<boost::numeric::ublas::vector<Matrix>, NumberOfIntegrationMethods> MassFactorsContainerType;
+    typedef boost::array<boost::numeric::ublas::vector<Matrix>, static_cast<int>(IntegrationMethod::NumberOfIntegrationMethods)> MassFactorsContainerType;
 
-    typedef boost::array<boost::numeric::ublas::vector<Matrix>, NumberOfIntegrationMethods> LampedMassFactorsContainerType;
+    typedef boost::array<boost::numeric::ublas::vector<Matrix>, static_cast<int>(IntegrationMethod::NumberOfIntegrationMethods)> LampedMassFactorsContainerType;
     ///@}
     ///@name Life Cycle
     ///@{
@@ -303,7 +311,7 @@ public:
         , mShapeFunctionsValues( ThisShapeFunctionsValues )
         , mShapeFunctionsLocalGradients( ThisShapeFunctionsLocalGradients )
     {
-        for ( unsigned int i = 0 ; i < NumberOfIntegrationMethods ; i++ )
+        for ( unsigned int i = 0 ; i < static_cast<int>(IntegrationMethod::NumberOfIntegrationMethods) ; i++ )
         {
             boost::numeric::ublas::vector<Matrix> temp( mIntegrationPoints[i].size() );
 
@@ -420,9 +428,9 @@ public:
     @return bool true if this integration method exist and false if this
     method is not imeplemented for this geometry.
     */
-    bool HasIntegrationMethod( enum IntegrationMethod ThisMethod ) const
+    bool HasIntegrationMethod( IntegrationMethod ThisMethod ) const
     {
-        return ( !mIntegrationPoints[ThisMethod].empty() );
+        return ( !mIntegrationPoints[static_cast<int>(ThisMethod)].empty() );
     }
 
     ///@}
@@ -445,7 +453,7 @@ public:
 
     SizeType IntegrationPointsNumber() const
     {
-        return mIntegrationPoints[mDefaultMethod].size();
+        return mIntegrationPoints[static_cast<int>(mDefaultMethod)].size();
     }
 
     /** Number of integtation points for given integration
@@ -456,9 +464,9 @@ public:
     @return SizeType which is the number of integration points
     for given integrating method.
     */
-    SizeType IntegrationPointsNumber( enum IntegrationMethod ThisMethod ) const
+    SizeType IntegrationPointsNumber( IntegrationMethod ThisMethod ) const
     {
-        return mIntegrationPoints[ThisMethod].size();
+        return mIntegrationPoints[static_cast<int>(ThisMethod)].size();
     }
 
 
@@ -472,7 +480,7 @@ public:
     */
     const IntegrationPointsArrayType& IntegrationPoints() const
     {
-        return mIntegrationPoints[mDefaultMethod];
+        return mIntegrationPoints[static_cast<int>(mDefaultMethod)];
     }
 
     /** Integtation points for given integration
@@ -483,9 +491,9 @@ public:
     @return const IntegrationPointsArrayType which is Vector of integration points
     for default integrating method.
     */
-    const IntegrationPointsArrayType& IntegrationPoints( enum IntegrationMethod ThisMethod ) const
+    const IntegrationPointsArrayType& IntegrationPoints( IntegrationMethod ThisMethod ) const
     {
-        return mIntegrationPoints[ThisMethod];
+        return mIntegrationPoints[static_cast<int>(ThisMethod)];
     }
 
     ///@}
@@ -512,7 +520,7 @@ public:
     */
     const Matrix& ShapeFunctionsValues() const
     {
-        return mShapeFunctionsValues[mDefaultMethod];
+        return mShapeFunctionsValues[static_cast<int>(mDefaultMethod)];
     }
 
     /** This method gives all shape functions values evaluated in all
@@ -535,9 +543,9 @@ public:
     @see ShapeFunctionsLocalGradients
     @see ShapeFunctionLocalGradient
     */
-    const Matrix& ShapeFunctionsValues( enum IntegrationMethod ThisMethod ) const
+    const Matrix& ShapeFunctionsValues( IntegrationMethod ThisMethod ) const
     {
-        return mShapeFunctionsValues[ThisMethod];
+        return mShapeFunctionsValues[static_cast<int>(ThisMethod)];
     }
 
     /** This method gives value of given shape function evaluated in
@@ -564,13 +572,13 @@ public:
     */
     double ShapeFunctionValue( IndexType IntegrationPointIndex, IndexType ShapeFunctionIndex ) const
     {
-        if ( mShapeFunctionsValues[mDefaultMethod].size1() <= IntegrationPointIndex )
+        if ( mShapeFunctionsValues[static_cast<int>(mDefaultMethod)].size1() <= IntegrationPointIndex )
             KRATOS_THROW_ERROR( std::invalid_argument, "No existing integration point", "" );
 
-        if ( mShapeFunctionsValues[mDefaultMethod].size2() <= ShapeFunctionIndex )
+        if ( mShapeFunctionsValues[static_cast<int>(mDefaultMethod)].size2() <= ShapeFunctionIndex )
             KRATOS_THROW_ERROR( std::invalid_argument, "No existing shape function value", "" );
 
-        return mShapeFunctionsValues[mDefaultMethod]( IntegrationPointIndex, ShapeFunctionIndex );
+        return mShapeFunctionsValues[static_cast<int>(mDefaultMethod)]( IntegrationPointIndex, ShapeFunctionIndex );
     }
 
     /** This method gives value of given shape function evaluated in given
@@ -595,15 +603,15 @@ public:
     @see ShapeFunctionsLocalGradients
     @see ShapeFunctionLocalGradient
     */
-    double ShapeFunctionValue( IndexType IntegrationPointIndex, IndexType ShapeFunctionIndex, enum IntegrationMethod ThisMethod ) const
+    double ShapeFunctionValue( IndexType IntegrationPointIndex, IndexType ShapeFunctionIndex, IntegrationMethod ThisMethod ) const
     {
-        if ( mShapeFunctionsValues[ThisMethod].size1() <= IntegrationPointIndex )
+        if ( mShapeFunctionsValues[static_cast<int>(ThisMethod)].size1() <= IntegrationPointIndex )
             KRATOS_THROW_ERROR( std::invalid_argument, "No existing integration point", "" );
 
-        if ( mShapeFunctionsValues[ThisMethod].size2() <= ShapeFunctionIndex )
+        if ( mShapeFunctionsValues[static_cast<int>(ThisMethod)].size2() <= ShapeFunctionIndex )
             KRATOS_THROW_ERROR( std::invalid_argument, "No existing shape function value", "" );
 
-        return mShapeFunctionsValues[ThisMethod]( IntegrationPointIndex, ShapeFunctionIndex );
+        return mShapeFunctionsValues[static_cast<int>(ThisMethod)]( IntegrationPointIndex, ShapeFunctionIndex );
     }
 
     /** This method gives all shape functions gradients evaluated in all
@@ -627,7 +635,7 @@ public:
     */
     const ShapeFunctionsGradientsType& ShapeFunctionsLocalGradients() const
     {
-        return mShapeFunctionsLocalGradients[mDefaultMethod];
+        return mShapeFunctionsLocalGradients[static_cast<int>(mDefaultMethod)];
     }
 
     /** This method gives all shape functions gradients evaluated in
@@ -651,9 +659,9 @@ public:
     @see ShapeFunctionValue
     @see ShapeFunctionLocalGradient
     */
-    const ShapeFunctionsGradientsType& ShapeFunctionsLocalGradients( enum IntegrationMethod ThisMethod ) const
+    const ShapeFunctionsGradientsType& ShapeFunctionsLocalGradients( IntegrationMethod ThisMethod ) const
     {
-        return mShapeFunctionsLocalGradients[ThisMethod];
+        return mShapeFunctionsLocalGradients[static_cast<int>(ThisMethod)];
     }
 
     /** This method gives gradient of given shape function evaluated in
@@ -680,10 +688,10 @@ public:
     */
     const Matrix& ShapeFunctionLocalGradient( IndexType IntegrationPointIndex ) const
     {
-        if ( mShapeFunctionsLocalGradients[mDefaultMethod].size() <= IntegrationPointIndex )
+        if ( mShapeFunctionsLocalGradients[static_cast<int>(mDefaultMethod)].size() <= IntegrationPointIndex )
             KRATOS_THROW_ERROR( std::invalid_argument, "No existing integration point", "" );
 
-        return mShapeFunctionsLocalGradients[mDefaultMethod][IntegrationPointIndex];
+        return mShapeFunctionsLocalGradients[static_cast<int>(mDefaultMethod)][IntegrationPointIndex];
     }
 
     /** This method gives gradient of given shape function evaluated
@@ -709,32 +717,32 @@ public:
     @see ShapeFunctionValue
     @see ShapeFunctionsLocalGradients
     */
-    const Matrix& ShapeFunctionLocalGradient( IndexType IntegrationPointIndex, IndexType ShapeFunctionIndex, enum IntegrationMethod ThisMethod ) const
+    const Matrix& ShapeFunctionLocalGradient( IndexType IntegrationPointIndex, IndexType ShapeFunctionIndex, IntegrationMethod ThisMethod ) const
     {
-        if ( mShapeFunctionsLocalGradients[ThisMethod].size() <= IntegrationPointIndex )
+        if ( mShapeFunctionsLocalGradients[static_cast<int>(ThisMethod)].size() <= IntegrationPointIndex )
             KRATOS_THROW_ERROR( std::invalid_argument, "No existing integration point", "" );
 
-        return mShapeFunctionsLocalGradients[ThisMethod][IntegrationPointIndex];
+        return mShapeFunctionsLocalGradients[static_cast<int>(ThisMethod)][IntegrationPointIndex];
     }
 
     boost::numeric::ublas::vector<Matrix> const& MassFactors() const
     {
-        return mMassFactors[mDefaultMethod];
+        return mMassFactors[static_cast<int>(mDefaultMethod)];
     }
 
-    boost::numeric::ublas::vector<Matrix> const& MassFactors( enum IntegrationMethod ThisMethod ) const
+    boost::numeric::ublas::vector<Matrix> const& MassFactors( IntegrationMethod ThisMethod ) const
     {
-        return mMassFactors[ThisMethod];
+        return mMassFactors[static_cast<int>(ThisMethod)];
     }
 
     Matrix const& MassFactors( IndexType IntegrationPointIndex ) const
     {
-        return mMassFactors[mDefaultMethod][IntegrationPointIndex];
+        return mMassFactors[static_cast<int>(mDefaultMethod)][IntegrationPointIndex];
     }
 
-    Matrix const& MassFactors( IndexType IntegrationPointIndex, enum IntegrationMethod ThisMethod ) const
+    Matrix const& MassFactors( IndexType IntegrationPointIndex, IntegrationMethod ThisMethod ) const
     {
-        return mMassFactors[ThisMethod][IntegrationPointIndex];
+        return mMassFactors[static_cast<int>(ThisMethod)][IntegrationPointIndex];
     }
 
     ///@}
@@ -838,7 +846,7 @@ private:
 
     SizeType mLocalSpaceDimension;
 
-    enum IntegrationMethod mDefaultMethod;
+    IntegrationMethod mDefaultMethod;
 
     IntegrationPointsContainerType mIntegrationPoints;
 

@@ -194,12 +194,12 @@ public:
 
     GeometryData::KratosGeometryFamily GetGeometryFamily() const final
     {
-        return GeometryData::Kratos_Point;
+        return GeometryData::KratosGeometryFamily::Kratos_Point;
     }
 
     GeometryData::KratosGeometryType GetGeometryType() const final
     {
-        return GeometryData::Kratos_Point3D;
+        return GeometryData::KratosGeometryType::Kratos_Point3D;
     }
 
     ///@}
@@ -615,12 +615,12 @@ private:
 
     friend class Serializer;
 
-    virtual void save(Serializer& rSerializer) const
+    void save(Serializer& rSerializer) const override
     {
         KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, PointsArrayType );
     }
 
-    virtual void load(Serializer& rSerializer)
+    void load(Serializer& rSerializer) override
     {
         KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, PointsArrayType );
     }
@@ -723,7 +723,7 @@ template<class TPointType>
 const GeometryData Point3D<TPointType>::msGeometryData( 3,
         3,
         0,
-        GeometryData::GI_GAUSS_1,
+        GeometryData::IntegrationMethod::GI_GAUSS_1,
         Point3D<TPointType>::AllIntegrationPoints(),
         Point3D<TPointType>::AllShapeFunctionsValues(),
         AllShapeFunctionsLocalGradients());
