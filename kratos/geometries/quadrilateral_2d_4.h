@@ -261,12 +261,12 @@ public:
 
     GeometryData::KratosGeometryFamily GetGeometryFamily() const final
     {
-        return GeometryData::Kratos_Quadrilateral;
+        return GeometryData::KratosGeometryFamily::Kratos_Quadrilateral;
     }
 
     GeometryData::KratosGeometryType GetGeometryType() const final
     {
-        return GeometryData::Kratos_Quadrilateral2D4;
+        return GeometryData::KratosGeometryType::Kratos_Quadrilateral2D4;
     }
 
     ///@}
@@ -841,7 +841,7 @@ private:
         IntegrationPointsContainerType all_integration_points =
             AllIntegrationPoints();
         IntegrationPointsArrayType integration_points =
-            all_integration_points[ThisMethod];
+            all_integration_points[static_cast<int>(ThisMethod)];
         //number of integration points
         const int integration_points_number = integration_points.size();
         //number of nodes in current geometry
@@ -888,7 +888,7 @@ private:
         IntegrationPointsContainerType all_integration_points =
             AllIntegrationPoints();
         IntegrationPointsArrayType integration_points =
-            all_integration_points[ThisMethod];
+            all_integration_points[static_cast<int>(ThisMethod)];
         //number of integration points
         const int integration_points_number = integration_points.size();
         ShapeFunctionsGradientsType d_shape_f_values( integration_points_number );
@@ -945,15 +945,15 @@ private:
         {
             {
                 Quadrilateral2D4<TPointType>::CalculateShapeFunctionsIntegrationPointsValues(
-                    GeometryData::GI_GAUSS_1 ),
+                    GeometryData::IntegrationMethod::GI_GAUSS_1 ),
                 Quadrilateral2D4<TPointType>::CalculateShapeFunctionsIntegrationPointsValues(
-                    GeometryData::GI_GAUSS_2 ),
+                    GeometryData::IntegrationMethod::GI_GAUSS_2 ),
                 Quadrilateral2D4<TPointType>::CalculateShapeFunctionsIntegrationPointsValues(
-                    GeometryData::GI_GAUSS_3 ),
+                    GeometryData::IntegrationMethod::GI_GAUSS_3 ),
                 Quadrilateral2D4<TPointType>::CalculateShapeFunctionsIntegrationPointsValues(
-                    GeometryData::GI_GAUSS_4 ),
+                    GeometryData::IntegrationMethod::GI_GAUSS_4 ),
                 Quadrilateral2D4<TPointType>::CalculateShapeFunctionsIntegrationPointsValues(
-                    GeometryData::GI_GAUSS_5 )
+                    GeometryData::IntegrationMethod::GI_GAUSS_5 )
             }
         };
         return shape_functions_values;
@@ -968,11 +968,11 @@ private:
         ShapeFunctionsLocalGradientsContainerType shape_functions_local_gradients =
         {
             {
-                Quadrilateral2D4<TPointType>::CalculateShapeFunctionsIntegrationPointsLocalGradients( GeometryData::GI_GAUSS_1 ),
-                Quadrilateral2D4<TPointType>::CalculateShapeFunctionsIntegrationPointsLocalGradients( GeometryData::GI_GAUSS_2 ),
-                Quadrilateral2D4<TPointType>::CalculateShapeFunctionsIntegrationPointsLocalGradients( GeometryData::GI_GAUSS_3 ),
-                Quadrilateral2D4<TPointType>::CalculateShapeFunctionsIntegrationPointsLocalGradients( GeometryData::GI_GAUSS_4 ),
-                Quadrilateral2D4<TPointType>::CalculateShapeFunctionsIntegrationPointsLocalGradients( GeometryData::GI_GAUSS_5 )
+                Quadrilateral2D4<TPointType>::CalculateShapeFunctionsIntegrationPointsLocalGradients( GeometryData::IntegrationMethod::GI_GAUSS_1 ),
+                Quadrilateral2D4<TPointType>::CalculateShapeFunctionsIntegrationPointsLocalGradients( GeometryData::IntegrationMethod::GI_GAUSS_2 ),
+                Quadrilateral2D4<TPointType>::CalculateShapeFunctionsIntegrationPointsLocalGradients( GeometryData::IntegrationMethod::GI_GAUSS_3 ),
+                Quadrilateral2D4<TPointType>::CalculateShapeFunctionsIntegrationPointsLocalGradients( GeometryData::IntegrationMethod::GI_GAUSS_4 ),
+                Quadrilateral2D4<TPointType>::CalculateShapeFunctionsIntegrationPointsLocalGradients( GeometryData::IntegrationMethod::GI_GAUSS_5 )
             }
         };
         return shape_functions_local_gradients;
@@ -1034,7 +1034,7 @@ template<class TPointType> inline std::ostream& operator << (
 template<class TPointType> const
 GeometryData Quadrilateral2D4<TPointType>::msGeometryData(
     2, 2, 2,
-    GeometryData::GI_GAUSS_2,
+    GeometryData::IntegrationMethod::GI_GAUSS_2,
     Quadrilateral2D4<TPointType>::AllIntegrationPoints(),
     Quadrilateral2D4<TPointType>::AllShapeFunctionsValues(),
     AllShapeFunctionsLocalGradients()

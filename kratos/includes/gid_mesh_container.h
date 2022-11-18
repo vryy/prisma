@@ -1,10 +1,10 @@
-//    |  /           | 
-//    ' /   __| _` | __|  _ \   __| 
+//    |  /           |
+//    ' /   __| _` | __|  _ \   __|
 //    . \  |   (   | |   (   |\__ \.
-//   _|\_\_|  \__,_|\__|\___/ ____/ 
-//                   Multi-Physics  
+//   _|\_\_|  \__,_|\__|\___/ ____/
+//                   Multi-Physics
 //
-//  License:		 BSD License 
+//  License:		 BSD License
 //					 Kratos default license: kratos/license.txt
 //
 //  Main authors:    Riccardo Rossi
@@ -178,8 +178,8 @@ public:
                         for ( unsigned int i=0; i< (it)->GetGeometry().size(); i++ )
                             nodes_id[i] = (it)->GetGeometry() [i].Id();
 
-                        if ( mGeometryType == GeometryData::Kratos_Line2D3
-                                || mGeometryType == GeometryData::Kratos_Line3D3 )
+                        if ( mGeometryType == GeometryData::KratosGeometryType::Kratos_Line2D3
+                                || mGeometryType == GeometryData::KratosGeometryType::Kratos_Line3D3 )
                         {
                             nodes_id[0] = (it)->GetGeometry() [0].Id();
                             nodes_id[1] = (it)->GetGeometry() [2].Id();
@@ -274,7 +274,7 @@ public:
                         for ( unsigned int i=0; i< (it)->GetGeometry().size(); i++ )
                             nodes_id[i] = (it)->GetGeometry() [i].Id();
                         //workaround: reordering node ids for Hexahedra20 elements
-                        if ( mGeometryType == GeometryData::Kratos_Hexahedra3D20 )
+                        if ( mGeometryType == GeometryData::KratosGeometryType::Kratos_Hexahedra3D20 )
                         {
                             nodes_id[12] = (it)->GetGeometry() [16].Id();
                             nodes_id[13] = (it)->GetGeometry() [17].Id();
@@ -286,7 +286,7 @@ public:
                             nodes_id[19] = (it)->GetGeometry() [15].Id();
                         }
                         nodes_id[ (it)->GetGeometry().size()]= (it)->GetProperties().Id()+1;
-                        
+
                         if ( it->Has ( IS_INACTIVE ) )
                         {
                             if ( ! it->GetValue ( IS_INACTIVE ) && (it)->GetProperties().Id()==current_layer )

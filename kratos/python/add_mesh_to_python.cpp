@@ -140,7 +140,7 @@ Condition::GeometryType::Pointer GetGeometryFromCondition( Condition& dummy )
 
 int GetIntegrationMethodFromElement( Element& dummy )
 {
-    return dummy.GetIntegrationMethod();
+    return static_cast<int>(dummy.GetIntegrationMethod());
 }
 
 boost::python::list GetIntegrationPointsFromElement( Element& dummy )

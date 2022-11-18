@@ -185,7 +185,7 @@ public:
                 //face nodes
                 Geometry<Node<3> >& geom = (ie)->GetGeometry();
 
-                if(geom.GetGeometryType() == GeometryData::Kratos_Triangle2D3 || geom.GetGeometryType() == GeometryData::Kratos_Triangle2D6)
+                if(geom.GetGeometryType() == GeometryData::KratosGeometryType::Kratos_Triangle2D3 || geom.GetGeometryType() == GeometryData::KratosGeometryType::Kratos_Triangle2D6)
                 {
                     //vector of the 3 faces around the given face
                     (ie->GetValue(NEIGHBOUR_ELEMENTS)).resize(3);
@@ -198,9 +198,9 @@ public:
                     neighb_elems(1) = CheckForNeighbourElems(geom[2].Id(), geom[0].Id(), geom[2].GetValue(NEIGHBOUR_ELEMENTS), ie);
                     neighb_elems(2) = CheckForNeighbourElems(geom[0].Id(), geom[1].Id(), geom[0].GetValue(NEIGHBOUR_ELEMENTS), ie);
                 }
-                else if(geom.GetGeometryType() == GeometryData::Kratos_Quadrilateral2D4
-                    || geom.GetGeometryType() == GeometryData::Kratos_Quadrilateral2D8
-                    || geom.GetGeometryType() == GeometryData::Kratos_Quadrilateral2D9)
+                else if(geom.GetGeometryType() == GeometryData::KratosGeometryType::Kratos_Quadrilateral2D4
+                    || geom.GetGeometryType() == GeometryData::KratosGeometryType::Kratos_Quadrilateral2D8
+                    || geom.GetGeometryType() == GeometryData::KratosGeometryType::Kratos_Quadrilateral2D9)
                 {
                     //vector of the 3 faces around the given face
                     (ie->GetValue(NEIGHBOUR_ELEMENTS)).resize(4);
@@ -218,7 +218,7 @@ public:
                 else
                 {
                     std::stringstream ss;
-                    ss << "The geometry type " << geom.GetGeometryType() << " is invalid";
+                    ss << "The geometry type " << static_cast<int>(geom.GetGeometryType()) << " is invalid";
                     KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
                 }
             }
@@ -232,8 +232,8 @@ public:
                 //face nodes
                 Geometry<Node<3> >& geom = (ie)->GetGeometry();
 
-                if(geom.GetGeometryType() == GeometryData::Kratos_Tetrahedra3D4
-                    || geom.GetGeometryType() == GeometryData::Kratos_Tetrahedra3D10)
+                if(geom.GetGeometryType() == GeometryData::KratosGeometryType::Kratos_Tetrahedra3D4
+                    || geom.GetGeometryType() == GeometryData::KratosGeometryType::Kratos_Tetrahedra3D10)
                 {
                     //vector of the 3 faces around the given face
                     (ie->GetValue(NEIGHBOUR_ELEMENTS)).resize(4);
@@ -247,9 +247,9 @@ public:
                     neighb_elems(2) = CheckForNeighbourElemsTetra(geom[3].Id(), geom[0].Id(), geom[1].Id(), geom[3].GetValue(NEIGHBOUR_ELEMENTS), ie);
                     neighb_elems(3) = CheckForNeighbourElemsTetra(geom[0].Id(), geom[1].Id(), geom[2].Id(), geom[0].GetValue(NEIGHBOUR_ELEMENTS), ie);
                 }
-                else if(geom.GetGeometryType() == GeometryData::Kratos_Hexahedra3D8
-                    || geom.GetGeometryType() == GeometryData::Kratos_Hexahedra3D20
-                    || geom.GetGeometryType() == GeometryData::Kratos_Hexahedra3D27)
+                else if(geom.GetGeometryType() == GeometryData::KratosGeometryType::Kratos_Hexahedra3D8
+                    || geom.GetGeometryType() == GeometryData::KratosGeometryType::Kratos_Hexahedra3D20
+                    || geom.GetGeometryType() == GeometryData::KratosGeometryType::Kratos_Hexahedra3D27)
                 {
                     //vector of the 3 faces around the given face
                     (ie->GetValue(NEIGHBOUR_ELEMENTS)).resize(6);
@@ -265,7 +265,7 @@ public:
                 else
                 {
                     std::stringstream ss;
-                    ss << "The geometry type " << geom.GetGeometryType() << " is invalid";
+                    ss << "The geometry type " << static_cast<int>(geom.GetGeometryType()) << " is invalid";
                     KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
                 }
             }
@@ -305,19 +305,19 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const override
     {
         return "FindElementalNeighboursProcess";
     }
 
     /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << "FindElementalNeighboursProcess";
     }
 
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
     }
 
@@ -489,16 +489,16 @@ private:
     {
         switch(rGeometryType)
         {
-            case GeometryData::Kratos_Triangle2D3: return 3;
-            case GeometryData::Kratos_Triangle2D6: return 3;
-            case GeometryData::Kratos_Quadrilateral2D4: return 4;
-            case GeometryData::Kratos_Quadrilateral2D8: return 4;
-            case GeometryData::Kratos_Quadrilateral2D9: return 4;
-            case GeometryData::Kratos_Tetrahedra3D4: return 4;
-            case GeometryData::Kratos_Tetrahedra3D10: return 4;
-            case GeometryData::Kratos_Hexahedra3D8: return 6;
-            case GeometryData::Kratos_Hexahedra3D20: return 6;
-            case GeometryData::Kratos_Hexahedra3D27: return 6;
+            case GeometryData::KratosGeometryType::Kratos_Triangle2D3: return 3;
+            case GeometryData::KratosGeometryType::Kratos_Triangle2D6: return 3;
+            case GeometryData::KratosGeometryType::Kratos_Quadrilateral2D4: return 4;
+            case GeometryData::KratosGeometryType::Kratos_Quadrilateral2D8: return 4;
+            case GeometryData::KratosGeometryType::Kratos_Quadrilateral2D9: return 4;
+            case GeometryData::KratosGeometryType::Kratos_Tetrahedra3D4: return 4;
+            case GeometryData::KratosGeometryType::Kratos_Tetrahedra3D10: return 4;
+            case GeometryData::KratosGeometryType::Kratos_Hexahedra3D8: return 6;
+            case GeometryData::KratosGeometryType::Kratos_Hexahedra3D20: return 6;
+            case GeometryData::KratosGeometryType::Kratos_Hexahedra3D27: return 6;
             default: return 0;
         }
     }

@@ -138,12 +138,12 @@ public:
     integration points related to different integration method
     implemented in geometry.
     */
-    typedef boost::array<IntegrationPointsArrayType, GeometryData::NumberOfIntegrationMethods> IntegrationPointsContainerType;
+    typedef boost::array<IntegrationPointsArrayType, static_cast<int>(GeometryData::IntegrationMethod::NumberOfIntegrationMethods)> IntegrationPointsContainerType;
 
     /** A third order tensor used as shape functions' values
     continer.
     */
-    typedef boost::array<Matrix, GeometryData::NumberOfIntegrationMethods> ShapeFunctionsValuesContainerType;
+    typedef boost::array<Matrix, static_cast<int>(GeometryData::IntegrationMethod::NumberOfIntegrationMethods)> ShapeFunctionsValuesContainerType;
 
     /** A fourth order tensor used as shape functions' local
     gradients container in geometry.
@@ -304,12 +304,12 @@ public:
 
     virtual GeometryData::KratosGeometryFamily GetGeometryFamily() const
     {
-        return GeometryData::Kratos_generic_family;
+        return GeometryData::KratosGeometryFamily::Kratos_generic_family;
     }
 
     virtual GeometryData::KratosGeometryType GetGeometryType() const
     {
-        return GeometryData::Kratos_generic_type;
+        return GeometryData::KratosGeometryType::Kratos_generic_type;
     }
 
     ///@}
@@ -2305,7 +2305,7 @@ private:
         return GeometryData( 2,
                              2,
                              2,
-                             GeometryData::GI_GAUSS_1,
+                             GeometryData::IntegrationMethod::GI_GAUSS_1,
                              integration_points,
                              shape_functions_values,
                              shape_functions_local_gradients );
