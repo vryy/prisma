@@ -13,41 +13,41 @@ FIND_PATH(MKLSOLVER_INCLUDE_DIR mkl_blas.h
 
 set(MY_LIB_SEARCH_DIR ${MKLSOLVER_LIB_DIR})
 
-FIND_LIBRARY(AUX1 mkl_intel_ilp64  
+FIND_LIBRARY(AUX1 mkl_intel_ilp64
   ${MY_LIB_SEARCH_DIR}
 )
 
 if(CMAKE_COMPILER_IS_GNUCXX )
-    FIND_LIBRARY(AUX2 mkl_gnu_thread  
+    FIND_LIBRARY(AUX2 mkl_gnu_thread
       ${MY_LIB_SEARCH_DIR}
     )
 else(CMAKE_COMPILER_IS_GNUCXX )
-    FIND_LIBRARY(AUX2 mkl_intel_thread  
+    FIND_LIBRARY(AUX2 mkl_intel_thread
       ${MY_LIB_SEARCH_DIR}
     )
 endif(CMAKE_COMPILER_IS_GNUCXX )
 
-FIND_LIBRARY(AUX3 mkl_core  
+FIND_LIBRARY(AUX3 mkl_core
   ${MY_LIB_SEARCH_DIR}
 )
 
-FIND_LIBRARY(AUX5 mkl_mc  
+FIND_LIBRARY(AUX5 mkl_mc # kernel library for SSE3
   ${MY_LIB_SEARCH_DIR}
 )
 
-FIND_LIBRARY(AUX6 mkl_mc3  
+FIND_LIBRARY(AUX6 mkl_mc3 # kernel library for SSE4.2
   ${MY_LIB_SEARCH_DIR}
 )
 
-#FIND_LIBRARY(AUX7 mkl_lapack95_ilp64  
+#FIND_LIBRARY(AUX7 mkl_lapack95_ilp64
 #  ${MY_LIB_SEARCH_DIR}
 #)
 
-FIND_LIBRARY(AUX8 pthread  
+FIND_LIBRARY(AUX8 pthread
   ${MY_LIB_SEARCH_DIR}
 )
 
-#FIND_LIBRARY(AUX9 mkl_p4n  
+#FIND_LIBRARY(AUX9 mkl_p4n
 #  ${MY_LIB_SEARCH_DIR}
 #)
 
@@ -64,7 +64,7 @@ IF(MKLSOLVER_INCLUDE_DIR)
 #     SET( MKLSOLVER_LIBRARIES ${AUX1} ${AUX2} ${AUX3} ${AUX4}  ${AUX7} ${AUX5} ${AUX6} ${AUX8}  ${AUX9}  )
     SET( MKLSOLVER_FOUND "YES" )
     include_directories( ${MKLSOLVER_INCLUDE_DIR} )
-    message("************ mkl solver libraries found  ${MKLSOLVER_LIBRARIES}") 
+    message("************ mkl solver libraries found  ${MKLSOLVER_LIBRARIES}")
   ELSE(AUX1)
     message("finding MKLSOLVER library failed, please try to set the var MKLSOLVER_ROOT_DIR")
   ENDIF(AUX1)
