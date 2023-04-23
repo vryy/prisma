@@ -1,11 +1,11 @@
-//    |  /           | 
-//    ' /   __| _` | __|  _ \   __| 
+//    |  /           |
+//    ' /   __| _` | __|  _ \   __|
 //    . \  |   (   | |   (   |\__ `
-//   _|\_\_|  \__,_|\__|\___/ ____/ 
-//                   Multi-Physics  
+//   _|\_\_|  \__,_|\__|\___/ ____/
+//                   Multi-Physics
 //
-//  License:		 BSD License 
-//					 Kratos default license: kratos/license.txt
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Pooyan Dadvand
 //
@@ -28,14 +28,17 @@ namespace Kratos
 {
     Kernel::Kernel()
     {
-	std::cout << " |  /           |             " << std::endl;
-	std::cout << " ' /   __| _` | __|  _ \\   __|" << std::endl;
-	std::cout << " . \\  |   (   | |   (   |\\__ \\ " << std::endl;
-	std::cout << "_|\\_\\_|  \\__,_|\\__|\\___/ ____/" << std::endl;
-    // std::cout << "           Multi-Physics "<< KRATOS_VERSION << std::endl;
-    std::cout << "           Multi-Physics " << std::endl;
-    std::cout << "   Hoang-Giang Bui " << std::endl;
-    std::cout << "     Ruhr University Bochum " << std::endl;
+        std::cout << "MAINTAINED" << std::endl;
+        std::cout << " |  /           |" << std::endl;
+        std::cout << " ' /   __| _` | __|  _ \\   __|" << std::endl;
+        std::cout << " . \\  |   (   | |   (   |\\__ \\" << std::endl;
+        std::cout << "_|\\_\\_|  \\__,_|\\__|\\___/ ____/" << std::endl;
+        // std::cout << "           Multi-Physics "<< KRATOS_VERSION << std::endl;
+        std::cout << "           Multi-Physics" << std::endl;
+        std::cout << "             for Python 2" << std::endl;
+        std::cout << "   by Hoang-Giang Bui" << std::endl;
+        std::cout << "     Ruhr University Bochum, 2013-2021" << std::endl;
+        std::cout << "     Helmholtz-Zentrum Hereon, 2022-2023" << std::endl;
 
         mKratosApplication.RegisterVariables();
     }

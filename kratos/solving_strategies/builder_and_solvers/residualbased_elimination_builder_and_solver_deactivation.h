@@ -568,7 +568,7 @@ public:
                         std::cout << "type of element: " << typeid((*it)).name() << std::endl;
                         std::cout << "element Properties " << it->GetProperties().Id() << ": " << it->GetProperties() << std::endl;
                         KRATOS_WATCH((*it))
-                        KRATOS_THROW_ERROR(std::logic_error, "NaN is detected at element", it->Id())
+                        KRATOS_THROW_ERROR(std::logic_error, "NaN is detected at element ", it->Id())
                     }
                     #endif
 
@@ -676,7 +676,7 @@ public:
                         std::cout << "type of condition: " << typeid((*it)).name() << std::endl;
                         std::cout << "condition Properties " << it->GetProperties().Id() << ": " << it->GetProperties() << std::endl;
                         KRATOS_WATCH((*it))
-                        KRATOS_THROW_ERROR(std::logic_error, "NaN is detected at condition", it->Id())
+                        KRATOS_THROW_ERROR(std::logic_error, "NaN is detected at condition ", it->Id())
                     }
                     #endif
 

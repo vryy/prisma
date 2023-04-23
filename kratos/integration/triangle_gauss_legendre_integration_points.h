@@ -166,7 +166,7 @@ public:
         const double Na2 = 0.091576213509771;
         const double Nb2 = 0.445948490915965;
 
-	msIntegrationPoints[0] = IntegrationPointType( Na2, Na2, wa );
+        msIntegrationPoints[0] = IntegrationPointType( Na2, Na2, wa );
         msIntegrationPoints[1] = IntegrationPointType( Na1, Na2, wa );
         msIntegrationPoints[2] = IntegrationPointType( Na2, Na1, wa );
         msIntegrationPoints[3] = IntegrationPointType( Nb2, Nb2, wb );
