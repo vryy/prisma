@@ -338,6 +338,3 @@ namespace Kratos
 
 // This CREATE must be HERE
 #undef DKRATOS_EXPORT_INTERFACE_2
-
-
-

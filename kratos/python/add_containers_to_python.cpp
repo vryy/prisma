@@ -62,7 +62,7 @@
 #endif
 #define KRATOS_REGISTER_IN_PYTHON_FLAG_IMPLEMENTATION(flag) \
  scope().attr(#flag) = boost::ref(flag)      \
- 
+
 #ifdef KRATOS_REGISTER_IN_PYTHON_FLAG
 #undef KRATOS_REGISTER_IN_PYTHON_FLAG
 #endif
@@ -408,7 +408,7 @@ void  AddContainersToPython()
     AddLegacyStructuralAppVarsToPython();
 
     KRATOS_REGISTER_IN_PYTHON_VARIABLE( DOMAIN_SIZE );
-    
+
     // These should be moved to applications
     KRATOS_REGISTER_IN_PYTHON_VARIABLE( POWER_LAW_N);
     KRATOS_REGISTER_IN_PYTHON_VARIABLE( POWER_LAW_K);
@@ -558,7 +558,7 @@ void  AddContainersToPython()
     KRATOS_REGISTER_IN_PYTHON_VARIABLE( NORMAL_SENSITIVITY );
 
     //for electric application
-    
+
     KRATOS_REGISTER_IN_PYTHON_VARIABLE( PARTITION_MASK )
 
     //for PFEM application TO BE REMOVED
@@ -680,7 +680,7 @@ void  AddContainersToPython()
     KRATOS_REGISTER_IN_PYTHON_VARIABLE( VEL_ART_VISC )
     KRATOS_REGISTER_IN_PYTHON_VARIABLE( PR_ART_VISC )
     KRATOS_REGISTER_IN_PYTHON_VARIABLE( SOUND_VELOCITY )
-            
+
     KRATOS_REGISTER_IN_PYTHON_VARIABLE( SEARCH_RADIUS );
 
 

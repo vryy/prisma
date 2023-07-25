@@ -10,16 +10,6 @@
 //  Main authors:    Pooyan Dadvand
 //
 
-
-
-
-
-
-
-
-
-
-
 #if !defined(KRATOS_CONDITION_H_INCLUDED )
 #define  KRATOS_CONDITION_H_INCLUDED
 
