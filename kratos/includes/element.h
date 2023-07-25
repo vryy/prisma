@@ -14,17 +14,10 @@
 #define  KRATOS_ELEMENT_H_INCLUDED
 
 // System includes
-#include <string>
-#include <iostream>
-#include <sstream>
-#include <cstddef>
 
 // External includes
 
 // Project includes
-#include "includes/define.h"
-#include "includes/node.h"
-#include "geometries/geometry.h"
 #include "includes/properties.h"
 #include "includes/process_info.h"
 #include "includes/geometrical_object.h"
@@ -101,11 +94,13 @@ public:
 
     typedef std::size_t SizeType;
 
+    typedef Dof<double> DofType;
+
     typedef std::vector<std::size_t> EquationIdVectorType;
 
-    typedef std::vector< Dof<double>::Pointer > DofsVectorType;
+    typedef std::vector<DofType::Pointer> DofsVectorType;
 
-    typedef PointerVectorSet<Dof<double>, IndexedObject> DofsArrayType;
+    typedef PointerVectorSet<DofType, IndexedObject> DofsArrayType;
 
     typedef VectorMap<IndexType, DataValueContainer> SolutionStepsElementalDataContainerType;
 
@@ -120,7 +115,7 @@ public:
 
     /**
      * ELEMENTS inherited from this class have to implement next
-     * contructors, copy constructors and destructor: MANDATORY
+     * constructors, copy constructors and destructor: MANDATORY
      */
 
     /**
@@ -174,7 +169,7 @@ public:
 
     /// Destructor.
 
-    virtual ~Element()
+    ~Element() override
     {
     }
 
@@ -220,10 +215,10 @@ public:
      */
 
     /**
-     * creates a new element pointer
-     * @param NewId: the ID of the new element
-     * @param ThisNodes: the nodes of the new element
-     * @param pProperties: the properties assigned to the new element
+     * @brief It creates a new element pointer
+     * @param NewId the ID of the new element
+     * @param ThisNodes the nodes of the new element
+     * @param pProperties the properties assigned to the new element
      * @return a Pointer to the new element
      */
     virtual Pointer Create(IndexType NewId, NodesArrayType const& ThisNodes,
@@ -237,10 +232,10 @@ public:
     }
 
     /**
-     * creates a new element pointer
-     * @param NewId: the ID of the new element
-     * @param pGeom: the geometry to be employed
-     * @param pProperties: the properties assigned to the new element
+     * @brief It creates a new element pointer
+     * @param NewId the ID of the new element
+     * @param pGeom the geometry to be employed
+     * @param pProperties the properties assigned to the new element
      * @return a Pointer to the new element
      */
     virtual Pointer Create(IndexType NewId,
@@ -273,10 +268,10 @@ public:
     }
 
     /**
-     * creates a new element pointer and clones the previous element data
-     * @param NewId: the ID of the new element
-     * @param ThisNodes: the nodes of the new element
-     * @param pProperties: the properties assigned to the new element
+     * @brief It creates a new element pointer and clones the previous element data
+     * @param NewId the ID of the new element
+     * @param ThisNodes the nodes of the new element
+     * @param pProperties the properties assigned to the new element
      * @return a Pointer to the new element
      */
     virtual Pointer Clone (IndexType NewId, NodesArrayType const& ThisNodes) const
@@ -297,8 +292,8 @@ public:
     /**
      * this determines the elemental equation ID vector for all elemental
      * DOFs
-     * @param rResult: the elemental equation ID vector
-     * @param rCurrentProcessInfo: the current process info instance
+     * @param rResult the elemental equation ID vector
+     * @param rCurrentProcessInfo the current process info instance
      */
     virtual void EquationIdVector(EquationIdVectorType& rResult,
                                   const ProcessInfo& rCurrentProcessInfo) const
@@ -312,8 +307,8 @@ public:
 
     /**
      * determines the elemental list of DOFs
-     * @param ElementalDofList: the list of DOFs
-     * @param rCurrentProcessInfo: the current process info instance
+     * @param ElementalDofList the list of DOFs
+     * @param rCurrentProcessInfo the current process info instance
      */
     virtual void GetDofList(DofsVectorType& rElementalDofList,
                             const ProcessInfo& rCurrentProcessInfo) const
@@ -348,6 +343,9 @@ public:
      */
     virtual void GetValuesVector(Vector& values, int Step = 0) const
     {
+        if (values.size() != 0) {
+            values.resize(0, false);
+        }
     }
 
     /**
@@ -355,6 +353,9 @@ public:
      */
     virtual void GetFirstDerivativesVector(Vector& values, int Step = 0) const
     {
+        if (values.size() != 0) {
+            values.resize(0, false);
+        }
     }
 
     /**
@@ -362,11 +363,14 @@ public:
      */
     virtual void GetSecondDerivativesVector(Vector& values, int Step = 0) const
     {
+        if (values.size() != 0) {
+            values.resize(0, false);
+        }
     }
 
     /**
      * ELEMENTS inherited from this class must implement next methods
-     * Initialize, ResetConstitutiveLaw, CleanMemory
+     * Initialize, ResetConstitutiveLaw
      * if the element needs to perform any operation before any calculation is done
      * reset material and constitutive parameters
      * or clean memory deleting obsolete variables
@@ -381,7 +385,6 @@ public:
     virtual void Initialize(const ProcessInfo& rCurrentProcessInfo)
     {
     }
-
 
     /**
      * is called to reset the constitutive law parameters and the material properties
@@ -415,14 +418,12 @@ public:
      * these methods are: OPTIONAL
      */
 
-
     /**
      * this is called in the beginning of each solution step
      */
     virtual void InitializeSolutionStep(const ProcessInfo& rCurrentProcessInfo)
     {
     }
-
 
     /**
      * this is called for non-linear analysis at the beginning of the iteration process
@@ -438,14 +439,12 @@ public:
     {
     }
 
-
     /**
      * this is called at the end of each solution step
      */
     virtual void FinalizeSolutionStep(const ProcessInfo& rCurrentProcessInfo)
     {
     }
-
 
     /**
      * ELEMENTS inherited from this class have to implement next
@@ -458,9 +457,9 @@ public:
      * this is called during the assembling process in order
      * to calculate all elemental contributions to the global system
      * matrix and the right hand side
-     * @param rLeftHandSideMatrix: the elemental left hand side matrix
-     * @param rRightHandSideVector: the elemental right hand side
-     * @param rCurrentProcessInfo: the current process info instance
+     * @param rLeftHandSideMatrix the elemental left hand side matrix
+     * @param rRightHandSideVector the elemental right hand side
+     * @param rCurrentProcessInfo the current process info instance
      */
     virtual void CalculateLocalSystem(MatrixType& rLeftHandSideMatrix,
                                       VectorType& rRightHandSideVector,
@@ -498,8 +497,8 @@ public:
     /**
      * this is called during the assembling process in order
      * to calculate the elemental left hand side matrix only
-     * @param rLeftHandSideMatrix: the elemental left hand side matrix
-     * @param rCurrentProcessInfo: the current process info instance
+     * @param rLeftHandSideMatrix the elemental left hand side matrix
+     * @param rCurrentProcessInfo the current process info instance
      */
     virtual void CalculateLeftHandSide(MatrixType& rLeftHandSideMatrix,
                                        const ProcessInfo& rCurrentProcessInfo)
@@ -532,8 +531,8 @@ public:
     /**
      * this is called during the assembling process in order
      * to calculate the elemental right hand side vector only
-     * @param rRightHandSideVector: the elemental right hand side vector
-     * @param rCurrentProcessInfo: the current process info instance
+     * @param rRightHandSideVector the elemental right hand side vector
+     * @param rCurrentProcessInfo the current process info instance
      */
     virtual void CalculateRightHandSide(VectorType& rRightHandSideVector,
                                         const ProcessInfo& rCurrentProcessInfo)
@@ -573,17 +572,16 @@ public:
      * CalculateFirstDerivativesLHS, CalculateFirstDerivativesRHS methods are : OPTIONAL
      */
 
-
     /**
      * this is called during the assembling process in order
      * to calculate the first derivatives contributions for the LHS and RHS
-     * @param rLeftHandSideMatrix: the elemental left hand side matrix
-     * @param rRightHandSideVector: the elemental right hand side
-     * @param rCurrentProcessInfo: the current process info instance
+     * @param rLeftHandSideMatrix the elemental left hand side matrix
+     * @param rRightHandSideVector the elemental right hand side
+     * @param rCurrentProcessInfo the current process info instance
      */
     virtual void CalculateFirstDerivativesContributions(MatrixType& rLeftHandSideMatrix,
-                            VectorType& rRightHandSideVector,
-                            const ProcessInfo& rCurrentProcessInfo)
+                                                        VectorType& rRightHandSideVector,
+                                                        const ProcessInfo& rCurrentProcessInfo)
     {
         std::stringstream ss;
         ss << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
@@ -594,12 +592,12 @@ public:
 
     /**
      * this is called during the assembling process in order
-     * to calculate the elemental left hand side matrix for the first derivatives constributions
-     * @param rLeftHandSideMatrix: the elemental left hand side matrix
-     * @param rCurrentProcessInfo: the current process info instance
+     * to calculate the elemental left hand side matrix for the first derivatives contributions
+     * @param rLeftHandSideMatrix the elemental left hand side matrix
+     * @param rCurrentProcessInfo the current process info instance
      */
     virtual void CalculateFirstDerivativesLHS(MatrixType& rLeftHandSideMatrix,
-                          const ProcessInfo& rCurrentProcessInfo)
+                                              const ProcessInfo& rCurrentProcessInfo)
     {
         std::stringstream ss;
         ss << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
@@ -611,9 +609,9 @@ public:
 
     /**
      * this is called during the assembling process in order
-     * to calculate the elemental right hand side vector for the first derivatives constributions
-     * @param rRightHandSideVector: the elemental right hand side vector
-     * @param rCurrentProcessInfo: the current process info instance
+     * to calculate the elemental right hand side vector for the first derivatives contributions
+     * @param rRightHandSideVector the elemental right hand side vector
+     * @param rCurrentProcessInfo the current process info instance
      */
     virtual void CalculateFirstDerivativesRHS(VectorType& rRightHandSideVector,
                           const ProcessInfo& rCurrentProcessInfo)
@@ -624,8 +622,6 @@ public:
 
         KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
     }
-
-
 
     /**
      * ELEMENTS inherited from this class must implement this methods
@@ -640,13 +636,13 @@ public:
    /**
      * this is called during the assembling process in order
      * to calculate the second derivative contributions for the LHS and RHS
-     * @param rLeftHandSideMatrix: the elemental left hand side matrix
-     * @param rRightHandSideVector: the elemental right hand side
-     * @param rCurrentProcessInfo: the current process info instance
+     * @param rLeftHandSideMatrix the elemental left hand side matrix
+     * @param rRightHandSideVector the elemental right hand side
+     * @param rCurrentProcessInfo the current process info instance
      */
     virtual void CalculateSecondDerivativesContributions(MatrixType& rLeftHandSideMatrix,
-                             VectorType& rRightHandSideVector,
-                             const ProcessInfo& rCurrentProcessInfo)
+                                                         VectorType& rRightHandSideVector,
+                                                         const ProcessInfo& rCurrentProcessInfo)
     {
         std::stringstream ss;
         ss << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
@@ -658,12 +654,12 @@ public:
 
     /**
      * this is called during the assembling process in order
-     * to calculate the elemental left hand side matrix for the second derivatives constributions
-     * @param rLeftHandSideMatrix: the elemental left hand side matrix
-     * @param rCurrentProcessInfo: the current process info instance
+     * to calculate the elemental left hand side matrix for the second derivatives contributions
+     * @param rLeftHandSideMatrix the elemental left hand side matrix
+     * @param rCurrentProcessInfo the current process info instance
      */
     virtual void CalculateSecondDerivativesLHS(MatrixType& rLeftHandSideMatrix,
-                           const ProcessInfo& rCurrentProcessInfo)
+                                               const ProcessInfo& rCurrentProcessInfo)
     {
         std::stringstream ss;
         ss << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
@@ -675,12 +671,12 @@ public:
 
     /**
      * this is called during the assembling process in order
-     * to calculate the elemental right hand side vector for the second derivatives constributions
-     * @param rRightHandSideVector: the elemental right hand side vector
-     * @param rCurrentProcessInfo: the current process info instance
+     * to calculate the elemental right hand side vector for the second derivatives contributions
+     * @param rRightHandSideVector the elemental right hand side vector
+     * @param rCurrentProcessInfo the current process info instance
      */
     virtual void CalculateSecondDerivativesRHS(VectorType& rRightHandSideVector,
-                           const ProcessInfo& rCurrentProcessInfo)
+                                               const ProcessInfo& rCurrentProcessInfo)
     {
         std::stringstream ss;
         ss << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
@@ -688,20 +684,18 @@ public:
 
         KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
     }
-
-
 
     /**
      * ELEMENTS inherited from this class must implement this methods
      * if they need to add dynamic element contributions
-     * CalculateMassMatrix and CalculateDampingMatrix methods are: OPTIONAL
+     * CalculateMassMatrix, CalculateDampingMatrix and CalculateLumpedMassVector methods are: OPTIONAL
      */
 
     /**
      * this is called during the assembling process in order
      * to calculate the elemental mass matrix
-     * @param rMassMatrix: the elemental mass matrix
-     * @param rCurrentProcessInfo: the current process info instance
+     * @param rMassMatrix the elemental mass matrix
+     * @param rCurrentProcessInfo the current process info instance
      */
     virtual void CalculateMassMatrix(MatrixType& rMassMatrix, const ProcessInfo& rCurrentProcessInfo)
     {
@@ -712,12 +706,11 @@ public:
         KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
     }
 
-
     /**
      * this is called during the assembling process in order
      * to calculate the elemental damping matrix
-     * @param rDampingMatrix: the elemental damping matrix
-     * @param rCurrentProcessInfo: the current process info instance
+     * @param rDampingMatrix the elemental damping matrix
+     * @param rCurrentProcessInfo the current process info instance
      */
     virtual void CalculateDampingMatrix(MatrixType& rDampingMatrix, const ProcessInfo& rCurrentProcessInfo)
     {
@@ -728,6 +721,22 @@ public:
         KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
     }
 
+    /**
+     * this is called during the initialize of the builder
+     * to calculate the lumped mass vector
+     * @param rLumpedMassVector the elemental lumped mass vector
+     * @param rCurrentProcessInfo the current process info instance
+     */
+    virtual void CalculateLumpedMassVector(
+        VectorType& rLumpedMassVector,
+        const ProcessInfo& rCurrentProcessInfo) const
+    {
+        std::stringstream ss;
+        ss << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
+           << __FUNCTION__ << " is not implemented";
+
+        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+    }
 
 
     /**
@@ -744,36 +753,62 @@ public:
      * IS ALLOWED TO WRITE ON ITS NODES.
      * the caller is expected to ensure thread safety hence
      * SET/UNSETLOCK MUST BE PERFORMED IN THE STRATEGY BEFORE CALLING THIS FUNCTION
-      * @param rCurrentProcessInfo: the current process info instance
+     * @param rCurrentProcessInfo the current process info instance
      */
     virtual void AddExplicitContribution(const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
     /**
-     * this function is designed to make the element to assemble an rRHS vector
-     * identified by a variable rRHSVariable by assembling it to the nodes on the variable
-     * rDestinationVariable.
-     * The "AddEXplicit" FUNCTIONS THE ONLY FUNCTIONS IN WHICH AN ELEMENT
-     * IS ALLOWED TO WRITE ON ITS NODES.
-     * the caller is expected to ensure thread safety hence
-     * SET/UNSETLOCK MUST BE PERFORMED IN THE STRATEGY BEFORE CALLING THIS FUNCTION
-     * @param rRHSVector: input variable containing the RHS vector to be assembled
-     * @param rRHSVariable: variable describing the type of the RHS vector to be assembled
-     * @param rDestinationVariable: variable in the database to which the rRHSVector will be assembled
-      * @param rCurrentProcessInfo: the current process info instance
+     * @brief This function is designed to make the element to assemble an rRHS vector identified by a variable rRHSVariable by assembling it to the nodes on the variable rDestinationVariable. (This is the double version)
+     * @details The "AddExplicit" FUNCTIONS THE ONLY FUNCTIONS IN WHICH AN ELEMENT IS ALLOWED TO WRITE ON ITS NODES. The caller is expected to ensure thread safety hence SET-/UNSET-LOCK MUST BE PERFORMED IN THE STRATEGY BEFORE CALLING THIS FUNCTION
+     * @param rRHSVector input variable containing the RHS vector to be assembled
+     * @param rRHSVariable variable describing the type of the RHS vector to be assembled
+     * @param rDestinationVariable variable in the database to which the rRHSvector will be assembled
+     * @param rCurrentProcessInfo the current process info instance
      */
-    virtual void AddExplicitContribution(const VectorType& rRHSVector, const Variable<VectorType>& rRHSVariable, Variable<double >& rDestinationVariable, const ProcessInfo& rCurrentProcessInfo)
+    virtual void AddExplicitContribution(
+        const VectorType& rRHSVector,
+        const Variable<VectorType>& rRHSVariable,
+        const Variable<double >& rDestinationVariable,
+        const ProcessInfo& rCurrentProcessInfo
+        )
     {
         KRATOS_THROW_ERROR(std::logic_error, "base element class is not able to assemble rRHS to the desired variable. destination variable is ",rDestinationVariable)
     }
 
-    virtual void AddExplicitContribution(const VectorType& rRHSVector, const Variable<VectorType>& rRHSVariable, Variable<array_1d<double,3> >& rDestinationVariable, const ProcessInfo& rCurrentProcessInfo)
+    /**
+     * @brief This function is designed to make the element to assemble an rRHS vector identified by a variable rRHSVariable by assembling it to the nodes on the variable rDestinationVariable. (This is the vector version)
+     * @details The "AddExplicit" FUNCTIONS THE ONLY FUNCTIONS IN WHICH AN ELEMENT IS ALLOWED TO WRITE ON ITS NODES. The caller is expected to ensure thread safety hence SET-/UNSET-LOCK MUST BE PERFORMED IN THE STRATEGY BEFORE CALLING THIS FUNCTION
+     * @param rRHSVector input variable containing the RHS vector to be assembled
+     * @param rRHSVariable variable describing the type of the RHS vector to be assembled
+     * @param rDestinationVariable variable in the database to which the rRHSvector will be assembled
+     * @param rCurrentProcessInfo the current process info instance
+     */
+    virtual void AddExplicitContribution(
+        const VectorType& rRHSVector,
+        const Variable<VectorType>& rRHSVariable,
+        const Variable<array_1d<double,3> >& rDestinationVariable,
+        const ProcessInfo& rCurrentProcessInfo
+        )
     {
          KRATOS_THROW_ERROR(std::logic_error, "base element class is not able to assemble rRHS to the desired variable. destination variable is ",rDestinationVariable)
     }
 
-    virtual void AddExplicitContribution(const MatrixType& rLHSMatrix, const Variable<MatrixType>& rLHSVariable, Variable<Matrix>& rDestinationVariable, const ProcessInfo& rCurrentProcessInfo)
+    /**
+     * @brief This function is designed to make the element to assemble an rRHS vector identified by a variable rRHSVariable by assembling it to the nodes on the variable rDestinationVariable. (This is the matrix version)
+     * @details The "AddExplicit" FUNCTIONS THE ONLY FUNCTIONS IN WHICH AN ELEMENT IS ALLOWED TO WRITE ON ITS NODES. The caller is expected to ensure thread safety hence SET-/UNSET-LOCK MUST BE PERFORMED IN THE STRATEGY BEFORE CALLING THIS FUNCTION
+     * @param rRHSVector input variable containing the RHS vector to be assembled
+     * @param rRHSVariable variable describing the type of the RHS vector to be assembled
+     * @param rDestinationVariable variable in the database to which the rRHSvector will be assembled
+     * @param rCurrentProcessInfo the current process info instance
+     */
+    virtual void AddExplicitContribution(
+        const MatrixType& rLHSMatrix,
+        const Variable<MatrixType>& rLHSVariable,
+        const Variable<Matrix>& rDestinationVariable,
+        const ProcessInfo& rCurrentProcessInfo
+        )
     {
          KRATOS_THROW_ERROR(std::logic_error, "base element class is not able to assemble rLHS to the desired variable. destination variable is ",rDestinationVariable)
     }
@@ -818,57 +853,57 @@ public:
      * these methods are: OPTIONAL
      */
 
+    virtual void CalculateOnIntegrationPoints(const Variable<bool>& rVariable,
+                          std::vector<bool>& rValues,
+                          const ProcessInfo& rCurrentProcessInfo)
+    {
+    }
+
     virtual void CalculateOnIntegrationPoints(const Variable<int>& rVariable,
-                         std::vector<int>& rValues,
-                         const ProcessInfo& rCurrentProcessInfo)
+                          std::vector<int>& rValues,
+                          const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
     virtual void CalculateOnIntegrationPoints(const Variable<double>& rVariable,
-                         std::vector<double>& rValues,
-                         const ProcessInfo& rCurrentProcessInfo)
+                          std::vector<double>& rValues,
+                          const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
     virtual void CalculateOnIntegrationPoints(const Variable<array_1d<double, 3 > >& rVariable,
-                         std::vector<array_1d<double, 3 > >& rValues,
-                         const ProcessInfo& rCurrentProcessInfo)
+                          std::vector<array_1d<double, 3 > >& rValues,
+                          const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
     virtual void CalculateOnIntegrationPoints(const Variable<array_1d<double, 6 > >& rVariable,
-                         std::vector<array_1d<double, 6 > >& rValues,
-                         const ProcessInfo& rCurrentProcessInfo)
+                          std::vector<array_1d<double, 6 > >& rValues,
+                          const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
     virtual void CalculateOnIntegrationPoints(const Variable<Vector>& rVariable,
-                         std::vector<Vector>& rValues,
-                         const ProcessInfo& rCurrentProcessInfo)
+                          std::vector<Vector>& rValues,
+                          const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
     virtual void CalculateOnIntegrationPoints(const Variable<Matrix>& rVariable,
-                         std::vector<Matrix>& rValues,
-                         const ProcessInfo& rCurrentProcessInfo)
+                          std::vector<Matrix>& rValues,
+                          const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
     virtual void CalculateOnIntegrationPoints(const Variable<ConstitutiveLaw::Pointer>& rVariable,
-                         std::vector<ConstitutiveLaw::Pointer>& rValues,
-                         const ProcessInfo& rCurrentProcessInfo)
+                          std::vector<ConstitutiveLaw::Pointer>& rValues,
+                          const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
     virtual void CalculateOnIntegrationPoints(const Variable<std::string>& rVariable,
-                         std::vector<std::string>& rValues,
-                         const ProcessInfo& rCurrentProcessInfo)
-    {
-    }
-
-    virtual void CalculateOnIntegrationPoints(const Variable<bool>& rVariable,
-                         std::vector<bool>& rValues,
-                         const ProcessInfo& rCurrentProcessInfo)
+                          std::vector<std::string>& rValues,
+                          const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
@@ -879,11 +914,16 @@ public:
      * Note, that these functions expect a std::vector of values for the specified variable type that
      * contains a value for each integration point!
      * SetValuesOnIntegrationPoints: set the values for given Variable.
-     * GetValuesOnIntegrationPoints: get the values for given Variable.
+     * CalculateOnIntegrationPoints: get/calculate the values for given Variable.
      * these methods are: OPTIONAL
      */
 
     //SET ON INTEGRATION POINTS - METHODS
+    virtual void SetValuesOnIntegrationPoints(const Variable<bool>& rVariable,
+                         const std::vector<bool>& rValues,
+                         const ProcessInfo& rCurrentProcessInfo)
+    {
+    }
     virtual void SetValuesOnIntegrationPoints(const Variable<int>& rVariable,
                          const std::vector<int>& rValues,
                          const ProcessInfo& rCurrentProcessInfo)
@@ -932,11 +972,6 @@ public:
     {
     }
 
-    virtual void SetValuesOnIntegrationPoints(const Variable<bool>& rVariable,
-                         const std::vector<bool>& rValues,
-                         const ProcessInfo& rCurrentProcessInfo)
-    {
-    }
 
     //GET ON INTEGRATION POINTS METHODS
 
@@ -1044,8 +1079,8 @@ public:
     /**
      * this is called during the assembling process in order
      * to calculate the elemental mass matrix
-     * @param rMassMatrix: the elemental mass matrix
-     * @param rCurrentProcessInfo: the current process info instance
+     * @param rMassMatrix the elemental mass matrix
+     * @param rCurrentProcessInfo the current process info instance
      */
     virtual void MassMatrix(MatrixType& rMassMatrix, const ProcessInfo& rCurrentProcessInfo)
     {
@@ -1058,9 +1093,9 @@ public:
 
     /**
      * adds the mass matrix scaled by a given factor to the LHS
-     * @param rLeftHandSideMatrix: the elemental LHS matrix
-     * @param coeff: the given factor
-     * @param rCurrentProcessInfo: the current process info instance
+     * @param rLeftHandSideMatrix the elemental LHS matrix
+     * @param coeff the given factor
+     * @param rCurrentProcessInfo the current process info instance
      */
     virtual void AddMassMatrix(MatrixType& rLeftHandSideMatrix,
                                double coeff, const ProcessInfo& rCurrentProcessInfo)
@@ -1070,8 +1105,8 @@ public:
     /**
      * this is called during the assembling process in order
      * to calculate the elemental damping matrix
-     * @param rDampMatrix: the elemental damping matrix
-     * @param rCurrentProcessInfo: the current process info instance
+     * @param rDampMatrix the elemental damping matrix
+     * @param rCurrentProcessInfo the current process info instance
      */
     virtual void DampMatrix(MatrixType& rDampMatrix, const ProcessInfo& rCurrentProcessInfo)
     {
@@ -1083,8 +1118,8 @@ public:
     }
 
     /**
-     * adds the inertia forces to the RHS --> performs residua = static_residua - coeff*M*acc
-     * @param rCurrentProcessInfo: the current process info instance
+     * adds the inertia forces to the RHS, e.g. performs residua = static_residua - coeff*M*acc
+     * @param rCurrentProcessInfo the current process info instance
      */
     virtual void AddInertiaForces(VectorType& rRightHandSideVector, double coeff,
                                   const ProcessInfo& rCurrentProcessInfo)
@@ -1094,9 +1129,9 @@ public:
 
     /**
      * Calculate Damp matrix and add velocity contribution to RHS
-     * @param rDampingMatrix: the velocity-proportional "damping" matrix
-     * @param rRightHandSideVector: the elemental right hand side matrix
-     * @param rCurrentProcessInfo: the current process info instance
+     * @param rDampingMatrix the velocity-dependent "damping" matrix
+     * @param rRightHandSideVector the elemental right hand side matrix
+     * @param rCurrentProcessInfo the current process info instance
      */
     virtual void CalculateLocalVelocityContribution(MatrixType& rDampingMatrix,
             VectorType& rRightHandSideVector, const ProcessInfo& rCurrentProcessInfo)
@@ -1108,6 +1143,27 @@ public:
         KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
     }
 
+    /**
+     * Calculate the transposed gradient of the element's residual w.r.t. design variable.
+     */
+    virtual void CalculateSensitivityMatrix(const Variable<double>& rDesignVariable,
+                                            Matrix& rOutput,
+                                            const ProcessInfo& rCurrentProcessInfo)
+    {
+        if (rOutput.size1() != 0)
+            rOutput.resize(0, 0, false);
+    }
+
+    /**
+     * Calculate the transposed gradient of the element's residual w.r.t. design variable.
+     */
+    virtual void CalculateSensitivityMatrix(const Variable<array_1d<double,3> >& rDesignVariable,
+                                            Matrix& rOutput,
+                                            const ProcessInfo& rCurrentProcessInfo)
+    {
+        if (rOutput.size1() != 0)
+            rOutput.resize(0, 0, false);
+    }
 
     //METHODS TO BE CLEANED: DEPRECATED end
 
@@ -1115,6 +1171,12 @@ public:
     ///@name Access
     ///@{
 
+    /**
+    * @brief returns the pointer to the property of the element.
+    *        Does not throw an error, to allow copying of
+    *        elements which don't have any property assigned.
+    * @return property pointer
+    */
     PropertiesType::Pointer pGetProperties()
     {
         return mpProperties;
@@ -1218,7 +1280,7 @@ public:
 
     /// Turn back information as a string.
 
-    virtual std::string Info() const
+    std::string Info() const override
     {
         std::stringstream buffer;
         buffer << "Element #" << Id();
@@ -1227,14 +1289,14 @@ public:
 
     /// Print information about this object.
 
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << "Element #" << Id();
     }
 
     /// Print object's data.
 
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
         pGetGeometry()->PrintData(rOStream);
     }
@@ -1296,7 +1358,7 @@ private:
 
     friend class Serializer;
 
-    virtual void save(Serializer& rSerializer) const
+    void save(Serializer& rSerializer) const override
     {
         KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, GeometricalObject );
         KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, Flags );
@@ -1304,7 +1366,7 @@ private:
         rSerializer.save("Properties", mpProperties);
     }
 
-    virtual void load(Serializer& rSerializer)
+    void load(Serializer& rSerializer) override
     {
         KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, GeometricalObject );
         KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, Flags );

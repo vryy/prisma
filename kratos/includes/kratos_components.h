@@ -18,9 +18,9 @@
 #include <string>
 #include <iostream>
 #include <map>
+#include <typeinfo>
 
 // External includes
-#include <boost/ref.hpp>
 
 // Project includes
 #include "includes/define.h"
@@ -31,14 +31,22 @@
 namespace Kratos
 {
 
-/// Short class definition.
-/** Detail class definition.
-*/
-
+/**
+ * @class KratosComponents
+ * @brief KratosComponents class encapsulates a lookup table for a family of classes in a generic way.
+ * @details Prototypes must be added to this table by unique names to be accessible by IO.
+ * These names can be created automatically using C++ RTTI or given manually for each component.
+ * In this design the manual approach is chosen, so shorter and more clear names can be given
+ * to each component and also there is a flexibility to give different names to different
+ * states of an object and create them via different prototypes.
+ * For example having TriangularThermal and  both
+ * @ingroup KratosCore
+ * @author Pooyan Dadvand
+ * @tparam TComponentType The type of components to be stored in this table.
+ */
 template<class TComponentType>
 class KRATOS_API(KRATOS_CORE) KratosComponents
 {
-
 public:
 
     ///@name Type Definitions
@@ -55,60 +63,64 @@ public:
     ///@{
 
     /// Default constructor.
-
     KratosComponents() {}
 
-//       KratosComponents(std::string const& Name, TComponentType const& ThisComponent)
-//       {
-//  	msComponents.insert(typename ComponentsContainerType::value_type(Name ,boost::cref(ThisComponent)));
-//       }
-
     /// Destructor.
-
     virtual ~KratosComponents() {}
 
     ///@}
     ///@name Operators
     ///@{
 
-
-
     ///@}
     ///@name Operations
     ///@{
 
-
-    static void Add(std::string const& Name, TComponentType const& ThisComponent)
+    /**
+     * @brief Adds a component to the collection.
+     * @param rName the name of the component
+     * @param rComponent the component to add
+     * @throws std::runtime_error if a different object was already registered with the same name
+     */
+    static void Add(const std::string& rName, const TComponentType& rComponent)
     {
-        msComponents.insert(typename ComponentsContainerType::value_type(Name , &ThisComponent));
+        // Check if a different object was already registered with this name, since this is undefined behavior
+        typename ComponentsContainerType::iterator it_comp =  msComponents.find(rName);
+        if (it_comp != msComponents.end() && typeid(*(it_comp->second)) != typeid(rComponent))
+            KRATOS_THROW_ERROR(std::logic_error, "An object of different type was already registered with name ", rName);
+        msComponents.insert(ValueType(rName , &rComponent));
     }
 
-
-//     static void Add(std::string const& Name, TComponentType const& ThisComponent, ComponentsContainerType& ThisComponents)
-//     {
-    ////ThisComponents.insert(typename ComponentsContainerType::value_type(Name ,boost::cref(ThisComponent)));
-    //msComponents.insert(typename ComponentsContainerType::value_type(Name ,boost::cref(ThisComponent)));
-//     }
-
-
-    static TComponentType const& Get(std::string const& Name)
+    /**
+     * @brief Removes a component with the specified name.
+     * @param rName The name of the component to remove.
+     * @throws ErrorType If the component with the specified name does not exist.
+     */
+    static void Remove(const std::string& rName)
     {
-        typename ComponentsContainerType::iterator i =  msComponents.find(Name);
-        /* 	if(i == msComponents.end()) */
-        /* 	   KRATOS_THROW_ERROR(std::invalid_argument, "The component is not registered!", Name); */
-        return *(i->second);
+        std::size_t num_erased = msComponents.erase(rName);
+        if (num_erased == 0)
+            KRATOS_THROW_ERROR(std::logic_error, "Trying to remove inexistent component ", rName);
     }
 
-    static ComponentsContainerType & GetComponents()
+    /**
+     * @brief Retrieves a component with the specified name.
+     * @details This function retrieves a component from the ComponentsContainer using the provided name.
+     * @param rName The name of the component to retrieve.
+     * @return A reference to the retrieved component.
+     * @note If the component is not found in debug, an error message will be printed and the program may terminate.
+     */
+    static const TComponentType& Get(const std::string& rName)
     {
-        return msComponents;
+        typename ComponentsContainerType::iterator it_comp = msComponents.find(rName);
+        if (it_comp == msComponents.end())
+            KRATOS_THROW_ERROR(std::logic_error, GetMessageUnregisteredComponent(rName), "");
+        return *(it_comp->second);
     }
 
-    static ComponentsContainerType * pGetComponents()
-    {
-        return &msComponents;
-    }
-
+    /**
+     * @brief Registers the function.
+     */
     static void Register()
     {
 
@@ -118,14 +130,37 @@ public:
     ///@name Access
     ///@{
 
+    /**
+     * @brief Retrieves the ComponentsContainer.
+     * @details This function returns a reference to the ComponentsContainer, which stores all the components.
+     * @return A reference to the ComponentsContainer.
+     */
+    static ComponentsContainerType& GetComponents()
+    {
+        return msComponents;
+    }
+
+    /**
+     * @brief Retrieves the pointer to the ComponentsContainerType object.
+     * @return Pointer to the ComponentsContainerType object.
+     */
+    static ComponentsContainerType* pGetComponents()
+    {
+        return &msComponents;
+    }
 
     ///@}
     ///@name Inquiry
     ///@{
 
-    static bool Has(std::string const& Name)
+    /**
+     * @brief Check if the given name exists in the set of components.
+     * @param rName the name to check
+     * @return true if the name exists, false otherwise
+     */
+    static bool Has(const std::string& rName)
     {
-        return (msComponents.find(Name) != msComponents.end());
+        return (msComponents.find(rName) != msComponents.end());
     }
 
     ///@}
@@ -155,87 +190,56 @@ public:
     ///@name Friends
     ///@{
 
-
     ///@}
-
-protected:
-
-    ///@name Protected static Member Variables
-    ///@{
-
-    ///@}
-    ///@name Protected member Variables
-    ///@{
-
-
-    ///@}
-    ///@name Protected Operators
-    ///@{
-
-
-    ///@}
-    ///@name Protected Operations
-    ///@{
-
-
-    ///@}
-    ///@name Protected  Access
-    ///@{
-
-
-    ///@}
-    ///@name Protected Inquiry
-    ///@{
-
-
-    ///@}
-    ///@name Protected LifeCycle
-    ///@{
-
-
-    ///@}
-
 private:
-
     ///@name Static Member Variables
     ///@{
 
-    static ComponentsContainerType msComponents;
+    static ComponentsContainerType msComponents; /// Component container
 
     ///@}
     ///@name Member Variables
     ///@{
 
-
     ///@}
     ///@name Private Operators
     ///@{
-
 
     ///@}
     ///@name Private Operations
     ///@{
 
+    /**
+     * @brief Retrieves a message indicating that the component with the given name is not registered.
+     * @param rName The name of the component that is not registered.
+     * @return A string containing the error message.
+     */
+    static std::string GetMessageUnregisteredComponent(const std::string& rName)
+    {
+        std::stringstream msg;
+        msg << "The component \"" << rName << "\" is not registered!\nMaybe you need to import the application where it is defined?\nThe following components of this type are registered:" << std::endl;
+        KratosComponents instance; // creating an instance for using "PrintData"
+        instance.PrintData(msg);
+        return msg.str();
+    }
 
     ///@}
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
-
 
     ///@}
     ///@name Un accessible methods
     ///@{
 
     /// Assignment operator.
-    KratosComponents& operator=(KratosComponents const& rOther);
+    KratosComponents& operator=(const KratosComponents& rOther);
 
     /// Copy constructor.
-    KratosComponents(KratosComponents const& rOther);
+    KratosComponents(const KratosComponents& rOther);
 
     ///@}
 
@@ -264,11 +268,6 @@ public:
     /// Default constructor.
     KratosComponents() {}
 
-//       KratosComponents(std::string const& Name, TComponentType const& ThisComponent)
-//       {
-//  	msComponents.insert(typename ComponentsContainerType::value_type(Name ,boost::cref(ThisComponent)));
-//       }
-
     /// Destructor.
     virtual ~KratosComponents() {}
 
@@ -276,47 +275,71 @@ public:
     ///@name Operators
     ///@{
 
-
     ///@}
     ///@name Operations
     ///@{
 
-    static void Add(std::string const& Name, VariableData& ThisComponent)
+    /**
+     * @brief Adds a new element to the msComponents map.
+     * @param rName the name of the element to add
+     * @param rComponent the VariableData object to add
+     */
+    static void Add(const std::string& rName, VariableData& rComponent)
     {
-        msComponents.insert(ComponentsContainerType::value_type(Name ,&ThisComponent));
+        msComponents.insert(ValueType(rName, &rComponent));
     }
 
+    /**
+     * @brief Remove a component from the list by name.
+     * @param rName the name of the component to remove
+     */
+    static void Remove(const std::string& rName)
+    {
+        std::size_t num_erased = msComponents.erase(rName);
+        if (num_erased == 0)
+            KRATOS_THROW_ERROR(std::logic_error, "Trying to remove inexistent component ", rName);
+    }
+
+    /**
+     * @brief Get the size of the components.
+     * @return The size of the components.
+     */
     static std::size_t Size()
     {
         return msComponents.size();
     }
 
-//     static void Add(std::string const& Name, VariableData& ThisComponent, ComponentsContainerType& ThisComponents)
-//     {
-    ////ThisComponents.insert(typename ComponentsContainerType::value_type(Name ,boost::cref(ThisComponent)));
-    //msComponents.insert(typename ComponentsContainerType::value_type(Name ,boost::ref(ThisComponent)));
-//     }
-
-    static VariableData & Get(std::string const& Name)
+    /**
+     * @brief Retrieves the VariableData with the specified name.
+     * @details This function retrieves the VariableData associated with the provided name from the msComponents container.
+     * @param rName The name of the VariableData to retrieve.
+     * @return A reference to the retrieved VariableData.
+     * @note If the VariableData is not found in debug, an error message will be printed and the program may terminate.
+     */
+    static VariableData& Get(const std::string& rName)
     {
-        return *(msComponents.find(Name)->second);
+        typename ComponentsContainerType::iterator it_comp =  msComponents.find(rName);
+        if (it_comp == msComponents.end())
+            KRATOS_THROW_ERROR(std::logic_error, GetMessageUnregisteredVariable(rName), "");
+        return *(it_comp->second);
     }
 
-    static VariableData* pGet(std::string const& Name)
+    /**
+     * @brief Retrieves the variable data associated with the given name.
+     * @param rName the name of the variable
+     * @return a pointer to the variable data, or nullptr if not found
+     */
+    static VariableData* pGet(const std::string& rName)
     {
-        return (msComponents.find(Name)->second);
+        typename ComponentsContainerType::iterator it_comp =  msComponents.find(rName);
+        if (it_comp == msComponents.end())
+            KRATOS_THROW_ERROR(std::logic_error, GetMessageUnregisteredVariable(rName), "");
+        return it_comp->second;
     }
 
-    static ComponentsContainerType & GetComponents()
-    {
-        return msComponents;
-    }
-
-    static ComponentsContainerType * pGetComponents()
-    {
-        return &msComponents;
-    }
-
+    /**
+     * @brief Registers the function.
+     */
     static void Register()
     {
 
@@ -326,14 +349,37 @@ public:
     ///@name Access
     ///@{
 
+    /**
+     * @brief Retrieves the ComponentsContainer.
+     * @details This function returns a reference to the ComponentsContainer, which stores all the components.
+     * @return A reference to the ComponentsContainer.
+     */
+    static ComponentsContainerType& GetComponents()
+    {
+        return msComponents;
+    }
+
+    /**
+     * @brief Returns a pointer to the ComponentsContainerType object.
+     * @return a pointer to the ComponentsContainerType object
+     */
+    static ComponentsContainerType* pGetComponents()
+    {
+        return &msComponents;
+    }
 
     ///@}
     ///@name Inquiry
     ///@{
 
-    static bool Has(std::string const& Name)
+    /**
+     * @brief Checks if the specified name exists in the set of components.
+     * @param rName the name to check
+     * @return true if the name exists in the set, false otherwise
+     */
+    static bool Has(const std::string& rName)
     {
-        return (msComponents.find(Name) != msComponents.end());
+        return (msComponents.find(rName) != msComponents.end());
     }
 
     ///@}
@@ -343,13 +389,13 @@ public:
     /// Turn back information as a string.
     virtual std::string Info() const
     {
-        return "Kratos components";
+        return "Kratos components <VariableData>";
     }
 
     /// Print information about this object.
     virtual void PrintInfo(std::ostream& rOStream) const
     {
-        rOStream << "Kratos components";
+        rOStream << "Kratos components <VariableData>";
     }
 
     /// Print object's data.
@@ -363,92 +409,66 @@ public:
     ///@name Friends
     ///@{
 
-
     ///@}
-
-protected:
-
-    ///@name Protected static Member Variables
-    ///@{
-
-
-    ///@}
-    ///@name Protected member Variables
-    ///@{
-
-
-    ///@}
-    ///@name Protected Operators
-    ///@{
-
-
-    ///@}
-    ///@name Protected Operations
-    ///@{
-
-
-    ///@}
-    ///@name Protected  Access
-    ///@{
-
-
-    ///@}
-    ///@name Protected Inquiry
-    ///@{
-
-
-    ///@}
-    ///@name Protected LifeCycle
-    ///@{
-
-
-    ///@}
-
 private:
 
     ///@name Static Member Variables
     ///@{
 
-    static ComponentsContainerType msComponents;
+    static ComponentsContainerType msComponents; /// Component container
 
     ///@}
     ///@name Member Variables
     ///@{
 
-
     ///@}
     ///@name Private Operators
     ///@{
-
 
     ///@}
     ///@name Private Operations
     ///@{
 
+    /**
+     * @brief Generates the error message for an unregistered variable.
+     * @param rName The name of the unregistered variable.
+     * @return The error message string.
+     */
+    static std::string GetMessageUnregisteredVariable(const std::string& rName)
+    {
+        std::stringstream msg;
+        msg << "The variable \"" << rName << "\" is not registered!\nMaybe you need to import the application where it is defined?\nThe following variables are registered:" << std::endl;
+        KratosComponents instance; // creating an instance for using "PrintData"
+        instance.PrintData(msg);
+        return msg.str();
+    }
 
     ///@}
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
-
 
     ///@}
     ///@name Un accessible methods
     ///@{
 
     /// Assignment operator.
-    KratosComponents& operator=(KratosComponents const& rOther);
+    KratosComponents& operator=(const KratosComponents& rOther);
 
     /// Copy constructor.
-    KratosComponents(KratosComponents const& rOther);
+    KratosComponents(const KratosComponents& rOther);
 
     ///@}
 
 }; // Class KratosComponents
+
+#ifdef KratosCore_EXPORTS
+template<class TComponentType>
+typename KratosComponents<TComponentType>::ComponentsContainerType KratosComponents<TComponentType>::msComponents;
+#endif
 
 
 template class KRATOS_API(KRATOS_CORE) KratosComponents<Variable<bool> >;
@@ -456,6 +476,9 @@ template class KRATOS_API(KRATOS_CORE) KratosComponents<Variable<int> >;
 template class KRATOS_API(KRATOS_CORE) KratosComponents<Variable<unsigned int> >;
 template class KRATOS_API(KRATOS_CORE) KratosComponents<Variable<double> >;
 template class KRATOS_API(KRATOS_CORE) KratosComponents<Variable<array_1d<double, 3> > >;
+template class KRATOS_API(KRATOS_CORE) KratosComponents<Variable<array_1d<double, 4> > >;
+template class KRATOS_API(KRATOS_CORE) KratosComponents<Variable<array_1d<double, 6> > >;
+template class KRATOS_API(KRATOS_CORE) KratosComponents<Variable<array_1d<double, 9> > >;
 template class KRATOS_API(KRATOS_CORE) KratosComponents<Variable<Vector> >;
 template class KRATOS_API(KRATOS_CORE) KratosComponents<Variable<Matrix> >;
 template class KRATOS_API(KRATOS_CORE) KratosComponents<Variable<std::string> >;
@@ -463,20 +486,8 @@ template class KRATOS_API(KRATOS_CORE) KratosComponents<VariableComponent<Vector
 template class KRATOS_API(KRATOS_CORE) KratosComponents<Variable<Flags> >;
 template class KRATOS_API(KRATOS_CORE) KratosComponents<Flags>;
 
-#ifdef KratosCore_EXPORTS
-template<class TComponentType>
-typename KratosComponents<TComponentType>::ComponentsContainerType KratosComponents<TComponentType>::msComponents;
-#endif
-
 ///@name Input and output
 ///@{
-
-/// input stream function
-//   template<class TComponentType>
-//   inline std::istream& operator >> (std::istream& rIStream,
-// 				    KratosComponents<TComponentType>& rThis);
-
-
 
 /// output stream function
 template<class TComponentType>
@@ -491,19 +502,22 @@ inline std::ostream& operator << (std::ostream& rOStream,
 }
 ///@}
 
-void KRATOS_API(KRATOS_CORE) AddKratosComponent(std::string const& Name, Variable<bool> const& ThisComponent);
-void KRATOS_API(KRATOS_CORE) AddKratosComponent(std::string const& Name, Variable<int> const& ThisComponent);
-void KRATOS_API(KRATOS_CORE) AddKratosComponent(std::string const& Name, Variable<unsigned int> const& ThisComponent);
-void KRATOS_API(KRATOS_CORE) AddKratosComponent(std::string const& Name, Variable<double> const& ThisComponent);
-void KRATOS_API(KRATOS_CORE) AddKratosComponent(std::string const& Name, Variable<array_1d<double, 3> > const& ThisComponent);
-void KRATOS_API(KRATOS_CORE) AddKratosComponent(std::string const& Name, Variable<Vector> const& ThisComponent);
-void KRATOS_API(KRATOS_CORE) AddKratosComponent(std::string const& Name, Variable<Matrix> const& ThisComponent);
-void KRATOS_API(KRATOS_CORE) AddKratosComponent(std::string const& Name, Variable<std::string> const& ThisComponent);
-void KRATOS_API(KRATOS_CORE) AddKratosComponent(std::string const& Name, VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > const& ThisComponent);
-void KRATOS_API(KRATOS_CORE) AddKratosComponent(std::string const& Name, Flags const& ThisComponent);
-void KRATOS_API(KRATOS_CORE) AddKratosComponent(std::string const& Name, Variable<Flags> const& ThisComponent);
+void KRATOS_API(KRATOS_CORE) AddKratosComponent(const std::string& rName, const Variable<bool>& rComponent);
+void KRATOS_API(KRATOS_CORE) AddKratosComponent(const std::string& rName, const Variable<int>& rComponent);
+void KRATOS_API(KRATOS_CORE) AddKratosComponent(const std::string& rName, const Variable<unsigned int>& rComponent);
+void KRATOS_API(KRATOS_CORE) AddKratosComponent(const std::string& rName, const Variable<double>& rComponent);
+void KRATOS_API(KRATOS_CORE) AddKratosComponent(const std::string& rName, const Variable<array_1d<double, 3> >& rComponent);
+void KRATOS_API(KRATOS_CORE) AddKratosComponent(const std::string& rName, const Variable<array_1d<double, 4> >& rComponent);
+void KRATOS_API(KRATOS_CORE) AddKratosComponent(const std::string& rName, const Variable<array_1d<double, 6> >& rComponent);
+void KRATOS_API(KRATOS_CORE) AddKratosComponent(const std::string& rName, const Variable<array_1d<double, 9> >& rComponent);
+void KRATOS_API(KRATOS_CORE) AddKratosComponent(const std::string& rName, const Variable<Vector>& rComponent);
+void KRATOS_API(KRATOS_CORE) AddKratosComponent(const std::string& rName, const Variable<Matrix>& rComponent);
+void KRATOS_API(KRATOS_CORE) AddKratosComponent(const std::string& rName, const Variable<std::string>& rComponent);
+void KRATOS_API(KRATOS_CORE) AddKratosComponent(const std::string& rName, const VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > >& rComponent);
+void KRATOS_API(KRATOS_CORE) AddKratosComponent(const std::string& rName, const Flags& rComponent);
+void KRATOS_API(KRATOS_CORE) AddKratosComponent(const std::string& rName, const Variable<Flags>& rComponent);
 
-template<class TComponentType> void AddKratosComponent(std::string const& Name, TComponentType const& ThisComponent)
+template<class TComponentType> void AddKratosComponent(const std::string& rName, const TComponentType& rComponent)
 {
 }
 
