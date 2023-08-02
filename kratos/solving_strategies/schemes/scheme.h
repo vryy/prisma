@@ -1,48 +1,14 @@
-/*
-==============================================================================
-Kratos
-A General Purpose Software for Multi-Physics Finite Element Analysis
-Version 1.0 (Released on march 05, 2007).
-
-Copyright 2007
-Pooyan Dadvand, Riccardo Rossi
-pooyan@cimne.upc.edu
-rrossi@cimne.upc.edu
-CIMNE (International Center for Numerical Methods in Engineering),
-Gran Capita' s/n, 08034 Barcelona, Spain
-
-Permission is hereby granted, free  of charge, to any person obtaining
-a  copy  of this  software  and  associated  documentation files  (the
-"Software"), to  deal in  the Software without  restriction, including
-without limitation  the rights to  use, copy, modify,  merge, publish,
-distribute,  sublicense and/or  sell copies  of the  Software,  and to
-permit persons to whom the Software  is furnished to do so, subject to
-the following condition:
-
-Distribution of this code for  any  commercial purpose  is permissible
-ONLY BY DIRECT ARRANGEMENT WITH THE COPYRIGHT OWNER.
-
-The  above  copyright  notice  and  this permission  notice  shall  be
-included in all copies or substantial portions of the Software.
-
-THE  SOFTWARE IS  PROVIDED  "AS  IS", WITHOUT  WARRANTY  OF ANY  KIND,
-EXPRESS OR  IMPLIED, INCLUDING  BUT NOT LIMITED  TO THE  WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT  SHALL THE AUTHORS OR COPYRIGHT HOLDERS  BE LIABLE FOR ANY
-CLAIM, DAMAGES OR  OTHER LIABILITY, WHETHER IN AN  ACTION OF CONTRACT,
-TORT  OR OTHERWISE, ARISING  FROM, OUT  OF OR  IN CONNECTION  WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-==============================================================================
- */
-
-/* *********************************************************
- *
- *   Last Modified by:    $Author: pooyan $
- *   Date:                $Date: 2008-02-27 13:54:45 $
- *   Revision:            $Revision: 1.4 $
- *
- * ***********************************************************/
+//    |  /           |
+//    ' /   __| _` | __|  _ \   __|
+//    . \  |   (   | |   (   |\__ `
+//   _|\_\_|  \__,_|\__|\___/ ____/
+//                   Multi-Physics
+//
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
+//
+//  Main authors:    Riccardo Rossi
+//
 
 
 
@@ -50,79 +16,41 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define  KRATOS_SCHEME
 
 
-/* System includes */
-#include <set>
+// System includes
 
-/* External includes */
-#include "boost/smart_ptr.hpp"
+// External includes
 
-
-/* Project includes */
+// Project includes
 #include "includes/define.h"
 #include "includes/kratos_flags.h"
 #include "includes/model_part.h"
 #include "utilities/openmp_utils.h"
 
-#include "includes/condition.h"
-//#include "vectorial_spaces/vector.h"
-//#include "vectorial_spaces/matrix.h"
-
-//default dense space
-//#include "vectorial_spaces/dense_space.h"
-
 namespace Kratos
 {
+///@name Kratos Globals
+///@{
+///@}
+///@name Type Definitions
+///@{
+///@}
+///@name  Enum's
+///@{
+///@}
+///@name  Functions
+///@{
+///@}
+///@name Kratos Classes
+///@{
 
-/**@name Kratos Globals */
-/*@{ */
-
-
-/*@} */
-/**@name Type Definitions */
-/*@{ */
-
-/*@} */
-
-
-/**@name  Enum's */
-/*@{ */
-
-
-/*@} */
-/**@name  Functions */
-/*@{ */
-
-
-
-/*@} */
-/**@name Kratos Classes */
-/*@{ */
-
-/** Short class definition.
-
-  This class provides the implementation of the basic tasks that are needed by the solution strategy.
-  It is intended to be the place for tailoring the solution strategies to problem specific tasks.
-
-        Detail class definition.
-
-          \URL[Example of use html]{ extended_documentation/no_ex_of_use.html}
-
-                \URL[Example of use pdf]{ extended_documentation/no_ex_of_use.pdf}
-
-                  \URL[Example of use doc]{ extended_documentation/no_ex_of_use.doc}
-
-                        \URL[Example of use ps]{ extended_documentation/no_ex_of_use.ps}
-
-
-                                \URL[Extended documentation html]{ extended_documentation/no_ext_doc.html}
-
-                                  \URL[Extended documentation pdf]{ extended_documentation/no_ext_doc.pdf}
-
-                                        \URL[Extended documentation doc]{ extended_documentation/no_ext_doc.doc}
-
-                                          \URL[Extended documentation ps]{ extended_documentation/no_ext_doc.ps}
-
-
+/**
+ * @class Scheme
+ * @ingroup KratosCore
+ * @brief This class provides the implementation of the basic tasks that are needed by the solution strategy.
+ * @details It is intended to be the place for tailoring the solution strategies to problem specific tasks.
+ * @tparam TSparseSpace The sparse space considered
+ * @tparam TDenseSpace The dense space considered
+ * @author Riccardo Rossi
  */
 template<class TSparseSpace,
          class TDenseSpace //= DenseSpace<double>
@@ -130,9 +58,12 @@ template<class TSparseSpace,
 class Scheme
 {
 public:
+    ///@name Type Definitions
+    ///@{
 
-    /**@name Type Definitions */
-    /*@{ */
+    /// Pointer definition of Scheme
+    KRATOS_CLASS_POINTER_DEFINITION(Scheme);
+
     typedef typename TSparseSpace::DataType TDataType;
     typedef typename TSparseSpace::MatrixType TSystemMatrixType;
     typedef typename TSparseSpace::VectorType TSystemVectorType;
@@ -153,102 +84,19 @@ public:
 
 
 
+    ///@}
+    ///@name Life Cycle
+    ///@{
+
     /**
-     * This struct is used in the component wise calculation only
-     * is defined here and is used to declare a member variable in the component wise schemes
-     * private pointers can only be accessed by means of set and get functions
-     * this allows to set and not copy the Element_Variables and Condition_Variables
-     * which will be asked and set by another strategy object
-     */
-
-    struct LocalSystemComponents
-    {
-    private:
-
-      //elements
-      std::vector<LocalSystemMatrixType> *mpLHS_Element_Components;
-      const std::vector< Variable< LocalSystemMatrixType > > *mpLHS_Element_Variables;
-
-      std::vector<LocalSystemVectorType> *mpRHS_Element_Components;
-      const std::vector< Variable< LocalSystemVectorType > > *mpRHS_Element_Variables;
-
-      //conditions
-      std::vector<LocalSystemMatrixType> *mpLHS_Condition_Components;
-      const std::vector< Variable< LocalSystemMatrixType > > *mpLHS_Condition_Variables;
-
-      std::vector<LocalSystemVectorType> *mpRHS_Condition_Components;
-      const std::vector< Variable< LocalSystemVectorType > > *mpRHS_Condition_Variables;
-
-    public:
-
-      void Initialize()
-      {
-    mpLHS_Element_Components = NULL;
-    mpLHS_Element_Variables  = NULL;
-
-    mpRHS_Element_Components = NULL;
-    mpRHS_Element_Variables  = NULL;
-
-    mpLHS_Condition_Components = NULL;
-    mpLHS_Condition_Variables  = NULL;
-
-    mpRHS_Condition_Components = NULL;
-    mpRHS_Condition_Variables  = NULL;
-      }
-
-      //setting pointer variables
-
-      //elements
-      void SetLHS_Element_Components ( std::vector<LocalSystemMatrixType>& rLHS_Element_Components ) { mpLHS_Element_Components = &rLHS_Element_Components; };
-      void SetLHS_Element_Variables     ( const std::vector< Variable< LocalSystemMatrixType > >& rLHS_Element_Variables ) { mpLHS_Element_Variables = &rLHS_Element_Variables; };
-      void SetRHS_Element_Components ( std::vector<LocalSystemVectorType>& rRHS_Element_Components ) { mpRHS_Element_Components = &rRHS_Element_Components; };
-      void SetRHS_Element_Variables     ( const std::vector< Variable< LocalSystemVectorType > >& rRHS_Element_Variables ) { mpRHS_Element_Variables = &rRHS_Element_Variables; };
-
-      bool Are_LHS_Element_Components_Set() { if( mpLHS_Element_Variables == NULL ) return false; else return true; };
-      bool Are_RHS_Element_Components_Set() { if( mpRHS_Element_Variables == NULL ) return false; else return true; };
-
-      //conditions
-      void SetLHS_Condition_Components ( std::vector<LocalSystemMatrixType>& rLHS_Condition_Components ) { mpLHS_Condition_Components = &rLHS_Condition_Components; };
-      void SetLHS_Condition_Variables     ( const std::vector< Variable< LocalSystemMatrixType > >& rLHS_Condition_Variables ) { mpLHS_Condition_Variables = &rLHS_Condition_Variables; };
-      void SetRHS_Condition_Components ( std::vector<LocalSystemVectorType>& rRHS_Condition_Components ) { mpRHS_Condition_Components = &rRHS_Condition_Components; };
-      void SetRHS_Condition_Variables     ( const std::vector< Variable< LocalSystemVectorType > >& rRHS_Condition_Variables ) { mpRHS_Condition_Variables = &rRHS_Condition_Variables; };
-
-      bool Are_LHS_Condition_Components_Set() { if( mpLHS_Condition_Variables == NULL ) return false; else return true; };
-      bool Are_RHS_Condition_Components_Set() { if( mpRHS_Condition_Variables == NULL ) return false; else return true; };
-
-      //getting pointer variables
-
-      //elements
-      std::vector<LocalSystemMatrixType>& GetLHS_Element_Components() { return *mpLHS_Element_Components; };
-      const std::vector< Variable< LocalSystemMatrixType > >& GetLHS_Element_Variables() { return *mpLHS_Element_Variables; };
-      std::vector<LocalSystemVectorType>& GetRHS_Element_Components() { return *mpRHS_Element_Components; };
-      const std::vector< Variable< LocalSystemVectorType > >& GetRHS_Element_Variables() { return *mpRHS_Element_Variables; };
-
-      //conditions
-      std::vector<LocalSystemMatrixType>& GetLHS_Condition_Components() { return *mpLHS_Condition_Components; };
-      const std::vector< Variable< LocalSystemMatrixType > >& GetLHS_Condition_Variables() { return *mpLHS_Condition_Variables; };
-      std::vector<LocalSystemVectorType>& GetRHS_Condition_Components() { return *mpRHS_Condition_Components; };
-      const std::vector< Variable< LocalSystemVectorType > >& GetRHS_Condition_Variables() { return *mpRHS_Condition_Variables; };
-
-    };
-
-    //pointer definition
-
-    KRATOS_CLASS_POINTER_DEFINITION(Scheme);
-
-
-    /*@} */
-    /**@name Life Cycle
-     */
-    /*@{ */
-
-    /** Constructor.
+     * @brief Default Constructor
+     * @details Initializes the flags
      */
     Scheme()
     {
         mSchemeIsInitialized = false;
         mElementsAreInitialized = false;
-    mConditionsAreInitialized = false;
+        mConditionsAreInitialized = false;
     }
 
 
@@ -261,85 +109,102 @@ public:
     {
     }
 
-
     /** Destructor.
      */
     virtual ~Scheme()
     {
     }
 
+    ///@}
+    ///@name Operators
+    ///@{
 
-    /*@} */
-    /**@name Operators
-     */
-    /*@{ */
+    ///@}
+    ///@name Operations
+    ///@{
+
 
     /**
-     * Clone
+     * @brief Clone method
+     * @return The pointer of the cloned scheme
      */
     virtual Pointer Clone()
     {
-      return Pointer( new Scheme(*this) );
+        return Pointer( new Scheme(*this) );
     }
 
     /**
-     * Component wise components Get method
+     * @brief This is the place to initialize the Scheme.
+     * @details This is intended to be called just once when the strategy is initialized
+     * @param rModelPart The model part of the problem to solve
      */
-
-    virtual LocalSystemComponents& GetLocalSystemComponents()
-    {
-      KRATOS_THROW_ERROR(std::logic_error, "Asking for Local Components to the SCHEME base class which is not component wise and not contains this member variable","")
-    }
-
-    /**
-    this is the place to initialize the Scheme.
-    This is intended to be called just once when the strategy is initialized
-     */
-    virtual void Initialize(
-        ModelPart& r_model_part
-    )
+    virtual void Initialize(ModelPart& rModelPart)
     {
         KRATOS_TRY
         mSchemeIsInitialized = true;
         KRATOS_CATCH("")
     }
 
+    /**
+     * @brief This method returns if the scheme is initialized
+     * @return True if initialized, false otherwise
+     */
     bool SchemeIsInitialized()
     {
         return mSchemeIsInitialized;
     }
 
-    bool ElementsAreInitialized()
-    {
-        return mElementsAreInitialized;
-    }
-
-    bool ConditionsAreInitialized()
-    {
-        return mConditionsAreInitialized;
-    }
-
+    /**
+     * @brief This method sets if the elements have been initialized or not (true by default)
+     * @param ElementsAreInitializedFlag If the flag must be set to true or false
+     */
     void SetSchemeIsInitialized(bool SchemeIsInitializedFlag = true)
     {
         mSchemeIsInitialized = SchemeIsInitializedFlag;
     }
 
+    /**
+     * @brief This method returns if the elements are initialized
+     * @return True if initialized, false otherwise
+     */
+    bool ElementsAreInitialized()
+    {
+        return mElementsAreInitialized;
+    }
+
+    /**
+     * @brief This method sets if the elements have been initialized or not (true by default)
+     * @param ElementsAreInitializedFlag If the flag must be set to true or false
+     */
     void SetElementsAreInitialized(bool ElementsAreInitializedFlag = true)
     {
         mElementsAreInitialized = ElementsAreInitializedFlag;
     }
 
+    /**
+     * @brief This method returns if the conditions are initialized
+     * @return True if initialized, false otherwise
+     */
+    bool ConditionsAreInitialized()
+    {
+        return mConditionsAreInitialized;
+    }
+
+    /**
+     * @brief This method sets if the conditions have been initialized or not (true by default)
+     * @param ConditionsAreInitializedFlag If the flag must be set to true or false
+     */
     void SetConditionsAreInitialized(bool ConditionsAreInitializedFlag = true)
     {
         mConditionsAreInitialized = ConditionsAreInitializedFlag;
     }
 
     /**
-    this is the place to initialize the elements.
-    This is intended to be called just once when the strategy is initialized
+     * @brief This is the place to initialize the elements.
+     * @details This is intended to be called just once when the strategy is initialized
+     * @param rModelPart The model part of the problem to solve
      */
-    virtual void InitializeElements(
-        ModelPart& rModelPart)
+    virtual void InitializeElements( ModelPart& rModelPart)
     {
         KRATOS_TRY
 
@@ -366,13 +231,12 @@ public:
         KRATOS_CATCH("")
     }
 
-
     /**
-    this is the place to initialize the conditions.
-    This is intended to be called just once when the strategy is initialized
-    */
-    virtual void InitializeConditions(
-        ModelPart& rModelPart)
+     * @brief This is the place to initialize the conditions.
+     * @details This is intended to be called just once when the strategy is initialized
+     * @param rModelPart The model part of the problem to solve
+     */
+    virtual void InitializeConditions(ModelPart& rModelPart)
     {
         KRATOS_TRY
 
@@ -402,13 +266,16 @@ public:
     }
 
     /**
-    Function called once at the beginning of each solution step.
-    The basic operations to be carried in there are the following:
-    - managing variables to be kept constant over the time step
-    (for example time-Scheme constants depending on the actual time step)
+     * @brief Function called once at the beginning of each solution step.
+     * @details The basic operations to be carried in there are the following:
+     * - managing variables to be kept constant over the time step (for example time-Scheme constants depending on the actual time step)
+     * @param rModelPart The model part of the problem to solve
+     * @param A LHS matrix
+     * @param Dx Incremental update of primary variables
+     * @param b RHS Vector
      */
     virtual void InitializeSolutionStep(
-        ModelPart& r_model_part,
+        ModelPart& rModelPart,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
         TSystemVectorType& b
@@ -416,15 +283,15 @@ public:
     {
         KRATOS_TRY
         //initialize solution step for all of the elements
-        ElementsArrayType& pElements = r_model_part.Elements();
-        ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
+        ElementsArrayType& pElements = rModelPart.Elements();
+        ProcessInfo& CurrentProcessInfo = rModelPart.GetProcessInfo();
 
         for (ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
             (it) -> InitializeSolutionStep(CurrentProcessInfo);
         }
 
-        ConditionsArrayType& pConditions = r_model_part.Conditions();
+        ConditionsArrayType& pConditions = rModelPart.Conditions();
         for (ConditionsArrayType::iterator it = pConditions.begin(); it != pConditions.end(); ++it)
         {
             (it) -> InitializeSolutionStep(CurrentProcessInfo);
@@ -433,8 +300,11 @@ public:
     }
 
     /**
-    function called once at the end of a solution step, after convergence is reached if
-    an iterative process is needed
+     * @brief Function called once at the end of a solution step, after convergence is reached if an iterative process is needed
+     * @param rModelPart The model part of the problem to solve
+     * @param A LHS matrix
+     * @param Dx Incremental update of primary variables
+     * @param b RHS Vector
      */
     virtual void FinalizeSolutionStep(
         ModelPart& rModelPart,
@@ -443,7 +313,8 @@ public:
         TSystemVectorType& b)
     {
         KRATOS_TRY
-        //finalizes solution step for all of the elements
+
+        // Finalizes solution step for all of the elements, conditions and constraints
         ElementsArrayType& rElements = rModelPart.Elements();
         ProcessInfo& CurrentProcessInfo = rModelPart.GetProcessInfo();
 
@@ -485,77 +356,32 @@ public:
     }
 
     /**
-    Completely analogous to the precedent,
-    to be used when system is not explicitely defined, for example for fractional step
-    strategies
-     */
-    /*      virtual void InitializeSolutionStep(
-                            ModelPart& r_model_part
-                            )
-                    {
-                            KRATOS_TRY
-                            KRATOS_CATCH("")
-                    }
-     */
-    /**
-    Completely analogous to the precedent,
-    to be used when system is not explicitely defined, for example for fractional step
-    strategies
-     */
-    /*      virtual void FinalizeSolutionStep(
-                            ModelPart& r_model_part
-                            )
-                    {
-                            KRATOS_TRY
-                            KRATOS_CATCH("")
-                    }
-     */
-    /**
-    executed before each fractional step
-     */
-    /*      virtual void InitializeFractionalSolutionStep(
-                            ModelPart& r_model_part
-                            )
-                    {
-                            KRATOS_TRY
-                            KRATOS_CATCH("")
-                    }
-     */
-    /**
-    executed after each fractional step
-     */
-    /*      virtual void FinalizeFractionalSolutionStep(
-                            ModelPart& r_model_part
-                            )
-                    {
-                            KRATOS_TRY
-                            KRATOS_CATCH("")
-                    }
-     */
-
-    /**
-    function to be called when it is needed to initialize an iteration.
-    it is designed to be called at the beginning of each non linear iteration
-
-      take care: the elemental function with the same name is NOT called here.
-      The function is called in the builder for memory efficiency
+     * @brief unction to be called when it is needed to initialize an iteration. It is designed to be called at the beginning of each non linear iteration
+     * @note Take care: the elemental function with the same name is NOT called here.
+     * @warning Must be defined in derived classes
+     * @details The function is called in the builder for memory efficiency
+     * @param rModelPart The model part of the problem to solve
+     * @param A LHS matrix
+     * @param Dx Incremental update of primary variables
+     * @param b RHS Vector
      */
     virtual void InitializeNonLinIteration(
-        ModelPart& r_model_part,
+        ModelPart& rModelPart,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
-        TSystemVectorType& b)
+        TSystemVectorType& b
+        )
     {
         KRATOS_TRY
-        ElementsArrayType& pElements = r_model_part.Elements();
-        ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
+        ElementsArrayType& pElements = rModelPart.Elements();
+        ProcessInfo& CurrentProcessInfo = rModelPart.GetProcessInfo();
 
         for (ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
             (it) -> InitializeNonLinearIteration(CurrentProcessInfo);
         }
 
-        ConditionsArrayType& pConditions = r_model_part.Conditions();
+        ConditionsArrayType& pConditions = rModelPart.Conditions();
         for (ConditionsArrayType::iterator it = pConditions.begin(); it != pConditions.end(); ++it)
         {
             (it) -> InitializeNonLinearIteration(CurrentProcessInfo);
@@ -563,43 +389,30 @@ public:
         KRATOS_CATCH("")
     }
 
-    virtual void InitializeNonLinearIteration(Condition::Pointer rCurrentCondition,
-        ProcessInfo& CurrentProcessInfo)
-    {
-        KRATOS_TRY
-        rCurrentCondition->InitializeNonLinearIteration(CurrentProcessInfo);
-        KRATOS_CATCH("")
-    }
-
-    virtual void InitializeNonLinearIteration(Element::Pointer rCurrentElement,
-        ProcessInfo& CurrentProcessInfo)
-    {
-        KRATOS_TRY
-        rCurrentElement->InitializeNonLinearIteration(CurrentProcessInfo);
-        KRATOS_CATCH("")
-    }
-
-
     /**
-    function to be called when it is needed to finalize an iteration.
-    it is designed to be called at the end of each non linear iteration
+     * @brief Function to be called when it is needed to finalize an iteration. It is designed to be called at the end of each non linear iteration
+     * @param rModelPart The model part of the problem to solve
+     * @param A LHS matrix
+     * @param Dx Incremental update of primary variables
+     * @param b RHS Vector
      */
     virtual void FinalizeNonLinIteration(
-        ModelPart& r_model_part,
+        ModelPart& rModelPart,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
-        TSystemVectorType& b)
+        TSystemVectorType& b
+        )
     {
         KRATOS_TRY
-        ElementsArrayType& pElements = r_model_part.Elements();
-        ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
+        ElementsArrayType& pElements = rModelPart.Elements();
+        ProcessInfo& CurrentProcessInfo = rModelPart.GetProcessInfo();
 
         for (ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
             (it) -> FinalizeNonLinearIteration(CurrentProcessInfo);
         }
 
-        ConditionsArrayType& pConditions = r_model_part.Conditions();
+        ConditionsArrayType& pConditions = rModelPart.Conditions();
         for (ConditionsArrayType::iterator it = pConditions.begin(); it != pConditions.end(); ++it)
         {
             (it) -> FinalizeNonLinearIteration(CurrentProcessInfo);
@@ -608,10 +421,15 @@ public:
     }
 
     /**
-    Performing the prediction of the solution.
+     * @brief Performing the prediction of the solution.
+     * @warning Must be defined in derived classes
+     * @param rModelPart The model part of the problem to solve
+     * @param A LHS matrix
+     * @param Dx Incremental update of primary variables
+     * @param b RHS Vector
      */
     virtual void Predict(
-        ModelPart& r_model_part,
+        ModelPart& rModelPart,
         DofsArrayType& rDofSet,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
@@ -623,48 +441,65 @@ public:
     }
 
     /**
-    Performing the update of the solution.
+     * @brief Performing the update of the solution.
+     * @warning Must be defined in derived classes
+     * @param rModelPart The model part of the problem to solve
+     * @param rDofSet Set of all primary variables
+     * @param A LHS matrix
+     * @param Dx Incremental update of primary variables
+     * @param b RHS Vector
      */
     virtual void Update(
-        ModelPart& r_model_part,
+        ModelPart& rModelPart,
         DofsArrayType& rDofSet,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
         TSystemVectorType& b
-    )
+        )
     {
         KRATOS_TRY
         KRATOS_CATCH("")
     }
 
     /**
-    functions to be called to prepare the data needed for the output of results.
+     * @brief Functions to be called to prepare the data needed for the output of results.
+     * @warning Must be defined in derived classes
+     * @param rModelPart The model part of the problem to solve
+     * @param rDofSet Set of all primary variables
+     * @param A LHS matrix
+     * @param Dx Incremental update of primary variables
+     * @param b RHS Vector
      */
     virtual void CalculateOutputData(
-        ModelPart& r_model_part,
+        ModelPart& rModelPart,
         DofsArrayType& rDofSet,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
         TSystemVectorType& b
-    )
+        )
     {
         KRATOS_TRY
         KRATOS_CATCH("")
     }
 
     /**
-    functions that cleans the results data.
+     * @brief Functions that cleans the results data.
+     * @warning Must be implemented in the derived classes
      */
     virtual void CleanOutputData()
     {
+        KRATOS_TRY
+        KRATOS_CATCH("")
     }
 
     /**
-    this function is intended to be called at the end of the solution step to clean up memory
-    storage not needed after the end of the solution step
+     * @brief This function is intended to be called at the end of the solution step to clean up memory storage not needed after the end of the solution step
+     * @warning Must be implemented in the derived classes
      */
     virtual void Clean()
     {
+        KRATOS_TRY
+        KRATOS_CATCH("")
     }
 
     /**
@@ -684,156 +519,212 @@ public:
     }
 
     /**
-     * Liberate internal storage.
+     * @brief Liberate internal storage.
+     * @warning Must be implemented in the derived classes
      */
     virtual void Clear()
     {
-
+        KRATOS_TRY
+        KRATOS_CATCH("")
     }
 
     /**
-     * This function is designed to be called once to perform all the checks needed
+     * @brief This function is designed to be called once to perform all the checks needed
      * on the input provided. Checks can be "expensive" as the function is designed
      * to catch user's errors.
-     * @param r_model_part
-     * @return 0 all ok
+     * @details Checks can be "expensive" as the function is designed
+     * @param rModelPart The model part of the problem to solve
+     * @return 0 all OK, 1 otherwise
      */
-    virtual int Check(ModelPart& r_model_part)
+    virtual int Check(const ModelPart& rModelPart) const
     {
         KRATOS_TRY
 
-        for(ModelPart::ElementsContainerType::iterator it=r_model_part.ElementsBegin();
-                it!=r_model_part.ElementsEnd(); it++)
+        for(ModelPart::ElementsContainerType::const_iterator it = rModelPart.ElementsBegin();
+                it != rModelPart.ElementsEnd(); ++it)
         {
-            it->Check(r_model_part.GetProcessInfo());
+            it->Check(rModelPart.GetProcessInfo());
         }
 
-        for(ModelPart::ConditionsContainerType::iterator it=r_model_part.ConditionsBegin();
-                it!=r_model_part.ConditionsEnd(); it++)
+        for(ModelPart::ConditionsContainerType::const_iterator it = rModelPart.ConditionsBegin();
+                it != rModelPart.ConditionsEnd(); ++it)
         {
-            it->Check(r_model_part.GetProcessInfo());
+            it->Check(rModelPart.GetProcessInfo());
         }
 
         return 0;
+
         KRATOS_CATCH("");
     }
 
-    /** this function is designed to be called in the builder and solver to introduce
-    the selected time integration scheme. It "asks" the matrix needed to the element and
-    performs the operations needed to introduce the seected time integration scheme.
-
-      this function calculates at the same time the contribution to the LHS and to the RHS
-      of the system
+    /**
+     * @brief This function is designed to be called in the builder and solver to introduce the selected time integration scheme.
+     * @details It "asks" the matrix needed to the element and performs the operations needed to introduce the selected time integration scheme. This function calculates at the same time the contribution to the LHS and to the RHS of the system
+     * @param rElement The element to compute
+     * @param LHS_Contribution The LHS matrix contribution
+     * @param RHS_Contribution The RHS vector contribution
+     * @param rEquationIdVector The ID's of the element degrees of freedom
+     * @param rCurrentProcessInfo The current process info instance
      */
     virtual void CalculateSystemContributions(
-        Element& rCurrentElement,
+        Element& rElement,
         LocalSystemMatrixType& LHS_Contribution,
         LocalSystemVectorType& RHS_Contribution,
-        Element::EquationIdVectorType& EquationId,
-        const ProcessInfo& CurrentProcessInfo)
+        Element::EquationIdVectorType& rEquationIdVector,
+        const ProcessInfo& rCurrentProcessInfo
+        )
     {
     }
 
-    virtual void CalculateRHSContribution(
-        Element& rCurrentElement,
-        LocalSystemVectorType& RHS_Contribution,
-        Element::EquationIdVectorType& EquationId,
-        const ProcessInfo& CurrentProcessInfo)
-    {
-    }
-
-    virtual void CalculateLHSContribution(
-        Element& rCurrentElement,
-        LocalSystemMatrixType& LHS_Contribution,
-        Element::EquationIdVectorType& EquationId,
-        const ProcessInfo& CurrentProcessInfo)
-    {
-    }
-
-    virtual void EquationId(
-        const Element& rCurrentElement,
-        Element::EquationIdVectorType& EquationId,
-        const ProcessInfo& CurrentProcessInfo)
-    {
-        rCurrentElement.EquationIdVector(EquationId, CurrentProcessInfo);
-    }
-
-    /** functions totally analogous to the precedent but applied to
-    the "condition" objects
+    /**
+     * @brief Functions totally analogous to the precedent but applied to the "condition" objects
+     * @param rCondition The condition to compute
+     * @param LHS_Contribution The LHS matrix contribution
+     * @param RHS_Contribution The RHS vector contribution
+     * @param rEquationIdVector The ID's of the condition degrees of freedom
+     * @param rCurrentProcessInfo The current process info instance
      */
     virtual void CalculateSystemContributions(
-        Condition& rCurrentCondition,
+        Condition& rCondition,
         LocalSystemMatrixType& LHS_Contribution,
         LocalSystemVectorType& RHS_Contribution,
-        Element::EquationIdVectorType& EquationId,
-        const ProcessInfo& CurrentProcessInfo)
+        Element::EquationIdVectorType& rEquationIdVector,
+        const ProcessInfo& rCurrentProcessInfo
+        )
     {
     }
 
+    /**
+     * @brief This function is designed to calculate just the RHS contribution
+     * @param rElement The element to compute
+     * @param RHS_Contribution The RHS vector contribution
+     * @param rEquationIdVector The ID's of the element degrees of freedom
+     * @param rCurrentProcessInfo The current process info instance
+     */
     virtual void CalculateRHSContribution(
-        Condition& rCurrentCondition,
+        Element& rElement,
         LocalSystemVectorType& RHS_Contribution,
-        Element::EquationIdVectorType& EquationId,
-        const ProcessInfo& CurrentProcessInfo)
+        Element::EquationIdVectorType& rEquationIdVector,
+        const ProcessInfo& rCurrentProcessInfo
+        )
     {
     }
 
+    /**
+     * @brief Functions totally analogous to the precedent but applied to the "condition" objects
+     * @param rCondition The condition to compute
+     * @param RHS_Contribution The RHS vector contribution
+     * @param rEquationIdVector The ID's of the condition degrees of freedom
+     * @param rCurrentProcessInfo The current process info instance
+     */
+    virtual void CalculateRHSContribution(
+        Condition& rCondition,
+        LocalSystemVectorType& RHS_Contribution,
+        Element::EquationIdVectorType& rEquationIdVector,
+        const ProcessInfo& rCurrentProcessInfo
+        )
+    {
+    }
+
+    /**
+     * @brief This function is designed to calculate just the LHS contribution
+     * @param rElement The element to compute
+     * @param LHS_Contribution The RHS vector contribution
+     * @param rEquationIdVector The ID's of the element degrees of freedom
+     * @param rCurrentProcessInfo The current process info instance
+     */
     virtual void CalculateLHSContribution(
-        Condition& rCurrentCondition,
+        Element& rElement,
         LocalSystemMatrixType& LHS_Contribution,
-        Element::EquationIdVectorType& EquationId,
-        const ProcessInfo& CurrentProcessInfo)
+        Element::EquationIdVectorType& rEquationIdVector,
+        const ProcessInfo& rCurrentProcessInfo
+        )
     {
     }
 
+    /**
+     * @brief Functions totally analogous to the precedent but applied to the "condition" objects
+     * @param rCondition The condition to compute
+     * @param LHS_Contribution The RHS vector contribution
+     * @param rEquationIdVector The ID's of the condition degrees of freedom
+     * @param rCurrentProcessInfo The current process info instance
+     */
+    virtual void CalculateLHSContribution(
+        Condition& rCondition,
+        LocalSystemMatrixType& LHS_Contribution,
+        Element::EquationIdVectorType& rEquationIdVector,
+        const ProcessInfo& rCurrentProcessInfo
+        )
+    {
+    }
+
+    /**
+     * @brief This method gets the eqaution id corresponding to the current element
+     * @param rElement The element to compute
+     * @param rEquationId The ID's of the element degrees of freedom
+     * @param rCurrentProcessInfo The current process info instance
+     */
     virtual void EquationId(
-        const Condition& rCurrentCondition,
-        Element::EquationIdVectorType& EquationId,
-        const ProcessInfo& CurrentProcessInfo)
+        const Element& rElement,
+        Element::EquationIdVectorType& rEquationId,
+        const ProcessInfo& rCurrentProcessInfo
+        )
     {
-        rCurrentCondition.EquationIdVector(EquationId, CurrentProcessInfo);
+        rElement.EquationIdVector(rEquationId, rCurrentProcessInfo);
     }
 
-    /** Function that returns the list of Degrees of freedom to be
-    assembled in the system for a Given Element
+    /**
+     * @brief Functions totally analogous to the precedent but applied to the "condition" objects
+     * @param rCondition The condition to compute
+     * @param rEquationId The ID's of the condition degrees of freedom
+     * @param rCurrentProcessInfo The current process info instance
+     */
+    virtual void EquationId(
+        const Condition& rCondition,
+        Element::EquationIdVectorType& rEquationId,
+        const ProcessInfo& rCurrentProcessInfo
+        )
+    {
+        rCondition.EquationIdVector(rEquationId, rCurrentProcessInfo);
+    }
+
+    /**
+     * @brief Function that returns the list of Degrees of freedom to be assembled in the system for a Given element
+     * @param pCurrentElement The element to compute
+     * @param rDofList The list containing the element degrees of freedom
+     * @param rCurrentProcessInfo The current process info instance
      */
     virtual void GetDofList(
-        const Element& rCurrentElement,
-        Element::DofsVectorType& ElementalDofList,
-        const ProcessInfo& CurrentProcessInfo)
+        const Element& rElement,
+        Element::DofsVectorType& rDofList,
+        const ProcessInfo& rCurrentProcessInfo
+        )
     {
-        rCurrentElement.GetDofList(ElementalDofList, CurrentProcessInfo);
+        rElement.GetDofList(rDofList, rCurrentProcessInfo);
     }
 
-    /** Function that returns the list of Degrees of freedom to be
-    assembled in the system for a Given Element
+    /**
+     * @brief Function that returns the list of Degrees of freedom to be assembled in the system for a Given condition
+     * @param rCondition The condition to compute
+     * @param rDofList The list containing the condition degrees of freedom
+     * @param rCurrentProcessInfo The current process info instance
      */
     virtual void GetDofList(
-        const Condition& rCurrentCondition,
-        Element::DofsVectorType& ConditionDofList,
-        const ProcessInfo& CurrentProcessInfo)
+        const Condition& rCondition,
+        Element::DofsVectorType& rDofList,
+        const ProcessInfo& rCurrentProcessInfo
+        )
     {
-        rCurrentCondition.GetDofList(ConditionDofList, CurrentProcessInfo);
+        rCondition.GetDofList(rDofList, rCurrentProcessInfo);
     }
 
-    /*@} */
-    /**@name Operations */
-    /*@{ */
+    ///@}
+    ///@name Access
+    ///@{
 
-
-    /*@} */
-    /**@name Access */
-    /*@{ */
-
-
-    /*@} */
-    /**@name Inquiry */
-    /*@{ */
-
-
-    /*@} */
-    /**@name Friends */
-    /*@{ */
+    ///@}
+    ///@name Inquiry
+    ///@{
 
     ///@}
     ///@name Input and output
@@ -854,110 +745,82 @@ public:
     /// Print object's data.
     virtual void PrintData(std::ostream& rOStream) const
     {
+        rOStream << Info();
     }
 
-    /*@} */
+    ///@}
+    ///@name Friends
+    ///@{
+
+    ///@}
 
 protected:
-    /**@name Protected static Member Variables */
-    /*@{ */
+    ///@name Protected static Member Variables
+    ///@{
 
+    ///@}
+    ///@name Protected member Variables
+    ///@{
 
-    /*@} */
-    /**@name Protected member Variables */
-    /*@{ */
+    bool mSchemeIsInitialized;      /// Flag to be used in controlling if the Scheme has been initialized or not
+    bool mElementsAreInitialized;   /// Flag taking in account if the elements were initialized correctly or not
+    bool mConditionsAreInitialized; /// Flag taking in account if the conditions were initialized correctly or not
 
-    /// flag to be used in controlling if the Scheme has been intialized or not
-    bool mSchemeIsInitialized;
+    ///@}
+    ///@name Protected Operators
+    ///@{
 
-    /// flag taking in account if the elements were initialized correctly or not
-    bool mElementsAreInitialized;
+    ///@}
+    ///@name Protected Operations
+    ///@{
 
-    /// flag taking in account if the conditions were initialized correctly or not
-    bool mConditionsAreInitialized;
+    ///@}
+    ///@name Protected  Access
+    ///@{
 
-    /** Pointer to the Model.
-     */
+    ///@}
+    ///@name Protected Inquiry
+    ///@{
 
-    /*@} */
-    /**@name Protected Operators*/
-    /*@{ */
+    ///@}
+    ///@name Protected LifeCycle
+    ///@{
 
-
-
-
-
-    /*@} */
-    /**@name Protected Operations*/
-    /*@{ */
-
-
-    /*@} */
-    /**@name Protected  Access */
-    /*@{ */
-
-
-    /*@} */
-    /**@name Protected Inquiry */
-    /*@{ */
-
-
-    /*@} */
-    /**@name Protected LifeCycle */
-    /*@{ */
-
-
-
-    /*@} */
+    ///@}
 
 private:
-    /**@name Static Member Variables */
-    /*@{ */
+    ///@name Static Member Variables
+    ///@{
 
+    ///@}
+    ///@name Member Variables
+    ///@{
 
-    /*@} */
-    /**@name Member Variables */
-    /*@{ */
+    ///@}
+    ///@name Private Operators
+    ///@{
 
+    ///@}
+    ///@name Private Operations
+    ///@{
 
-    /*@} */
-    /**@name Private Operators*/
-    /*@{ */
+    ///@}
+    ///@name Private  Access
+    ///@{
 
+    ///@}
+    ///@name Private Inquiry
+    ///@{
 
-    /*@} */
-    /**@name Private Operations*/
-    /*@{ */
+    ///@}
+    ///@name Un accessible methods
+    ///@{
 
+    ///@}
 
-    /*@} */
-    /**@name Private  Access */
-    /*@{ */
+}; // Class Scheme
 
-
-    /*@} */
-    /**@name Private Inquiry */
-    /*@{ */
-
-
-    /*@} */
-    /**@name Un accessible methods */
-    /*@{ */
-
-
-    /*@} */
-
-}; /* Class Scheme */
-
-/*@} */
-
-/**@name Type Definitions */
-/*@{ */
-
-
-/*@} */
-
-} /* namespace Kratos.*/
+} // namespace Kratos.
 
 #endif /* KRATOS_SCHEME  defined */
 
