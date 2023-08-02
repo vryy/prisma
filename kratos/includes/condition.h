@@ -1079,12 +1079,31 @@ public:
     /**
      * adds the inertia forces to the RHS --> performs residua = static_residua - coeff*M*acc
      * @param rCurrentProcessInfo the current process info instance
+     */
     virtual void AddInertiaForces(VectorType& rRightHandSideVector, double coeff,
                                   const ProcessInfo& rCurrentProcessInfo)
-     */
     {
     }
 
+    /**
+     * adds the damping forces to the RHS, e.g performs residua = static_residua - coeff*D*vel
+     * @param rCurrentProcessInfo the current process info instance
+     */
+    virtual void AddDampingForces(VectorType& rRightHandSideVector, double coeff,
+                                  const ProcessInfo& rCurrentProcessInfo)
+    {
+    }
+
+    /**
+     * Calculate Mass matrix and add acceleration contribution to RHS
+     * @param rMassMatrix the mass matrix
+     * @param rRightHandSideVector the elemental right hand side matrix
+     * @param rCurrentProcessInfo the current process info instance
+     */
+    virtual void CalculateLocalAccelerationContribution(MatrixType& rMassMatrix,
+            VectorType& rRightHandSideVector, const ProcessInfo& rCurrentProcessInfo)
+    {
+    }
 
     /**
      * Calculate Damp matrix and add velocity contribution to RHS
