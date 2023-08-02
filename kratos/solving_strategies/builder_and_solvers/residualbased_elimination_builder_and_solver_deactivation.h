@@ -1290,8 +1290,9 @@ public:
     {
         KRATOS_TRY
 
-        KRATOS_WATCH("setting up the dofs");
-        //Gets the array of elements from the modeler
+        std::cout << "setting up the dofs" << std::endl;
+
+        // obtain the dofs from elements
 
         Element::DofsVectorType DofList;
 
@@ -1327,7 +1328,7 @@ public:
         KRATOS_WATCH(pElements.size());
         KRATOS_WATCH(num_active_elements);
 
-        //taking in account conditions
+        // taking in account conditions
         ConditionsArrayType& pConditions = r_model_part.Conditions();
         std::size_t num_active_conditions = 0;
         for (typename ConditionsArrayType::iterator it=pConditions.begin(); it!=pConditions.end(); ++it)
@@ -1688,14 +1689,6 @@ public:
         ModelPart& r_model_part,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
-        TSystemVectorType& b) override
-    {}
-
-    //**************************************************************************
-    //**************************************************************************
-    void ApplyPointLoads(
-        typename TSchemeType::Pointer pScheme,
-        ModelPart& r_model_part,
         TSystemVectorType& b) override
     {}
 
