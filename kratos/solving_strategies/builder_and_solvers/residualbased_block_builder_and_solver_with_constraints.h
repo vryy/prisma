@@ -1048,7 +1048,7 @@ public:
      * @param rModelPart The model part of the problem to solve
      * @return 0 all ok
      */
-    int Check(ModelPart& rModelPart) override
+    int Check(const ModelPart& rModelPart) const override
     {
         KRATOS_TRY
 
