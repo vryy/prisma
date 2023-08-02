@@ -67,8 +67,6 @@
 #include "geometries/hexahedra_3d_20.h"
 #include "geometries/hexahedra_3d_27.h"
 
-#include "python/add_deprecated_variables_to_python.h"
-
 #include "includes/convection_diffusion_settings.h"
 #include "includes/radiation_settings.h"
 

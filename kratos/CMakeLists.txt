@@ -12,37 +12,38 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 ## generate variables with the sources
 set( KRATOS_CORE_SOURCES
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/global_variables.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/deprecated_variables.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/c2c_variables.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/cfd_variables.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/dem_variables.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/legacy_structural_app_vars.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/variables.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/integration_rules.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/containers/variables_list_data_value_container.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/mmio.c
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/timer.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/serializer.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/kernel.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/periodic_condition.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/constitutive_law.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/kratos_components.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/model_part_io.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/reorder_consecutive_model_part_io.cpp
-	# ${CMAKE_CURRENT_SOURCE_DIR}/processes/calculate_signed_distance_to_3d_skin_process.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/io.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/model_part.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/kratos_application.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/utilities/logger.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/utilities/constraint_utilities.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/code_location.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/kratos_exception.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/containers/variable_data.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/containers/model.cpp
-	#${CMAKE_CURRENT_SOURCE_DIR}/processes/mesh_smoothing_process.cpp
-	#${CMAKE_CURRENT_SOURCE_DIR}/processes/measure_mesh_quality_process.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/sources/bounding_volume_tree.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/utilities/logger.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/mmio.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/code_location.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/kratos_exception.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/containers/variable_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/timer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/integration_rules.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/io.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/containers/variables_list_data_value_container.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/kratos_components.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/geometries/point.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/constitutive_law.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/serializer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/variables.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/global_variables.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/deprecated_variables.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/c2c_variables.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/cfd_variables.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/dem_variables.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/legacy_structural_app_vars.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/model_part.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/containers/model.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/model_part_io.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/periodic_condition.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/kratos_application.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/kernel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/reorder_consecutive_model_part_io.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/utilities/constraint_utilities.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/bounding_volume_tree.cpp
+    # # ${CMAKE_CURRENT_SOURCE_DIR}/processes/calculate_signed_distance_to_3d_skin_process.cpp
+    # #${CMAKE_CURRENT_SOURCE_DIR}/processes/mesh_smoothing_process.cpp
+    # #${CMAKE_CURRENT_SOURCE_DIR}/processes/measure_mesh_quality_process.cpp
      )
 
 set( KRATOS_PYTHON_SOURCES

@@ -103,6 +103,22 @@ void AddKratosComponent(std::string const& Name, ConstitutiveLaw const& ThisComp
 }
 
 template class KratosComponents<MasterSlaveConstraint>;
+template class KRATOS_API(KRATOS_CORE) KratosComponents<Variable<bool> >;
+template class KRATOS_API(KRATOS_CORE) KratosComponents<Variable<int> >;
+template class KRATOS_API(KRATOS_CORE) KratosComponents<Variable<unsigned int> >;
+template class KRATOS_API(KRATOS_CORE) KratosComponents<Variable<double> >;
+template class KRATOS_API(KRATOS_CORE) KratosComponents<Variable<array_1d<double, 3> > >;
+template class KRATOS_API(KRATOS_CORE) KratosComponents<Variable<array_1d<double, 4> > >;
+template class KRATOS_API(KRATOS_CORE) KratosComponents<Variable<array_1d<double, 6> > >;
+template class KRATOS_API(KRATOS_CORE) KratosComponents<Variable<array_1d<double, 9> > >;
+template class KRATOS_API(KRATOS_CORE) KratosComponents<Variable<Vector> >;
+template class KRATOS_API(KRATOS_CORE) KratosComponents<Variable<Matrix> >;
+template class KRATOS_API(KRATOS_CORE) KratosComponents<Variable<std::string> >;
+template class KRATOS_API(KRATOS_CORE) KratosComponents<VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > >;
+template class KRATOS_API(KRATOS_CORE) KratosComponents<Variable<Flags> >;
+template class KRATOS_API(KRATOS_CORE) KratosComponents<Flags>;
+template class KRATOS_API(KRATOS_CORE) KratosComponents<Element >;
+template class KRATOS_API(KRATOS_CORE) KratosComponents<Condition >;
 
 // Specialize array of compenents for VariableData
 KratosComponents<VariableData>::ComponentsContainerType KratosComponents<VariableData>::msComponents;

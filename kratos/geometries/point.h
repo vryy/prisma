@@ -456,7 +456,6 @@ private:
 
 ///@}
 
-template class KRATOS_API(KRATOS_CORE) KratosComponents<Point<3,double> >;
 
 ///@name Type Definitions
 ///@{
