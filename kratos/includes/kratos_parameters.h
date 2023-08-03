@@ -139,14 +139,14 @@ public:
 
 
     //*******************************************************************************************************
-    Parameters GetValue(const std::string entry)
+    Parameters GetValue(const std::string entry) const
     {
         if(this->Has(entry) == false) KRATOS_THROW_ERROR(std::invalid_argument,"getting a value that does not exist. entry string : ",entry);
         rapidjson::Value* pvalue = &((*mpvalue)[entry.c_str()]);
 
         return Parameters(pvalue, mpdoc);
     }
-    Parameters operator[](const std::string entry)
+    Parameters operator[](const std::string entry) const
     {
         return Parameters(&(*mpvalue)[entry.c_str()],mpdoc);
     }
@@ -180,56 +180,56 @@ public:
 
 
     //*******************************************************************************************************
-    bool Has(const std::string entry)
+    bool Has(const std::string entry) const
     {
         return mpvalue->HasMember(entry.c_str());
     }
 
 
-    bool IsNumber()
+    bool IsNumber() const
     {
         return mpvalue->IsNumber();
     }
-    bool IsDouble()
+    bool IsDouble() const
     {
         return mpvalue->IsDouble();
     }
-    bool IsInt()
+    bool IsInt() const
     {
         return mpvalue->IsInt();
     }
-    bool IsBool()
+    bool IsBool() const
     {
         return mpvalue->IsBool();
     }
-    bool IsString()
+    bool IsString() const
     {
         return mpvalue->IsString();
     }
-    bool IsArray()
+    bool IsArray() const
     {
         return mpvalue->IsArray();
     }
-    bool IsSubParameter()
+    bool IsSubParameter() const
     {
         return mpvalue->IsObject();
     }
-    double GetDouble()
+    double GetDouble() const
     {
         if(mpvalue->IsNumber() == false) KRATOS_THROW_ERROR(std::invalid_argument,"argument must be a number","");
         return mpvalue->GetDouble();
     }
-    int GetInt()
+    int GetInt() const
     {
         if(mpvalue->IsNumber() == false) KRATOS_THROW_ERROR(std::invalid_argument,"argument must be a number","");
         return mpvalue->GetInt();
     }
-    bool GetBool()
+    bool GetBool() const
     {
         if(mpvalue->IsBool() == false) KRATOS_THROW_ERROR(std::invalid_argument,"argument must be a bool","");
         return mpvalue->GetBool();
     }
-    std::string GetString()
+    std::string GetString() const
     {
         if(mpvalue->IsString() == false) KRATOS_THROW_ERROR(std::invalid_argument,"argument must be a string","");
         return mpvalue->GetString();
@@ -258,14 +258,14 @@ public:
 
     //*******************************************************************************************************
     //methods for array
-    unsigned int size()
+    unsigned int size() const
     {
         if(mpvalue->IsArray() == false)
             KRATOS_THROW_ERROR(std::invalid_argument,"size can only be queried if the value if of Array type","");
         return mpvalue->Size();
     }
 
-    Parameters GetArrayItem(unsigned int index)
+    Parameters GetArrayItem(unsigned int index) const
     {
         if(mpvalue->IsArray() == false)
             KRATOS_THROW_ERROR(std::invalid_argument,"GetArrayItem only makes sense if the value if of Array type","")
@@ -292,17 +292,17 @@ public:
 #endif
             }
     }
-    Parameters operator[](unsigned int index)
+    Parameters operator[](unsigned int index) const
     {
         return this->GetArrayItem(index);
     }
 
     /**This function is designed to verify that the parameters under testing match the
      * form prescribed by the defaults.
-     * If the parameters contain values that do not appear in the defaults, an error is thrown, 
+     * If the parameters contain values that do not appear in the defaults, an error is thrown,
      * whereas if a parameter is found in the defaults but not in the Parameters been tested,
      * it is copied to the parameters.
-     * 
+     *
      * this version of the function only walks one level, without descending in the branches
      */
     void ValidateAndAssignDefaults(Parameters& defaults)
@@ -378,11 +378,11 @@ public:
 
     /**This function is designed to verify that the parameters under testing match the
      * form prescribed by the defaults.
-     * If the parameters contain values that do not appear in the defaults, an error is thrown, 
+     * If the parameters contain values that do not appear in the defaults, an error is thrown,
      * whereas if a parameter is found in the defaults but not in the Parameters been tested,
      * it is copied to the parameters.
-     * 
-     * this version walks and validates the entire json tree below 
+     *
+     * this version walks and validates the entire json tree below
      * the point at which the function is called
     */
     void RecursivelyValidateAndAssignDefaults(Parameters& defaults)
