@@ -1,0 +1,29 @@
+add_definitions(-DKratosCore_BUILT_AS_STATIC)
+add_definitions(-DKRATOS_API_NO_DLL)
+
+set(KRATOS_PYTHON FALSE) # disable Python interface
+set(INSTALL_PYTHON_FILES OFF)
+set(ADOLC_IS_AVAILABLE OFF)
+
+if(${KRATOS_PYTHON} MATCHES TRUE)
+    message("Kratos Python interface is enabled")
+endif()
+
+# include internal dependencies
+include_directories(external_libraries)
+include_directories(kratos)
+
+# include subdirectories
+add_subdirectory(external_libraries/zlib)
+add_subdirectory(external_libraries/gidpost)
+add_subdirectory(kratos)
+
+# OpenMp necessity
+if (OPENMP_FOUND)
+    target_link_libraries(KratosCore -fopenmp -static-openmp) # this is important to avoid app to crash on start-up, see:
+    # https://stackoverflow.com/questions/64026166/how-to-run-openmp-parallel-in-android-native-code
+    #target_compile_options(computepi -fopenmp)
+endif (OPENMP_FOUND)
+
+# Kratos applications
+add_subdirectory(applications)
