@@ -1,6 +1,3 @@
-cmake_minimum_required (VERSION 2.8.6...3.19.4)
-project (KratosMultiphysics)
-
 #set here the version number **** only update upon tagging a release!
 set (KratosMultiphysics_VERSION_MAJOR 3)
 set (KratosMultiphysics_VERSION_MINOR 3)

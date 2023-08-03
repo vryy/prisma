@@ -108,7 +108,7 @@ endif()
 ###############################################################
 ## define library KratosCore to be included in all of the others
 add_library(KratosCore SHARED ${KRATOS_CORE_SOURCES})
-if(${KRATOS_PYTHON} MATCHES ON)
+if(${KRATOS_PYTHON} MATCHES TRUE)
     #target_link_libraries(KratosCore ${Boost_PYTHON_LIBRARIES} ${PYTHON_LIBRARIES} gidpost )
     target_link_libraries(KratosCore ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${PYTHON_LIBRARIES} gidpost )
 else()
