@@ -1,1 +1,2 @@
-A customized Kratos kernel which works with Python 2. The interface is maintained to be almost compatible with the HEAD.
+Customized Kratos kernel which works with Python 2 on Linux and Android. Maintained by Bui, Hoang-Giang Bui.
+
