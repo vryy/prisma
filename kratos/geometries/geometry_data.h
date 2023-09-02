@@ -125,6 +125,8 @@ public:
         Kratos_Point3D,
         Kratos_Sphere3D1,
         Kratos_Bezier1D,
+        Kratos_Bezier1D2,
+        Kratos_Bezier1D3,
         Kratos_Bezier2D,
         Kratos_Bezier2D3,
         Kratos_Bezier3D,
