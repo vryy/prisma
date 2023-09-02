@@ -116,9 +116,9 @@ else()
 endif()
 # cotire(KratosCore)
 
-if(${ADOLC_IS_AVAILABLE} MATCHES ON)
-    target_link_libraries(KratosCore ${ADOL_C_LIBRARIES} )
-endif()
+# if(${ADOL_C_FOUND} MATCHES TRUE)
+#     target_link_libraries(KratosCore ${ADOL_C_LIBRARIES} )
+# endif()
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Android")
     set_target_properties(KratosCore PROPERTIES COMPILE_DEFINITIONS "KRATOS_CORE=")
