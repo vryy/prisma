@@ -38,6 +38,7 @@ namespace Kratos
     //Define Variables by type:
 
     //bools
+    KRATOS_DEFINE_VARIABLE(bool, COMPUTE_LUMPED_MASS_MATRIX )
 
     //ints
     KRATOS_DEFINE_VARIABLE( int, DOMAIN_SIZE )

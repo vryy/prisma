@@ -34,6 +34,7 @@ namespace Kratos
 //Create Variables by type:
 
 //bools
+KRATOS_CREATE_VARIABLE(bool, COMPUTE_LUMPED_MASS_MATRIX)
 
 //for Structural application:
 
