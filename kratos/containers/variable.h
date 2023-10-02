@@ -1,62 +1,26 @@
-/*
-==============================================================================
-Kratos
-A General Purpose Software for Multi-Physics Finite Element Analysis
-Version 1.0 (Released on march 05, 2007).
-
-Copyright 2007
-Pooyan Dadvand, Riccardo Rossi
-pooyan@cimne.upc.edu
-rrossi@cimne.upc.edu
-CIMNE (International Center for Numerical Methods in Engineering),
-Gran Capita' s/n, 08034 Barcelona, Spain
-
-Permission is hereby granted, free  of charge, to any person obtaining
-a  copy  of this  software  and  associated  documentation files  (the
-"Software"), to  deal in  the Software without  restriction, including
-without limitation  the rights to  use, copy, modify,  merge, publish,
-distribute,  sublicense and/or  sell copies  of the  Software,  and to
-permit persons to whom the Software  is furnished to do so, subject to
-the following condition:
-
-Distribution of this code for  any  commercial purpose  is permissible
-ONLY BY DIRECT ARRANGEMENT WITH THE COPYRIGHT OWNER.
-
-The  above  copyright  notice  and  this permission  notice  shall  be
-included in all copies or substantial portions of the Software.
-
-THE  SOFTWARE IS  PROVIDED  "AS  IS", WITHOUT  WARRANTY  OF ANY  KIND,
-EXPRESS OR  IMPLIED, INCLUDING  BUT NOT LIMITED  TO THE  WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT  SHALL THE AUTHORS OR COPYRIGHT HOLDERS  BE LIABLE FOR ANY
-CLAIM, DAMAGES OR  OTHER LIABILITY, WHETHER IN AN  ACTION OF CONTRACT,
-TORT  OR OTHERWISE, ARISING  FROM, OUT  OF OR  IN CONNECTION  WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-==============================================================================
-*/
-
+//    |  /           |
+//    ' /   __| _` | __|  _ \   __|
+//    . \  |   (   | |   (   |\__ `
+//   _|\_\_|  \__,_|\__|\___/ ____/
+//                   Multi-Physics
 //
-//   Project Name:        Kratos
-//   Last Modified by:    $Author: rrossi $
-//   Date:                $Date: 2007-03-06 10:30:33 $
-//   Revision:            $Revision: 1.2 $
+//  License:		 BSD License
+//					 Kratos default license: kratos/license.txt
+//
+//  Main authors:    Pooyan Dadvand
+//                   Riccardo Rossi
+//  Collaborator:    Vicente Mataix Ferrandiz
 //
 //
-
 
 #if !defined(KRATOS_VARIABLE_H_INCLUDED )
 #define  KRATOS_VARIABLE_H_INCLUDED
-
-
 
 // System includes
 #include <string>
 #include <iostream>
 
-
 // External includes
-
 
 // Project includes
 #include "includes/define.h"
@@ -85,13 +49,13 @@ namespace Kratos
 ///@name Kratos Classes
 ///@{
 
-/// Variable class contains all information needed to store and retrive data from a data container.
-/** Variable class contains all information needed to store and
-    retrive data from a data container.  It contains key value which
-    is needed for searching in data container. Also a zero value to
-    use as a default value in the container. Finally it has the type of
-    the Variable as its template parameter so the container can find it
-    in its relative part.
+/**
+ * @class Variable
+ * @brief Variable class contains all information needed to store and retrive data from a data container.
+ * @details Variable class contains all information needed to store and retrive data from a data container.  It contains key value which is needed for searching in data container. Also a zero value to use as a default value in the container. Finally it has the type of the Variable as its template parameter so the container can find it in its relative part.
+* @tparam TDataType The data type hold by the variable
+* @ingroup KratosCore
+* @author Pooyan Dadvand
 */
 template<class TDataType>
 class Variable : public VariableData
@@ -126,72 +90,124 @@ public:
     Variable(const VariableType& rOtherVariable) : VariableData(rOtherVariable), mZero(rOtherVariable.mZero) {}
 
     /// Destructor.
-    virtual ~Variable() {}
+    ~Variable() override {}
 
     ///@}
     ///@name Operators
     ///@{
-    
-    /// Assignment operator.
-    VariableType& operator=(const VariableType& rOtherVariable)
-    {
-        VariableData::operator=(rOtherVariable);
-        mZero = rOtherVariable.mZero;
-        return *this;
-    }
+
+    /**
+     * @brief Assignment operator, deleted to avoid misuse which can lead to memory problems
+     */
+    VariableType& operator=(const VariableType& rOtherVariable) = delete;
 
     ///@}
     ///@name Operations
     ///@{
 
-    void* Clone(const void* pSource) const
+    /**
+     * @brief Clone creates a copy of the object using a copy constructor of the class.
+     * @details It is useful to avoid shallow copying of complex objects and also without actually having information about the variable type.
+     * @param pSource The pointer of the variable to be cloned
+     * @return A raw pointer of the variable
+     */
+    void* Clone(const void* pSource) const override
     {
         return new TDataType(*static_cast<const TDataType* >(pSource) );
     }
 
-    void* Copy(const void* pSource, void* pDestination) const
+    /**
+     * @brief Copy is very similar to Clone except that it also the destination pointer also passed to it.
+     * @details It is a helpful method specially to create a copy of heterogeneous data arrays
+     * @param pSource The pointer of the variable to be copied
+     * @param pDestination The pointer of the destination variable
+     * @return A raw pointer of the variable
+     */
+    void* Copy(const void* pSource, void* pDestination) const override
     {
         return new(pDestination) TDataType(*static_cast<const TDataType* >(pSource) );
     }
 
-    void Assign(const void* pSource, void* pDestination) const
+    /**
+     * @brief Assign is very similar to Copy. It just differs in using an assignment operator besides the copy constructor. Copy creates a new object while
+     * @details Assign does the assignment for two existing objects.
+     * @param pSource The pointer of the value to be assigned
+     * @param pDestination The pointer of the destination value
+     */
+    void Assign(const void* pSource, void* pDestination) const override
     {
         (*static_cast<TDataType* >(pDestination) ) = (*static_cast<const TDataType* >(pSource) );
     }
 
-    void AssignZero(void* pDestination) const
+    /**
+     * @brief AssignZero is a special case of Assign for which variable zero value used as source.
+     * @details This method is useful for initializing arrays or resetting values in memory.
+     * @param pDestination The pointer of the destination variable
+     */
+    void AssignZero(void* pDestination) const override
     {
         //(*static_cast<TDataType* >(pDestination) ) = mZero;
         new (pDestination) TDataType(mZero);
     }
 
-    void Delete(void* pSource) const
+    /**
+     * @brief Delete removes an object of variable type from memory.
+     * @details It calls a destructor of objects to prevent memory leak and frees the memory allocated for this object assuming that the object is allocated in heap.
+     * @param pSource The pointer of the variable to be deleted
+     */
+    void Delete(void* pSource) const override
     {
         delete static_cast<TDataType* >(pSource);
     }
 
-    void Destruct(void* pSource) const
+    /**
+     * @brief Destruct eliminates an object maintaining the memory it is using.
+     * @details However, the unlike Delete it does nothing with the memory allocated to it.
+     * So it is very useful in case of reallocating a part of the memory.
+     * @param pSource The pointer of the variable to be destructed
+     */
+    void Destruct(void* pSource) const override
     {
         static_cast<TDataType* >(pSource)->~TDataType();
     }
 
-    void Print(const void* pSource, std::ostream& rOStream) const
+    /**
+     * @brief Print is an auxiliary method to produce output of given variable knowing its address.
+     * @details For example writing an heterogenous container in an output stream can be done using this method. Point assumes that the streaming operator is defined for the variable type.
+     * @param pSource The pointer of the variable to be printed
+     * @param rOStream The stream used to print the information
+     */
+    void Print(const void* pSource, std::ostream& rOStream) const override
     {
         rOStream << Name() << " : " << *static_cast<const TDataType* >(pSource) ;
     }
 
-    virtual void Save(Serializer& rSerializer, void* pData) const
+    /**
+     * @brief The save operation which backups the data of the class
+     * @param rSerializer The serializer used to preserve the information
+     * @param pData A pointer to the data to be saved
+     */
+    void Save(Serializer& rSerializer, void* pData) const override
     {
         // I'm saving by the value, it can be done by the pointer to detect shared data. Pooyan.
         rSerializer.save("Data",*static_cast<TDataType* >(pData));
     }
 
-    virtual void Allocate(void** pData) const
+    /**
+     * @brief This method allocates the data of the variable
+     * @param pData A pointer to the data to be allocated
+     */
+    void Allocate(void** pData) const override
     {
         *pData = new TDataType;
     }
 
-    virtual void Load(Serializer& rSerializer, void* pData) const
+    /**
+     * @brief The load operation which restores the data of the class
+     * @param rSerializer The serializer used to preserve the information
+     * @param pData A pointer to the data to be loaded
+     */
+    void Load(Serializer& rSerializer, void* pData) const override
     {
         rSerializer.load("Data",*static_cast<TDataType* >(pData));
     }
@@ -210,6 +226,10 @@ public:
         return mZero;
     }
 
+    const void* pZero() const override {
+       return &mZero;
+    }
+
     ///@}
     ///@name Inquiry
     ///@{
@@ -219,23 +239,29 @@ public:
     ///@name Input and output
     ///@{
 
-    /// Turn back information as a string.
-    virtual std::string Info() const
+    /**
+     * Turn back information as a string.
+     */
+    std::string Info() const override
     {
         std::stringstream buffer;
-        buffer << Name() << " variable";
+        buffer << Name() << " variable" <<" #" << static_cast<unsigned int>(Key());
         return buffer.str();
     }
 
-    /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
+    /**
+     * Print information about this object.
+     * @param rOStream The stream used to print the information
+     */
+    void PrintInfo(std::ostream& rOStream) const override
     {
-        rOStream << Name() << " variable";
+        rOStream << Info();
     }
 
     /// Print object's data.
-//       virtual void PrintData(std::ostream& rOStream) const;
-
+    void PrintData(std::ostream& rOStream) const override{
+        VariableData::PrintData(rOStream);
+    }
 
     ///@}
     ///@name Friends
@@ -258,7 +284,7 @@ protected:
     ///@name Protected Operators
     ///@{
 
- 
+
     ///@}
     ///@name Protected Operations
     ///@{
@@ -278,20 +304,18 @@ protected:
     ///@name Protected LifeCycle
     ///@{
 
-
     ///@}
-
 private:
     ///@name Static Member Variables
     ///@{
 
-    static const VariableType msStaticObject;
+    static const VariableType msStaticObject;               /// Definition of the static variable
 
     ///@}
     ///@name Member Variables
     ///@{
 
-    TDataType mZero;
+    TDataType mZero;                                        /// The zero type contains the null value of the current variable type
 
     ///@}
     ///@name Private Operators
@@ -308,13 +332,21 @@ private:
 
     friend class Serializer;
 
-    virtual void save(Serializer& rSerializer) const
+    /**
+     * The save operation which copies the database of the class
+     * @param rSerializer The serializer used to preserve the information
+     */
+    void save(Serializer& rSerializer) const override
     {
         KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, VariableData );
         rSerializer.save("Zero",mZero);
     }
 
-    virtual void load(Serializer& rSerializer)
+    /**
+     * The load operation which restores the database of the class
+     * @param rSerializer The serializer used to preserve the information
+     */
+    void load(Serializer& rSerializer) override
     {
         KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, VariableData );
         rSerializer.load("Zero",mZero);

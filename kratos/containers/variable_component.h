@@ -175,7 +175,7 @@ public:
         return msStaticObject;
     }
 
-    void Print(const void* pSource, std::ostream& rOStream) const
+    void Print(const void* pSource, std::ostream& rOStream) const override
     {
         rOStream << Name() << " component of " <<  mAdaptor.GetSourceVariable().Name() << " variable : " <<  *static_cast<const DataType* >(pSource) ;
     }
@@ -190,7 +190,7 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const override
     {
         std::stringstream buffer;
         buffer << Name() << " component of " <<  mAdaptor.GetSourceVariable().Name() << " variable";
@@ -198,13 +198,14 @@ public:
     }
 
     /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << Name() << " component of " <<  mAdaptor.GetSourceVariable().Name() << " variable";
     }
 
     /// Print object's data.
-//       virtual void PrintData(std::ostream& rOStream) const;
+    void PrintData(std::ostream& rOStream) const override
+    {}
 
 
     ///@}
@@ -338,6 +339,4 @@ inline std::ostream& operator << (std::ostream& OStream,
 
 }  // namespace Kratos.
 
-#endif // KRATOS_FILENAME_H_INCLUDED  defined 
-
-
+#endif // KRATOS_FILENAME_H_INCLUDED  defined
