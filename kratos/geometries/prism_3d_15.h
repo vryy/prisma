@@ -520,7 +520,7 @@ public:
     /**
      * Returns whether given arbitrary point is inside the Geometry
      */
-    bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult, Matrix& DeltaPosition ) const override
+    bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult, const Matrix& DeltaPosition ) const override
     {
         this->PointLocalCoordinates( rResult, rPoint, DeltaPosition );
 
@@ -629,7 +629,7 @@ public:
      */
     JacobiansType& Jacobian( JacobiansType& rResult,
                              IntegrationMethod ThisMethod,
-                             Matrix & DeltaPosition ) const override
+                             const Matrix& DeltaPosition ) const override
     {
         //getting derivatives of shape functions
         ShapeFunctionsGradientsType shape_functions_gradients =

@@ -435,7 +435,7 @@ public:
     }
 
     CoordinatesArrayType& PointLocalCoordinates( CoordinatesArrayType& rResult, const CoordinatesArrayType& rPoint,
-            const bool& force_error = true ) const override
+            bool force_error = true ) const override
     {
         boost::numeric::ublas::bounded_matrix<double,3,3> X;
         boost::numeric::ublas::bounded_matrix<double,3,2> DN;
@@ -509,7 +509,7 @@ public:
     }
 
     CoordinatesArrayType& PointLocalCoordinates( CoordinatesArrayType& rResult, const CoordinatesArrayType& rPoint,
-            Matrix& DeltaPosition, const bool& force_error = true ) const override
+            const Matrix& DeltaPosition, bool force_error = true ) const override
     {
         boost::numeric::ublas::bounded_matrix<double,3,3> X;
         boost::numeric::ublas::bounded_matrix<double,3,2> DN;
@@ -636,14 +636,14 @@ public:
      * @return JacobiansType a Vector of jacobian
      * matrices \f$ J_i \f$ where \f$ i=1,2,...,n \f$ is the integration
      * point index of given integration method.
-     * 
+     *
      * @param DeltaPosition Matrix with the nodes position increment which describes
-     * the configuration where the jacobian has to be calculated.     
+     * the configuration where the jacobian has to be calculated.
      *
      * @see DeterminantOfJacobian
      * @see InverseOfJacobian
      */
-    JacobiansType& Jacobian( JacobiansType& rResult, IntegrationMethod ThisMethod, Matrix & DeltaPosition ) const override
+    JacobiansType& Jacobian( JacobiansType& rResult, IntegrationMethod ThisMethod, const Matrix& DeltaPosition ) const override
     {
         Matrix jacobian( 3, 2 );
         jacobian( 0, 0 ) = -( BaseType::GetPoint( 0 ).X() - DeltaPosition(0,0) ) + ( BaseType::GetPoint( 1 ).X() - DeltaPosition(1,0) ); //on the Gauss points (J is constant at each element)
@@ -1507,5 +1507,5 @@ GeometryData Triangle3D3<TPointType>::msGeometryData(
 );
 }// namespace Kratos.
 
-#endif // KRATOS_QUADRILATERAL_3D_4_H_INCLUDED  defined 
+#endif // KRATOS_QUADRILATERAL_3D_4_H_INCLUDED  defined
 

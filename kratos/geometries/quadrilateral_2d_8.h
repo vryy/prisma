@@ -510,7 +510,7 @@ public:
 //     * point index of given integration method.
 //     *
 //     * @param DeltaPosition Matrix with the nodes position increment which describes
-//     * the configuration where the jacobian has to be calculated.     
+//     * the configuration where the jacobian has to be calculated.
 //     *
 //     * @see DeterminantOfJacobian
 //     * @see InverseOfJacobian
@@ -1732,4 +1732,4 @@ Quadrilateral2D8<TPointType>::msGeometryData( 2, 2, 2,
 
 }  // namespace Kratos.
 
-#endif // KRATOS_QUADRILATERAL_2D_8_H_INCLUDED  defined 
+#endif // KRATOS_QUADRILATERAL_2D_8_H_INCLUDED  defined

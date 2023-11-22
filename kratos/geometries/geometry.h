@@ -707,7 +707,7 @@ public:
     * Returns the local coordinates of a given arbitrary point
     */
     virtual CoordinatesArrayType& PointLocalCoordinates( CoordinatesArrayType& rResult,
-            const CoordinatesArrayType& rPoint, const bool& force_error = true ) const
+            const CoordinatesArrayType& rPoint, bool force_error = true ) const
     {
         if (this->WorkingSpaceDimension() != this->LocalSpaceDimension())
             KRATOS_THROW_ERROR(std::logic_error, "Attention, the Point Local Coordinates must be specialized for the current geometry", "");
@@ -775,7 +775,7 @@ public:
     * Returns the local coordinates of a given arbitrary point
     */
     virtual CoordinatesArrayType& PointLocalCoordinates( CoordinatesArrayType& rResult,
-            const CoordinatesArrayType& rPoint, Matrix& DeltaPosition, const bool& force_error = true ) const
+            const CoordinatesArrayType& rPoint, const Matrix& DeltaPosition, bool force_error = true ) const
     {
         if (this->WorkingSpaceDimension() != this->LocalSpaceDimension())
             KRATOS_THROW_ERROR(std::logic_error, "Attention, the Point Local Coordinates must be specialized for the current geometry", "");
@@ -864,7 +864,7 @@ public:
      * Returns whether given arbitrary point is inside the Geometry and the respective
      * local point for the given global point
     */
-    virtual bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult, Matrix& DeltaPosition ) const
+    virtual bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult, const Matrix& DeltaPosition ) const
     {
         this->PointLocalCoordinates( rResult, rPoint, DeltaPosition, false );
 
@@ -1142,7 +1142,7 @@ public:
         return rResult;
     }
 
-    virtual CoordinatesArrayType& GlobalCoordinates( CoordinatesArrayType& rResult, CoordinatesArrayType const& LocalCoordinates, Matrix& DeltaPosition ) const
+    virtual CoordinatesArrayType& GlobalCoordinates( CoordinatesArrayType& rResult, CoordinatesArrayType const& LocalCoordinates, const Matrix& DeltaPosition ) const
     {
         if (rResult.size() != 3)
             rResult.resize(3, false);
@@ -1222,7 +1222,7 @@ public:
     @see DeterminantOfJacobian
     @see InverseOfJacobian
     */
-    virtual JacobiansType& Jacobian( JacobiansType& rResult, IntegrationMethod ThisMethod, Matrix & DeltaPosition ) const
+    virtual JacobiansType& Jacobian( JacobiansType& rResult, IntegrationMethod ThisMethod, const Matrix& DeltaPosition ) const
     {
         if( rResult.size() != this->IntegrationPointsNumber( ThisMethod ) )
             rResult.resize( this->IntegrationPointsNumber( ThisMethod ), false );
@@ -1313,7 +1313,7 @@ public:
     @see DeterminantOfJacobian
     @see InverseOfJacobian
     */
-    virtual Matrix& Jacobian( Matrix& rResult, IndexType IntegrationPointIndex, IntegrationMethod ThisMethod, Matrix& DeltaPosition ) const
+    virtual Matrix& Jacobian( Matrix& rResult, IndexType IntegrationPointIndex, IntegrationMethod ThisMethod, const Matrix& DeltaPosition ) const
     {
         if(rResult.size1() != this->WorkingSpaceDimension() || rResult.size2() != this->LocalSpaceDimension())
             rResult.resize( this->WorkingSpaceDimension(), this->LocalSpaceDimension(), false );
@@ -1383,7 +1383,7 @@ public:
     @see DeterminantOfJacobian
     @see InverseOfJacobian
     */
-    virtual Matrix& Jacobian( Matrix& rResult, const CoordinatesArrayType& rCoordinates, Matrix& DeltaPosition ) const
+    virtual Matrix& Jacobian( Matrix& rResult, const CoordinatesArrayType& rCoordinates, const Matrix& DeltaPosition ) const
     {
         if(rResult.size1() != this->WorkingSpaceDimension() || rResult.size2() != this->LocalSpaceDimension())
             rResult.resize( this->WorkingSpaceDimension(), this->LocalSpaceDimension(), false );
@@ -1648,9 +1648,9 @@ public:
     @see DeterminantOfJacobian
     @see InverseOfJacobian
     */
-    virtual Matrix& InverseOfJacobian( Matrix& rResult, const CoordinatesArrayType& rCoordinates, Matrix& DeltaPosition ) const
+    virtual Matrix& InverseOfJacobian( Matrix& rResult, const CoordinatesArrayType& rCoordinates, const Matrix& DeltaPosition ) const
     {
-        Jacobian(rResult,rCoordinates,DeltaPosition); //this will be overwritten
+        Jacobian(rResult, rCoordinates, DeltaPosition); //this will be overwritten
 
         double detJ;
         Matrix Jinv(this->WorkingSpaceDimension(), this->WorkingSpaceDimension());

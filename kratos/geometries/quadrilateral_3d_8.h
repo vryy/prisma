@@ -431,7 +431,7 @@ public:
     }
 
     CoordinatesArrayType& PointLocalCoordinates( CoordinatesArrayType& rResult, const CoordinatesArrayType& rPoint,
-        const bool& force_error = true ) const override
+        bool force_error = true ) const override
     {
         double tol = 1.0e-8;
         int maxiter = 1000;
@@ -554,8 +554,8 @@ public:
         return( rResult );
     }
 
-    CoordinatesArrayType& PointLocalCoordinates( CoordinatesArrayType& rResult, const CoordinatesArrayType& rPoint, Matrix& DeltaPosition,
-        const bool& force_error = true ) const override
+    CoordinatesArrayType& PointLocalCoordinates( CoordinatesArrayType& rResult, const CoordinatesArrayType& rPoint, const Matrix& DeltaPosition,
+        bool force_error = true ) const override
     {
         double tol = 1.0e-8;
         int maxiter = 1000;
@@ -765,7 +765,7 @@ public:
      * @see DeterminantOfJacobian
      * @see InverseOfJacobian
      */
-    JacobiansType& Jacobian( JacobiansType& rResult, IntegrationMethod ThisMethod, Matrix & DeltaPosition ) const override
+    JacobiansType& Jacobian( JacobiansType& rResult, IntegrationMethod ThisMethod, const Matrix& DeltaPosition ) const override
     {
         //getting derivatives of shape functions
         ShapeFunctionsGradientsType shape_functions_gradients =
