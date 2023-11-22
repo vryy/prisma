@@ -301,7 +301,7 @@ public:
        * Verify Parameters
        */
 
-      bool CheckAllParameters ()
+      bool CheckAllParameters () const
       {
         if(CheckMechanicalVariables() &&  CheckShapeFunctions() && CheckInfoMaterialGeometry ())
             return 1;
@@ -314,7 +314,7 @@ public:
        *Check currentprocessinfo, material properties and geometry
        */
 
-      bool CheckShapeFunctions ()
+      bool CheckShapeFunctions () const
       {
         if(!mpShapeFunctionsValues)
             KRATOS_THROW_ERROR(std::invalid_argument,"ShapeFunctionsValues NOT SET","");
@@ -329,7 +329,7 @@ public:
        *Check currentprocessinfo, material properties and geometry
        */
 
-      bool CheckInfoMaterialGeometry ()
+      bool CheckInfoMaterialGeometry () const
       {
         if(!mpCurrentProcessInfo)
             KRATOS_THROW_ERROR(std::invalid_argument,"CurrentProcessInfo NOT SET","");
@@ -348,7 +348,7 @@ public:
        *Check deformation gradient, strains and stresses assigned
        */
 
-      bool CheckMechanicalVariables ()
+      bool CheckMechanicalVariables () const
       {
           if(mDeterminantF<=0)
             KRATOS_THROW_ERROR(std::invalid_argument,"DeterminantF NOT SET, value <= 0", "");
@@ -402,20 +402,20 @@ public:
        */
       Flags& GetOptions () {return mOptions;};
 
-      const double& GetDeterminantF              () {return mDeterminantF;};
-      const Vector& GetShapeFunctionsValues      () {return *mpShapeFunctionsValues;};
-      const Matrix& GetShapeFunctionsDerivatives () {return *mpShapeFunctionsDerivatives;};
-      const Matrix& GetDeformationGradientF      () {return *mpDeformationGradientF;};
+      const double& GetDeterminantF              () const {return mDeterminantF;};
+      const Vector& GetShapeFunctionsValues      () const {return *mpShapeFunctionsValues;};
+      const Matrix& GetShapeFunctionsDerivatives () const {return *mpShapeFunctionsDerivatives;};
+      const Matrix& GetDeformationGradientF      () const {return *mpDeformationGradientF;};
 
-      StrainVectorType& GetStrainVector                    () {return *mpStrainVector;};
-      StressVectorType& GetStressVector                    () {return *mpStressVector;};
+      StrainVectorType& GetStrainVector          () {return *mpStrainVector;};
+      StressVectorType& GetStressVector          () {return *mpStressVector;};
 
-      VoigtSizeMatrixType& GetConstitutiveMatrix              () {return *mpConstitutiveMatrix;};
+      VoigtSizeMatrixType& GetConstitutiveMatrix () {return *mpConstitutiveMatrix;};
 
 
-      const ProcessInfo&  GetProcessInfo         () {return *mpCurrentProcessInfo;};
-      const Properties&   GetMaterialProperties  () {return *mpMaterialProperties;};
-      const GeometryType& GetElementGeometry     () {return *mpElementGeometry;};
+      const ProcessInfo&  GetProcessInfo         () const {return *mpCurrentProcessInfo;};
+      const Properties&   GetMaterialProperties  () const {return *mpMaterialProperties;};
+      const GeometryType& GetElementGeometry     () const {return *mpElementGeometry;};
 
 
 
@@ -433,19 +433,19 @@ public:
        * Returns if the different components has been set
        */
 
-      bool IsSetDeterminantF              () {return (mDeterminantF > 0.0);};
-      bool IsSetShapeFunctionsValues      () {return (mpShapeFunctionsValues != NULL);};
-      bool IsSetShapeFunctionsDerivatives () {return (mpShapeFunctionsDerivatives != NULL);};
-      bool IsSetDeformationGradientF      () {return (mpDeformationGradientF != NULL);};
+      bool IsSetDeterminantF              () const {return (mDeterminantF > 0.0);};
+      bool IsSetShapeFunctionsValues      () const {return (mpShapeFunctionsValues != NULL);};
+      bool IsSetShapeFunctionsDerivatives () const {return (mpShapeFunctionsDerivatives != NULL);};
+      bool IsSetDeformationGradientF      () const {return (mpDeformationGradientF != NULL);};
 
-      bool IsSetStrainVector              () {return (mpStrainVector != NULL);};
-      bool IsSetStressVector              () {return (mpStressVector != NULL);};
+      bool IsSetStrainVector              () const {return (mpStrainVector != NULL);};
+      bool IsSetStressVector              () const {return (mpStressVector != NULL);};
 
-      bool IsSetConstitutiveMatrix        () {return (mpConstitutiveMatrix != NULL);};
+      bool IsSetConstitutiveMatrix        () const {return (mpConstitutiveMatrix != NULL);};
 
-      bool IsSetProcessInfo               () {return (mpCurrentProcessInfo != NULL);};
-      bool IsSetMaterialProperties        () {return (mpMaterialProperties != NULL);};
-      bool IsSetElementGeometry           () {return (mpElementGeometry != NULL);};
+      bool IsSetProcessInfo               () const {return (mpCurrentProcessInfo != NULL);};
+      bool IsSetMaterialProperties        () const {return (mpMaterialProperties != NULL);};
+      bool IsSetElementGeometry           () const {return (mpElementGeometry != NULL);};
 
     };// struct Parameters end
 
