@@ -1001,6 +1001,7 @@ public:
         KRATOS_TRY
 
         double solve_time_start = Timer::GetTime();
+        Timer::Start("SystemSolve");
 
         double norm_b;
         if( TSparseSpace::Size(b) != 0)
@@ -1020,6 +1021,7 @@ public:
         }
 
         double solve_time_stop = Timer::GetTime();
+        Timer::Stop("SystemSolve");
 
         if(this->GetEchoLevel()>0)
         {
@@ -1291,6 +1293,7 @@ public:
         KRATOS_TRY
 
         std::cout << "setting up the dofs" << std::endl;
+        Timer::Start("SetUpDofSet");
 
         // obtain the dofs from elements
 
@@ -1366,6 +1369,8 @@ public:
 
         BaseType::mDofSetIsInitialized = true;
 
+        Timer::Stop("SetUpDofSet");
+
         #if defined(ENABLE_LOG) && defined(QUERY_DOFSET)
         MY_LOG_TRACE << "At SetUpDofSet: try to probe all dofs of the current process" << std::endl;
         MY_LOG_TRACE << "There are " << BaseType::mDofSet.size() << " dofs in the problem" << std::endl;
@@ -1422,7 +1427,6 @@ public:
             MY_LOG_TRACE << dof_iterator->GetVariable().Name() << '\t' << dof_iterator->Id() << '\t' << dof_iterator->EquationId() << std::endl;
         MY_LOG_TRACE << "#########################SetUpSystem completed####################" << std::endl;
         #endif
-
     }
     #endif
 
