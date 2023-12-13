@@ -284,9 +284,7 @@ array_1d<double, 6 > & ConstitutiveLaw::GetValue(const Variable<array_1d<double,
 void ConstitutiveLaw::SetValue(const Variable<bool>& rThisVariable,
                                const bool& Value,
                                const ProcessInfo& rCurrentProcessInfo)
-{
-    KRATOS_THROW_ERROR(std::logic_error, "Called the virtual function for SetValue", "");
-}
+{}
 
 /**
  * @brief Sets the value of a specified variable (int)
@@ -297,9 +295,7 @@ void ConstitutiveLaw::SetValue(const Variable<bool>& rThisVariable,
 void ConstitutiveLaw::SetValue(const Variable<int>& rThisVariable,
                                const int& Value,
                                const ProcessInfo& rCurrentProcessInfo)
-{
-    KRATOS_THROW_ERROR(std::logic_error, "Called the virtual function for SetValue", "");
-}
+{}
 
 /**
  * @brief Sets the value of a specified variable (double)
@@ -310,9 +306,7 @@ void ConstitutiveLaw::SetValue(const Variable<int>& rThisVariable,
 void ConstitutiveLaw::SetValue(const Variable<double>& rVariable,
                                const double& rValue,
                                const ProcessInfo& rCurrentProcessInfo)
-{
-    KRATOS_THROW_ERROR(std::logic_error, "Called the virtual function for SetValue", "");
-}
+{}
 
 /**
  * @brief Sets the value of a specified variable (Vector)
@@ -322,9 +316,7 @@ void ConstitutiveLaw::SetValue(const Variable<double>& rVariable,
  */
 void ConstitutiveLaw::SetValue(const Variable<Vector >& rVariable,
                                const Vector& rValue, const ProcessInfo& rCurrentProcessInfo)
-{
-    KRATOS_THROW_ERROR(std::logic_error, "Called the virtual function for SetValue", "");
-}
+{}
 
 /**
  * @brief Sets the value of a specified variable (Matrix)
@@ -334,9 +326,7 @@ void ConstitutiveLaw::SetValue(const Variable<Vector >& rVariable,
  */
 void ConstitutiveLaw::SetValue(const Variable<Matrix >& rVariable,
                                const Matrix& rValue, const ProcessInfo& rCurrentProcessInfo)
-{
-    KRATOS_THROW_ERROR(std::logic_error, "Called the virtual function for SetValue", "");
-}
+{}
 
 /**
  * @brief Sets the value of a specified variable (array of 3 components)
@@ -347,9 +337,7 @@ void ConstitutiveLaw::SetValue(const Variable<Matrix >& rVariable,
 void ConstitutiveLaw::SetValue(const Variable<array_1d<double, 3 > >& rVariable,
                                const array_1d<double, 3 > & rValue,
                                const ProcessInfo& rCurrentProcessInfo)
-{
-    KRATOS_THROW_ERROR(std::logic_error, "Called the virtual function for SetValue", "");
-}
+{}
 
 /**
  * @brief Sets the value of a specified variable (array of 6 components)
@@ -360,9 +348,7 @@ void ConstitutiveLaw::SetValue(const Variable<array_1d<double, 3 > >& rVariable,
 void ConstitutiveLaw::SetValue(const Variable<array_1d<double, 6 > >& rVariable,
                                const array_1d<double, 6 > & rValue,
                                const ProcessInfo& rCurrentProcessInfo)
-{
-    KRATOS_THROW_ERROR(std::logic_error, "Called the virtual function for SetValue", "");
-}
+{}
 
 /**
  * @brief Sets the value of a specified variable (std::string components)
@@ -372,9 +358,7 @@ void ConstitutiveLaw::SetValue(const Variable<array_1d<double, 6 > >& rVariable,
  */
  void ConstitutiveLaw::SetValue(const Variable<std::string >& rVariable,
                       const std::string& rValue, const ProcessInfo& rCurrentProcessInfo)
-{
-    KRATOS_THROW_ERROR(std::logic_error, "Called the virtual function for SetValue", "");
-}
+{}
 
 /**
  * @brief Sets the value of a specified variable (ConstitutiveLaw component)
@@ -385,9 +369,7 @@ void ConstitutiveLaw::SetValue(const Variable<array_1d<double, 6 > >& rVariable,
 void ConstitutiveLaw::SetValue(const Variable<ConstitutiveLaw::Pointer>& rVariable,
                       ConstitutiveLaw::Pointer rValue,
                       const ProcessInfo& rCurrentProcessInfo)
-{
-    KRATOS_THROW_ERROR(std::logic_error, "Called the virtual function for SetValue", "");
-}
+{}
 
 /**
  * @brief Calculates the value of a specified variable (bool)
