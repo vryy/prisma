@@ -345,7 +345,7 @@ public:
 //        ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
         // assemble all elements
 #ifndef _OPENMP
-        ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
+        const ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
         for (typename ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
             if( !it->GetValue( IS_INACTIVE ) || it->Is( ACTIVE ) )
@@ -409,7 +409,7 @@ public:
         #ifdef MODIFY_INACTIVE_PART_OF_THE_MATRIX
         std::set<std::size_t> ActiveIdSet;
         std::set<std::size_t> InactiveIdSet;
-        ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
+        const ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
         for (typename ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
             it->EquationIdVector(EquationId, CurrentProcessInfo);
@@ -538,7 +538,7 @@ public:
             //vector containing the localization in the system of the different
             //terms
             Element::EquationIdVectorType EquationId;
-            ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
+            const ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
             typename ElementsArrayType::iterator it_begin = pElements.ptr_begin() + element_partition[k];
             typename ElementsArrayType::iterator it_end = pElements.ptr_begin() + element_partition[k+1];
 
@@ -651,7 +651,7 @@ public:
 
             Condition::EquationIdVectorType EquationId;
 
-            ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
+            const ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
 
             typename ConditionsArrayType::iterator it_begin = ConditionsArray.ptr_begin() + condition_partition[k];
             typename ConditionsArrayType::iterator it_end = ConditionsArray.ptr_begin() + condition_partition[k+1];
@@ -891,7 +891,7 @@ public:
         //terms
         Element::EquationIdVectorType EquationId;
 
-        ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
+        const ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
 
         // assemble all elements
         for (typename ElementsArrayType::iterator it=pElements.begin(); it!=pElements.end(); ++it)
@@ -943,7 +943,7 @@ public:
         //getting the array of the conditions
         ConditionsArrayType& ConditionsArray = r_model_part.Conditions();
 
-        ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
+        const ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
 
         //resetting to zero the vector of reactions
         TSparseSpace::SetToZero( *(BaseType::mpReactionsVector) );
@@ -1164,7 +1164,7 @@ public:
         //getting the array of the conditions
         ConditionsArrayType& ConditionsArray = r_model_part.Conditions();
 
-        ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
+        const ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
 
         //resetting to zero the vector of reactions
         TSparseSpace::SetToZero( *(BaseType::mpReactionsVector) );
@@ -1219,7 +1219,7 @@ public:
         //getting the array of the conditions
         ConditionsArrayType& ConditionsArray = r_model_part.Conditions();
 
-        ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
+        const ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
 
         //resetting to zero the vector of reactions
         TSparseSpace::SetToZero( *(BaseType::mpReactionsVector) );
@@ -1260,7 +1260,7 @@ public:
 
                 //vector containing the localization in the system of the different terms
                 Element::EquationIdVectorType EquationId;
-                ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
+                const ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
                 typename ElementsArrayType::iterator it_begin = pElements.ptr_begin() + element_partition[k];
                 typename ElementsArrayType::iterator it_end = pElements.ptr_begin() + element_partition[k + 1];
 
@@ -1299,7 +1299,7 @@ public:
 
         Element::DofsVectorType DofList;
 
-        ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
+        const ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
 
         DofsArrayType Doftemp;
         // BaseType::mDofSet = DofsArrayType();
