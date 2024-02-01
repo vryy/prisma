@@ -41,6 +41,8 @@ set( KRATOS_CORE_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/reorder_consecutive_model_part_io.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/utilities/constraint_utilities.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/bounding_volume_tree.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/kratos_filesystem.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/kratos_parameters.cpp
     # # ${CMAKE_CURRENT_SOURCE_DIR}/processes/calculate_signed_distance_to_3d_skin_process.cpp
     # #${CMAKE_CURRENT_SOURCE_DIR}/processes/mesh_smoothing_process.cpp
     # #${CMAKE_CURRENT_SOURCE_DIR}/processes/measure_mesh_quality_process.cpp

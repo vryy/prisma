@@ -265,6 +265,9 @@ catch(...) { Block KRATOS_THROW_ERROR(std::runtime_error, "Unknown error", MoreI
     KRATOS_REGISTER_VARIABLE(name##_Y) \
     KRATOS_REGISTER_VARIABLE(name##_Z)
 
+#define KRATOS_DEPRECATED [[deprecated]]
+#define KRATOS_DEPRECATED_MESSAGE(deprecated_message) [[deprecated(deprecated_message)]]
+
 //-----------------------------------------------------------------
 //
 // Flags
