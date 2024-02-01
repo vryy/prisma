@@ -251,6 +251,29 @@ void SetValuesOnIntegrationPointsDouble( TObject& dummy, const Variable<double>&
 }
 
 template< class TObject >
+boost::python::list GetValuesOnIntegrationPointsInt( TObject& dummy,
+        const Variable<int>& rVariable, const ProcessInfo& rCurrentProcessInfo )
+{
+    boost::python::list values_list;
+    std::vector<int> values;
+    dummy.CalculateOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
+    for( unsigned int i=0; i<values.size(); i++ )
+    {
+        boost::python::list integration_point_value;
+        integration_point_value.append( values[i] );
+        values_list.append( integration_point_value );
+    }
+    return( values_list );
+}
+
+template< class TObject >
+boost::python::list CalculateOnIntegrationPointsInt( TObject& dummy,
+        const Variable<int>& rVariable, const ProcessInfo& rCurrentProcessInfo )
+{
+    return GetValuesOnIntegrationPointsInt<TObject>(dummy, rVariable, rCurrentProcessInfo);
+}
+
+template< class TObject >
 void SetValuesOnIntegrationPointsInt( TObject& dummy, const Variable<int>& rVariable, boost::python::list values_list,  const ProcessInfo& rCurrentProcessInfo )
 {
     IntegrationPointsArrayType integration_points = dummy.GetGeometry().IntegrationPoints(
@@ -600,6 +623,7 @@ void  AddMeshToPython()
     .def("CalculateOnIntegrationPoints", CalculateOnIntegrationPointsArray1d<Element>)
     .def("CalculateOnIntegrationPoints", CalculateOnIntegrationPointsMatrix<Element>)
     .def("CalculateOnIntegrationPoints", CalculateOnIntegrationPointsDouble<Element>)
+    .def("CalculateOnIntegrationPoints", CalculateOnIntegrationPointsInt<Element>)
     .def("CalculateOnIntegrationPoints", CalculateOnIntegrationPointsConstitutiveLaw)
     .def("GetValuesOnIntegrationPoints", GetValuesOnIntegrationPointsDouble<Element>)
     .def("GetValuesOnIntegrationPoints", GetValuesOnIntegrationPointsArray1d<Element>)
@@ -716,6 +740,7 @@ void  AddMeshToPython()
     .def("CalculateOnIntegrationPoints", CalculateOnIntegrationPointsArray1d<Condition>)
     .def("CalculateOnIntegrationPoints", CalculateOnIntegrationPointsMatrix<Condition>)
     .def("CalculateOnIntegrationPoints", CalculateOnIntegrationPointsDouble<Condition>)
+    .def("CalculateOnIntegrationPoints", CalculateOnIntegrationPointsInt<Condition>)
 
     .def("GetValuesOnIntegrationPoints", GetValuesOnIntegrationPointsDouble<Condition>)
     .def("GetValuesOnIntegrationPoints", GetValuesOnIntegrationPointsArray1d<Condition>)
