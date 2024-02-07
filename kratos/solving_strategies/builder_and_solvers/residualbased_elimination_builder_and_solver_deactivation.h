@@ -294,6 +294,7 @@ public:
 
         boost::log::core::get()->add_sink(sink);
         boost::log::add_common_attributes();
+        boost::log::keywords::auto_flush = true;
     }
     #endif
 
