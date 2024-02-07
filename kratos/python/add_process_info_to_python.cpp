@@ -30,6 +30,7 @@
 // Project includes
 #include "includes/define.h"
 #include "includes/process_info.h"
+#include "includes/process_info_with_dofs.h"
 #include "python/add_process_info_to_python.h"
 #include "containers/data_value_container.h"
 #include "includes/convection_diffusion_settings.h"
@@ -72,12 +73,24 @@ void  AddProcessInfoToPython()
 {
     using namespace boost::python;
 
+    typedef Variable<double> DoubleVariableType;
+    typedef VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<double, 3>>> VariableComponentType;
+
     class_<ProcessInfo, ProcessInfo::Pointer, bases<DataValueContainer, Flags>, boost::noncopyable>("ProcessInfo")
     .def(init<>())
     .def("CreateSolutionStepInfo", &ProcessInfo::CreateSolutionStepInfo)
     .def(self_ns::str(self))
     ;
+
+    class_<ProcessInfoWithDofs, ProcessInfoWithDofs::Pointer, bases<ProcessInfo>, boost::noncopyable>("ProcessInfoWithDofs")
+    .def(init<>())
+    .def("AddDof", &ProcessInfoWithDofs::AddDof<DoubleVariableType>)
+    .def("AddDof", &ProcessInfoWithDofs::AddDof<VariableComponentType>)
+    .def("FixDof", &ProcessInfoWithDofs::FixDof<DoubleVariableType>)
+    .def("FixDof", &ProcessInfoWithDofs::FixDof<VariableComponentType>)
+    ;
 }
+
 }  // namespace Python.
 
 } // Namespace Kratos

@@ -20,6 +20,7 @@
 // Project includes
 #include "includes/define.h"
 #include "includes/model_part.h"
+#include "includes/process_info_with_dofs.h"
 #include "containers/model.h"
 #include "boost/make_shared.hpp"
 #include "boost/progress.hpp"
@@ -134,6 +135,10 @@ namespace Kratos
         for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
             delete i_sub_model_part.base()->second;
 
+        auto* pProcessInfoWithDofs = dynamic_cast<ProcessInfoWithDofs*>(mpProcessInfo.get());
+        if (pProcessInfoWithDofs != NULL)
+            pProcessInfoWithDofs->Finalize();
+
         if (!IsSubModelPart())
             delete mpVariablesList;
     }
@@ -176,6 +181,12 @@ namespace Kratos
             node_iterator->CloneSolutionStepData();
 
         mpProcessInfo->CloneSolutionStepInfo();
+
+        auto* pProcessInfoWithDofs = dynamic_cast<ProcessInfoWithDofs*>(mpProcessInfo.get());
+        if (pProcessInfoWithDofs != NULL)
+        {
+            pProcessInfoWithDofs->CloneSolutionStepData();
+        }
 
         mpProcessInfo->ClearHistory(mBufferSize);
 
@@ -1259,6 +1270,33 @@ const ModelPart::MasterSlaveConstraintType& ModelPart::GetMasterSlaveConstraint(
         for (NodeIterator node_iterator = NodesBegin(); node_iterator != NodesEnd(); node_iterator++)
             node_iterator->SetBufferSize(mBufferSize);
 
+        auto* pProcessInfoWithDofs = dynamic_cast<ProcessInfoWithDofs*>(mpProcessInfo.get());
+        if (pProcessInfoWithDofs != NULL)
+        {
+            pProcessInfoWithDofs->SetBufferSize(mBufferSize);
+        }
+    }
+
+    void ModelPart::SetProcessInfo(ProcessInfo::Pointer pNewProcessInfo)
+    {
+        mpProcessInfo = pNewProcessInfo;
+        auto* pProcessInfoWithDofs = dynamic_cast<ProcessInfoWithDofs*>(mpProcessInfo.get());
+        if (pProcessInfoWithDofs != NULL)
+        {
+            pProcessInfoWithDofs->SetSolutionStepVariablesList(*mpVariablesList);
+            pProcessInfoWithDofs->SetBufferSize(mBufferSize);
+        }
+    }
+
+    void ModelPart::SetProcessInfo(ProcessInfo& NewProcessInfo)
+    {
+        *mpProcessInfo = NewProcessInfo;
+        auto* pProcessInfoWithDofs = dynamic_cast<ProcessInfoWithDofs*>(mpProcessInfo.get());
+        if (pProcessInfoWithDofs != NULL)
+        {
+            pProcessInfoWithDofs->SetSolutionStepVariablesList(*mpVariablesList);
+            pProcessInfoWithDofs->SetBufferSize(mBufferSize);
+        }
     }
 
     /// run input validation
