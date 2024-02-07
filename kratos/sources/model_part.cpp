@@ -185,9 +185,8 @@ namespace Kratos
     ModelPart::IndexType ModelPart::CloneTimeStep()
     {
         if (IsSubModelPart())
-KRATOS_THROW_ERROR(std::logic_error, "Calling the method of the sub model part ", Name())
-          //KRATOS_ERROR << "Calling the CloneTimeStep method of the sub model part " << Name()
-          //    << " please call the one of the parent modelpart : " << mpParentModelPart->Name() << std::endl;
+            KRATOS_ERROR << "Calling the CloneTimeStep method of the sub model part " << Name()
+                         << " please call the one of the parent modelpart : " << mpParentModelPart->Name() << std::endl;
 
         IndexType new_index = CloneSolutionStep();
         mpProcessInfo->SetAsTimeStepInfo();
@@ -199,9 +198,8 @@ KRATOS_THROW_ERROR(std::logic_error, "Calling the method of the sub model part "
     ModelPart::IndexType ModelPart::CreateTimeStep(double NewTime)
     {
         if (IsSubModelPart())
-KRATOS_THROW_ERROR(std::logic_error, "Calling the method of the sub model part ", Name())
-          //KRATOS_ERROR << "Calling the CreateTimeStep method of the sub model part " << Name()
-          //    << " please call the one of the parent modelpart : " << mpParentModelPart->Name() << std::endl;
+            KRATOS_ERROR << "Calling the CreateTimeStep method of the sub model part " << Name()
+                         << " please call the one of the parent modelpart : " << mpParentModelPart->Name() << std::endl;
 
         IndexType new_index = CreateSolutionStep();
         mpProcessInfo->SetAsTimeStepInfo(NewTime);
@@ -212,9 +210,8 @@ KRATOS_THROW_ERROR(std::logic_error, "Calling the method of the sub model part "
     ModelPart::IndexType ModelPart::CloneTimeStep(double NewTime)
     {
         if (IsSubModelPart())
-        KRATOS_THROW_ERROR(std::logic_error, "Calling the CloneSolutionStep method of the sub model part ", Name())
-          //    KRATOS_ERROR << "Calling the CloneTimeStep method of the sub model part " << Name()
-          //    << " please call the one of the parent modelpart : " << mpParentModelPart->Name() << std::endl;
+            KRATOS_ERROR << "Calling the CloneTimeStep method of the sub model part " << Name()
+                         << " please call the one of the parent modelpart : " << mpParentModelPart->Name() << std::endl;
 
         IndexType new_index = CloneSolutionStep();
         mpProcessInfo->SetAsTimeStepInfo(NewTime);
@@ -225,9 +222,8 @@ KRATOS_THROW_ERROR(std::logic_error, "Calling the method of the sub model part "
     void ModelPart::OverwriteSolutionStepData(IndexType SourceSolutionStepIndex, IndexType DestinationSourceSolutionStepIndex)
     {
         if (IsSubModelPart())
-KRATOS_THROW_ERROR(std::logic_error, "Calling the method of the sub model part ", Name())
-          //KRATOS_ERROR << "Calling the OverwriteSolutionStepData method of the sub model part " << Name()
-          //    << " please call the one of the parent modelpart : " << mpParentModelPart->Name() << std::endl;
+            KRATOS_ERROR << "Calling the OverwriteSolutionStepData method of the sub model part " << Name()
+                         << " please call the one of the parent modelpart : " << mpParentModelPart->Name() << std::endl;
 
         for (NodeIterator node_iterator = NodesBegin(); node_iterator != NodesEnd(); node_iterator++)
             node_iterator->OverwriteSolutionStepData(SourceSolutionStepIndex, DestinationSourceSolutionStepIndex);
@@ -242,9 +238,8 @@ KRATOS_THROW_ERROR(std::logic_error, "Calling the method of the sub model part "
             //It just resets the database values to the values at the beginning of the time step
 
             if (IsSubModelPart())
-KRATOS_THROW_ERROR(std::logic_error, "Calling the method of the sub model part ", Name())
-  //    KRATOS_ERROR << "Calling the OverwriteSolutionStepData method of the sub model part " << Name()
-  //                << " please call the one of the parent modelpart : " << mpParentModelPart->Name() << std::endl;
+                KRATOS_ERROR << "Calling the OverwriteSolutionStepData method of the sub model part " << Name()
+                             << " please call the one of the parent modelpart : " << mpParentModelPart->Name() << std::endl;
 
             rModelPart.OverwriteSolutionStepData(1, 0);
             rModelPart.GetProcessInfo().SetCurrentTime(NewTime);
@@ -325,7 +320,7 @@ KRATOS_THROW_ERROR(std::logic_error, "Calling the method of the sub model part "
 
         //create a new node
 //      NodeType::Pointer p_new_node = NodeType::Pointer(new NodeType(Id, x, y, z));
-                NodeType::Pointer p_new_node = boost::make_shared< NodeType >( Id, x, y, z);
+        NodeType::Pointer p_new_node = boost::make_shared< NodeType >( Id, x, y, z);
 
         // Giving model part's variables list to the node
         p_new_node->SetSolutionStepVariablesList(mpVariablesList);
@@ -352,7 +347,8 @@ KRATOS_THROW_ERROR(std::logic_error, "Calling the method of the sub model part "
 
         //create a new node
         //NodeType::Pointer p_new_node = NodeType::Pointer(new NodeType(Id, x, y, z, mpVariablesList, pThisData, mBufferSize));
-                NodeType::Pointer p_new_node = boost::make_shared< NodeType >( Id, x, y, z, mpVariablesList, pThisData, mBufferSize);
+        NodeType::Pointer p_new_node = boost::make_shared< NodeType >( Id, x, y, z, mpVariablesList, pThisData, mBufferSize);
+
         //add the new node to the list of nodes
         GetMesh(ThisIndex).AddNode(p_new_node);
 
@@ -372,7 +368,7 @@ KRATOS_THROW_ERROR(std::logic_error, "Calling the method of the sub model part "
 
         //create a new node
 //      NodeType::Pointer p_new_node = NodeType::Pointer(new NodeType(NodeId, rSourceNode.X(), rSourceNode.Y(), rSourceNode.Z()));
-                NodeType::Pointer p_new_node = boost::make_shared< NodeType >( NodeId, rSourceNode.X(), rSourceNode.Y(), rSourceNode.Z() );
+        NodeType::Pointer p_new_node = boost::make_shared< NodeType >( NodeId, rSourceNode.X(), rSourceNode.Y(), rSourceNode.Z() );
 
         // Giving model part's variables list to the node
         p_new_node->SetSolutionStepVariablesList(mpVariablesList);
@@ -488,9 +484,8 @@ KRATOS_THROW_ERROR(std::logic_error, "Calling the method of the sub model part "
     void ModelPart::SetNodalSolutionStepVariablesList()
     {
         if (IsSubModelPart())
-KRATOS_THROW_ERROR(std::logic_error, "Calling the method of the sub model part ", Name())
-  //KRATOS_ERROR << "Calling the SetNodalSolutionStepVariablesList method of the sub model part " << Name()
-  //            << " please call the one of the parent modelpart : " << mpParentModelPart->Name() << std::endl;
+            KRATOS_ERROR << "Calling the SetNodalSolutionStepVariablesList method of the sub model part " << Name()
+                         << " please call the one of the parent modelpart : " << mpParentModelPart->Name() << std::endl;
 
         for (NodeIterator i_node = NodesBegin(); i_node != NodesEnd(); ++i_node)
             i_node->SetSolutionStepVariablesList(mpVariablesList);
@@ -753,8 +748,8 @@ void ModelPart::AddMasterSlaveConstraint(ModelPart::MasterSlaveConstraintType::P
         }
         else //master-slave constraint did exist already
         {
-                     if(&(*existing_constraint_it) != (pNewMasterSlaveConstraint.get()))
-                            KRATOS_THROW_ERROR(std::logic_error, "attempting to add Master-Slave constraint with Id :xxx , unfortunately a (different) condition with the same Id already exists", pNewMasterSlaveConstraint->Id())
+            if(&(*existing_constraint_it) != (pNewMasterSlaveConstraint.get()))
+                KRATOS_THROW_ERROR(std::logic_error, "attempting to add Master-Slave constraint with Id :xxx , unfortunately a (different) condition with the same Id already exists", pNewMasterSlaveConstraint->Id())
         }
     }
 }
@@ -764,6 +759,7 @@ void ModelPart::AddMasterSlaveConstraint(ModelPart::MasterSlaveConstraintType::P
 void ModelPart::AddMasterSlaveConstraints(std::vector<IndexType> const& MasterSlaveConstraintIds, IndexType ThisIndex)
 {
     KRATOS_TRY
+
     if(IsSubModelPart()) //does nothing if we are on the top model part
     {
         //obtain from the root model part the corresponding list of constraints
@@ -790,6 +786,7 @@ void ModelPart::AddMasterSlaveConstraints(std::vector<IndexType> const& MasterSl
             current_part = current_part->GetParentModelPart();
         }
     }
+
     KRATOS_CATCH("");
 }
 
@@ -1183,9 +1180,8 @@ const ModelPart::MasterSlaveConstraintType& ModelPart::GetMasterSlaveConstraint(
             return *(mSubModelParts.insert(p_model_part));
         }
         else
-                    KRATOS_THROW_ERROR(std::logic_error, "There is an already existing sub model part with name ", NewSubModelPartName)
             // Here a warning would be enough. To be disscussed. Pooyan.
-            //KRATOS_ERROR << "There is an already existing sub model part with name \"" << NewSubModelPartName << "\" in model part: \"" << Name() << "\"" << std::endl;
+            KRATOS_ERROR << "There is an already existing sub model part with name \"" << NewSubModelPartName << "\" in model part: \"" << Name() << "\"" << std::endl;
     }
 
     void ModelPart::AddSubModelPart(ModelPart& rThisSubModelPart)
@@ -1228,8 +1224,7 @@ const ModelPart::MasterSlaveConstraintType& ModelPart::GetMasterSlaveConstraint(
         SubModelPartIterator i_sub_model_part = mSubModelParts.find(name);
 
         if (i_sub_model_part == mSubModelParts.end())
-KRATOS_THROW_ERROR(std::logic_error, "The sub modelpart does not exist", "")
-  //KRATOS_ERROR << "The sub modelpart  \"" << name << "\" does not exist in the \"" << Name() << "\" model part to be removed" << std::endl;
+            KRATOS_ERROR << "The sub modelpart  \"" << name << "\" does not exist in the \"" << Name() << "\" model part to be removed" << std::endl;
 
                     // deallocate the sub model part
         delete i_sub_model_part.base()->second;
@@ -1251,14 +1246,13 @@ KRATOS_THROW_ERROR(std::logic_error, "The sub modelpart does not exist", "")
     void ModelPart::SetBufferSize(ModelPart::IndexType NewBufferSize)
     {
         if (IsSubModelPart())
- KRATOS_THROW_ERROR(std::logic_error, "Calling the method of the sub model part ", Name())
-          //    KRATOS_ERROR << "Calling the SetBufferSize method of the sub model part " << Name()
-          //    << " please call the one of the parent modelpart : " << mpParentModelPart->Name() << std::endl;
+            KRATOS_ERROR << "Calling the SetBufferSize method of the sub model part " << Name()
+                         << " please call the one of the parent modelpart : " << mpParentModelPart->Name() << std::endl;
 
-                for(SubModelPartIterator i_sub_model_part = mSubModelParts.begin(); i_sub_model_part != mSubModelParts.end(); i_sub_model_part++)
-                {
-                    i_sub_model_part->mBufferSize = NewBufferSize;
-                }
+        for(SubModelPartIterator i_sub_model_part = mSubModelParts.begin(); i_sub_model_part != mSubModelParts.end(); i_sub_model_part++)
+        {
+            i_sub_model_part->mBufferSize = NewBufferSize;
+        }
 
         mBufferSize = NewBufferSize;
 

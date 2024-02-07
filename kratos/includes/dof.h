@@ -1,33 +1,18 @@
-// Kratos Multi-Physics
+//    |  /           |
+//    ' /   __| _` | __|  _ \   __|
+//    . \  |   (   | |   (   |\__ `
+//   _|\_\_|  \__,_|\__|\___/ ____/
+//                   Multi-Physics
 //
-// Copyright (c) 2016 Pooyan Dadvand, Riccardo Rossi, CIMNE (International Center for Numerical Methods in Engineering)
-// All rights reserved.
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
-// Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+//  Main authors:    Pooyan Dadvand
 //
-// 	-	Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-// 	-	Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
-// 		in the documentation and/or other materials provided with the distribution.
-// 	-	All advertising materials mentioning features or use of this software must display the following acknowledgement:
-// 			This product includes Kratos Multi-Physics technology.
-// 	-	Neither the name of the CIMNE nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 //
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
-// THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// HOLDERS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED ANDON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
-// THE USE OF THISSOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
-
-
-
-#if !defined(KRATOS_DOF_H_INCLUDED )
+#if !defined(KRATOS_DOF_H_INCLUDED)
 #define  KRATOS_DOF_H_INCLUDED
-
-
-
 
 // System includes
 #include <string>
@@ -35,12 +20,7 @@
 #include <sstream>
 #include <cstddef>
 
-
-
 // External includes
-#include <boost/variant.hpp>
-
-
 
 // Project includes
 #include "includes/define.h"
@@ -55,7 +35,6 @@
 namespace Kratos
 {
 
-
 #define KRATOS_DOF_TRAITS \
         KRATOS_MAKE_DOF_TRAIT(0) Variable<TDataType> KRATOS_END_DOF_TRAIT(0); \
         KRATOS_MAKE_DOF_TRAIT(1) VariableComponent<VectorComponentAdaptor<array_1d<TDataType, 3> > > KRATOS_END_DOF_TRAIT(1);
@@ -66,8 +45,6 @@ template<class TDataType, class TVariableType = Variable<TDataType> >
 struct DofTrait
 {
     static const int Id;
-
-
 };
 
 
@@ -89,7 +66,6 @@ KRATOS_DOF_TRAITS
 #undef KRATOS_END_DOF_TRAIT
 
 
-
 ///@name Kratos Globals
 ///@{
 
@@ -109,8 +85,11 @@ KRATOS_DOF_TRAITS
 ///@name Kratos Classes
 ///@{
 
-/// Short class definition.
-/** Detail class definition.
+/// Dof represents a degree of freedom (DoF).
+/** It is a lightweight object which holds its variable, like TEMPERATURE, its
+state of freedom, and a reference to its value in the data structure.
+This class enables the system to work with different set of dofs and also
+represents the Dirichlet condition assigned to each dof.
 */
 template<class TDataType>
 class Dof : public IndexedObject
@@ -124,7 +103,6 @@ public:
 
     typedef std::size_t IndexType;
 
-
     typedef std::size_t EquationIdType;
 
     typedef VariablesListDataValueContainer SolutionStepsDataContainerType;
@@ -134,7 +112,7 @@ public:
     ///@{
 
     /** Constructor. This constructor takes all necessary
-    informations to construct a degree of freedom. Also default
+    information to construct a degree of freedom. Also default
     values are used to make it easier to define for simple cases.
 
 
@@ -203,34 +181,6 @@ public:
           mReactionType(DofTrait<TDataType, Variable<TDataType> >::Id)
     {
     }
-
-// 	  template<class TVariableType>
-// 	  Dof(const TVariableType& rThisVariable)
-// 		  : IndexedObject(Counter<Dof<TDataType> >::Increment()),
-// 		  mIsFixed(false),
-// 		  mEquationId(IndexType()),
-// 		  mpSolutionStepsData(SolutionStepsDataContainerType::Pointer(new SolutionStepsDataContainerType)),
-// 		  mpVariable(&rThisVariable),
-// 		  mpReaction(&msNone),
-// 		  mVariableType(DofTrait<TDataType, TVariableType>::Id),
-// 		  mReactionType(DofTrait<TDataType, Variable<TDataType> >::Id)
-// 	  {
-// 	  }
-
-// 	  template<class TVariableType, class TReactionType>
-// 	  Dof(const TVariableType& rThisVariable,
-// 		  const TReactionType& rThisReaction)
-// 		  : IndexedObject(Counter<Dof<TDataType> >::Increment()),
-// 		  mIsFixed(false),
-// 		  mEquationId(IndexType()),
-// 		  mpSolutionStepsData(SolutionStepsDataContainerType::Pointer(new SolutionStepsDataContainerType)),
-// 		  mpVariable(&rThisVariable),
-// 		  mpReaction(&rThisReaction),
-// 		  mVariableType(DofTrait<TDataType, TVariableType>::Id),
-// 		  mReactionType(DofTrait<TDataType, TReactionType>::Id)
-// 	  {
-// 	  }
-
 
     /// Copy constructor.
     Dof(Dof const& rOther)
@@ -303,68 +253,19 @@ public:
         return GetSolutionStepValue(SolutionStepIndex);
     }
 
-
     ///@}
     ///@name Operations
     ///@{
-
-//       TDataType& GetSolutionStepValue(IndexType SolutionStepIndex = 0)
-//      {
-//        SolutionStepsDataContainerType::iterator i;
-//        if((i = mpSolutionStepsData->find(SolutionStepIndex)) == mpSolutionStepsData->end())
-//          KRATOS_THROW_ERROR(std::invalid_argument, "Solution step index out of range.", "");
-
-
-//        return GetReference(*mpVariable, *i, mVariableType);
-//      }
-
-
-//        TDataType const& GetSolutionStepValue(IndexType SolutionStepIndex = 0) const
-//      {
-//        SolutionStepsDataContainerType::iterator i;
-//        if((i = mpSolutionStepsData->find(SolutionStepIndex)) == mpSolutionStepsData->end())
-//          KRATOS_THROW_ERROR(std::invalid_argument, "Solution step index out of range.", "");
-
-
-//        return GetReference(*mpVariable, *i, mVariableType);
-//      }
-
-
-//       template<class TVariableType>
-//                typename TVariableType::Type& GetSolutionStepValue(const TVariableType& rThisVariable, IndexType SolutionStepIndex = 0)
-//      {
-//        SolutionStepsDataContainerType::const_iterator i;
-//        if((i = mpSolutionStepsData->find(SolutionStepIndex)) == mpSolutionStepsData->end())
-//          KRATOS_THROW_ERROR(std::invalid_argument, "Solution step index out of range.", "");
-
-
-//        return i->GetValue(rThisVariable);
-//      }
-
-
-//       template<class TVariableType>
-//                typename TVariableType::Type const& GetSolutionStepValue(const TVariableType& rThisVariable, IndexType SolutionStepIndex = 0) const
-//      {
-//        SolutionStepsDataContainerType::const_iterator i;
-//        if((i = mpSolutionStepsData->find(SolutionStepIndex)) == mpSolutionStepsData->end())
-//          KRATOS_THROW_ERROR(std::invalid_argument, "Solution step index out of range.", "");
-
-
-//        return i->GetValue(rThisVariable);
-//      }
-
 
     TDataType& GetSolutionStepValue(IndexType SolutionStepIndex = 0)
     {
         return GetReference(*mpVariable, *mpSolutionStepsData, SolutionStepIndex, mVariableType);
     }
 
-
     TDataType const& GetSolutionStepValue(IndexType SolutionStepIndex = 0) const
     {
         return GetReference(*mpVariable, *mpSolutionStepsData, SolutionStepIndex, mVariableType);
     }
-
 
     template<class TVariableType>
     typename TVariableType::Type& GetSolutionStepValue(const TVariableType& rThisVariable, IndexType SolutionStepIndex = 0)
@@ -372,13 +273,11 @@ public:
         return mpSolutionStepsData->GetValue(rThisVariable, SolutionStepIndex);
     }
 
-
     template<class TVariableType>
     typename TVariableType::Type const& GetSolutionStepValue(const TVariableType& rThisVariable, IndexType SolutionStepIndex = 0) const
     {
         return mpSolutionStepsData->GetValue(rThisVariable, SolutionStepIndex);
     }
-
 
     TDataType& GetSolutionStepReactionValue(IndexType SolutionStepIndex = 0)
     {
@@ -389,7 +288,6 @@ public:
     {
         return GetReference(*mpReaction, *mpSolutionStepsData, SolutionStepIndex, mReactionType);
     }
-
 
     ///@}
     ///@name Access
@@ -443,9 +341,8 @@ public:
      */
     void FixDof()
     {
-        mIsFixed= true;
+        mIsFixed=true;
     }
-
 
     /** Frees the degree of freedom
      */
@@ -453,7 +350,6 @@ public:
     {
         mIsFixed=false;
     }
-
 
     SolutionStepsDataContainerType* GetSolutionStepsData()
     {
@@ -522,13 +418,9 @@ public:
         rOStream << "    Local Equation Id            : " << mLocalEquationId << std::endl;
     }
 
-
-
-
     ///@}
     ///@name Friends
     ///@{
-
 
     ///@}
 
@@ -622,7 +514,7 @@ private:
         {
             KRATOS_DOF_TRAITS
         }
-        KRATOS_THROW_ERROR(std::invalid_argument, "Not supported type for Dof" , "");
+        KRATOS_ERROR << "Not supported type for Dof" << std::endl;
     }
 
     TDataType const& GetReference(VariableData const& ThisVariable, VariablesListDataValueContainer const& rData, IndexType SolutionStepIndex, int ThisId) const
@@ -631,9 +523,8 @@ private:
         {
             KRATOS_DOF_TRAITS
         }
-        KRATOS_THROW_ERROR(std::invalid_argument, "Not supported type for Dof" , "");
+        KRATOS_ERROR << "Not supported type for Dof" << std::endl;
     }
-
 
     ///@}
     ///@name Serialization
@@ -676,42 +567,26 @@ private:
     ///@name Private Operations
     ///@{
 
-
     ///@}
     ///@name Private  Access
     ///@{
 
-
-    ///@}
-    ///@name Private Inquiry
-    ///@{
-
-
     ///@}
     ///@name Un accessible methods
     ///@{
-
-    /// Default constructor.
-    //      Dof();
-
-
 
     ///@}
 
 }; // Class Dof
 template<class TDataType> const Variable<TDataType> Dof<TDataType>::msNone("NONE");
 
-
 ///@}
-
 ///@name Type Definitions
 ///@{
-
 
 ///@}
 ///@name Input and output
 ///@{
-
 
 /// input stream function
 template<class TDataType>
@@ -790,26 +665,10 @@ inline bool operator == ( Dof<TDataType> const& First,
 
 ///@}
 
-
 }  // namespace Kratos.
-
 
 #undef KRATOS_DOF_TRAITS
 #undef KRATOS_MAKE_DOF_TRAIT
 #undef KRATOS_END_DOF_TRAIT
 
-
-#endif // KRATOS_DOF_H_INCLUDED  defined 
-
-
-
-
-
-
-
-
-
-
-
-
-
+#endif // KRATOS_DOF_H_INCLUDED  defined

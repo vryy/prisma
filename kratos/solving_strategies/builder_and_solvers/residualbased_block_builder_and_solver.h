@@ -691,7 +691,6 @@ public:
 
         Build(pScheme, r_model_part, A, b);
 
-        KRATOS_WATCH(A)
 
         Timer::Stop("Build");
 

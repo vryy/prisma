@@ -5,12 +5,12 @@
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 //
-// 	-	Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-// 	-	Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
-// 		in the documentation and/or other materials provided with the distribution.
-// 	-	All advertising materials mentioning features or use of this software must display the following acknowledgement:
-// 			This product includes Kratos Multi-Physics technology.
-// 	-	Neither the name of the CIMNE nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+//  -   Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+//  -   Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
+//      in the documentation and/or other materials provided with the distribution.
+//  -   All advertising materials mentioning features or use of this software must display the following acknowledgement:
+//          This product includes Kratos Multi-Physics technology.
+//  -   Neither the name of the CIMNE nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
 // THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
@@ -39,18 +39,18 @@ namespace Kratos
 
 namespace Python
 {
-// 	void SetModelPartName(ModelPart& rModelPart, std::string const& NewName)
-// 	{
-// 		rModelPart.Name() = NewName;
-// 	}
-// 	std::string GetModelPartName(ModelPart const& rModelPart)
-// 	{
-// 		return rModelPart.Name();
-// 	}
-// 	ProcessInfo& GetProcessInfo(ModelPart& rModelPart )
-// 	{	  return rModelPart.GetProcessInfo();	 }
-// 	void SetProcessInfo(ModelPart& rModelPart, ProcessInfo& NewProcessInfo)
-// 	{	  rModelPart.SetProcessInfo(NewProcessInfo);	  }
+//  void SetModelPartName(ModelPart& rModelPart, std::string const& NewName)
+//  {
+//      rModelPart.Name() = NewName;
+//  }
+//  std::string GetModelPartName(ModelPart const& rModelPart)
+//  {
+//      return rModelPart.Name();
+//  }
+//  ProcessInfo& GetProcessInfo(ModelPart& rModelPart )
+//  {     return rModelPart.GetProcessInfo();    }
+//  void SetProcessInfo(ModelPart& rModelPart, ProcessInfo& NewProcessInfo)
+//  {     rModelPart.SetProcessInfo(NewProcessInfo);      }
 
 template< class TContainerType, class TVariableType > void MySetValueHelperFunction1(
     TContainerType& el,
@@ -75,10 +75,6 @@ void  AddProcessInfoToPython()
     class_<ProcessInfo, ProcessInfo::Pointer, bases<DataValueContainer, Flags>, boost::noncopyable>("ProcessInfo")
     .def(init<>())
     .def("CreateSolutionStepInfo", &ProcessInfo::CreateSolutionStepInfo)
-// 				.def("CreateTimeStepInfo",(void (ProcessInfo::*)(std::size_t)) &ProcessInfo::CreateTimeStepInfo)
-// 				.def("CreateTimeStepInfo",&ProcessInfo::CreateTimeStepInfo)
-// 				.def("CloneTimeStepInfo",(void (ProcessInfo::*)(std::size_t) )&ProcessInfo::CloneTimeStepInfo)
-// 				.def("SetAsTimeStepInfo",(void (ProcessInfo::*)()) &ProcessInfo::SetAsTimeStepInfo)
     .def(self_ns::str(self))
     ;
 }

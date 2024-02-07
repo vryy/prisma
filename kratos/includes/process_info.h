@@ -5,12 +5,12 @@
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 //
-// 	-	Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-// 	-	Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
-// 		in the documentation and/or other materials provided with the distribution.
-// 	-	All advertising materials mentioning features or use of this software must display the following acknowledgement:
-// 			This product includes Kratos Multi-Physics technology.
-// 	-	Neither the name of the CIMNE nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+//  -   Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+//  -   Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
+//      in the documentation and/or other materials provided with the distribution.
+//  -   All advertising materials mentioning features or use of this software must display the following acknowledgement:
+//          This product includes Kratos Multi-Physics technology.
+//  -   Neither the name of the CIMNE nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
 // THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
@@ -89,7 +89,7 @@ public:
 
     /// Default constructor.
     ProcessInfo() :
-		BaseType(),
+        BaseType(),
         Flags(),
         mIsTimeStep(true),
         mSolutionStepIndex(),
@@ -100,7 +100,7 @@ public:
 
     /// Copy constructor.
     ProcessInfo(const ProcessInfo& Other) :
-		BaseType(Other),
+        BaseType(Other),
         Flags(Other),
         mIsTimeStep(Other.mIsTimeStep),
         mSolutionStepIndex(Other.mSolutionStepIndex),
@@ -149,10 +149,10 @@ public:
     }
 
     /*       void CloneTimeStepInfo(IndexType SolutionStepIndex, IndexType SourceSolutionStepIndex) */
-    /* 	{ */
-    /* 	  CloneSolutionStepInfo(SolutionStepIndex, SourceSolutionStepIndex); */
-    /* 	  mIsTimeStep = true; */
-    /* 	} */
+    /*  { */
+    /*    CloneSolutionStepInfo(SolutionStepIndex, SourceSolutionStepIndex); */
+    /*    mIsTimeStep = true; */
+    /*  } */
 
     void CloneTimeStepInfo(IndexType SolutionStepIndex, ProcessInfo const &  SourceSolutionStepInfo)
     {
@@ -173,16 +173,16 @@ public:
     }
 
     /*       void CloneTimeStepInfo(double NewTime, IndexType SolutionStepIndex = 0) */
-    /* 	{ */
-    /* 	  CloneTimeStepInfo(SolutionStepIndex); */
-    /* 	  SetCurrentTime(NewTime); */
-    /* 	} */
+    /*  { */
+    /*    CloneTimeStepInfo(SolutionStepIndex); */
+    /*    SetCurrentTime(NewTime); */
+    /*  } */
 
     /*       void CloneTimeStepInfo(double NewTime, IndexType SolutionStepIndex = 0, IndexType SourceSolutionStepIndex = 0) */
-    /* 	{ */
-    /* 	  CloneTimeStepInfo(SolutionStepIndex, SourceSolutionStepIndex); */
-    /* 	  SetCurrentTime(NewTime); */
-    /* 	} */
+    /*  { */
+    /*    CloneTimeStepInfo(SolutionStepIndex, SourceSolutionStepIndex); */
+    /*    SetCurrentTime(NewTime); */
+    /*  } */
 
     void CloneTimeStepInfo(double NewTime, IndexType SolutionStepIndex, ProcessInfo const &  SourceSolutionStepInfo)
     {
@@ -282,33 +282,33 @@ public:
         if(mIsTimeStep)
             mpPreviousTimeStepInfo = mpPreviousSolutionStepInfo;
         mIsTimeStep = false;
-		BaseType::Clear();
+        BaseType::Clear();
     }
 
 //       void CloneSolutionStepInfo(IndexType SolutionStepIndex = 0)
-// 	{
-// 	  mpPreviousSolutionStepInfo = Pointer(new ProcessInfo(*this));
-// 	  mSolutionStepIndex = SolutionStepIndex;
-// 	  if(mIsTimeStep)
-// 	    mpPreviousTimeStepInfo = mpPreviousSolutionStepInfo;
-// 	  mIsTimeStep = false;
-// 	}
+//  {
+//    mpPreviousSolutionStepInfo = Pointer(new ProcessInfo(*this));
+//    mSolutionStepIndex = SolutionStepIndex;
+//    if(mIsTimeStep)
+//      mpPreviousTimeStepInfo = mpPreviousSolutionStepInfo;
+//    mIsTimeStep = false;
+//  }
 
 //       void CloneSolutionStepInfo(IndexType SolutionStepIndex = 0, IndexType SourceSolutionStepIndex = 0)
-// 	{
-// 	  ProcessInfo& source_info = FindSolutionStepInfo(SourceSolutionStepIndex);
-// 	  if(source_info.GetSolutionStepIndex() == SourceSolutionStepIndex)
-// 	    {
-// 	      mpPreviousSolutionStepInfo = Pointer(new ProcessInfo(*this));
-// 	      mSolutionStepIndex = SolutionStepIndex;
-// 	      BaseType::operator=(source_info);
-// 	      if(mIsTimeStep)
-// 		mpPreviousTimeStepInfo = mpPreviousSolutionStepInfo;
-// 	      mIsTimeStep = false;
-// 	    }
-// 	  else
-// 	    CreateSolutionStepInfo(SolutionStepIndex);
-// 	}
+//  {
+//    ProcessInfo& source_info = FindSolutionStepInfo(SourceSolutionStepIndex);
+//    if(source_info.GetSolutionStepIndex() == SourceSolutionStepIndex)
+//      {
+//        mpPreviousSolutionStepInfo = Pointer(new ProcessInfo(*this));
+//        mSolutionStepIndex = SolutionStepIndex;
+//        BaseType::operator=(source_info);
+//        if(mIsTimeStep)
+//      mpPreviousTimeStepInfo = mpPreviousSolutionStepInfo;
+//        mIsTimeStep = false;
+//      }
+//    else
+//      CreateSolutionStepInfo(SolutionStepIndex);
+//  }
 
     void CloneSolutionStepInfo()
     {
@@ -445,7 +445,6 @@ public:
         mSolutionStepIndex = NewIndex;
     }
 
-
     ///@}
     ///@name Inquiry
     ///@{
@@ -555,7 +554,7 @@ private:
 
     virtual void save(Serializer& rSerializer) const
     {
-		KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, BaseType );
+        KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, BaseType );
         KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, Flags );
         rSerializer.save("Is Time Step",mIsTimeStep);
         rSerializer.save("Solution Step Index",mSolutionStepIndex);
@@ -565,7 +564,7 @@ private:
 
     virtual void load(Serializer& rSerializer)
     {
-		KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, BaseType );
+        KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, BaseType );
         KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, Flags );
         rSerializer.load("Is Time Step",mIsTimeStep);
         rSerializer.load("Solution Step Index",mSolutionStepIndex);
@@ -624,6 +623,4 @@ inline std::ostream& operator << (std::ostream& rOStream,
 
 }  // namespace Kratos.
 
-#endif // KRATOS_PROCESS_INFO_H_INCLUDED  defined 
-
-
+#endif // KRATOS_PROCESS_INFO_H_INCLUDED  defined
