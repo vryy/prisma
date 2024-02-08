@@ -54,7 +54,7 @@ namespace Kratos
  * @details The data T and ConstantVector (or the equivalent scalars) are not stored in the base class, since they can be eventually evaluated runtime.
  * @author Aditya Ghantasala
  */
-class LinearMasterSlaveConstraint
+class KRATOS_API(KRATOS_CORE) LinearMasterSlaveConstraint
     :  public MasterSlaveConstraint
 {
 public:
@@ -315,17 +315,19 @@ public:
     {
         KRATOS_TRY
 
-        MasterSlaveConstraint::Pointer p_constraint = boost::make_shared<LinearMasterSlaveConstraint>(*this);
-        p_constraint->SetData(this->GetData());
-        return p_constraint;
+        MasterSlaveConstraint::Pointer p_new_const = boost::make_shared<LinearMasterSlaveConstraint>(*this);
+        p_new_const->SetId(NewId);
+        p_new_const->SetData(this->GetData());
+        p_new_const->Set(Flags(*this));
+        return p_new_const;
 
         KRATOS_CATCH("");
     }
 
     /**
      * @brief Determines the constrant's slvae and master list of DOFs
-     * @param rSlaveDofList The list of slave DOFs
-     * @param rMasterDofList The list of slave DOFs
+     * @param rSlaveDofsVector The list of slave DOFs
+     * @param rMasterDofsVector The list of slave DOFs
      * @param rCurrentProcessInfo The current process info instance
      */
     void GetDofList(
@@ -336,6 +338,22 @@ public:
     {
         rSlaveDofsVector = mSlaveDofsVector;
         rMasterDofsVector = mMasterDofsVector;
+    }
+
+    /**
+     * @brief Determines the constrant's slave and master list of DOFs
+     * @param rSlaveDofsVector The list of slave DOFs
+     * @param rMasterDofsVector The list of slave DOFs
+     * @param rCurrentProcessInfo The current process info instance
+     */
+    void SetDofList(
+        const DofPointerVectorType& rSlaveDofsVector,
+        const DofPointerVectorType& rMasterDofsVector,
+        const ProcessInfo& rCurrentProcessInfo
+        ) override
+    {
+        mSlaveDofsVector = rSlaveDofsVector;
+        mMasterDofsVector = rMasterDofsVector;
     }
 
     /**
@@ -376,9 +394,27 @@ public:
      * @brief This method returns the slave dof vector
      * @return The vector containing the slave dofs
      */
+    void SetSlaveDofsVector(const DofPointerVectorType& rSlaveDofsVector) override
+    {
+        mSlaveDofsVector = rSlaveDofsVector;
+    }
+
+    /**
+     * @brief This method returns the slave dof vector
+     * @return The vector containing the slave dofs
+     */
     const DofPointerVectorType& GetMasterDofsVector() const override
     {
         return mMasterDofsVector;
+    }
+
+    /**
+     * @brief This method returns the slave dof vector
+     * @return The vector containing the slave dofs
+     */
+    void SetMasterDofsVector(const DofPointerVectorType& rMasterDofsVector) override
+    {
+        mMasterDofsVector = rMasterDofsVector;
     }
 
     /**
@@ -433,17 +469,17 @@ public:
     /**
      * @brief This is called during the assembling process in order
      * @details To calculate the relation between the master and slave.
-     * @param rTransformationMatrix the matrix which relates the master and slave degree of freedom
+     * @param rRelationMatrix the matrix which relates the master and slave degree of freedom
      * @param rConstant The constant vector (one entry for each slave)
      * @param rCurrentProcessInfo the current process info instance
      */
     void CalculateLocalSystem(
-        MatrixType& rTransformationMatrix,
+        MatrixType& rRelationMatrix,
         VectorType& rConstantVector,
         const ProcessInfo& rCurrentProcessInfo
-        ) override
+        ) const override
     {
-        rTransformationMatrix = mRelationMatrix;
+        rRelationMatrix = mRelationMatrix;
         rConstantVector = mConstantVector;
     }
 
@@ -519,6 +555,7 @@ private:
 
     ///@name Serialization
     ///@{
+
     friend class Serializer;
 
     void save(Serializer &rSerializer) const override
@@ -557,7 +594,6 @@ inline std::ostream& operator<<(std::ostream& rOStream,
 }
 
 ///@}
-
 
 } // namespace Kratos
 

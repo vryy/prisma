@@ -391,7 +391,7 @@ public:
         MatrixType& rTransformationMatrix,
         VectorType& rConstantVector,
         const ProcessInfo& rCurrentProcessInfo
-        ) override
+        ) const override
     {
         rTransformationMatrix = ZeroMatrix(0);
         rConstantVector = mConstantVector;
