@@ -173,17 +173,6 @@ else(${KRATOS_EXCLUDE_OPENMP} MATCHES ON)
 endif(${KRATOS_EXCLUDE_OPENMP} MATCHES ON)
 
 ##*****************************
-#finding and including BOOST library
-set(Boost_USE_STATIC_LIBS   OFF)
-set(Boost_USE_MULTITHREADED ON)
-set(Boost_REALPATH ON)
-find_package(Boost COMPONENTS python log REQUIRED)
-# on sdcluster link with system and thread
-include_directories(${Boost_INCLUDE_DIRS})
-link_directories(${Boost_LIBRARY_DIRS})
-ADD_DEFINITIONS(-DBOOST_LOG_DYN_LINK)
-
-##*****************************
 #finding and including PYTHON
 find_package(PythonLibs REQUIRED)
 include_directories(${PYTHON_INCLUDE_DIRS})
@@ -193,6 +182,16 @@ list(GET PYTHON_VERSION_STRING_ARRAY 0 PYTHON_VERSION_MAJOR)
 list(GET PYTHON_VERSION_STRING_ARRAY 1 PYTHON_VERSION_MINOR)
 list(GET PYTHON_VERSION_STRING_ARRAY 2 PYTHON_VERSION_PATCH)
 
+##*****************************
+#finding and including BOOST library
+set(Boost_USE_STATIC_LIBS   OFF)
+set(Boost_USE_MULTITHREADED ON)
+set(Boost_REALPATH ON)
+find_package(Boost COMPONENTS python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR} log REQUIRED)
+# on sdcluster link with system and thread
+include_directories(${Boost_INCLUDE_DIRS})
+link_directories(${Boost_LIBRARY_DIRS})
+ADD_DEFINITIONS(-DBOOST_LOG_DYN_LINK)
 
 #follow the symbolic links for the python lib only if needed
 if(${INSTALL_EMBEDDED_PYTHON} MATCHES ON )
@@ -353,7 +352,7 @@ install(FILES "${CMAKE_SOURCE_DIR}/kratos/python_interface/kratos_globals.py" DE
 install(FILES "${CMAKE_SOURCE_DIR}/kratos/python_interface/application_importer.py" DESTINATION KratosMultiphysics )
 install(FILES "${CMAKE_SOURCE_DIR}/kratos/python_interface/kratos_unittest.py" DESTINATION KratosMultiphysics RENAME KratosUnittest.py )
 
-message("---- boost python lib used = " ${Boost_PYTHON_LIBRARY_RELEASE})
+message("---- boost python lib used = " ${Boost_PYTHON${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}_LIBRARY_RELEASE})
 install(FILES ${Boost_PYTHON_LIBRARY_RELEASE} DESTINATION libs)
 install(FILES ${EXTRA_INSTALL_LIBS} DESTINATION libs)
 
