@@ -65,7 +65,6 @@ namespace Kratos
  * @see GeometryAndFormulationElement
  */
 template<class TPointType>
-
 class Geometry : public PointerVector<TPointType>
 {
 public:
@@ -82,7 +81,6 @@ public:
     /** Base type for geometry.
     */
     typedef PointerVector<TPointType> BaseType;
-
 
     /** The bounding box */
     /*typedef BoundingBox<TPointType, GeometryType>  BoundingBoxType; */
@@ -111,7 +109,6 @@ public:
     */
     typedef std::size_t IndexType;
 
-
     /** This typed used to return size or dimension in
     geometry. Dimension, WorkingDimension, PointsNumber and
     ... return this type as their results.
@@ -119,7 +116,6 @@ public:
     typedef std::size_t SizeType;
 
     typedef typename PointType::CoordinatesArrayType CoordinatesArrayType;
-
 
     /** This type used for representing an integration point in
     geometry. This integration point is a point with an
@@ -192,7 +188,6 @@ public:
 
     Geometry() : mpGeometryData( 0 )
     {
-
     }
 
     /** Complete argument constructor. This constructor gives a
@@ -421,7 +416,7 @@ public:
     //lumping factors for the calculation of the lumped mass matrix
     virtual Vector& LumpingFactors( Vector& rResult )  const
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Called the virtual function for LumpingFactors" , *this );
+        KRATOS_ERROR << "Called the virtual function for LumpingFactors";
         return rResult;
     }
 
@@ -542,14 +537,14 @@ public:
 
     virtual bool HasIntersection( const GeometryType& ThisGeometry ) const
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Calling base class HasIntersection method instead of derived class one. Please check the definition of derived class." , *this );
+        KRATOS_ERROR << "Calling base class HasIntersection method instead of derived class one. Please check the definition of derived class.";
         return false;
     }
 
     /// Interseciones con la geometrias y cajas en 3D
     virtual bool HasIntersection( const Point<3, double>& rLowPoint, const Point<3, double>& rHighPoint ) const
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Calling base class HasIntersection method instead of derived class one. Please check the definition of derived class." , *this );
+        KRATOS_ERROR << "Calling base class HasIntersection method instead of derived class one. Please check the definition of derived class.";
         return false;
     }
 
@@ -627,17 +622,6 @@ public:
         return *this;
     }
 
-    /** An access method to the Vector of the points stored in
-    this geometry.
-
-    @return A reference to PointsArrayType contains pointers to
-    the points.
-    */
-    PointsArrayType& Points()
-    {
-        return *this;
-    }
-
     /** A constant access method to the i'th points stored in
     this geometry.
 
@@ -698,8 +682,7 @@ public:
      */
     virtual Matrix& PointsLocalCoordinates( Matrix& rResult ) const
     {
-        KRATOS_THROW_ERROR( std::logic_error,
-                            "Calling base class PointsLocalCoordinates method instead of derived class one. Please check the definition of derived class." , *this );
+        KRATOS_ERROR << "Calling base class PointsLocalCoordinates method instead of derived class one. Please check the definition of derived class.";
         return rResult;
     }
 
@@ -844,8 +827,7 @@ public:
     */
     virtual bool IsInside( const CoordinatesArrayType& rPoint ) const
     {
-        KRATOS_THROW_ERROR( std::logic_error,
-                            "Calling base class IsInside method instead of derived class one. Please check the definition of derived class." , *this );
+        KRATOS_ERROR << "Calling base class IsInside method instead of derived class one. Please check the definition of derived class.";
         return false;
     }
 
@@ -929,8 +911,7 @@ public:
     // will be used by refinement algorithm, thus uncommented. janosch.
     virtual SizeType EdgesNumber() const
     {
-        KRATOS_THROW_ERROR( std::logic_error,
-                            "Calling base class EdgesNumber method instead of derived class one. Please check the definition of derived class." , *this );
+        KRATOS_ERROR << "Calling base class EdgesNumber method instead of derived class one. Please check the definition of derived class.";
 
         return SizeType();
     }
@@ -949,8 +930,7 @@ public:
     // will be used by refinement algorithm, thus uncommented. janosch.
     virtual GeometriesArrayType Edges( void ) const
     {
-        KRATOS_THROW_ERROR( std::logic_error,
-                            "Calling base class Edges method instead of derived class one. Please check the definition of derived class." , *this );
+        KRATOS_ERROR << "Calling base class Edges method instead of derived class one. Please check the definition of derived class.";
 
         return GeometriesArrayType();
     }
@@ -983,8 +963,7 @@ public:
      */
     virtual SizeType FacesNumber() const
     {
-        KRATOS_THROW_ERROR( std::logic_error,
-                            "Calling base class FacesNumber method instead of derived class one. Please check the definition of derived class." , *this );
+        KRATOS_ERROR << "Calling base class FacesNumber method instead of derived class one. Please check the definition of derived class.";
 
         return SizeType();
     }
@@ -999,8 +978,7 @@ public:
      */
     virtual GeometriesArrayType Faces( void ) const
     {
-        KRATOS_THROW_ERROR( std::logic_error,
-                            "Calling base class Faces method instead of derived class one. Please check the definition of derived class." , *this );
+        KRATOS_ERROR << "Calling base class Faces method instead of derived class one. Please check the definition of derived class.";
 
         return GeometriesArrayType();
     }
@@ -1008,14 +986,12 @@ public:
     //Connectivities of faces required
     virtual void NumberNodesInFaces (boost::numeric::ublas::vector<unsigned int>& NumberNodesInFaces) const
     {
-        KRATOS_THROW_ERROR( std::logic_error,
-                            "Calling base class NumberNodesInFaces method instead of derived class one. Please check the definition of derived class." , *this );
+        KRATOS_ERROR << "Calling base class NumberNodesInFaces method instead of derived class one. Please check the definition of derived class.";
     }
 
     virtual void NodesInFaces (boost::numeric::ublas::matrix<unsigned int>& NodesInFaces) const
     {
-        KRATOS_THROW_ERROR( std::logic_error,
-                            "Calling base class NodesInFaces method instead of derived class one. Please check the definition of derived class." , *this );
+        KRATOS_ERROR << "Calling base class NodesInFaces method instead of derived class one. Please check the definition of derived class.";
     }
 
 
@@ -1846,8 +1822,7 @@ public:
     */
     virtual double ShapeFunctionValue( IndexType ShapeFunctionIndex, const CoordinatesArrayType& rCoordinates ) const
     {
-        KRATOS_THROW_ERROR( std::logic_error,
-                            "Calling base class ShapeFunctionValue method instead of derived class one. Please check the definition of derived class." , *this );
+        KRATOS_ERROR << "Calling base class ShapeFunctionValue method instead of derived class one. Please check the definition of derived class.";
 
         return 0;
     }
@@ -1990,8 +1965,7 @@ public:
      */
     virtual Matrix& ShapeFunctionsLocalGradients( Matrix& rResult, const CoordinatesArrayType& rPoint ) const
     {
-        KRATOS_THROW_ERROR( std::logic_error,
-                            "Calling base class ShapeFunctionsLocalGradients method instead of derived class one. Please check the definition of derived class." , *this );
+        KRATOS_ERROR << "Calling base class ShapeFunctionsLocalGradients method instead of derived class one. Please check the definition of derived class.";
         return rResult;
     }
 
@@ -2004,8 +1978,7 @@ public:
      */
     virtual ShapeFunctionsSecondDerivativesType& ShapeFunctionsSecondDerivatives( ShapeFunctionsSecondDerivativesType& rResult, const CoordinatesArrayType& rPoint ) const
     {
-        KRATOS_THROW_ERROR( std::logic_error,
-                            "Calling base class ShapeFunctionsSecondDerivatives method instead of derived class one. Please check the definition of derived class." , *this );
+        KRATOS_ERROR << "Calling base class ShapeFunctionsSecondDerivatives method instead of derived class one. Please check the definition of derived class.";
         return rResult;
     }
 
@@ -2018,8 +1991,7 @@ public:
      */
     virtual ShapeFunctionsThirdDerivativesType& ShapeFunctionsThirdDerivatives( ShapeFunctionsThirdDerivativesType& rResult, const CoordinatesArrayType& rPoint ) const
     {
-        KRATOS_THROW_ERROR( std::logic_error,
-                            "Calling base class ShapeFunctionsThirdDerivatives method instead of derived class one. Please check the definition of derived class." , *this );
+        KRATOS_ERROR << "Calling base class ShapeFunctionsThirdDerivatives method instead of derived class one. Please check the definition of derived class.";
         return rResult;
     }
 
@@ -2037,8 +2009,7 @@ public:
         const unsigned int integration_points_number = this->IntegrationPointsNumber( ThisMethod );
 
         if ( integration_points_number == 0 )
-            KRATOS_THROW_ERROR( std::logic_error,
-                                "This integration method is not supported" , *this );
+            KRATOS_ERROR << "This integration method is not supported";
 
         if ( rResult.size() != integration_points_number )
             rResult.resize(  this->IntegrationPointsNumber( ThisMethod ), false  );
@@ -2066,8 +2037,7 @@ public:
         const unsigned int integration_points_number = this->IntegrationPointsNumber( ThisMethod );
 
         if ( integration_points_number == 0 )
-            KRATOS_THROW_ERROR( std::logic_error,
-                                "This integration method is not supported" , *this );
+            KRATOS_ERROR << "This integration method is not supported";
 
         if ( rResult.size() != integration_points_number )
             rResult.resize(  this->IntegrationPointsNumber( ThisMethod ), false  );
@@ -2236,6 +2206,16 @@ protected:
     ///@name Protected  Access
     ///@{
 
+    /** An access method to the Vector of the points stored in
+    this geometry.
+
+    @return A reference to PointsArrayType contains pointers to
+    the points.
+    */
+    PointsArrayType& Points()
+    {
+        return *this;
+    }
 
     ///@}
     ///@name Protected Inquiry
@@ -2246,14 +2226,8 @@ protected:
     ///@name Protected LifeCycle
     ///@{
 
-    /** Protected Constructor.
-    Avoids object to be created Except for derived classes
-    */
-
 
     ///@}
-
-
 
 private:
     ///@name Static Member Variables
@@ -2286,7 +2260,6 @@ private:
         KRATOS_SERIALIZE_LOAD_BASE_CLASS( rSerializer, BaseType );
         //rSerializer.load( "Geometry Data", const_cast<GeometryData*>( mpGeometryData ) );
     }
-
 
     ///@}
     ///@name Private Operators

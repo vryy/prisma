@@ -33,8 +33,6 @@ namespace Kratos
 namespace Python
 {
 
-const PointerVector< Node<3> >& ConstGetPoints( Geometry<Node<3> >& geom ) { return geom.Points(); }
-PointerVector< Node<3> >& GetPoints( Geometry<Node<3> >& geom ) { return geom.Points(); }
 
 bool Geometry_IsInside1(Geometry<Node<3> >& rDummy, boost::python::list& point)
 {
@@ -59,8 +57,6 @@ void  AddGeometriesToPython()
     typedef Geometry<Node<3> > GeometryType;
     class_<GeometryType, GeometryType::Pointer >("Geometry", init<>())
     .def(init< GeometryType::PointsArrayType& >())
-//     .def("Points", &GeometryType::ConstGetPoints)
-//     .def("Points", &GeometryType::GetPoints)
     .def("IsInside", &Geometry_IsInside1)
     .def("IsInside", &Geometry_IsInside2)
     ;
