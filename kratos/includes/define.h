@@ -424,6 +424,11 @@ typedef const char* PointerToConstCharType;
 #define KRATOS_WATCH(variable) \
   std::cout << #variable << " : " << variable << std::endl;
 
+#define KRATOS_WATCH_STD_CON(variable) \
+  std::cout << #variable << " :"; \
+  for (auto it___ = variable.begin(); it___ != variable.end(); ++it___) std::cout << " " << *it___; \
+  std::cout << std::endl;
+
 }  /* namespace Kratos.*/
 
 
