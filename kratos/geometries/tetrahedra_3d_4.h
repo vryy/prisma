@@ -928,10 +928,10 @@ public:
         array_1d<double, 3> edge31 = geom_1[3].Coordinates() - geom_1[1].Coordinates();
 
 
-        plane[0].mNormal = MathUtils<double>::UnitCrossProduct(edge20,edge10);  // <v0,v2,v1>
-        plane[1].mNormal = MathUtils<double>::UnitCrossProduct(edge10,edge30);  // <v0,v1,v3>
-        plane[2].mNormal = MathUtils<double>::UnitCrossProduct(edge30,edge20);  // <v0,v3,v2>
-        plane[3].mNormal = MathUtils<double>::UnitCrossProduct(edge21,edge31);  // <v1,v2,v3>
+        MathUtils<double>::UnitCrossProduct(plane[0].mNormal, edge20, edge10);  // <v0,v2,v1>
+        MathUtils<double>::UnitCrossProduct(plane[1].mNormal, edge10, edge30);  // <v0,v1,v3>
+        MathUtils<double>::UnitCrossProduct(plane[2].mNormal, edge30, edge20);  // <v0,v3,v2>
+        MathUtils<double>::UnitCrossProduct(plane[3].mNormal, edge21, edge31);  // <v1,v2,v3>
 
 
         double det = inner_prod(edge10, plane[3].mNormal);
