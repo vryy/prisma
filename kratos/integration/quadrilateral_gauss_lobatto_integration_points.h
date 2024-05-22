@@ -40,10 +40,12 @@ public:
         return 1;
     }
 
-    static IntegrationPointsArrayType& IntegrationPoints()
+    static const IntegrationPointsArrayType& IntegrationPoints()
     {
-        msIntegrationPoints[0] = IntegrationPointType( 0.00 , 0.00, 4.00 );
-        return msIntegrationPoints;
+        static const IntegrationPointsArrayType s_integration_points{{
+            IntegrationPointType( 0.00 , 0.00, 4.00 ),
+        }};
+        return s_integration_points;
     }
 
     std::string Info() const
@@ -52,12 +54,6 @@ public:
         buffer << "Quadrilateral Gauss-Lobatto integration 1 ";
         return buffer.str();
     }
-protected:
-
-private:
-
-    static IntegrationPointsArrayType msIntegrationPoints;
-
 }; // Class QuadrilateralGaussLobattoIntegrationPoints1
 
 class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLobattoIntegrationPoints2
@@ -78,14 +74,15 @@ public:
         return 4;
     }
 
-    static IntegrationPointsArrayType& IntegrationPoints()
+    static const IntegrationPointsArrayType& IntegrationPoints()
     {
-        // This is added to solve the problem of static initialization.
-        msIntegrationPoints[0] = IntegrationPointType( -1.00 , -1.00, 1.00 );
-        msIntegrationPoints[1] = IntegrationPointType(  1.00 , -1.00, 1.00 );
-        msIntegrationPoints[2] = IntegrationPointType(  1.00 ,  1.00, 1.00 );
-        msIntegrationPoints[3] = IntegrationPointType( -1.00 ,  1.00, 1.00 );
-        return msIntegrationPoints;
+        static const IntegrationPointsArrayType s_integration_points{{
+            IntegrationPointType( -1.00 , -1.00, 1.00 ),
+            IntegrationPointType(  1.00 , -1.00, 1.00 ),
+            IntegrationPointType(  1.00 ,  1.00, 1.00 ),
+            IntegrationPointType( -1.00 ,  1.00, 1.00 )
+        }};
+        return s_integration_points;
     }
 
     std::string Info() const
@@ -94,11 +91,6 @@ public:
         buffer << "Quadrilateral Gauss-Lobatto integration 2 ";
         return buffer.str();
     }
-protected:
-
-private:
-
-    static IntegrationPointsArrayType msIntegrationPoints;
 }; // Class QuadrilateralGaussLobattoIntegrationPoints2
 
 class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLobattoIntegrationPoints3
@@ -119,19 +111,20 @@ public:
         return 9;
     }
 
-    static IntegrationPointsArrayType& IntegrationPoints()
+    static const IntegrationPointsArrayType& IntegrationPoints()
     {
-        // This is added to solve the problem of static initialization.
-        msIntegrationPoints[0] = IntegrationPointType( -1.00 , -1.00, 1.00 / 9.00 );
-        msIntegrationPoints[1] = IntegrationPointType( -1.00 , 0.00, 4.00 / 9.00 );
-        msIntegrationPoints[2] = IntegrationPointType( -1.00 , 1.00, 1.00 / 9.00 );
-        msIntegrationPoints[3] = IntegrationPointType( 0.00 , -1.00, 4.00 / 9.00 );
-        msIntegrationPoints[4] = IntegrationPointType( 0.00 , 0.00, 16.00 / 9.00 );
-        msIntegrationPoints[5] = IntegrationPointType( 0.00 , 1.00, 4.00 / 9.00 );
-        msIntegrationPoints[6] = IntegrationPointType( 1.00 , -1.00, 1.00 / 9.00 );
-        msIntegrationPoints[7] = IntegrationPointType( 1.00 , 0.00, 4.00 / 9.00 );
-        msIntegrationPoints[8] = IntegrationPointType( 1.00 , 1.00, 1.00 / 9.00 );
-        return msIntegrationPoints;
+        static const IntegrationPointsArrayType s_integration_points{{
+            IntegrationPointType( -1.00 , -1.00, 1.00 / 9.0 ),
+            IntegrationPointType( -1.00 , 0.00, 4.00 / 9.0 ),
+            IntegrationPointType( -1.00 , 1.00, 1.00 / 9.0 ),
+            IntegrationPointType( 0.00 , -1.00, 4.00 / 9.0 ),
+            IntegrationPointType( 0.00 , 0.00, 16.00 / 9.0 ),
+            IntegrationPointType( 0.00 , 1.00, 4.00 / 9.0 ),
+            IntegrationPointType( 1.00 , -1.00, 1.00 / 9.0 ),
+            IntegrationPointType( 1.00 , 0.00, 4.00 / 9.0 ),
+            IntegrationPointType( 1.00 , 1.00, 1.00 / 9.0 )
+        }};
+        return s_integration_points;
     }
 
     std::string Info() const
@@ -140,11 +133,6 @@ public:
         buffer << "Quadrilateral Gauss-Lobatto integration 3 ";
         return buffer.str();
     }
-protected:
-
-private:
-
-    static IntegrationPointsArrayType msIntegrationPoints;
 }; // Class QuadrilateralGaussLobattoIntegrationPoints3
 
 class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLobattoIntegrationPoints4
@@ -165,26 +153,27 @@ public:
         return 16;
     }
 
-    static IntegrationPointsArrayType& IntegrationPoints()
+    static const IntegrationPointsArrayType& IntegrationPoints()
     {
-        // This is added to solve the problem of static initialization.
-        msIntegrationPoints[0] = IntegrationPointType(-1.00, -1.00, 1.00 / 36.00);
-        msIntegrationPoints[1] = IntegrationPointType(-std::sqrt(5.00) / 5.00, -1.00, 5.00 / 36.00);
-        msIntegrationPoints[2] = IntegrationPointType( std::sqrt(5.00) / 5.00, -1.00, 5.00 / 36.00);
-        msIntegrationPoints[3] = IntegrationPointType( 1.00, -1.00, 1.00 / 36.00);
-        msIntegrationPoints[4] = IntegrationPointType(-1.00, -std::sqrt(5.00) / 5.00, 5.00 / 36.00);
-        msIntegrationPoints[5] = IntegrationPointType(-std::sqrt(5.00) / 5.00, -std::sqrt(5.00) / 5.00, 25.00 / 36.00);
-        msIntegrationPoints[6] = IntegrationPointType( std::sqrt(5.00) / 5.00, -std::sqrt(5.00) / 5.00, 25.00 / 36.00);
-        msIntegrationPoints[7] = IntegrationPointType( 1.00, -std::sqrt(5.00) / 5.00, 5.00 / 36.00);
-        msIntegrationPoints[8] = IntegrationPointType(-1.00, std::sqrt(5.00) / 5.00, 5.00 / 36.00);
-        msIntegrationPoints[9] = IntegrationPointType(-std::sqrt(5.00) / 5.00, std::sqrt(5.00) / 5.00, 25.00 / 36.00);
-        msIntegrationPoints[10] = IntegrationPointType( std::sqrt(5.00) / 5.00, std::sqrt(5.00) / 5.00, 25.00 / 36.00);
-        msIntegrationPoints[11] = IntegrationPointType( 1.00, std::sqrt(5.00) / 5.00, 5.00 / 36.00);
-        msIntegrationPoints[12] = IntegrationPointType(-1.00, 1.00, 1.00 / 36.00);
-        msIntegrationPoints[13] = IntegrationPointType(-std::sqrt(5.00) / 5.00, 1.00, 5.00 / 36.00);
-        msIntegrationPoints[14] = IntegrationPointType( std::sqrt(5.00) / 5.00, 1.00, 5.00 / 36.00);
-        msIntegrationPoints[15] = IntegrationPointType( 1.00, 1.00, 1.00 / 36.00);
-        return msIntegrationPoints;
+        static const IntegrationPointsArrayType s_integration_points{{
+            IntegrationPointType(-1.00, -1.00, 1.00 / 36.00),
+            IntegrationPointType(-std::sqrt(5.00) / 5.00, -1.00, 5.00 / 36.00),
+            IntegrationPointType( std::sqrt(5.00) / 5.00, -1.00, 5.00 / 36.00),
+            IntegrationPointType( 1.00, -1.00, 1.00 / 36.00),
+            IntegrationPointType(-1.00, -std::sqrt(5.00) / 5.00, 5.00 / 36.00),
+            IntegrationPointType(-std::sqrt(5.00) / 5.00, -std::sqrt(5.00) / 5.00, 25.00 / 36.00),
+            IntegrationPointType( std::sqrt(5.00) / 5.00, -std::sqrt(5.00) / 5.00, 25.00 / 36.00),
+            IntegrationPointType( 1.00, -std::sqrt(5.00) / 5.00, 5.00 / 36.00),
+            IntegrationPointType(-1.00, std::sqrt(5.00) / 5.00, 5.00 / 36.00),
+            IntegrationPointType(-std::sqrt(5.00) / 5.00, std::sqrt(5.00) / 5.00, 25.00 / 36.00),
+            IntegrationPointType( std::sqrt(5.00) / 5.00, std::sqrt(5.00) / 5.00, 25.00 / 36.00),
+            IntegrationPointType( 1.00, std::sqrt(5.00) / 5.00, 5.00 / 36.00),
+            IntegrationPointType(-1.00, 1.00, 1.00 / 36.00),
+            IntegrationPointType(-std::sqrt(5.00) / 5.00, 1.00, 5.00 / 36.00),
+            IntegrationPointType( std::sqrt(5.00) / 5.00, 1.00, 5.00 / 36.00),
+            IntegrationPointType( 1.00, 1.00, 1.00 / 36.00)
+        }};
+        return s_integration_points;
     }
 
     std::string Info() const
@@ -193,11 +182,6 @@ public:
         buffer << "Quadrilateral Gauss-Lobatto integration 4 ";
         return buffer.str();
     }
-protected:
-
-private:
-
-    static IntegrationPointsArrayType msIntegrationPoints;
 }; // Class QuadrilateralGaussLobattoIntegrationPoints4
 
 class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLobattoIntegrationPoints5
@@ -218,40 +202,40 @@ public:
         return 25;
     }
 
-    static IntegrationPointsArrayType& IntegrationPoints()
+    static const IntegrationPointsArrayType& IntegrationPoints()
     {
-        // This is added to solve the problem of static initialization.
-        msIntegrationPoints[0] = IntegrationPointType(-1.00, -1.00, 1.00 / 10.00 * 1.00 / 10.00);
-        msIntegrationPoints[1] = IntegrationPointType(-std::sqrt(21.00) / 7.00, -1.00, 49.00 / 90.00 * 1.00 / 10.00);
-        msIntegrationPoints[2] = IntegrationPointType( 0.00, -1.00, 32.00 / 45.00 * 1.00 / 10.00);
-        msIntegrationPoints[3] = IntegrationPointType( std::sqrt(21.00) / 7.00, -1.00, 49.00 / 90.00 * 1.00 / 10.00);
-        msIntegrationPoints[4] = IntegrationPointType( 1.00, -1.00, 1.00 / 10.00 * 1.00 / 10.00);
+        static const IntegrationPointsArrayType s_integration_points{{
+            IntegrationPointType(-1.00, -1.00, 1.00 / 10.00 * 1.00 / 10.00),
+            IntegrationPointType(-std::sqrt(21.00) / 7.00, -1.00, 49.00 / 90.00 * 1.00 / 10.00),
+            IntegrationPointType( 0.00, -1.00, 32.00 / 45.00 * 1.00 / 10.00),
+            IntegrationPointType( std::sqrt(21.00) / 7.00, -1.00, 49.00 / 90.00 * 1.00 / 10.00),
+            IntegrationPointType( 1.00, -1.00, 1.00 / 10.00 * 1.00 / 10.00),
 
-        msIntegrationPoints[5] = IntegrationPointType(-1.00, -std::sqrt(21.00) / 7.00, 1.00 / 10.00 * 49.00 / 90.00);
-        msIntegrationPoints[6] = IntegrationPointType(-std::sqrt(21.00) / 7.00, -std::sqrt(21.00) / 7.00, 49.00 / 90.00 * 49.00 / 90.00);
-        msIntegrationPoints[7] = IntegrationPointType( 0.00, -std::sqrt(21.00) / 7.00, 32.00 / 45.00 * 49.00 / 90.00);
-        msIntegrationPoints[8] = IntegrationPointType( std::sqrt(21.00) / 7.00, -std::sqrt(21.00) / 7.00, 49.00 / 90.00 * 49.00 / 90.00);
-        msIntegrationPoints[9] = IntegrationPointType( 1.00, -std::sqrt(21.00) / 7.00, 1.00 / 10.00 * 49.00 / 90.00);
+            IntegrationPointType(-1.00, -std::sqrt(21.00) / 7.00, 1.00 / 10.00 * 49.00 / 90.00),
+            IntegrationPointType(-std::sqrt(21.00) / 7.00, -std::sqrt(21.00) / 7.00, 49.00 / 90.00 * 49.00 / 90.00),
+            IntegrationPointType( 0.00, -std::sqrt(21.00) / 7.00, 32.00 / 45.00 * 49.00 / 90.00),
+            IntegrationPointType( std::sqrt(21.00) / 7.00, -std::sqrt(21.00) / 7.00, 49.00 / 90.00 * 49.00 / 90.00),
+            IntegrationPointType( 1.00, -std::sqrt(21.00) / 7.00, 1.00 / 10.00 * 49.00 / 90.00),
 
-        msIntegrationPoints[10] = IntegrationPointType(-1.00, 0.00, 1.00 / 10.00 * 32.00 / 45.00);
-        msIntegrationPoints[11] = IntegrationPointType(-std::sqrt(21.00) / 7.00, 0.00, 49.00 / 90.00 * 32.00 / 45.00);
-        msIntegrationPoints[12] = IntegrationPointType( 0.00, 0.00, 32.00 / 45.00 * 32.00 / 45.00);
-        msIntegrationPoints[13] = IntegrationPointType( std::sqrt(21.00) / 7.00, 0.00, 49.00 / 90.00 * 32.00 / 45.00);
-        msIntegrationPoints[14] = IntegrationPointType( 1.00, 0.00, 1.00 / 10.00 * 32.00 / 45.00);
+            IntegrationPointType(-1.00, 0.00, 1.00 / 10.00 * 32.00 / 45.00),
+            IntegrationPointType(-std::sqrt(21.00) / 7.00, 0.00, 49.00 / 90.00 * 32.00 / 45.00),
+            IntegrationPointType( 0.00, 0.00, 32.00 / 45.00 * 32.00 / 45.00),
+            IntegrationPointType( std::sqrt(21.00) / 7.00, 0.00, 49.00 / 90.00 * 32.00 / 45.00),
+            IntegrationPointType( 1.00, 0.00, 1.00 / 10.00 * 32.00 / 45.00),
 
-        msIntegrationPoints[15] = IntegrationPointType(-1.00, std::sqrt(21.00) / 7.00, 1.00 / 10.00 * 49.00 / 90.00);
-        msIntegrationPoints[16] = IntegrationPointType(-std::sqrt(21.00) / 7.00, std::sqrt(21.00) / 7.00, 49.00 / 90.00 * 49.00 / 90.00);
-        msIntegrationPoints[17] = IntegrationPointType( 0.00, std::sqrt(21.00) / 7.00, 32.00 / 45.00 * 49.00 / 90.00);
-        msIntegrationPoints[18] = IntegrationPointType( std::sqrt(21.00) / 7.00, std::sqrt(21.00) / 7.00, 49.00 / 90.00 * 49.00 / 90.00);
-        msIntegrationPoints[19] = IntegrationPointType( 1.00, std::sqrt(21.00) / 7.00, 1.00 / 10.00 * 49.00 / 90.00);
+            IntegrationPointType(-1.00, std::sqrt(21.00) / 7.00, 1.00 / 10.00 * 49.00 / 90.00),
+            IntegrationPointType(-std::sqrt(21.00) / 7.00, std::sqrt(21.00) / 7.00, 49.00 / 90.00 * 49.00 / 90.00),
+            IntegrationPointType( 0.00, std::sqrt(21.00) / 7.00, 32.00 / 45.00 * 49.00 / 90.00),
+            IntegrationPointType( std::sqrt(21.00) / 7.00, std::sqrt(21.00) / 7.00, 49.00 / 90.00 * 49.00 / 90.00),
+            IntegrationPointType( 1.00, std::sqrt(21.00) / 7.00, 1.00 / 10.00 * 49.00 / 90.00),
 
-        msIntegrationPoints[20] = IntegrationPointType(-1.00, 1.00, 1.00 / 10.00 * 1.00 / 10.00);
-        msIntegrationPoints[21] = IntegrationPointType(-std::sqrt(21.00) / 7.00, 1.00, 49.00 / 90.00 * 1.00 / 10.00);
-        msIntegrationPoints[22] = IntegrationPointType( 0.00, 1.00, 32.00 / 45.00 * 1.00 / 10.00);
-        msIntegrationPoints[23] = IntegrationPointType( std::sqrt(21.00) / 7.00, 1.00, 49.00 / 90.00 * 1.00 / 10.00);
-        msIntegrationPoints[24] = IntegrationPointType( 1.00, 1.00, 1.00 / 10.00 * 1.00 / 10.00);
-
-        return msIntegrationPoints;
+            IntegrationPointType(-1.00, 1.00, 1.00 / 10.00 * 1.00 / 10.00),
+            IntegrationPointType(-std::sqrt(21.00) / 7.00, 1.00, 49.00 / 90.00 * 1.00 / 10.00),
+            IntegrationPointType( 0.00, 1.00, 32.00 / 45.00 * 1.00 / 10.00),
+            IntegrationPointType( std::sqrt(21.00) / 7.00, 1.00, 49.00 / 90.00 * 1.00 / 10.00),
+            IntegrationPointType( 1.00, 1.00, 1.00 / 10.00 * 1.00 / 10.00)
+        }};
+        return s_integration_points;
     }
 
     std::string Info() const
@@ -260,11 +244,6 @@ public:
         buffer << "Quadrilateral Gauss-Lobatto integration 5 ";
         return buffer.str();
     }
-protected:
-
-private:
-
-    static IntegrationPointsArrayType msIntegrationPoints;
 }; // Class QuadrilateralGaussLobattoIntegrationPoints5
 
 ///@name Type Definitions
@@ -296,5 +275,3 @@ class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLobattoIntegrationPoints<5> : pu
 }
 
 #endif // KRATOS_QUADRILATERAL_GAUSS_LOBATTO_INTEGRATION_POINTS_H_INCLUDED defined
-
-

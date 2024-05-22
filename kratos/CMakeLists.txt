@@ -18,7 +18,6 @@ set( KRATOS_CORE_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/kratos_exception.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/containers/variable_data.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/timer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/sources/integration_rules.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/io.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/containers/variables_list_data_value_container.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/kratos_components.cpp

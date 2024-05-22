@@ -39,12 +39,14 @@ public:
         return 3;
     }
 
-    static IntegrationPointsArrayType& IntegrationPoints()
+    static const IntegrationPointsArrayType& IntegrationPoints()
     {
-        msIntegrationPoints[0] = IntegrationPointType( 0.0 , 0.0 , 0.5 , 1.00 / 6.00 );
-        msIntegrationPoints[1] = IntegrationPointType( 1.0 , 0.0 , 0.5 , 1.00 / 6.00 );
-        msIntegrationPoints[2] = IntegrationPointType( 0.0 , 1.0 , 0.5 , 1.00 / 6.00 );
-        return msIntegrationPoints;
+        static const IntegrationPointsArrayType s_integration_points{{
+            IntegrationPointType( 0.0 , 0.0 , 0.5 , 1.00 / 6.00 ),
+            IntegrationPointType( 1.0 , 0.0 , 0.5 , 1.00 / 6.00 ),
+            IntegrationPointType( 0.0 , 1.0 , 0.5 , 1.00 / 6.00 )
+        }};
+        return s_integration_points;
     }
 
     std::string Info() const
@@ -53,12 +55,6 @@ public:
         buffer << "Prism Gauss-Lobatto quadrature 1 ";
         return buffer.str();
     }
-protected:
-
-private:
-
-    static IntegrationPointsArrayType msIntegrationPoints;
-    
 }; // Class PrismGaussLobattoIntegrationPoints1
 
 class KRATOS_API(KRATOS_CORE) PrismGaussLobattoIntegrationPoints2
@@ -79,17 +75,17 @@ public:
         return 6;
     }
 
-    static IntegrationPointsArrayType& IntegrationPoints()
+    static const IntegrationPointsArrayType& IntegrationPoints()
     {
-        // This is added to solve the problem of static initialization. Pooyan.
-        msIntegrationPoints[0] = IntegrationPointType( 0.0 , 0.0 , 0.0 , 1.00 / 12.00 );
-        msIntegrationPoints[1] = IntegrationPointType( 1.0 , 0.0 , 0.0 , 1.00 / 12.00 );
-        msIntegrationPoints[2] = IntegrationPointType( 0.0 , 1.0 , 0.0 , 1.00 / 12.00 );
-
-        msIntegrationPoints[3] = IntegrationPointType( 0.0 , 0.0 , 1.0 , 1.00 / 12.00 );
-        msIntegrationPoints[4] = IntegrationPointType( 1.0 , 0.0 , 1.0 , 1.00 / 12.00 );
-        msIntegrationPoints[5] = IntegrationPointType( 0.0 , 1.0 , 1.0 , 1.00 / 12.00 );
-        return msIntegrationPoints;
+        static const IntegrationPointsArrayType s_integration_points{{
+            IntegrationPointType( 0.0 , 0.0 , 0.0 , 1.00 / 12.00 ),
+            IntegrationPointType( 1.0 , 0.0 , 0.0 , 1.00 / 12.00 ),
+            IntegrationPointType( 0.0 , 1.0 , 0.0 , 1.00 / 12.00 ),
+            IntegrationPointType( 0.0 , 0.0 , 1.0 , 1.00 / 12.00 ),
+            IntegrationPointType( 1.0 , 0.0 , 1.0 , 1.00 / 12.00 ),
+            IntegrationPointType( 0.0 , 1.0 , 1.0 , 1.00 / 12.00 )
+        }};
+        return s_integration_points;
     }
 
     std::string Info() const
@@ -98,18 +94,8 @@ public:
         buffer << "Prism Gauss-Lobatto quadrature 2 ";
         return buffer.str();
     }
-protected:
-
-private:
-
-    static IntegrationPointsArrayType msIntegrationPoints;
-
 }; // Class PrismGaussLobattoIntegrationPoints2
-
-
 
 }
 
 #endif // KRATOS_PRISM_GAUSS_LOBATTO_INTEGRATION_POINTS_H_INCLUDED defined 
-
-
