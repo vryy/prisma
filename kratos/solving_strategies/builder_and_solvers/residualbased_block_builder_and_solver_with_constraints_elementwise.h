@@ -79,6 +79,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise
     typedef ResidualBasedBlockBuilderAndSolverWithConstraints<TSparseSpace, TDenseSpace, TLinearSolver> BaseType;
     typedef typename BaseType::IndexType IndexType;
     typedef typename BaseType::SizeType SizeType;
+    typedef typename BaseType::DofType DofType;
     typedef typename BaseType::TSchemeType TSchemeType;
     typedef typename BaseType::TDataType TDataType;
     typedef typename BaseType::DofsArrayType DofsArrayType;
@@ -99,7 +100,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise
     typedef Internals::GlobalMasterSlaveRelationContainerType GlobalMasterSlaveRelationContainerType;
     typedef std::vector<IndexType> EquationIdVectorType;
     typedef std::vector<IndexType> VectorIndexType;
-    typedef std::vector<Dof<double>::Pointer> DofsVectorType;
+    typedef std::vector<typename DofType::Pointer> DofsVectorType;
     typedef Vector VectorType;
     typedef Internals::ConstraintImposer<TSparseSpace, TDenseSpace, TLinearSolver> ConstraintImposerType;
 
@@ -630,7 +631,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise
 
         unsigned int nthreads = OpenMPUtils::GetNumThreads();
 
-        typedef std::unordered_set < typename NodeType::DofType::Pointer, DofPointerHasher>  set_type;
+        typedef std::unordered_set < typename DofType::Pointer, DofPointerHasher>  set_type;
 
         if ( this->GetEchoLevel() > 2)
         {

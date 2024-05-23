@@ -446,7 +446,7 @@ public:
     ///@name Type Definitions
     ///@{
     typedef Internals::AuxiliaryGlobalMasterSlaveConstraint AuxiliaryGlobalMasterSlaveRelationType;
-    typedef std::vector<Dof<double>::Pointer> DofsVectorType;
+    typedef std::vector<Dof<KRATOS_DOUBLE_TYPE>::Pointer> DofsVectorType;
     typedef typename TDenseSpace::MatrixType LocalSystemMatrixType;
     typedef typename TDenseSpace::VectorType LocalSystemVectorType;
     typedef Internals::LocalIndices LocalIndicesType;

@@ -79,6 +79,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
     typedef ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation<TSparseSpace, TDenseSpace, TLinearSolver> BaseType;
     typedef typename BaseType::IndexType IndexType;
     typedef typename BaseType::SizeType SizeType;
+    typedef typename BaseType::DofType DofType;
     typedef typename BaseType::TSchemeType TSchemeType;
     typedef typename BaseType::TDataType TDataType;
     typedef typename BaseType::DofsArrayType DofsArrayType;
@@ -100,7 +101,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
     typedef Internals::GlobalMasterSlaveRelationContainerType GlobalMasterSlaveRelationContainerType;
     typedef std::vector<IndexType> EquationIdVectorType;
     typedef std::vector<IndexType> VectorIndexType;
-    typedef std::vector<Dof<double>::Pointer> DofsVectorType;
+    typedef std::vector<typename DofType::Pointer> DofsVectorType;
     typedef Vector VectorType;
     typedef Internals::ConstraintImposer<TSparseSpace, TDenseSpace, TLinearSolver> ConstraintImposerType;
 

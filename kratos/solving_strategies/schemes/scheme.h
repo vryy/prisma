@@ -70,8 +70,8 @@ public:
 
     typedef typename TDenseSpace::MatrixType LocalSystemMatrixType;
     typedef typename TDenseSpace::VectorType LocalSystemVectorType;
-    typedef Dof<double> TDofType;
 
+    typedef ModelPart::DofType DofType;
     typedef ModelPart::DofsArrayType DofsArrayType;
     typedef typename DofsArrayType::iterator DofIterator;
     typedef typename DofsArrayType::const_iterator DofConstantIterator;

@@ -94,11 +94,11 @@ public:
 
     typedef std::size_t SizeType;
 
-    typedef Dof<double> DofType;
+    typedef typename NodeType::DofType DofType;
 
     typedef std::vector<std::size_t> EquationIdVectorType;
 
-    typedef std::vector<DofType::Pointer> DofsVectorType;
+    typedef std::vector<typename DofType::Pointer> DofsVectorType;
 
     typedef PointerVectorSet<DofType, IndexedObject> DofsArrayType;
 

@@ -92,7 +92,7 @@ public:
     typedef typename TDenseSpace::MatrixType LocalSystemMatrixType;
     typedef typename TDenseSpace::VectorType LocalSystemVectorType;
 
-    typedef Dof<double> TDofType;
+    typedef Dof<KRATOS_DOUBLE_TYPE> TDofType;
     typedef PointerVectorSet<TDofType, SetIdentityFunction<TDofType> > DofsArrayType;
     /* 		typedef PointerVectorSet<TDofType, IndexedObject> DofsArrayType; */
 

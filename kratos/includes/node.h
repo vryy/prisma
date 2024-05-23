@@ -43,8 +43,6 @@
 namespace Kratos
 {
 
-class Element;
-
 ///@name Kratos Globals
 ///@{
 
@@ -64,10 +62,9 @@ class Element;
 ///@name Kratos Classes
 ///@{
 
-/// This class defines the node
 /** The node class from Kratos is defined in this class
 */
-template<std::size_t TDimension, class TDofType = Dof<double> >
+template<std::size_t TDimension, class TDofType = Dof<KRATOS_DOUBLE_TYPE> >
 class Node : public Point<TDimension>,  public IndexedObject, public Flags
 {
     class GetDofKey : public std::unary_function<TDofType, VariableData::KeyType>
@@ -98,24 +95,11 @@ public:
 
     typedef typename std::size_t SizeType;
 
-    //typedef Neighbours<NodeType, Element> NeighboursType;
-
-    /** Element array type for neighbor elements. */
-    //typedef typename NeighboursType::NeighbourElementsArrayType NeighbourElementsArrayType;
-
-    /** Element array type for neighbor elements. */
-    //typedef typename NeighboursType::NeighbourNodesArrayType NeighbourNodesArrayType;
-
     typedef PointerVectorSet<TDofType, GetDofKey> DofsContainerType;
 
-    //typedef Buffer<std::vector<FixDataValueContainer> > SolutionStepsNodalDataContainerType;
-
-//        typedef Buffer<std::vector<VariablesListDataValueContainer> > SolutionStepsNodalDataContainerType;
     typedef VariablesListDataValueContainer SolutionStepsNodalDataContainerType;
 
     typedef VariablesListDataValueContainer::BlockType BlockType;
-
-    //typedef VectorMap<IndexType, NeighboursType > SolutionStepsNeighboursContainerType;
 
     typedef Variable<double> DoubleVariableType;
 

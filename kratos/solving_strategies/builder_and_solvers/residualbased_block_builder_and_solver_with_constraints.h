@@ -106,8 +106,8 @@ public:
     typedef boost::numeric::ublas::compressed_matrix<double> CompressedMatrixType;
 
     /// DoF types definition
-    typedef Node<3> NodeType;
-    typedef typename NodeType::DofType DofType;
+    typedef ModelPart::NodeType NodeType;
+    typedef typename BaseType::DofType DofType;
     typedef typename DofType::Pointer DofPointerType;
 
     ///@}
@@ -619,7 +619,7 @@ public:
 
         unsigned int nthreads = OpenMPUtils::GetNumThreads();
 
-        typedef std::set < DofType::Pointer >  set_type;
+        typedef std::set < typename DofType::Pointer >  set_type;
 
         if ( this->GetEchoLevel() > 2)
         {

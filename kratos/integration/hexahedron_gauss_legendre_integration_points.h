@@ -23,7 +23,7 @@
 namespace Kratos
 {
 
-template<typename TDataType = double>
+template<typename TDataType = KRATOS_DOUBLE_TYPE>
 class KRATOS_API(KRATOS_CORE) HexahedronGaussLegendreIntegrationPoints1
 {
 public:
@@ -62,7 +62,7 @@ public:
     }
 }; // Class HexahedronGaussLegendreIntegrationPoints1
 
-template<typename TDataType = double>
+template<typename TDataType = KRATOS_DOUBLE_TYPE>
 class KRATOS_API(KRATOS_CORE) HexahedronGaussLegendreIntegrationPoints2
 {
 public:
@@ -109,7 +109,7 @@ public:
     }
 }; // Class HexahedronGaussLegendreIntegrationPoints2
 
-template<typename TDataType = double>
+template<typename TDataType = KRATOS_DOUBLE_TYPE>
 class KRATOS_API(KRATOS_CORE) HexahedronGaussLegendreIntegrationPoints3
 {
 public:
@@ -188,7 +188,7 @@ public:
     }
 }; // Class HexahedronGaussLegendreIntegrationPoints3
 
-template<typename TDataType = double>
+template<typename TDataType = KRATOS_DOUBLE_TYPE>
 class KRATOS_API(KRATOS_CORE) HexahedronGaussLegendreIntegrationPoints4
 {
 public:
@@ -303,7 +303,7 @@ public:
     }
 }; // Class HexahedronGaussLegendreIntegrationPoints4
 
-template<typename TDataType = double>
+template<typename TDataType = KRATOS_DOUBLE_TYPE>
 class KRATOS_API(KRATOS_CORE) HexahedronGaussLegendreIntegrationPoints5
 {
 public:
@@ -466,7 +466,7 @@ public:
     }
 }; // Class HexahedronGaussLegendreIntegrationPoints5
 
-template<typename TDataType = double>
+template<typename TDataType = KRATOS_DOUBLE_TYPE>
 class KRATOS_API(KRATOS_CORE) HexahedronGaussLegendreIntegrationPoints6
 {
 public:
@@ -755,7 +755,7 @@ public:
     }
 }; // Class HexahedronGaussLegendreIntegrationPoints6
 
-template<typename TDataType = double>
+template<typename TDataType = KRATOS_DOUBLE_TYPE>
 class KRATOS_API(KRATOS_CORE) HexahedronGaussLegendreIntegrationPoints7
 {
 public:
@@ -1184,7 +1184,7 @@ public:
     }
 }; // Class HexahedronGaussLegendreIntegrationPoints7
 
-template<typename TDataType = double>
+template<typename TDataType = KRATOS_DOUBLE_TYPE>
 class KRATOS_API(KRATOS_CORE) HexahedronGaussLegendreIntegrationPoints8
 {
 public:
@@ -1800,7 +1800,7 @@ public:
 ///@name Type Definitions
 ///@{
 
-template<int TDegree, typename TDataType = double>
+template<int TDegree, typename TDataType = KRATOS_DOUBLE_TYPE>
 class KRATOS_API(KRATOS_CORE) HexahedronGaussLegendreIntegrationPoints;
 
 template<typename TDataType>

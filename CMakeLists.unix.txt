@@ -127,6 +127,15 @@ else()
     add_definitions(-DKRATOS_SD_REF_NUMBER_2)
 endif()
 ################################
+# selector for double type
+if(KRATOS_DOUBLE_TYPE)
+    add_compile_definitions(KRATOS_DOUBLE_TYPE=${KRATOS_DOUBLE_TYPE})
+    message("Kratos will be compiled with double type = " ${KRATOS_DOUBLE_TYPE})
+else()
+    add_compile_definitions(KRATOS_DOUBLE_TYPE=double)
+    message("Kratos will be compiled with double type = double" )
+endif()
+################################
 
 ##find all dependencies
 

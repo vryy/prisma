@@ -66,7 +66,7 @@ public:
 
     typedef ProcessInfo BaseType;
 
-    typedef Dof<double> DofType;
+    typedef Dof<KRATOS_DOUBLE_TYPE> DofType;
 
     typedef std::deque<DofType::Pointer> DofsContainerType;
 

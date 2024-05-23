@@ -102,18 +102,19 @@ public:
     /// Pointer definition of ModelPart
     KRATOS_CLASS_POINTER_DEFINITION(ModelPart);
 
-    typedef Dof<double> DofType;
-    typedef std::vector< DofType::Pointer > DofsVectorType;
     typedef Kratos::Variable<double> DoubleVariableType;
     typedef Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<double, 3>>> VariableComponentType;
     typedef Matrix MatrixType;
     typedef Vector VectorType;
-    typedef PointerVectorSet<DofType, SetIdentityFunction<DofType> > DofsArrayType;
 
     typedef Node < 3 > NodeType;
     typedef Properties PropertiesType;
     typedef Element ElementType;
     typedef Condition ConditionType;
+
+    typedef typename NodeType::DofType DofType;
+    typedef std::vector< typename DofType::Pointer > DofsVectorType;
+    typedef PointerVectorSet<DofType, SetIdentityFunction<DofType> > DofsArrayType;
 
     typedef Mesh<NodeType, PropertiesType, ElementType, ConditionType> MeshType;
 

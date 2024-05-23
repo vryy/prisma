@@ -42,6 +42,8 @@ namespace Kratos
     // The node definition
     //typedef Node<3> NodeType;
 
+    typedef Dof<KRATOS_DOUBLE_TYPE> DofType;
+
 ///@}
 ///@name  Enum's
 ///@{
@@ -315,7 +317,7 @@ namespace Kratos
          * @brief The () operator
          * @param pDoF The DoF pointer
          */
-        HashType operator()(const Dof<double>::Pointer& pDoF) const
+        HashType operator()(const typename DofType::Pointer& pDoF) const
         {
             HashType seed = 0;
             HashCombine(seed, pDoF->Id());
@@ -335,7 +337,7 @@ namespace Kratos
          * @param pDoF1 The first DoF pointer
          * @param pDoF2 The second DoF pointer
          */
-        bool operator()(const Dof<double>::Pointer& pDoF1, const Dof<double>::Pointer& pDoF2) const
+        bool operator()(const typename DofType::Pointer& pDoF1, const typename DofType::Pointer& pDoF2) const
         {
             return (((pDoF1->Id() == pDoF2->Id() && (pDoF1->GetVariable()).Key()) == (pDoF2->GetVariable()).Key()));
         }

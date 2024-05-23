@@ -86,14 +86,14 @@ public:
     /// The index type definition
     typedef std::size_t IndexType;
 
-    /// The DoF type definition
-    typedef Dof<double> DofType;
-
-    /// The DoF pointer vector type definition
-    typedef std::vector< DofType::Pointer > DofPointerVectorType;
-
     /// The node type definition
     typedef Node<3> NodeType;
+
+    /// The DoF type definition
+    typedef typename NodeType::DofType DofType;
+
+    /// The DoF pointer vector type definition
+    typedef std::vector< typename DofType::Pointer > DofPointerVectorType;
 
     /// The equation Id vector type definition
     typedef std::vector<std::size_t> EquationIdVectorType;

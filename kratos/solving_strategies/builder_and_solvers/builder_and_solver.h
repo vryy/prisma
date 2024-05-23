@@ -79,11 +79,11 @@ public:
     typedef TLinearSolver TLinearSolverType;
     typedef TSparseSpace TSparseSpaceType;
 
-    typedef ModelPart::DofType TDofType;
+    typedef ModelPart::DofType DofType;
     typedef ModelPart::DofsArrayType DofsArrayType;
 
-    //typedef Dof<TDataType> TDofType;
-    //typedef PointerVectorSet<TDofType, IdentityFunction<TDofType> > DofsArrayType;
+    //typedef Dof<TDataType> DofType;
+    //typedef PointerVectorSet<DofType, IdentityFunction<DofType> > DofsArrayType;
 
     typedef typename DofsArrayType::iterator DofIterator;
     typedef typename DofsArrayType::const_iterator DofConstantIterator;
