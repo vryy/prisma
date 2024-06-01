@@ -42,7 +42,7 @@ void LinearMasterSlaveConstraint::Apply(const ProcessInfo& rCurrentProcessInfo)
 
     // Apply the constraint to the slave dofs
     for (IndexType i = 0; i < mRelationMatrix.size1(); ++i) {
-        double aux = mConstantVector[i];
+        DataType aux = mConstantVector[i];
         for(IndexType j = 0; j < mRelationMatrix.size2(); ++j) {
             aux += mRelationMatrix(i,j) * master_dofs_values[j];
         }
@@ -57,6 +57,5 @@ void LinearMasterSlaveConstraint::Apply(const ProcessInfo& rCurrentProcessInfo)
     //           << ", " << mSlaveDofsVector[i]->GetSolutionStepValue() << ")";
     // std::cout << std::endl;
 }
-
 
 } // namespace Kratos

@@ -5,12 +5,12 @@
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 //
-// 	-	Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-// 	-	Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
-// 		in the documentation and/or other materials provided with the distribution.
-// 	-	All advertising materials mentioning features or use of this software must display the following acknowledgement:
-// 			This product includes Kratos Multi-Physics technology.
-// 	-	Neither the name of the CIMNE nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+//  -   Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+//  -   Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
+//      in the documentation and/or other materials provided with the distribution.
+//  -   All advertising materials mentioning features or use of this software must display the following acknowledgement:
+//          This product includes Kratos Multi-Physics technology.
+//  -   Neither the name of the CIMNE nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
 // THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
@@ -90,9 +90,9 @@ public:
 
     typedef NodeType::IndexType IndexType;
 
-	typedef Table<double> TableType;
+    typedef Table<KRATOS_DOUBLE_TYPE> TableType;
 
-	typedef std::map<int64_t, TableType> TablesContainerType; // This is a provisional implmentation and should be changed to hash. Pooyan.
+    typedef std::map<int64_t, TableType> TablesContainerType; // This is a provisional implmentation and should be changed to hash. Pooyan.
 
 
     ///@}
@@ -100,7 +100,7 @@ public:
     ///@{
 
     /// Default constructor.
-	Properties(IndexType NewId = 0) : BaseType(NewId), mData(), mTables() {}
+    Properties(IndexType NewId = 0) : BaseType(NewId), mData(), mTables() {}
 
     /// Copy constructor.
     Properties(const Properties& rOther) : BaseType(rOther), mData(rOther.mData), mTables(rOther.mTables) {}
@@ -242,28 +242,28 @@ public:
     template<class XVariableType, class YVariableType>
     TableType& GetTable(const XVariableType& XVariable, const YVariableType& YVariable)
     {
-		return mTables[Key(XVariable, YVariable)];
+        return mTables[Key(XVariable, YVariable)];
     }
 
     template<class XVariableType, class YVariableType>
     TableType const& GetTable(const XVariableType& XVariable, const YVariableType& YVariable) const
     {
-		return mTables[Key(XVariable.Key(), YVariable.Key())];
+        return mTables[Key(XVariable.Key(), YVariable.Key())];
     }
 
     template<class XVariableType, class YVariableType>
     void SetTable(const XVariableType& XVariable, const YVariableType& YVariable, TableType const& rThisTable)
     {
-		mTables[Key(XVariable.Key(), YVariable.Key())] = rThisTable;
+        mTables[Key(XVariable.Key(), YVariable.Key())] = rThisTable;
     }
 
-	int64_t Key(std::size_t XKey, std::size_t YKey) const
-	{
-		int64_t result_key = XKey;
-		result_key = result_key << 32;
-		result_key |= YKey; // I know that the key is less than 2^32 so I don't need zeroing the upper part
-		return result_key;
-	}
+    int64_t Key(std::size_t XKey, std::size_t YKey) const
+    {
+        int64_t result_key = XKey;
+        result_key = result_key << 32;
+        result_key |= YKey; // I know that the key is less than 2^32 so I don't need zeroing the upper part
+        return result_key;
+    }
 
     ///@}
     ///@name Access
@@ -312,7 +312,7 @@ public:
     virtual void PrintData(std::ostream& rOStream) const
     {
         mData.PrintData(rOStream);
-		rOStream << "This properties contains " << mTables.size() << " tables";
+        rOStream << "This properties contains " << mTables.size() << " tables";
     }
 
 
@@ -370,7 +370,7 @@ private:
     ///@{
 
     ContainerType mData;
-	TablesContainerType mTables;
+    TablesContainerType mTables;
 
     ///@}
     ///@name Private Operators

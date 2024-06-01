@@ -69,6 +69,11 @@ public:
      */
     typedef TPointType PointType;
 
+    /**
+     * Type used for double value.
+     */
+    typedef typename BaseType::DataType DataType;
+
     /** Type used for indexing in geometry class.std::size_t used for indexing
     point or integration point access methods and also all other
     methods which need point or integration point index.
@@ -295,15 +300,15 @@ public:
     @see Volume()
     @see DomainSize()
     */
-    double Length() const override
+    DataType Length() const override
     {
 
         const TPointType& point0 = BaseType::GetPoint(0);
         const TPointType& point1 = BaseType::GetPoint(1);
-        const double lx = point0.X() - point1.X();
-        const double ly = point0.Y() - point1.Y();
+        const DataType lx = point0.X() - point1.X();
+        const DataType ly = point0.Y() - point1.Y();
 
-        const double length = lx * lx + ly * ly;
+        const DataType length = lx * lx + ly * ly;
 
         return sqrt( length );
     }
@@ -319,7 +324,7 @@ public:
     @see Volume()
     @see DomainSize()
     */
-    double Area() const override
+    DataType Area() const override
     {
         return 0.00;
     }
@@ -335,14 +340,14 @@ public:
     @see Area()
     @see Volume()
     */
-    double DomainSize() const override
+    DataType DomainSize() const override
     {
         const TPointType& point0 = BaseType::GetPoint(0);
         const TPointType& point1 = BaseType::GetPoint(1);
-        const double lx = point0.X() - point1.X();
-        const double ly = point0.Y() - point1.Y();
+        const DataType lx = point0.X() - point1.X();
+        const DataType ly = point0.Y() - point1.Y();
 
-        const double length = lx * lx + ly * ly;
+        const DataType length = lx * lx + ly * ly;
 
         return sqrt( length );
     }
@@ -495,7 +500,7 @@ public:
     @see Jacobian
     @see InverseOfJacobian
     */
-    double DeterminantOfJacobian(IndexType IntegrationPointIndex, IntegrationMethod ThisMethod) const override
+    DataType DeterminantOfJacobian(IndexType IntegrationPointIndex, IntegrationMethod ThisMethod) const override
     {
         KRATOS_THROW_ERROR(std::logic_error, "Jacobian is not square" , "");
     }
@@ -512,7 +517,7 @@ public:
     @see DeterminantOfJacobian
     @see InverseOfJacobian
     */
-    double DeterminantOfJacobian(const CoordinatesArrayType& rPoint) const override
+    DataType DeterminantOfJacobian(const CoordinatesArrayType& rPoint) const override
     {
         KRATOS_THROW_ERROR(std::logic_error, "Jacobian is not square" , "");
     }
@@ -588,7 +593,7 @@ public:
     ///@name Shape Function
     ///@{
 
-    double ShapeFunctionValue(IndexType ShapeFunctionIndex,
+    DataType ShapeFunctionValue(IndexType ShapeFunctionIndex,
                                       const CoordinatesArrayType& rPoint) const override
     {
         KRATOS_THROW_ERROR(std::logic_error,
@@ -738,7 +743,7 @@ private:
         Matrix N(integration_points_number,2);
         for(int it_gp = 0; it_gp < integration_points_number; it_gp++)
         {
-            double e = IntegrationPoints[it_gp].X();
+            DataType e = IntegrationPoints[it_gp].X();
             N(it_gp,0) = 0.5*(1-e);
             N(it_gp,1) = 0.5*(1+e);
         }
@@ -755,7 +760,7 @@ private:
 
         for(unsigned int it_gp = 0; it_gp < IntegrationPoints.size(); it_gp++)
         {
-            //  double e = IntegrationPoints[it_gp].X();
+            //  DataType e = IntegrationPoints[it_gp].X();
             DN_De[it_gp](0,0) = -0.5;
             DN_De[it_gp](1,0) =  0.5;
         }

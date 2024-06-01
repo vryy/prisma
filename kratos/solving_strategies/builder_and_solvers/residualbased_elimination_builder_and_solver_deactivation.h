@@ -826,7 +826,9 @@ public:
 
         if(this->GetEchoLevel()>0)
         {
-            std::cout << "Building Time : " << (building_time_stop - building_time_start) << std::endl;
+            std::cout << "Building Time : " << (building_time_stop - building_time_start)
+                      << " (step " << mStepCounter << ", it " << mLocalCounter << ")"
+                      << std::endl;
         }
 
         #ifdef EXPORT_LHS_MATRIX

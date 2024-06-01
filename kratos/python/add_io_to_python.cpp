@@ -5,12 +5,12 @@
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 //
-// 	-	Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-// 	-	Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
-// 		in the documentation and/or other materials provided with the distribution.
-// 	-	All advertising materials mentioning features or use of this software must display the following acknowledgement:
-// 			This product includes Kratos Multi-Physics technology.
-// 	-	Neither the name of the CIMNE nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+//  -   Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+//  -   Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
+//      in the documentation and/or other materials provided with the distribution.
+//  -   All advertising materials mentioning features or use of this software must display the following acknowledgement:
+//          This product includes Kratos Multi-Physics technology.
+//  -   Neither the name of the CIMNE nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
 // THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
@@ -46,10 +46,11 @@ namespace Kratos
 namespace Python
 {
 
+typedef ModelPart::DataType DataType;
+
 void (GidIO<>::*pointer_to_io_read_single_properties)(Properties& rThisProperties ) = &IO::ReadProperties;
 
 void (GidIO<>::*pointer_to_io_read_properties)(IO::PropertiesContainerType& rThisProperties ) = &IO::ReadProperties;
-
 
 void WriteNodeMesh( GidIO<>& dummy, GidIO<>::MeshType& rThisMesh )
 {
@@ -82,13 +83,13 @@ void IntPrintOnGaussPoints( GidIO<>& dummy, const Variable<int>& rVariable,
     dummy.PrintOnGaussPoints( rVariable, r_model_part, SolutionTag );
 }
 
-void DoublePrintOnGaussPoints( GidIO<>& dummy, const Variable<double>& rVariable,
+void DoublePrintOnGaussPoints( GidIO<>& dummy, const Variable<DataType>& rVariable,
                                ModelPart& r_model_part, double SolutionTag )
 {
     dummy.PrintOnGaussPoints( rVariable, r_model_part, SolutionTag );
 }
 
-void Array1DPrintOnGaussPoints( GidIO<>& dummy, const Variable<array_1d<double,3> >& rVariable,
+void Array1DPrintOnGaussPoints( GidIO<>& dummy, const Variable<array_1d<DataType, 3> >& rVariable,
                                 ModelPart& r_model_part, double SolutionTag )
 {
     dummy.PrintOnGaussPoints( rVariable, r_model_part, SolutionTag );
@@ -110,17 +111,17 @@ void MatrixPrintOnGaussPoints( GidIO<>& dummy, const Variable<Matrix>& rVariable
 void (GidIO<>::*pointer_to_bool_write_nodal_results)( Variable<bool> const& rVariable,
         GidIO<>::NodesContainerType& rNodes, double SolutionTag,
         std::size_t SolutionStepNumber ) = &GidIO<>::WriteNodalResults;
-void (GidIO<>::*pointer_to_double_write_nodal_results)( Variable<double> const& rVariable,
+void (GidIO<>::*pointer_to_double_write_nodal_results)( Variable<DataType> const& rVariable,
         GidIO<>::NodesContainerType& rNodes, double SolutionTag,
         std::size_t SolutionStepNumber ) = &GidIO<>::WriteNodalResults;
 void (GidIO<>::*pointer_to_array1d_write_nodal_results)(
-    Variable<array_1d<double, 3> > const& rVariable, GidIO<>::NodesContainerType& rNodes,
+    Variable<array_1d<DataType, 3> > const& rVariable, GidIO<>::NodesContainerType& rNodes,
     double SolutionTag, std::size_t SolutionStepNumber) = &GidIO<>::WriteNodalResults;
 
 //         void (GidIO::*pointer_to_vector_write_nodal_results)(Variable<Vector > const& rVariable, GidIO::NodesContainerType& rNodes, double SolutionTag, std::size_t SolutionStepNumber) = &GidIO::WriteNodalResults;
 void (GidIO<>::*pointer_to_matrix_write_nodal_results)(Variable<Matrix > const& rVariable, GidIO<>::NodesContainerType& rNodes, double SolutionTag, std::size_t SolutionStepNumber) = &GidIO<>::WriteNodalResults;
 
-void (GidIO<>::*local_axes_write_nodal_results)( Variable<array_1d<double, 3> > const& rVariable,
+void (GidIO<>::*local_axes_write_nodal_results)( Variable<array_1d<DataType, 3> > const& rVariable,
         GidIO<>::NodesContainerType& rNodes, double SolutionTag,
         std::size_t SolutionStepNumber ) = &GidIO<>::WriteLocalAxesOnNodes;
 
@@ -128,18 +129,18 @@ void (GidIO<>::*local_axes_write_nodal_results)( Variable<array_1d<double, 3> > 
 /// NON-HISTORICAL DATABASE                               ///
 ////////////////////////////////////////////////////////////
 void (GidIO<>::*pointer_to_bool_write_nodal_results_NH)( Variable<bool> const& rVariable, GidIO<>::NodesContainerType& rNodes, double SolutionTag)
-	= &GidIO<>::WriteNodalResultsNonHistorical;
+    = &GidIO<>::WriteNodalResultsNonHistorical;
 
-void (GidIO<>::*pointer_to_double_write_nodal_results_NH)( Variable<double> const& rVariable,  GidIO<>::NodesContainerType& rNodes, double SolutionTag)
-	= &GidIO<>::WriteNodalResultsNonHistorical;
-void (GidIO<>::*pointer_to_array1d_write_nodal_results_NH)(Variable<array_1d<double, 3> > const& rVariable, GidIO<>::NodesContainerType& rNodes, double SolutionTag)
-	= &GidIO<>::WriteNodalResultsNonHistorical;
+void (GidIO<>::*pointer_to_double_write_nodal_results_NH)( Variable<DataType> const& rVariable,  GidIO<>::NodesContainerType& rNodes, double SolutionTag)
+    = &GidIO<>::WriteNodalResultsNonHistorical;
+void (GidIO<>::*pointer_to_array1d_write_nodal_results_NH)(Variable<array_1d<DataType, 3> > const& rVariable, GidIO<>::NodesContainerType& rNodes, double SolutionTag)
+    = &GidIO<>::WriteNodalResultsNonHistorical;
 
 void (GidIO<>::*pointer_to_matrix_write_nodal_results_NH)(Variable<Matrix > const& rVariable, GidIO<>::NodesContainerType& rNodes, double SolutionTag)
-	= &GidIO<>::WriteNodalResultsNonHistorical;
+    = &GidIO<>::WriteNodalResultsNonHistorical;
 
-void (GidIO<>::*local_axes_write_nodal_results_NH)( Variable<array_1d<double, 3> > const& rVariable, GidIO<>::NodesContainerType& rNodes, double SolutionTag)
-	= &GidIO<>::WriteLocalAxesOnNodesNonHistorical;
+void (GidIO<>::*local_axes_write_nodal_results_NH)( Variable<array_1d<DataType, 3> > const& rVariable, GidIO<>::NodesContainerType& rNodes, double SolutionTag)
+    = &GidIO<>::WriteLocalAxesOnNodesNonHistorical;
 
 
 //         void (GidIO::*pointer_to_double_cond_print_on_gauss_points)(const Variable<double>& rVariable,
@@ -177,11 +178,11 @@ void  AddIOToPython()
     .def("ReadInitialValues",&ReadInitialValues2)
     .def("ReadMesh",&IO::ReadMesh)
     .def("ReadModelPart",&IO::ReadModelPart)
-	;
-	io_python_interface.attr("READ") = IO::READ;
-	io_python_interface.attr("WRITE") =IO::WRITE;
-	io_python_interface.attr("APPEND") = IO::APPEND;
-	io_python_interface.attr("IGNORE_VARIABLES_ERROR" ) = IO::IGNORE_VARIABLES_ERROR;
+    ;
+    io_python_interface.attr("READ") = IO::READ;
+    io_python_interface.attr("WRITE") =IO::WRITE;
+    io_python_interface.attr("APPEND") = IO::APPEND;
+    io_python_interface.attr("IGNORE_VARIABLES_ERROR" ) = IO::IGNORE_VARIABLES_ERROR;
 
 
 
@@ -232,8 +233,8 @@ void  AddIOToPython()
     .def("WriteNodalResults",pointer_to_matrix_write_nodal_results)
 
     .def("WriteLocalAxesOnNodes",local_axes_write_nodal_results)
-	// NonHistorical
-	.def("WriteNodalResultsNonHistorical",pointer_to_bool_write_nodal_results_NH)
+    // NonHistorical
+    .def("WriteNodalResultsNonHistorical",pointer_to_bool_write_nodal_results_NH)
     .def("WriteNodalResultsNonHistorical",pointer_to_double_write_nodal_results_NH)
     .def("WriteNodalResultsNonHistorical",pointer_to_array1d_write_nodal_results_NH)
     .def("WriteNodalResultsNonHistorical",pointer_to_matrix_write_nodal_results_NH)
@@ -262,7 +263,7 @@ void  AddIOToPython()
     .value("GiD_PostAscii", GiD_PostAscii)
     .value("GiD_PostAsciiZipped", GiD_PostAsciiZipped)
     .value("GiD_PostBinary", GiD_PostBinary)
-	.value("GiD_PostHDF5", GiD_PostHDF5)
+    .value("GiD_PostHDF5", GiD_PostHDF5)
     ;
 
     enum_<WriteDeformedMeshFlag>("WriteDeformedMeshFlag")

@@ -27,6 +27,8 @@
 
 namespace Kratos
 {
+    typedef ModelPart::DataType DataType;
+
     KRATOS_CREATE_LOCAL_FLAG(ModelPart, ALL_ENTITIES, 0);
     KRATOS_CREATE_LOCAL_FLAG(ModelPart, OVERWRITE_ENTITIES, 1);
 
@@ -141,6 +143,8 @@ namespace Kratos
 
         if (!IsSubModelPart())
             delete mpVariablesList;
+
+        std::cout << "ModelPart " << Name() << " destructor is called" << std::endl;
     }
 
 
@@ -206,7 +210,7 @@ namespace Kratos
     }
 
 
-    ModelPart::IndexType ModelPart::CreateTimeStep(double NewTime)
+    ModelPart::IndexType ModelPart::CreateTimeStep(DataType NewTime)
     {
         if (IsSubModelPart())
             KRATOS_ERROR << "Calling the CreateTimeStep method of the sub model part " << Name()
@@ -218,7 +222,7 @@ namespace Kratos
         return new_index;
     }
 
-    ModelPart::IndexType ModelPart::CloneTimeStep(double NewTime)
+    ModelPart::IndexType ModelPart::CloneTimeStep(DataType NewTime)
     {
         if (IsSubModelPart())
             KRATOS_ERROR << "Calling the CloneTimeStep method of the sub model part " << Name()
@@ -241,7 +245,7 @@ namespace Kratos
 
     }
 
-    void ModelPart::ReduceTimeStep(ModelPart& rModelPart, double NewTime)
+    void ModelPart::ReduceTimeStep(ModelPart& rModelPart, DataType NewTime)
     {
         KRATOS_TRY
 
@@ -293,7 +297,7 @@ namespace Kratos
 
     /** Inserts a node in the mesh with ThisIndex.
     */
-    ModelPart::NodeType::Pointer ModelPart::CreateNewNode(int Id, double x, double y, double z, VariablesList* pNewVariablesList, ModelPart::IndexType ThisIndex)
+    ModelPart::NodeType::Pointer ModelPart::CreateNewNode(int Id, DataType x, DataType y, DataType z, VariablesList* pNewVariablesList, ModelPart::IndexType ThisIndex)
     {
         if (IsSubModelPart())
         {
@@ -319,7 +323,7 @@ namespace Kratos
         return p_new_node;
     }
 
-    ModelPart::NodeType::Pointer ModelPart::CreateNewNode(ModelPart::IndexType Id, double x, double y, double z, ModelPart::IndexType ThisIndex)
+    ModelPart::NodeType::Pointer ModelPart::CreateNewNode(ModelPart::IndexType Id, DataType x, DataType y, DataType z, ModelPart::IndexType ThisIndex)
     {
         if (IsSubModelPart())
         {
@@ -345,7 +349,7 @@ namespace Kratos
         return p_new_node;
     }
 
-    ModelPart::NodeType::Pointer ModelPart::CreateNewNode(ModelPart::IndexType Id, double x, double y, double z, double* pThisData, ModelPart::IndexType ThisIndex)
+    ModelPart::NodeType::Pointer ModelPart::CreateNewNode(ModelPart::IndexType Id, DataType x, DataType y, DataType z, DataType* pThisData, ModelPart::IndexType ThisIndex)
     {
         if (IsSubModelPart())
 
@@ -841,7 +845,7 @@ ModelPart::MasterSlaveConstraintType::Pointer ModelPart::CreateNewMasterSlaveCon
 ModelPart::MasterSlaveConstraintType::Pointer ModelPart::CreateNewMasterSlaveConstraint(const std::string& ConstraintName,
     const ModelPart::IndexType& Id, ModelPart::NodeType& rMasterNode, const ModelPart::DoubleVariableType& rMasterVariable,
     ModelPart::NodeType& rSlaveNode, const ModelPart::DoubleVariableType& rSlaveVariable,
-    const double& Weight, const double& Constant, const IndexType& ThisIndex)
+    const DataType& Weight, const DataType& Constant, const IndexType& ThisIndex)
 {
     KRATOS_TRY
 
@@ -882,7 +886,7 @@ ModelPart::MasterSlaveConstraintType::Pointer ModelPart::CreateNewMasterSlaveCon
 ModelPart::MasterSlaveConstraintType::Pointer ModelPart::CreateNewMasterSlaveConstraint(const std::string& ConstraintName,
     const ModelPart::IndexType& Id, ModelPart::NodeType& rMasterNode, const ModelPart::VariableComponentType& rMasterVariable,
     ModelPart::NodeType& rSlaveNode, const ModelPart::VariableComponentType& rSlaveVariable,
-    const double& Weight, const double& Constant, const IndexType& ThisIndex)
+    const DataType& Weight, const DataType& Constant, const IndexType& ThisIndex)
 {
     KRATOS_TRY
 

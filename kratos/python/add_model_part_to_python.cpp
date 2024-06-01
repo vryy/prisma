@@ -69,6 +69,8 @@ namespace Kratos
 namespace Python
 {
 
+typedef ModelPart::DataType DataType;
+
 template<class TDataType>
 void AddNodalSolutionStepVariable(ModelPart& rModelPart, Variable<TDataType> const& rThisVariable)
 {
@@ -111,7 +113,7 @@ ModelPart::MeshType::Pointer ModelPartGetMesh2(ModelPart& rModelPart, ModelPart:
     return rModelPart.pGetMesh(MeshIndex);
 }
 
-Node < 3 > ::Pointer ModelPartCreateNewNode(ModelPart& rModelPart, int Id, double x, double y, double z)
+Node < 3 > ::Pointer ModelPartCreateNewNode(ModelPart& rModelPart, int Id, DataType x, DataType y, DataType z)
 {
     return rModelPart.CreateNewNode(Id, x, y, z);
 }
@@ -492,8 +494,8 @@ void CreateNewMasterSlaveConstraint2(ModelPart& rModelPart,
     ModelPart::DoubleVariableType& rMasterVariable,
     ModelPart::NodeType& rSlaveNode,
     ModelPart::DoubleVariableType& rSlaveVariable,
-    double Weight,
-    double Constant)
+    DataType Weight,
+    DataType Constant)
 {
     // return
     rModelPart.CreateNewMasterSlaveConstraint(ConstraintName, Id, rMasterNode, rMasterVariable, rSlaveNode, rSlaveVariable, Weight, Constant);
@@ -506,8 +508,8 @@ void CreateNewMasterSlaveConstraint3(ModelPart& rModelPart,
     ModelPart::VariableComponentType& rMasterVariable,
     ModelPart::NodeType& rSlaveNode,
     ModelPart::VariableComponentType& rSlaveVariable,
-    double Weight,
-    double Constant)
+    DataType Weight,
+    DataType Constant)
 {
     // return
     rModelPart.CreateNewMasterSlaveConstraint(ConstraintName, Id, rMasterNode, rMasterVariable, rSlaveNode, rSlaveVariable, Weight, Constant);
@@ -586,9 +588,9 @@ int CommunicatorSumAllInt(Communicator& rCommunicator, const int& value)
     return temp;
 }
 
-double CommunicatorSumAllDouble(Communicator& rCommunicator, const double& value)
+DataType CommunicatorSumAllDouble(Communicator& rCommunicator, const DataType& value)
 {
-    double temp = value;
+    DataType temp = value;
     rCommunicator.SumAll(temp);
     return temp;
 }
@@ -600,9 +602,9 @@ int CommunicatorMinAllInt(Communicator& rCommunicator, const int& value)
     return temp;
 }
 
-double CommunicatorMinAllDouble(Communicator& rCommunicator, const double& value)
+DataType CommunicatorMinAllDouble(Communicator& rCommunicator, const DataType& value)
 {
-    double temp = value;
+    DataType temp = value;
     rCommunicator.MinAll(temp);
     return temp;
 }
@@ -614,9 +616,9 @@ int CommunicatorMaxAllInt(Communicator& rCommunicator, const int& value)
     return temp;
 }
 
-double CommunicatorMaxAllDouble(Communicator& rCommunicator, const double& value)
+DataType CommunicatorMaxAllDouble(Communicator& rCommunicator, const DataType& value)
 {
-    double temp = value;
+    DataType temp = value;
     rCommunicator.MaxAll(temp);
     return temp;
 }
@@ -706,7 +708,7 @@ void AddModelPartToPython()
 {
 
     ModelPart::IndexType(ModelPart::*pointer_to_clone_time_step_1)(void) = &ModelPart::CloneTimeStep;
-    ModelPart::IndexType(ModelPart::*pointer_to_clone_time_step_2)(double) = &ModelPart::CloneTimeStep;
+    ModelPart::IndexType(ModelPart::*pointer_to_clone_time_step_2)(ModelPart::DataType) = &ModelPart::CloneTimeStep;
     ProcessInfo::Pointer(ModelPart::*pointer_to_get_process_info)(void) = &ModelPart::pGetProcessInfo;
     void (ModelPart::*pointer_to_set_process_info)(ProcessInfo::Pointer) = &ModelPart::SetProcessInfo;
     // ModelPart::MeshType::Pointer (ModelPart::*pointer_to_get_mesh)() = &ModelPart::pGetMesh;
@@ -738,13 +740,13 @@ void AddModelPartToPython()
     .def("GetLastElementId", CommunicatorGetLastElementId )
     .def("GetLastConditionId", CommunicatorGetLastConditionId )
     .def("AssembleCurrentData", CommunicatorAssembleCurrentData<int> )
-    .def("AssembleCurrentData", CommunicatorAssembleCurrentData<double> )
-    .def("AssembleCurrentData", CommunicatorAssembleCurrentData<array_1d<double,3> > )
+    .def("AssembleCurrentData", CommunicatorAssembleCurrentData<DataType> )
+    .def("AssembleCurrentData", CommunicatorAssembleCurrentData<array_1d<DataType,3> > )
     .def("AssembleCurrentData", CommunicatorAssembleCurrentData<Vector> )
     .def("AssembleCurrentData", CommunicatorAssembleCurrentData<Matrix> )
     .def("AssembleNonHistoricalData", CommunicatorAssembleNonHistoricalData<int> )
-    .def("AssembleNonHistoricalData", CommunicatorAssembleNonHistoricalData<double> )
-    .def("AssembleNonHistoricalData", CommunicatorAssembleNonHistoricalData<array_1d<double,3> > )
+    .def("AssembleNonHistoricalData", CommunicatorAssembleNonHistoricalData<DataType> )
+    .def("AssembleNonHistoricalData", CommunicatorAssembleNonHistoricalData<array_1d<DataType,3> > )
     .def("AssembleNonHistoricalData", CommunicatorAssembleNonHistoricalData<Vector> )
     .def("AssembleNonHistoricalData", CommunicatorAssembleNonHistoricalData<Matrix> )
     ;
@@ -858,8 +860,8 @@ void AddModelPartToPython()
     // .def("ConditionsArray", &ModelPart::ConditionsArray, return_internal_reference<>())
     .def("AddNodalSolutionStepVariable", AddNodalSolutionStepVariable<bool>)
     .def("AddNodalSolutionStepVariable", AddNodalSolutionStepVariable<int>)
-    .def("AddNodalSolutionStepVariable", AddNodalSolutionStepVariable<double>)
-    .def("AddNodalSolutionStepVariable", AddNodalSolutionStepVariable<array_1d<double, 3 > >)
+    .def("AddNodalSolutionStepVariable", AddNodalSolutionStepVariable<DataType>)
+    .def("AddNodalSolutionStepVariable", AddNodalSolutionStepVariable<array_1d<DataType, 3 > >)
     .def("AddNodalSolutionStepVariable", AddNodalSolutionStepVariable<Vector>)
     .def("AddNodalSolutionStepVariable", AddNodalSolutionStepVariable<Matrix>)
     .def("GetNodalSolutionStepDataSize", &ModelPart::GetNodalSolutionStepDataSize)

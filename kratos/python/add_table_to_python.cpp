@@ -41,9 +41,9 @@ namespace Python
 
 using namespace boost::python;
 
-typedef Table<double,double> DoubleTableType;
+typedef Table<KRATOS_DOUBLE_TYPE> DoubleTableType;
 
-double TableGetNearestValue(DoubleTableType& ThisTable, double X)
+DoubleTableType::result_type TableGetNearestValue(DoubleTableType& ThisTable, DoubleTableType::argument_type X)
 {
     return ThisTable.GetNearestValue(X);
 }

@@ -72,6 +72,11 @@ public:
     typedef TPointType PointType;
 
     /**
+     * Type used for double value.
+     */
+    typedef typename BaseType::DataType DataType;
+
+    /**
      * Type used for indexing in geometry class.std::size_t used for indexing
      * point or integration point access methods and also all other
      * methods which need point or integration point index.
@@ -387,7 +392,7 @@ public:
      * and for the other geometries it gives Characteristic length
      * otherwise.
      *
-     * @return double value contains length or Characteristic
+     * @return DataType value contains length or Characteristic
      * length
      * @see Area()
      * @see Volume()
@@ -395,9 +400,9 @@ public:
      *
      * :TODO: might need to be changed to be useful!
      */
-    double Length() const override
+    DataType Length() const override
     {
-        double length = 0.000;
+        DataType length = 0.000;
         length = cbrt( fabs( Area() ) );
         return length;
     }
@@ -408,27 +413,27 @@ public:
      * geometry it returns zero, for two dimensional it gives area
      * and for three dimensional geometries it gives surface area.
      *
-     * @return double value contains area or surface area.
+     * @return DataType value contains area or surface area.
      * @see Length()
      * @see Volume()
      * @see DomainSize()
      *
      * :TODO: might need to be changed to be useful!
      */
-    double Area() const override
+    DataType Area() const override
     {
          return Volume();
     }
 
 
 
-    double Volume() const override //Not a closed formula for a hexahedra
+    DataType Volume() const override //Not a closed formula for a hexahedra
     {
 
         Vector temp;
         this->DeterminantOfJacobian( temp, msGeometryData.DefaultIntegrationMethod() );
         const IntegrationPointsArrayType& integration_points = this->IntegrationPoints( msGeometryData.DefaultIntegrationMethod() );
-        double Volume = 0.00;
+        DataType Volume = 0.00;
 
         for ( unsigned int i = 0; i < integration_points.size(); i++ )
         {
@@ -448,14 +453,14 @@ public:
      * geometry it returns its length, for two dimensional it gives area
      * and for three dimensional geometries it gives its volume.
      *
-     * @return double value contains length, area or volume.
+     * @return DataType value contains length, area or volume.
      * @see Length()
      * @see Area()
      * @see Volume()
      *
      * :TODO: might need to be changed to be useful!
      */
-    double DomainSize() const override
+    DataType DomainSize() const override
     {
         return Volume();
     }
@@ -639,7 +644,7 @@ public:
      * @return the value of the shape function at the given point
      * TODO: implemented but not yet tested
      */
-    double ShapeFunctionValue( IndexType ShapeFunctionIndex, const CoordinatesArrayType& rPoint ) const override
+    DataType ShapeFunctionValue( IndexType ShapeFunctionIndex, const CoordinatesArrayType& rPoint ) const override
     {
         switch ( ShapeFunctionIndex )
         {

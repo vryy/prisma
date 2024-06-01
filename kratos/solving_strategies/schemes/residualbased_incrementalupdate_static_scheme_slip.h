@@ -314,7 +314,7 @@ private:
     ///@{
 
     /// Rotation tool instance
-    CoordinateTransformationUtils<LocalSystemMatrixType,LocalSystemVectorType,double> mRotationTool;
+    CoordinateTransformationUtils<LocalSystemMatrixType,LocalSystemVectorType,TDataType> mRotationTool;
 
     ///@}
     ///@name Serialization

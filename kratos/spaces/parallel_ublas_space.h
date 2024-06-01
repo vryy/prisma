@@ -2,13 +2,13 @@
 //    ' /   __| _` | __|  _ \   __|
 //    . \  |   (   | |   (   |\__ `
 //   _|\_\_|  \__,_|\__|\___/ ____/
-//                   Multi-Physics 
+//                   Multi-Physics
 //
-//  License:		 BSD License 
-//					 Kratos default license: kratos/license.txt
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Riccardo Rossi
-//                    
+//
 //
 #if !defined(KRATOS_PARALLEL_UBLAS_SPACE_H_INCLUDED )
 #define  KRATOS_PARALLEL_UBLAS_SPACE_H_INCLUDED
@@ -214,7 +214,7 @@ public:
     static void Mult(MatrixType& rA, VectorType& rX, VectorType& rY)
     {
         ParallelProductNoAdd( rA, rX, rY );
-// 	  axpy_prod(rA, rX, rY, true);
+//    axpy_prod(rA, rX, rY, true);
     }// rY = rA * rX
 
     static void TransposeMult(MatrixType& rA, VectorType& rX, VectorType& rY)
@@ -442,7 +442,7 @@ public:
         // Use full namespace in call to make sure we are not calling this function recursively
         return Kratos::WriteMatrixMarketMatrix(FileName,M,Symmetric);
     }
-    
+
         template< class VectorType >
     static bool WriteMatrixMarketVector(const char *FileName, VectorType& V)
     {
@@ -616,11 +616,11 @@ private:
 
 /// input stream function
 //   inline std::istream& operator >> (std::istream& rIStream,
-// 				    ParallelUblasSpace& rThis);
+//                  ParallelUblasSpace& rThis);
 
 //   /// output stream function
 //   inline std::ostream& operator << (std::ostream& rOStream,
-// 				    const ParallelUblasSpace& rThis)
+//                  const ParallelUblasSpace& rThis)
 //     {
 //       rThis.PrintInfo(rOStream);
 //       rOStream << std::endl;
@@ -633,5 +633,5 @@ private:
 
 }  // namespace Kratos.
 
-#endif // KRATOS_PARALLEL_UBLAS_SPACE_H_INCLUDED  defined 
+#endif // KRATOS_PARALLEL_UBLAS_SPACE_H_INCLUDED  defined
 

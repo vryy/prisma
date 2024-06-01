@@ -5,12 +5,12 @@
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 //
-// 	-	Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-// 	-	Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
-// 		in the documentation and/or other materials provided with the distribution.
-// 	-	All advertising materials mentioning features or use of this software must display the following acknowledgement:
-// 			This product includes Kratos Multi-Physics technology.
-// 	-	Neither the name of the CIMNE nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+//  -   Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+//  -   Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
+//      in the documentation and/or other materials provided with the distribution.
+//  -   All advertising materials mentioning features or use of this software must display the following acknowledgement:
+//          This product includes Kratos Multi-Physics technology.
+//  -   Neither the name of the CIMNE nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
 // THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
@@ -228,15 +228,15 @@ public:
 
         else if(X <= mData[0].first)
             mData.insert(mData.begin(), RecordType(X,Y));
-		else if(X <= mData.back().first)
-			mData.push_back(RecordType(X,Y));
-		else
-			for(std::size_t i = 1 ; i < size ; i++)
-				if((X > mData[i-1].first) && (X <= mData[i].first))
-				{
-					mData.insert(mData.begin() + i, RecordType(X,Y));
-					break;
-				}
+        else if(X <= mData.back().first)
+            mData.push_back(RecordType(X,Y));
+        else
+            for(std::size_t i = 1 ; i < size ; i++)
+                if((X > mData[i-1].first) && (X <= mData[i].first))
+                {
+                    mData.insert(mData.begin() + i, RecordType(X,Y));
+                    break;
+                }
 
     }
 
@@ -399,18 +399,18 @@ private:
 
 }; // Class Table
 
-template<>
-class Table<double, double>
+template<typename TDataType>
+class ScalarTable
 {
 public:
     ///@name Type Definitions
     ///@{
 
-    /// Pointer definition of Table
-    KRATOS_CLASS_POINTER_DEFINITION(Table);
+    /// Pointer definition of ScalarTable
+    KRATOS_CLASS_POINTER_DEFINITION(ScalarTable);
 
-    typedef double argument_type; // To be STL conformance.
-    typedef double result_type; // To be STL conformance.
+    typedef TDataType argument_type; // To be STL conformance.
+    typedef TDataType result_type; // To be STL conformance.
 
     typedef boost::array<result_type, 1>  result_row_type;
 
@@ -426,33 +426,33 @@ public:
     ///@{
 
     /// Default constructor.
-    Table() : mData()
+    ScalarTable() : mData()
     {
     }
 
 
     /// Copy constructor.
-    Table(Table const& rOther): mData(rOther.mData)
+    ScalarTable(ScalarTable const& rOther): mData(rOther.mData)
     {
 
     }
 
     /// Matrix constructor. the template parameter must have (i,j) access operator and  size1 methods defined.
     template<class TMatrixType>
-    Table(TMatrixType const& ThisMatrix): mData()
+    ScalarTable(TMatrixType const& ThisMatrix): mData()
     {
         for(unsigned int i = 0 ; i < ThisMatrix.size1() ; i++)
             PushBack(ThisMatrix(i,0), ThisMatrix(i,1));
     }
 
     /// Destructor.
-    virtual ~Table()
+    virtual ~ScalarTable()
     {
     }
 
 
     /// Assignment operator.
-    Table& operator=(Table const& rOther)
+    ScalarTable& operator=(ScalarTable const& rOther)
     {
         mData = rOther.mData;
         return *this;
@@ -579,15 +579,15 @@ public:
 
     result_type& Interpolate(argument_type const& X, argument_type const& X1, result_type const& Y1, argument_type const& X2, result_type const& Y2, result_type& Result) const
     {
-        const double epsilon = 1e-12;
+        const argument_type epsilon = 1e-12;
 
-        double dx = X2 - X1;
+        argument_type dx = X2 - X1;
         result_type dy = Y2 - Y1;
 
-        double scale = 0.00;
+        result_type scale = 0.00;
 
         if (dx > epsilon)
-            scale = (X - X1) / dx;
+            scale = static_cast<result_type>((X - X1) / dx);
 
         Result = Y1 + dy * scale;
 
@@ -612,15 +612,15 @@ public:
             mData.push_back(RecordType(X,Y));
         else if(X <= mData[0].first)
             mData.insert(mData.begin(), RecordType(X,Y));
-		else if(X > mData.back().first)
-			mData.push_back(RecordType(X,Y));
-		else
+        else if(X > mData.back().first)
+            mData.push_back(RecordType(X,Y));
+        else
             for(std::size_t i = 1 ; i < size ; i++)
                 if((X > mData[i-1].first) && (X <= mData[i].first))
-				{
+                {
                     mData.insert(mData.begin() + i, RecordType(X,Y));
-					break;
-				}
+                    break;
+                }
     }
 
     // assumes that the X is the greater than the last argument and put the row at the end.
@@ -722,13 +722,35 @@ private:
 
     ///@}
 
-}; // Class Table
+}; // Class ScalarTable
 
 ///@}
 
 ///@name Type Definitions
 ///@{
 
+template<>
+class Table<KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE> : public ScalarTable<KRATOS_DOUBLE_TYPE>
+{
+public:
+    /// Pointer definition of Table
+    KRATOS_CLASS_POINTER_DEFINITION(Table);
+
+    /// Reuse the constructor
+    using ScalarTable::ScalarTable;
+};
+
+// // #if !std::is_same<KRATOS_DOUBLE_TYPE, double>
+// #if std::string(KRATOS_DOUBLE_TYPE) != std::string("double")
+// TODO
+// template<>
+// class Table<double, double> : public ScalarTable<double>
+// {
+// public:
+//     /// Pointer definition of Table
+//     KRATOS_CLASS_POINTER_DEFINITION(Table);
+// };
+// #endif
 
 ///@}
 ///@name Input and output
@@ -758,6 +780,4 @@ inline std::ostream& operator << (std::ostream& rOStream,
 
 }  // namespace Kratos.
 
-#endif // KRATOS_TABLE_H_INCLUDED  defined 
-
-
+#endif // KRATOS_TABLE_H_INCLUDED  defined

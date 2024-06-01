@@ -81,13 +81,13 @@ template<class TNodeType, class TPropertiesType, class TElementType, class TCond
 class Mesh : public DataValueContainer, public Flags
 {
 public:
-
-
     ///@name Type Definitions
     ///@{
 
     /// Pointer definition of Mesh
     KRATOS_CLASS_POINTER_DEFINITION(Mesh);
+
+    typedef KRATOS_DOUBLE_TYPE DataType;
 
     typedef std::size_t IndexType;
 

@@ -52,13 +52,14 @@ using namespace boost::python;
 
 typedef ConstitutiveLaw ConstitutiveLawBaseType;
 typedef Mesh<Node<3>, Properties, Element, Condition> MeshType;
+typedef ConstitutiveLaw::DataType DataType;
 
 template<class TVariableType> bool ConstitutiveLawHas(ConstitutiveLaw& this_constitutive_law, TVariableType const& rThisVariable) { return this_constitutive_law.Has(rThisVariable); }
 
 //dirty trick. give back a copy instead of a reference
-//template<class TDataType> const TDataType ConstitutiveLawGetValue(ConstitutiveLaw& this_constitutive_law, const Variable<TDataType >& rThisVariable, TDataType& value ) 
+//template<class TDataType> const TDataType ConstitutiveLawGetValue(ConstitutiveLaw& this_constitutive_law, const Variable<TDataType >& rThisVariable, TDataType& value )
 template<class TDataType> const TDataType ConstitutiveLawGetValue(ConstitutiveLaw& this_constitutive_law, const Variable<TDataType >& rThisVariable )
-{ 
+{
     TDataType tmp;
     tmp = this_constitutive_law.GetValue(rThisVariable, tmp);
     return tmp;
@@ -73,7 +74,7 @@ void NewInterfaceCalculateMaterialResponse(ConstitutiveLaw& this_constitutive_la
 {this_constitutive_law.CalculateMaterialResponse (rValues,rStressMeasure);}
 
 
-double GetDeterminantF1(ConstitutiveLaw::Parameters& this_params){ return this_params.GetDeterminantF();}
+DataType GetDeterminantF1(ConstitutiveLaw::Parameters& this_params){ return this_params.GetDeterminantF();}
 
 Vector& GetStrainVector1(ConstitutiveLaw::Parameters& this_params){ return this_params.GetStrainVector();}
 Vector& GetStrainVector2(ConstitutiveLaw::Parameters& this_params, Vector& strain){ return this_params.GetStrainVector(strain);}
@@ -88,7 +89,7 @@ Matrix& GetDeformationGradientF2(ConstitutiveLaw::Parameters& this_params, Matri
 
 void  AddConstitutiveLawToPython()
 {
-    
+
     enum_<ConstitutiveLaw::StrainMeasure>("StrainMeasure")
         .value("StrainMeasure_Infinitesimal", ConstitutiveLaw::StrainMeasure_Infinitesimal)
         .value("StrainMeasure_GreenLagrange", ConstitutiveLaw::StrainMeasure_GreenLagrange)
@@ -141,10 +142,10 @@ void  AddConstitutiveLawToPython()
         .def("GetShapeFunctionsValues",&ConstitutiveLaw::Parameters::GetShapeFunctionsValues, return_internal_reference<>())
         .def("GetProcessInfo",&ConstitutiveLaw::Parameters::GetProcessInfo, return_internal_reference<>())
         .def("GetMaterialProperties",&ConstitutiveLaw::Parameters::GetMaterialProperties, return_internal_reference<>())
-        .def("GetElementGeometry",&ConstitutiveLaw::Parameters::GetElementGeometry, return_internal_reference<>())    
+        .def("GetElementGeometry",&ConstitutiveLaw::Parameters::GetElementGeometry, return_internal_reference<>())
     ;
 
-    
+
     class_< ConstitutiveLaw, ConstitutiveLaw::Pointer , bases<Flags>, boost::noncopyable >
     ("ConstitutiveLaw", init<>() )
     .def("Clone",&ConstitutiveLaw::Clone)
@@ -153,23 +154,23 @@ void  AddConstitutiveLawToPython()
     .def("GetStressMeasure",&ConstitutiveLaw::GetStressMeasure)
     .def("IsIncremental",&ConstitutiveLaw::IsIncremental)
     .def("WorkingSpaceDimension",&ConstitutiveLaw::WorkingSpaceDimension)
-    .def("GetStrainSize",&ConstitutiveLaw::GetStrainSize)   
+    .def("GetStrainSize",&ConstitutiveLaw::GetStrainSize)
     .def("Has", &ConstitutiveLawHas< Variable<bool> >)
     .def("Has", &ConstitutiveLawHas< Variable<int> >)
-    .def("Has", &ConstitutiveLawHas< Variable<double> >)
-    .def("Has", &ConstitutiveLawHas< Variable<array_1d<double,3> > >)
+    .def("Has", &ConstitutiveLawHas< Variable<DataType> >)
+    .def("Has", &ConstitutiveLawHas< Variable<array_1d<DataType,3> > >)
     .def("Has", &ConstitutiveLawHas< Variable<Vector> >)
     .def("Has", &ConstitutiveLawHas< Variable<Matrix> >)
     .def("GetValue", &ConstitutiveLawGetValue<bool> )
     .def("GetValue", &ConstitutiveLawGetValue<int> )
-    .def("GetValue", &ConstitutiveLawGetValue<double> )
-    .def("GetValue", &ConstitutiveLawGetValue<array_1d<double,3>  >)
+    .def("GetValue", &ConstitutiveLawGetValue<DataType> )
+    .def("GetValue", &ConstitutiveLawGetValue<array_1d<DataType,3>  >)
     .def("GetValue", &ConstitutiveLawGetValue<Vector >)
     .def("GetValue", &ConstitutiveLawGetValue<Matrix >)
     .def("SetValue", &ConstitutiveLawSetValue<bool> )
     .def("SetValue", &ConstitutiveLawSetValue<int> )
-    .def("SetValue", &ConstitutiveLawSetValue<double> )
-    .def("SetValue", &ConstitutiveLawSetValue<array_1d<double,3>  >)
+    .def("SetValue", &ConstitutiveLawSetValue<DataType> )
+    .def("SetValue", &ConstitutiveLawSetValue<array_1d<DataType,3>  >)
     .def("SetValue", &ConstitutiveLawSetValue<Vector >)
     .def("SetValue", &ConstitutiveLawSetValue<Matrix >)
     .def("SetValue", &ConstitutiveLawSetValue<std::string >)

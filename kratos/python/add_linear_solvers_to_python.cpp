@@ -5,12 +5,12 @@
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 //
-// 	-	Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-// 	-	Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
-// 		in the documentation and/or other materials provided with the distribution.
-// 	-	All advertising materials mentioning features or use of this software must display the following acknowledgement:
-// 			This product includes Kratos Multi-Physics technology.
-// 	-	Neither the name of the CIMNE nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+//  -   Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+//  -   Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
+//      in the documentation and/or other materials provided with the distribution.
+//  -   All advertising materials mentioning features or use of this software must display the following acknowledgement:
+//          This product includes Kratos Multi-Physics technology.
+//  -   Neither the name of the CIMNE nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
 // THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
@@ -59,8 +59,9 @@ namespace Python
 {
 void  AddLinearSolversToPython()
 {
-    typedef UblasSpace<double, CompressedMatrix, Vector> SpaceType;
-    typedef UblasSpace<double, Matrix, Vector> LocalSpaceType;
+    typedef KRATOS_DOUBLE_TYPE DataType;
+    typedef UblasSpace<DataType, CompressedMatrix, Vector> SpaceType;
+    typedef UblasSpace<DataType, Matrix, Vector> LocalSpaceType;
     typedef LinearSolver<SpaceType,  LocalSpaceType> LinearSolverType;
     typedef IterativeSolver<SpaceType,  LocalSpaceType> IterativeSolverType;
     typedef CGSolver<SpaceType,  LocalSpaceType> CGSolverType;
@@ -117,26 +118,26 @@ void  AddLinearSolversToPython()
     ;
 
     class_<CGSolverType, CGSolverType::Pointer, bases<IterativeSolverType> >("CGSolver")
-    .def(init<double>())
-    .def(init<double, unsigned int>())
-    .def(init<double, unsigned int,  PreconditionerType::Pointer>())
+    .def(init<DataType>())
+    .def(init<DataType, unsigned int>())
+    .def(init<DataType, unsigned int,  PreconditionerType::Pointer>())
     //.def("",&LinearSolverType::)
     .def(self_ns::str(self))
     ;
 
     class_<BICGSTABSolverType, BICGSTABSolverType::Pointer, bases<IterativeSolverType> >("BICGSTABSolver")
-    .def(init<double>())
-    .def(init<double, unsigned int>())
+    .def(init<DataType>())
+    .def(init<DataType, unsigned int>())
     .def(self_ns::str(self))
-    .def(init<double, unsigned int,  PreconditionerType::Pointer>())
+    .def(init<DataType, unsigned int,  PreconditionerType::Pointer>())
     .def("SetTolerance",&BICGSTABSolverType::SetTolerance)
     ;
 
     class_<TFQMRSolverType, TFQMRSolverType::Pointer, bases<IterativeSolverType> >("TFQMRSolver")
-    .def(init<double>())
-    .def(init<double, unsigned int>())
+    .def(init<DataType>())
+    .def(init<DataType, unsigned int>())
     .def(self_ns::str(self))
-    .def(init<double, unsigned int,  PreconditionerType::Pointer>())
+    .def(init<DataType, unsigned int,  PreconditionerType::Pointer>())
     ;
 
     class_<ScalingSolverType, ScalingSolverType::Pointer, bases<LinearSolverType> >("ScalingSolver")
@@ -144,7 +145,7 @@ void  AddLinearSolversToPython()
     ;
 
     class_<PowerIterationEigenvalueSolverType, PowerIterationEigenvalueSolverType::Pointer, bases<LinearSolverType> >("PowerIterationEigenvalueSolver")
-    .def(init<double, unsigned int, unsigned int, LinearSolverType::Pointer>())
+    .def(init<DataType, unsigned int, unsigned int, LinearSolverType::Pointer>())
     ;
 
     typedef Reorderer<SpaceType,  LocalSpaceType > ReordererType;
@@ -170,26 +171,25 @@ void  AddLinearSolversToPython()
     ;
 
     class_<DeflatedCGSolverType, DeflatedCGSolverType::Pointer, bases<IterativeSolverType> >("DeflatedCGSolver")
-    .def(init<double,bool,int>())
-    .def(init<double, unsigned int,bool,int>())
-    .def(init<double, unsigned int,  PreconditionerType::Pointer,bool,int>())
-// 		  .def(init<double, unsigned int,  PreconditionerType::Pointer, ModelPart::Pointer>())
-    //.def("",&LinearSolverType::)
+    .def(init<DataType,bool,int>())
+    .def(init<DataType, unsigned int,bool,int>())
+    .def(init<DataType, unsigned int,  PreconditionerType::Pointer,bool,int>())
+    // .def(init<DataType, unsigned int,  PreconditionerType::Pointer, ModelPart::Pointer>())
+    // .def("",&LinearSolverType::)
     .def(self_ns::str(self))
     ;
 
-    class_<MixedUPLinearSolverType, MixedUPLinearSolverType::Pointer, bases<IterativeSolverType> >("MixedUPLinearSolver",init<LinearSolverType::Pointer, LinearSolverType::Pointer ,double, unsigned int, unsigned int >())
+    class_<MixedUPLinearSolverType, MixedUPLinearSolverType::Pointer, bases<IterativeSolverType> >("MixedUPLinearSolver",init<LinearSolverType::Pointer, LinearSolverType::Pointer ,DataType, unsigned int, unsigned int >())
     .def(self_ns::str(self))
     ;
 
-    class_<DeflatedGMRESSolverType, DeflatedGMRESSolverType::Pointer, bases<IterativeSolverType> >("DeflatedGMRESSolver",init<LinearSolverType::Pointer ,double, unsigned int, unsigned int, unsigned int >())
+    class_<DeflatedGMRESSolverType, DeflatedGMRESSolverType::Pointer, bases<IterativeSolverType> >("DeflatedGMRESSolver",init<LinearSolverType::Pointer ,DataType, unsigned int, unsigned int, unsigned int >())
     .def(self_ns::str(self))
     ;
 
-//	typedef SuperLUSolver<SparseSpaceType, LocalSpaceType> SuperLUSolverType;
-//	class_<SuperLUSolverType, bases<DirectSolverType>, boost::noncopyable >
-//		( "SuperLUSolver",
-//			init<>() )
+    // typedef SuperLUSolver<SparseSpaceType, LocalSpaceType> SuperLUSolverType;
+    // class_<SuperLUSolverType, bases<DirectSolverType>, boost::noncopyable >
+    // ( "SuperLUSolver", init<>() )
 }
 
 }  // namespace Python.

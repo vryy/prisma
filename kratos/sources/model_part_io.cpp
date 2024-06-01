@@ -312,7 +312,7 @@ namespace Kratos
         ReadConditionalScalarVariableDataImpl(variable_name, rConditionIndices, rConditionalDataValues);
     }
 
-    void ModelPartIO::ReadConditionalScalarVariableData(std::string variable_name, std::vector<ModelPartIO::SizeType>& rConditionIndices, std::vector<double>& rConditionalDataValues)
+    void ModelPartIO::ReadConditionalScalarVariableData(std::string variable_name, std::vector<ModelPartIO::SizeType>& rConditionIndices, std::vector<ModelPart::DataType>& rConditionalDataValues)
     {
         ReadConditionalScalarVariableDataImpl(variable_name, rConditionIndices, rConditionalDataValues);
     }
@@ -653,14 +653,14 @@ namespace Kratos
             ReadWord(variable_name);
             if(CheckEndBlock("ModelPartData", variable_name))
                 break;
-            if(KratosComponents<Variable<double> >::Has(variable_name))
+            if(KratosComponents<Variable<DataType> >::Has(variable_name))
             {
                 std::string value;
-                double temp;
+                DataType temp;
 
                 ReadWord(value); // reading value
                 ExtractValue(value,temp);
-                rModelPart[KratosComponents<Variable<double> >::Get(variable_name)] = temp;
+                rModelPart[KratosComponents<Variable<DataType> >::Get(variable_name)] = temp;
             }
             else if(KratosComponents<Variable<bool> >::Has(variable_name))
             {
@@ -680,11 +680,11 @@ namespace Kratos
                 ExtractValue(value,temp);
                 rModelPart[KratosComponents<Variable<int> >::Get(variable_name)] = temp;
             }
-            else if(KratosComponents<Variable<array_1d<double, 3> > >::Has(variable_name))
+            else if(KratosComponents<Variable<array_1d<DataType, 3> > >::Has(variable_name))
             {
                 Vector temp_vector; // defining a Vector because for array_1d the operator >> is not defined yet!
                 ReadVectorialValue(temp_vector);
-                rModelPart[KratosComponents<Variable<array_1d<double,3> > >::Get(variable_name)] = temp_vector;
+                rModelPart[KratosComponents<Variable<array_1d<DataType,3> > >::Get(variable_name)] = temp_vector;
             }
             else if(KratosComponents<Variable<Matrix> >::Has(variable_name))
             {
@@ -721,7 +721,7 @@ namespace Kratos
 
         {
             std::stringstream buffer;
-            buffer << variable_name << " is not a valid argument variable!!! Table only accepts double arguments." << std::endl;
+            buffer << variable_name << " is not a valid argument variable!!! Table only accepts " << Kratos::DataTypeToString<DataType>::Get() << " arguments." << std::endl;
             buffer << " [Line " << mNumberOfLines << " ]";
             KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
 
@@ -734,7 +734,7 @@ namespace Kratos
         if(!KratosComponents<VariableData>::Has(variable_name))
         {
             std::stringstream buffer;
-            buffer << variable_name << " is not a valid value variable!!! Table only accepts double values." << std::endl;
+            buffer << variable_name << " is not a valid value variable!!! Table only accepts " << Kratos::DataTypeToString<DataType>::Get() << " values." << std::endl;
             buffer << " [Line " << mNumberOfLines << " ]";
             KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
 
@@ -743,8 +743,8 @@ namespace Kratos
 
         while(!mFile.eof())
         {
-            double x;
-            double y;
+            DataType x;
+            DataType y;
             ReadWord(word);
             if(CheckEndBlock("Table", word))
                 break;
@@ -799,8 +799,8 @@ namespace Kratos
 
         while(!mFile.eof())
         {
-            double x;
-            double y;
+            DataType x;
+            DataType y;
             ReadWord(word);
             if(CheckEndBlock("Table", word))
                 break;
@@ -915,15 +915,15 @@ namespace Kratos
             std::cout << "attention! we read " << numer_of_nodes_read << " but there are only " << rModelPart.Nodes().size() << " non repeated nodes" << std::endl;
 */
     SizeType id;
-    double x;
-    double y;
-    double z;
+    DataType x;
+    DataType y;
+    DataType z;
 
     std::string word;
 
     SizeType number_of_nodes_read = 0;
 
-        typedef std::map< unsigned int, array_1d<double,3> > map_type;
+        typedef std::map< unsigned int, array_1d<DataType,3> > map_type;
         map_type read_coordinates;
 
         std::cout << "  [Reading Nodes    : ";
@@ -942,7 +942,7 @@ namespace Kratos
       ReadWord(word);
       ExtractValue(word, z);
 
-         array_1d<double,3> coords;
+         array_1d<DataType,3> coords;
          coords[0]=x;
          coords[1]=y;
          coords[2]=z;
@@ -954,7 +954,7 @@ namespace Kratos
     for(map_type::const_iterator it = read_coordinates.begin(); it!=read_coordinates.end(); ++it)
         {
             const unsigned int node_id = it->first;
-            const array_1d<double,3>& coords = it->second;
+            const array_1d<DataType,3>& coords = it->second;
             rModelPart.CreateNewNode(node_id,coords[0],coords[1],coords[2]);
         }
         if(rModelPart.Nodes().size() != number_of_nodes_read)
@@ -1044,14 +1044,14 @@ namespace Kratos
                 ExtractValue(value,temp);
                 temp_properties[KratosComponents<Variable<std::string> >::Get(variable_name)] = temp;
             }
-        else if(KratosComponents<Variable<double> >::Has(variable_name))
+        else if(KratosComponents<Variable<DataType> >::Has(variable_name))
             {
                 std::string value;
-                double temp;
+                DataType temp;
 
                 ReadWord(value); // reading value
                 ExtractValue(value,temp);
-                temp_properties[KratosComponents<Variable<double> >::Get(variable_name)] = temp;
+                temp_properties[KratosComponents<Variable<DataType> >::Get(variable_name)] = temp;
             }
             else if(KratosComponents<Variable<int> >::Has(variable_name))
             {
@@ -1071,11 +1071,11 @@ namespace Kratos
                 ExtractValue(value,temp);
                 temp_properties[KratosComponents<Variable<bool> >::Get(variable_name)] = temp;
             }
-            else if(KratosComponents<Variable<array_1d<double, 3> > >::Has(variable_name))
+            else if(KratosComponents<Variable<array_1d<DataType, 3> > >::Has(variable_name))
             {
                 Vector temp_vector; // defining a Vector because for array_1d the operator >> is not defined yet!
                 ReadVectorialValue(temp_vector);
-                temp_properties[KratosComponents<Variable<array_1d<double,3> > >::Get(variable_name)] = temp_vector;
+                temp_properties[KratosComponents<Variable<array_1d<DataType,3> > >::Get(variable_name)] = temp_vector;
             }
             else if(KratosComponents<Variable<Vector> >::Has(variable_name))
             {
@@ -1237,7 +1237,7 @@ namespace Kratos
 
         NodesContainerType& rThisNodes = rThisModelPart.Nodes();
 
-        typedef VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > array_1d_component_type;
+        typedef VariableComponent<VectorComponentAdaptor<array_1d<DataType, 3> > > array_1d_component_type;
 
         std::string variable_name;
 
@@ -1262,9 +1262,9 @@ namespace Kratos
                 ReadNodalScalarVariableData(rThisNodes, static_cast<Variable<int> const& >(KratosComponents<Variable<int> >::Get(variable_name)));
             }
         }
-        else if(KratosComponents<Variable<double> >::Has(variable_name))
+        else if(KratosComponents<Variable<DataType> >::Has(variable_name))
         {
-            bool has_been_added = r_modelpart_nodal_variables_list.Has(KratosComponents<Variable<double> >::Get(variable_name)) ;
+            bool has_been_added = r_modelpart_nodal_variables_list.Has(KratosComponents<Variable<DataType> >::Get(variable_name)) ;
             if( !has_been_added && mOptions.Is(IGNORE_VARIABLES_ERROR) ) {
                 std::cout<<std::endl<<"WARNING: Skipping NodalData block. Variable "<<variable_name<<" has not been added to ModelPart '"<<rThisModelPart.Name()<<"'"<<std::endl<<std::endl;
                 SkipBlock("NodalData");
@@ -1272,23 +1272,23 @@ namespace Kratos
             else if (!has_been_added)
                 KRATOS_THROW_ERROR(std::invalid_argument,"The nodal solution step container deos not have this variable: ", variable_name)
             else {
-                ReadNodalDofVariableData(rThisNodes, static_cast<Variable<double> const& >(KratosComponents<Variable<double> >::Get(variable_name)));
+                ReadNodalDofVariableData(rThisNodes, static_cast<Variable<DataType> const& >(KratosComponents<Variable<DataType> >::Get(variable_name)));
             }
         }
         else if(KratosComponents<array_1d_component_type>::Has(variable_name))
         {
             ReadNodalDofVariableData(rThisNodes, static_cast<array_1d_component_type const& >(KratosComponents<array_1d_component_type>::Get(variable_name)));
         }
-        else if(KratosComponents<Variable<array_1d<double, 3> > >::Has(variable_name))
+        else if(KratosComponents<Variable<array_1d<DataType, 3> > >::Has(variable_name))
         {
-            bool has_been_added = r_modelpart_nodal_variables_list.Has(KratosComponents<Variable<array_1d<double, 3> > >::Get(variable_name)) ;
+            bool has_been_added = r_modelpart_nodal_variables_list.Has(KratosComponents<Variable<array_1d<DataType, 3> > >::Get(variable_name)) ;
             if( !has_been_added && mOptions.Is(IGNORE_VARIABLES_ERROR) ) {
                 std::cout<<std::endl<<"WARNING: Skipping NodalData block. Variable "<<variable_name<<" has not been added to ModelPart '"<<rThisModelPart.Name()<<"'"<<std::endl<<std::endl;
             }
             else if (!has_been_added)
                 KRATOS_THROW_ERROR(std::invalid_argument,"The nodal solution step container deos not have this variable: ", variable_name)
             else {
-                ReadNodalVectorialVariableData(rThisNodes, static_cast<Variable<array_1d<double, 3> > const& >(KratosComponents<Variable<array_1d<double, 3> > >::Get(variable_name)), Vector(3));
+                ReadNodalVectorialVariableData(rThisNodes, static_cast<Variable<array_1d<DataType, 3> > const& >(KratosComponents<Variable<array_1d<DataType, 3> > >::Get(variable_name)), Vector(3));
             }
         }
         else if(KratosComponents<Variable<Matrix> >::Has(variable_name))
@@ -1324,7 +1324,7 @@ namespace Kratos
 
         SizeType id;
         bool is_fixed;
-        double nodal_value;
+        DataType nodal_value;
 
         std::string value;
 
@@ -1403,7 +1403,7 @@ namespace Kratos
             if(is_fixed)
             {
                 std::stringstream buffer;
-                buffer << "Only double variables or components can be fixed.";
+                buffer << "Only " << Kratos::DataTypeToString<DataType>::Get() << " variables or components can be fixed.";
                 buffer <<  " [Line " << mNumberOfLines << " ]";
                 KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
             }
@@ -1447,7 +1447,7 @@ namespace Kratos
             if(is_fixed)
             {
                 std::stringstream buffer;
-                buffer << "Only double variables or components can be fixed.";
+                buffer << "Only " << Kratos::DataTypeToString<DataType>::Get() << " variables or components can be fixed.";
                 buffer <<  " [Line " << mNumberOfLines << " ]";
                 KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
             }
@@ -1465,7 +1465,7 @@ namespace Kratos
     {
         KRATOS_TRY
 
-        typedef VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > array_1d_component_type;
+        typedef VariableComponent<VectorComponentAdaptor<array_1d<DataType, 3> > > array_1d_component_type;
 
         std::string variable_name;
 
@@ -1479,17 +1479,17 @@ namespace Kratos
         {
             ReadElementalScalarVariableData(rThisElements, static_cast<Variable<int> const& >(KratosComponents<Variable<int> >::Get(variable_name)));
         }
-        else if(KratosComponents<Variable<double> >::Has(variable_name))
+        else if(KratosComponents<Variable<DataType> >::Has(variable_name))
         {
-            ReadElementalScalarVariableData(rThisElements, static_cast<Variable<double> const& >(KratosComponents<Variable<double> >::Get(variable_name)));
+            ReadElementalScalarVariableData(rThisElements, static_cast<Variable<DataType> const& >(KratosComponents<Variable<DataType> >::Get(variable_name)));
         }
         else if(KratosComponents<array_1d_component_type>::Has(variable_name))
         {
             ReadElementalScalarVariableData(rThisElements, static_cast<array_1d_component_type const& >(KratosComponents<array_1d_component_type>::Get(variable_name)));
         }
-        else if(KratosComponents<Variable<array_1d<double, 3> > >::Has(variable_name))
+        else if(KratosComponents<Variable<array_1d<DataType, 3> > >::Has(variable_name))
         {
-            ReadElementalVectorialVariableData(rThisElements, static_cast<Variable<array_1d<double, 3> > const& >(KratosComponents<Variable<array_1d<double, 3> > >::Get(variable_name)), Vector(3));
+            ReadElementalVectorialVariableData(rThisElements, static_cast<Variable<array_1d<DataType, 3> > const& >(KratosComponents<Variable<array_1d<DataType, 3> > >::Get(variable_name)), Vector(3));
         }
         else if(KratosComponents<Variable<Vector> >::Has(variable_name))
         {
@@ -1516,7 +1516,7 @@ namespace Kratos
         KRATOS_TRY
 
         SizeType id;
-        double elemental_value;
+        DataType elemental_value;
 
         std::string value;
 
@@ -1581,15 +1581,15 @@ namespace Kratos
     {
         KRATOS_TRY
 
-        typedef VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > array_1d_component_type;
+        typedef VariableComponent<VectorComponentAdaptor<array_1d<DataType, 3> > > array_1d_component_type;
 
         std::string variable_name;
 
         ReadWord(variable_name);
 
-        if(KratosComponents<Variable<double> >::Has(variable_name))
+        if(KratosComponents<Variable<DataType> >::Has(variable_name))
         {
-            ReadConditionalScalarVariableData(rThisConditions, static_cast<Variable<double> const& >(KratosComponents<Variable<double> >::Get(variable_name)));
+            ReadConditionalScalarVariableData(rThisConditions, static_cast<Variable<DataType> const& >(KratosComponents<Variable<DataType> >::Get(variable_name)));
         }
         else if(KratosComponents<Variable<bool> >::Has(variable_name))
         {
@@ -1603,9 +1603,9 @@ namespace Kratos
         {
             ReadConditionalScalarVariableData(rThisConditions, static_cast<array_1d_component_type const& >(KratosComponents<array_1d_component_type>::Get(variable_name)));
         }
-        else if(KratosComponents<Variable<array_1d<double, 3> > >::Has(variable_name))
+        else if(KratosComponents<Variable<array_1d<DataType, 3> > >::Has(variable_name))
         {
-            ReadConditionalVectorialVariableData(rThisConditions, static_cast<Variable<array_1d<double, 3> > const& >(KratosComponents<Variable<array_1d<double, 3> > >::Get(variable_name)), Vector(3));
+            ReadConditionalVectorialVariableData(rThisConditions, static_cast<Variable<array_1d<DataType, 3> > const& >(KratosComponents<Variable<array_1d<DataType, 3> > >::Get(variable_name)), Vector(3));
         }
         else if(KratosComponents<Variable<Vector> >::Has(variable_name))
         {
@@ -1632,7 +1632,7 @@ namespace Kratos
         KRATOS_TRY
 
         SizeType id;
-        double conditional_value;
+        DataType conditional_value;
 
         std::string value;
 
@@ -2206,14 +2206,14 @@ namespace Kratos
             ReadWord(variable_name);
             if(CheckEndBlock("MeshData", variable_name))
                 break;
-            if(KratosComponents<Variable<double> >::Has(variable_name))
+            if(KratosComponents<Variable<DataType> >::Has(variable_name))
             {
                 std::string value;
-                double temp;
+                DataType temp;
 
                 ReadWord(value); // reading value
                 ExtractValue(value,temp);
-                rMesh[KratosComponents<Variable<double> >::Get(variable_name)] = temp;
+                rMesh[KratosComponents<Variable<DataType> >::Get(variable_name)] = temp;
             }
             else if(KratosComponents<Variable<bool> >::Has(variable_name))
             {
@@ -2233,11 +2233,11 @@ namespace Kratos
                 ExtractValue(value,temp);
                 rMesh[KratosComponents<Variable<int> >::Get(variable_name)] = temp;
             }
-            else if(KratosComponents<Variable<array_1d<double, 3> > >::Has(variable_name))
+            else if(KratosComponents<Variable<array_1d<DataType, 3> > >::Has(variable_name))
             {
                 Vector temp_vector; // defining a Vector because for array_1d the operator >> is not defined yet!
                 ReadVectorialValue(temp_vector);
-                rMesh[KratosComponents<Variable<array_1d<double,3> > >::Get(variable_name)] = temp_vector;
+                rMesh[KratosComponents<Variable<array_1d<DataType,3> > >::Get(variable_name)] = temp_vector;
             }
             else if(KratosComponents<Variable<Matrix> >::Has(variable_name))
             {
@@ -2370,14 +2370,14 @@ namespace Kratos
                 ExtractValue(value,temp);
                 temp_properties[KratosComponents<Variable<std::string> >::Get(variable_name)] = temp;
             }
-        else if(KratosComponents<Variable<double> >::Has(variable_name))
+        else if(KratosComponents<Variable<DataType> >::Has(variable_name))
             {
                 std::string value;
-                double temp;
+                DataType temp;
 
                 ReadWord(value); // reading value
                 ExtractValue(value,temp);
-                temp_properties[KratosComponents<Variable<double> >::Get(variable_name)] = temp;
+                temp_properties[KratosComponents<Variable<DataType> >::Get(variable_name)] = temp;
             }
             else if(KratosComponents<Variable<int> >::Has(variable_name))
             {
@@ -2397,11 +2397,11 @@ namespace Kratos
                 ExtractValue(value,temp);
                 temp_properties[KratosComponents<Variable<bool> >::Get(variable_name)] = temp;
             }
-            else if(KratosComponents<Variable<array_1d<double, 3> > >::Has(variable_name))
+            else if(KratosComponents<Variable<array_1d<DataType, 3> > >::Has(variable_name))
             {
                 Vector temp_vector; // defining a Vector because for array_1d the operator >> is not defined yet!
                 ReadVectorialValue(temp_vector);
-                temp_properties[KratosComponents<Variable<array_1d<double,3> > >::Get(variable_name)] = temp_vector;
+                temp_properties[KratosComponents<Variable<array_1d<DataType,3> > >::Get(variable_name)] = temp_vector;
             }
             else if(KratosComponents<Variable<Vector> >::Has(variable_name))
             {
@@ -2845,7 +2845,7 @@ namespace Kratos
     {
         KRATOS_TRY
 
-        typedef VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > array_1d_component_type;
+        typedef VariableComponent<VectorComponentAdaptor<array_1d<DataType, 3> > > array_1d_component_type;
 
         std::string word;
 
@@ -2858,7 +2858,7 @@ namespace Kratos
         WriteInAllFiles(OutputFiles, variable_name);
         WriteInAllFiles(OutputFiles, "\n");
 
-        if(KratosComponents<Variable<double> >::Has(variable_name))
+        if(KratosComponents<Variable<DataType> >::Has(variable_name))
         {
             DivideDofVariableData(OutputFiles, NodesAllPartitions);
         }
@@ -2874,7 +2874,7 @@ namespace Kratos
         {
             DivideDofVariableData(OutputFiles, NodesAllPartitions);
         }
-        else if(KratosComponents<Variable<array_1d<double, 3> > >::Has(variable_name))
+        else if(KratosComponents<Variable<array_1d<DataType, 3> > >::Has(variable_name))
         {
             DivideVectorialVariableData(OutputFiles, NodesAllPartitions, "NodalData");
         }
@@ -2997,7 +2997,7 @@ namespace Kratos
                 if(is_fixed)
                 {
                     std::stringstream buffer;
-                    buffer << "Only double variables or components can be fixed.";
+                    buffer << "Only " << Kratos::DataTypeToString<DataType>::Get() << " variables or components can be fixed.";
                     buffer <<  " [Line " << mNumberOfLines << " ]";
                     KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
                 }
@@ -3067,7 +3067,7 @@ namespace Kratos
                 if(is_fixed)
                 {
                     std::stringstream buffer;
-                    buffer << "Only double variables or components can be fixed.";
+                    buffer << "Only " << Kratos::DataTypeToString<DataType>::Get() << " variables or components can be fixed.";
                     buffer <<  " [Line " << mNumberOfLines << " ]";
                     KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
                 }
@@ -3101,7 +3101,7 @@ namespace Kratos
     {
         KRATOS_TRY
 
-        typedef VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > array_1d_component_type;
+        typedef VariableComponent<VectorComponentAdaptor<array_1d<DataType, 3> > > array_1d_component_type;
 
         std::string word;
 
@@ -3114,7 +3114,7 @@ namespace Kratos
         WriteInAllFiles(OutputFiles, variable_name);
         WriteInAllFiles(OutputFiles, "\n");
 
-        if(KratosComponents<Variable<double> >::Has(variable_name))
+        if(KratosComponents<Variable<DataType> >::Has(variable_name))
         {
             DivideScalarVariableData(OutputFiles, ElementsAllPartitions, "ElementalData");
         }
@@ -3130,7 +3130,7 @@ namespace Kratos
         {
             DivideScalarVariableData(OutputFiles, ElementsAllPartitions, "ElementalData");
         }
-        else if(KratosComponents<Variable<array_1d<double, 3> > >::Has(variable_name))
+        else if(KratosComponents<Variable<array_1d<DataType, 3> > >::Has(variable_name))
         {
             DivideVectorialVariableData(OutputFiles, ElementsAllPartitions, "ElementalData");
         }
@@ -3225,7 +3225,7 @@ namespace Kratos
         KRATOS_TRY
 
 
-        typedef VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > array_1d_component_type;
+        typedef VariableComponent<VectorComponentAdaptor<array_1d<DataType, 3> > > array_1d_component_type;
 
         std::string word;
 
@@ -3238,7 +3238,7 @@ namespace Kratos
         WriteInAllFiles(OutputFiles, variable_name);
         WriteInAllFiles(OutputFiles, "\n");
 
-        if(KratosComponents<Variable<double> >::Has(variable_name))
+        if(KratosComponents<Variable<DataType> >::Has(variable_name))
         {
             DivideScalarVariableData(OutputFiles, ConditionsAllPartitions, "ConditionalData");
         }
@@ -3254,7 +3254,7 @@ namespace Kratos
         {
             DivideScalarVariableData(OutputFiles, ConditionsAllPartitions, "ConditionalData");
         }
-        else if(KratosComponents<Variable<array_1d<double, 3> > >::Has(variable_name))
+        else if(KratosComponents<Variable<array_1d<DataType, 3> > >::Has(variable_name))
         {
             DivideVectorialVariableData(OutputFiles, ConditionsAllPartitions, "ConditionalData");
         }

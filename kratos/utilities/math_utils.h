@@ -53,9 +53,9 @@ template<class TDataType> struct MathUtils_ZeroTolerance
     static inline const TDataType Get() {return 0;}
 };
 
-template<> struct MathUtils_ZeroTolerance<double>
+template<> struct MathUtils_ZeroTolerance<KRATOS_DOUBLE_TYPE>
 {
-    static inline const double Get() {return std::numeric_limits<double>::epsilon();}
+    static inline const KRATOS_DOUBLE_TYPE Get() {return std::numeric_limits<KRATOS_DOUBLE_TYPE>::epsilon();}
 };
 
 /**
@@ -66,7 +66,7 @@ template<> struct MathUtils_ZeroTolerance<double>
  * @author Riccardo Rossi
  * @author Pooyan Dadvand
  */
-template<class TDataType = double>
+template<class TDataType = KRATOS_DOUBLE_TYPE>
 class KRATOS_API(KRATOS_CORE) MathUtils
 {
 public:

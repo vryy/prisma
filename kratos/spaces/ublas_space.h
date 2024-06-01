@@ -257,7 +257,7 @@ public:
                                                     TDataType());
         }
 
-        double total = TDataType();
+        auto total = TDataType();
         for (int i = 0; i < number_of_threads; i++)
             total += partial_results[i];
         return total;
@@ -267,7 +267,7 @@ public:
 
     /// ||rX||2
 
-    static double TwoNorm(VectorType const& rX)
+    static TDataType TwoNorm(VectorType const& rX)
     {
         return sqrt(Dot(rX, rX));
     }
@@ -388,7 +388,7 @@ public:
     //********************************************************************
     //checks if a multiplication is needed and tries to do otherwise
 
-    static void InplaceMult(VectorType& rX, const double A)
+    static void InplaceMult(VectorType& rX, const TDataType A)
     {
 
         if (A == 1.00)
@@ -433,7 +433,7 @@ public:
     //ATTENTION it is assumed no aliasing between rX and rY
     // X = A*y;
 
-    static void Assign(VectorType& rX, const double A, const VectorType& rY)
+    static void Assign(VectorType& rX, const TDataType A, const VectorType& rY)
     {
 #ifndef _OPENMP
         if (A == 1.00)
@@ -473,7 +473,7 @@ public:
     //ATTENTION it is assumed no aliasing between rX and rY
     // X += A*y;
 
-    static void UnaliasedAdd(VectorType& rX, const double A, const VectorType& rY)
+    static void UnaliasedAdd(VectorType& rX, const TDataType A, const VectorType& rY)
     {
 #ifndef _OPENMP
         if (A == 1.00)
@@ -513,13 +513,13 @@ public:
 
     //********************************************************************
 
-    static void ScaleAndAdd(const double A, const VectorType& rX, const double B, const VectorType& rY, VectorType& rZ) // rZ = (A * rX) + (B * rY)
+    static void ScaleAndAdd(const TDataType A, const VectorType& rX, const TDataType B, const VectorType& rY, VectorType& rZ) // rZ = (A * rX) + (B * rY)
     {
         Assign(rZ, A, rX); //rZ = A*rX
         UnaliasedAdd(rZ, B, rY); //rZ += B*rY
     }
 
-    static void ScaleAndAdd(const double A, const VectorType& rX, const double B, VectorType& rY) // rY = (A * rX) + (B * rY)
+    static void ScaleAndAdd(const TDataType A, const VectorType& rX, const TDataType B, VectorType& rY) // rY = (A * rX) + (B * rY)
     {
         InplaceMult(rY, B);
         UnaliasedAdd(rY, A, rX);
@@ -528,7 +528,7 @@ public:
 
     /// rA[i] * rX
 
-    static double RowDot(unsigned int i, MatrixType& rA, VectorType& rX)
+    static TDataType RowDot(unsigned int i, MatrixType& rA, VectorType& rX)
     {
         return inner_prod(row(rA, i), rX);
     }
@@ -723,13 +723,13 @@ public:
 
     //***********************************************************************
 
-    inline static double GetValue(const VectorType& x, std::size_t I)
+    inline static TDataType GetValue(const VectorType& x, std::size_t I)
     {
         return x[I];
     }
     //***********************************************************************
 
-    static void GatherValues(const VectorType& x, const std::vector<std::size_t>& IndexArray, double* pValues)
+    static void GatherValues(const VectorType& x, const std::vector<std::size_t>& IndexArray, TDataType* pValues)
     {
         KRATOS_TRY
 

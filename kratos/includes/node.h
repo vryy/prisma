@@ -65,7 +65,7 @@ namespace Kratos
 /** The node class from Kratos is defined in this class
 */
 template<std::size_t TDimension, class TDofType = Dof<KRATOS_DOUBLE_TYPE> >
-class Node : public Point<TDimension>,  public IndexedObject, public Flags
+class Node : public Point<TDimension, typename TDofType::DataType>,  public IndexedObject, public Flags
 {
     class GetDofKey : public std::unary_function<TDofType, VariableData::KeyType>
     {
@@ -83,11 +83,13 @@ public:
     /// Pointer definition of Node
     KRATOS_CLASS_POINTER_DEFINITION(Node);
 
+    typedef typename TDofType::DataType DataType;
+
     typedef Node<TDimension, TDofType> NodeType;
 
-    typedef Point<TDimension> BaseType;
+    typedef Point<TDimension, DataType> BaseType;
 
-    typedef Point<TDimension> PointType;
+    typedef Point<TDimension, DataType> PointType;
 
     typedef TDofType DofType;
 
@@ -101,7 +103,7 @@ public:
 
     typedef VariablesListDataValueContainer::BlockType BlockType;
 
-    typedef Variable<double> DoubleVariableType;
+    typedef Variable<DataType> DoubleVariableType;
 
     ///@}
     ///@name Life Cycle
@@ -142,7 +144,7 @@ public:
     }
 
     /// 1d constructor.
-    Node(IndexType NewId, double const& NewX)
+    Node(IndexType NewId, const DataType NewX)
         : BaseType(NewX)
         , IndexedObject(NewId)
         , Flags()
@@ -159,7 +161,7 @@ public:
     }
 
     /// 2d constructor.
-    Node(IndexType NewId, double const& NewX, double const& NewY)
+    Node(IndexType NewId, const DataType NewX, const DataType NewY)
         : BaseType(NewX, NewY)
         , IndexedObject(NewId)
         , Flags()
@@ -176,7 +178,7 @@ public:
     }
 
     /// 3d constructor.
-    Node(IndexType NewId, double const& NewX, double const& NewY, double const& NewZ)
+    Node(IndexType NewId, const DataType NewX, const DataType NewY, const DataType NewZ)
         : BaseType(NewX, NewY, NewZ)
         , IndexedObject(NewId)
         , Flags()
@@ -288,7 +290,7 @@ public:
 
     /** Constructor using coordinates stored in given std::vector. Initialize
     this point with the coordinates in the array. */
-    Node(IndexType NewId, std::vector<double> const&  rOtherCoordinates)
+    Node(IndexType NewId, std::vector<DataType> const&  rOtherCoordinates)
         : BaseType(rOtherCoordinates)
         , IndexedObject(NewId)
         , Flags()
@@ -305,7 +307,7 @@ public:
     }
 
     /// 3d with variables list and data constructor.
-    Node(IndexType NewId, double const& NewX, double const& NewY, double const& NewZ, VariablesList*  pVariablesList, BlockType const * ThisData, SizeType NewQueueSize = 1)
+    Node(IndexType NewId, const DataType NewX, const DataType NewY, const DataType NewZ, VariablesList*  pVariablesList, BlockType const* ThisData, SizeType NewQueueSize = 1)
         : BaseType(NewX, NewY, NewZ)
         , IndexedObject(NewId)
         , Flags()
@@ -434,12 +436,12 @@ public:
         return GetValue(rThisVariable);
     }
 
-    double& operator[](IndexType ThisIndex)
+    DataType& operator[](IndexType ThisIndex)
     {
         return BaseType::operator[](ThisIndex);
     }
 
-    double operator[](IndexType ThisIndex) const
+    DataType operator[](IndexType ThisIndex) const
     {
         return BaseType::operator[](ThisIndex);
     }
@@ -747,28 +749,28 @@ public:
         return mInitialPosition;
     }
 
-    double& X0()
+    DataType& X0()
     {
         return mInitialPosition.X();
     }
-    double& Y0()
+    DataType& Y0()
     {
         return mInitialPosition.Y();
     }
-    double& Z0()
+    DataType& Z0()
     {
         return mInitialPosition.Z();
     }
 
-    double X0() const
+    DataType X0() const
     {
         return mInitialPosition.X();
     }
-    double Y0() const
+    DataType Y0() const
     {
         return mInitialPosition.Y();
     }
-    double Z0() const
+    DataType Z0() const
     {
         return mInitialPosition.Z();
     }
@@ -780,7 +782,7 @@ public:
         mInitialPosition.Z() = NewInitialPosition.Z();
     }
 
-    void SetInitialPosition(double X, double Y, double Z)
+    void SetInitialPosition(DataType X, DataType Y, DataType Z)
     {
         mInitialPosition.X() = X;
         mInitialPosition.Y() = Y;
@@ -1152,7 +1154,7 @@ private:
     {
 //    int size = rSerializer.GetBuffer().end() - rSerializer.GetBuffer().begin();
 //    KRATOS_WATCH(rSerializer.GetBuffer().end() - rSerializer.GetBuffer().begin());
-        KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, Point<TDimension> );
+        KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, PointType );
         KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, IndexedObject );
         KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, Flags );
         rSerializer.save("Data", mData);
@@ -1169,7 +1171,7 @@ private:
     {
 //    int size = rSerializer.GetBuffer().end() - rSerializer.GetBuffer().begin();
 //    KRATOS_WATCH(rSerializer.GetBuffer().end() - rSerializer.GetBuffer().begin());
-        KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, Point<TDimension> );
+        KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, PointType );
         KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, IndexedObject );
         KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, Flags );
         rSerializer.load("Data", mData);
@@ -1198,8 +1200,8 @@ private:
 
 ///@}
 
-// template class KRATOS_API(KRATOS_CORE) KratosComponents<Node<3,double> >;
-// template class KRATOS_API(KRATOS_CORE) KratosComponents<Node<3,double>::Pointer >;
+// template class KRATOS_API(KRATOS_CORE) KratosComponents<Node<3, KRATOS_DOUBLE_TYPE> >;
+// template class KRATOS_API(KRATOS_CORE) KratosComponents<Node<3, KRATOS_DOUBLE_TYPE>::Pointer >;
 
 ///@name Type Definitions
 ///@{

@@ -108,112 +108,7 @@ void FlagsSet2(Flags& ThisFlag, const Flags& OtherFlag, bool Value )
 {
     ThisFlag.Set(OtherFlag, Value);
 }
-/*
-void TestContainers(int repeat_number)
-{
-	Timer::Start("Properties SetValue Test");
-	Properties properties(0);
-	for(int i = 0 ; i < repeat_number ; i++)
-	{
-		double d = i/2.;
-		properties.SetValue(DISPLACEMENT_X, d);
-		properties.SetValue(TEMPERATURE, d);
-		properties.SetValue(VELOCITY_Y, d);
-		//properties.SetValue(CAUCHY_STRESS_TENSOR, ScalarMatrix(3,3,d));
-		properties.SetValue(DENSITY, d);
-		properties.SetValue(VISCOSITY, d);
-		properties.SetValue(PRESSURE, d);
-		properties.SetValue(DELTA_TIME, d);
-		properties.SetValue(TIME, d);
-		properties.SetValue(ACCELERATION_X, d);
-	}
-	Timer::Stop("Properties SetValue Test");
-	Timer::Start("Properties GetValue Test");
-	double d = 0.;
-	for(int i = 0 ; i < repeat_number ; i++)
-	{
-		d += properties.GetValue(DISPLACEMENT_X);
-		d += properties.GetValue(TEMPERATURE);
-		d += properties.GetValue(VELOCITY_Y);
-		d += properties.GetValue(DENSITY);
-		d += properties.GetValue(VISCOSITY);
-		d += properties.GetValue(PRESSURE);
-		d += properties.GetValue(DELTA_TIME);
-		d += properties.GetValue(TIME);
-		d += properties.GetValue(ACCELERATION_X);
-	}
-	Timer::Stop("Properties GetValue Test");
-	KRATOS_WATCH(d);
-	//Timer::Start("AllVariables SetValue Test");
-	//AllVariablesDataValueContainer all_variables_container;
-	//for(int i = 0 ; i < repeat_number ; i++)
-	//{
-	//	double d = i/2.;
-	//	all_variables_container.SetValue(DISPLACEMENT_X, d);
-	//	all_variables_container.SetValue(TEMPERATURE, d);
-	//	all_variables_container.SetValue(VELOCITY_Y, d);
-	//	//all_variables_container.SetValue(CAUCHY_STRESS_TENSOR, ScalarMatrix(3,3,d));
-	//	all_variables_container.SetValue(DENSITY, d);
-	//	all_variables_container.SetValue(VISCOSITY, d);
-	//	all_variables_container.SetValue(PRESSURE, d);
-	//	all_variables_container.SetValue(DELTA_TIME, d);
-	//	all_variables_container.SetValue(TIME, d);
-	//	all_variables_container.SetValue(ACCELERATION_X, d);
-	//}
-	//Timer::Stop("AllVariables SetValue Test");
-	//Timer::Start("AllVariables GetValue Test");
-	//for(int i = 0 ; i < repeat_number ; i++)
-	//{
-	//	d += all_variables_container.GetValue(DISPLACEMENT_X);
-	//	d += all_variables_container.GetValue(TEMPERATURE);
-	//	d += all_variables_container.GetValue(VELOCITY_Y);
-	//	d += all_variables_container.GetValue(DENSITY);
-	//	d += all_variables_container.GetValue(VISCOSITY);
-	//	d += all_variables_container.GetValue(PRESSURE);
-	//	d += all_variables_container.GetValue(DELTA_TIME);
-	//	d += all_variables_container.GetValue(TIME);
-	//	d += all_variables_container.GetValue(ACCELERATION_X);
-	//}
-	//Timer::Stop("AllVariables GetValue Test");
-	KRATOS_WATCH(d);
 
-	KRATOS_WATCH(properties);
-	std::cout << Timer() << std::endl;
-	Table<double> test_table;
-	test_table.insert(3.14,25.);
-
-	properties.SetTable(TEMPERATURE, DENSITY, test_table);
-
-	test_table.insert(1., 2.);
-
-	properties.SetTable(DISPLACEMENT_X, TIME, test_table);
-
-	test_table.insert(2., 3.);
-
-	properties.SetTable(TIME, DISPLACEMENT_X, test_table);
-
-	test_table.insert(3., 4.);
-
-	properties.SetTable(TIME, DISPLACEMENT_Y, test_table);
-
-	test_table.insert(4., 5.);
-
-	properties.SetTable(TIME, DENSITY, test_table);
-
-	Table<double>& retrieved_table = properties.GetTable(TEMPERATURE, DENSITY);
-
-	KRATOS_WATCH(retrieved_table);
-	KRATOS_WATCH(properties.GetTable(TEMPERATURE, DENSITY));
-	KRATOS_WATCH(properties.GetTable(DISPLACEMENT_X, TIME));
-	KRATOS_WATCH(properties.GetTable(TIME, DISPLACEMENT_X));
-	KRATOS_WATCH(properties.GetTable(TIME, DISPLACEMENT_Y));
-	KRATOS_WATCH(properties.GetTable(TIME, DENSITY));
-
-
-
-
-}
-*/
 template<class TContainerType>
 struct Array1DModifier
 {
@@ -228,24 +123,24 @@ struct Array1DModifier
 
 void  AddContainersToPython()
 {
-    //def("TestContainers", TestContainers);
+    typedef KRATOS_DOUBLE_TYPE DataType;
 
-    BoundedVectorPythonInterface<array_1d<double, 3>, 3>::CreateInterface( "Array3" )
-    .def( init<vector_expression<array_1d<double, 3> > >() )
-    .def( VectorScalarOperatorPython<array_1d<double, 3>, double, array_1d<double, 3> >() )
-    .def( VectorVectorOperatorPython<array_1d<double, 3>, zero_vector<double>, array_1d<double, 3> >() )
-    .def( VectorVectorOperatorPython<array_1d<double, 3>, unit_vector<double>, array_1d<double, 3> >() )
-    .def( VectorVectorOperatorPython<array_1d<double, 3>, scalar_vector<double>, array_1d<double, 3> >() )
-    .def( VectorVectorOperatorPython<array_1d<double, 3>, mapped_vector<double>, array_1d<double, 3> >() )
+    BoundedVectorPythonInterface<array_1d<DataType, 3>, 3>::CreateInterface( "Array3" )
+    .def( init<vector_expression<array_1d<DataType, 3> > >() )
+    .def( VectorScalarOperatorPython<array_1d<DataType, 3>, DataType, array_1d<DataType, 3> >() )
+    .def( VectorVectorOperatorPython<array_1d<DataType, 3>, zero_vector<DataType>, array_1d<DataType, 3> >() )
+    .def( VectorVectorOperatorPython<array_1d<DataType, 3>, unit_vector<DataType>, array_1d<DataType, 3> >() )
+    .def( VectorVectorOperatorPython<array_1d<DataType, 3>, scalar_vector<DataType>, array_1d<DataType, 3> >() )
+    .def( VectorVectorOperatorPython<array_1d<DataType, 3>, mapped_vector<DataType>, array_1d<DataType, 3> >() )
     ;
 
-    BoundedVectorPythonInterface<array_1d<double, 2>, 2>::CreateInterface( "Array2" )
-    .def( init<vector_expression<array_1d<double, 2> > >() )
-    .def( VectorScalarOperatorPython<array_1d<double, 2>, double, array_1d<double, 2> >() )
-    .def( VectorVectorOperatorPython<array_1d<double, 2>, zero_vector<double>, array_1d<double, 2> >() )
-    .def( VectorVectorOperatorPython<array_1d<double, 2>, unit_vector<double>, array_1d<double, 2> >() )
-    .def( VectorVectorOperatorPython<array_1d<double, 2>, scalar_vector<double>, array_1d<double, 2> >() )
-    .def( VectorVectorOperatorPython<array_1d<double, 2>, mapped_vector<double>, array_1d<double, 2> >() )
+    BoundedVectorPythonInterface<array_1d<DataType, 2>, 2>::CreateInterface( "Array2" )
+    .def( init<vector_expression<array_1d<DataType, 2> > >() )
+    .def( VectorScalarOperatorPython<array_1d<DataType, 2>, DataType, array_1d<DataType, 2> >() )
+    .def( VectorVectorOperatorPython<array_1d<DataType, 2>, zero_vector<DataType>, array_1d<DataType, 2> >() )
+    .def( VectorVectorOperatorPython<array_1d<DataType, 2>, unit_vector<DataType>, array_1d<DataType, 2> >() )
+    .def( VectorVectorOperatorPython<array_1d<DataType, 2>, scalar_vector<DataType>, array_1d<DataType, 2> >() )
+    .def( VectorVectorOperatorPython<array_1d<DataType, 2>, mapped_vector<DataType>, array_1d<DataType, 2> >() )
     ;
 
     class_<VariableData>( "VariableData", no_init )
@@ -268,23 +163,23 @@ void  AddContainersToPython()
     .def( self_ns::str( self ) )
     ;
 
-    class_<Variable<double>, bases<VariableData>, boost::noncopyable >( "DoubleVariable", no_init )
+    class_<Variable<DataType>, bases<VariableData>, boost::noncopyable >( "DoubleVariable", no_init )
     .def( self_ns::str( self ) )
     ;
 
-    class_<Variable<vector<double> >, bases<VariableData>, boost::noncopyable >( "VectorVariable", no_init )
+    class_<Variable<vector<DataType> >, bases<VariableData>, boost::noncopyable >( "VectorVariable", no_init )
     .def( self_ns::str( self ) )
     ;
 
-    class_<Variable<array_1d<double, 3> >, bases<VariableData>, boost::noncopyable >( "Array1DVariable3", no_init )
+    class_<Variable<array_1d<DataType, 3> >, bases<VariableData>, boost::noncopyable >( "Array1DVariable3", no_init )
     .def( self_ns::str( self ) )
     ;
 
-    class_<Variable<array_1d<double, 6> >, bases<VariableData>, boost::noncopyable >( "Array1DVariable6", no_init )
+    class_<Variable<array_1d<DataType, 6> >, bases<VariableData>, boost::noncopyable >( "Array1DVariable6", no_init )
     .def( self_ns::str( self ) )
     ;
 
-    class_<Variable<matrix<double> >, bases<VariableData>, boost::noncopyable >( "MatrixVariable", no_init )
+    class_<Variable<matrix<DataType> >, bases<VariableData>, boost::noncopyable >( "MatrixVariable", no_init )
     .def( self_ns::str( self ) )
     ;
 
@@ -299,11 +194,11 @@ void  AddContainersToPython()
     class_<Variable<RadiationSettings::Pointer > , bases<VariableData>, boost::noncopyable >("RadiationSettingsVariable", no_init)
     .def( self_ns::str( self ) )
     ;
-    class_<VariableComponent<VectorComponentAdaptor<vector<double> > >, bases<VariableData>, boost::noncopyable >( "VectorComponentVariable", no_init )
+    class_<VariableComponent<VectorComponentAdaptor<vector<DataType> > >, bases<VariableData>, boost::noncopyable >( "VectorComponentVariable", no_init )
     .def( self_ns::str( self ) )
     ;
 
-    class_<VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > >, bases<VariableData>, boost::noncopyable >( "Array1DComponentVariable", no_init )
+    class_<VariableComponent<VectorComponentAdaptor<array_1d<DataType, 3> > >, bases<VariableData>, boost::noncopyable >( "Array1DComponentVariable", no_init )
     .def( self_ns::str( self ) )
     ;
 
@@ -312,13 +207,13 @@ void  AddContainersToPython()
     //.def( "__len__", &AllVariablesDataValueContainer::Size )
     //.def( VariableIndexingPython<AllVariablesDataValueContainer, Variable<std::string> >() )
     //.def( VariableIndexingPython<AllVariablesDataValueContainer, Variable<int> >() )
-    //.def( VariableIndexingPython<AllVariablesDataValueContainer, Variable<double> >() )
-    //.def( VariableIndexingPython<AllVariablesDataValueContainer, Variable<array_1d<double, 3> > >() )
-    //.def( VariableIndexingPython<AllVariablesDataValueContainer, Variable<vector<double> > >() )
-    //.def( VariableIndexingPython<AllVariablesDataValueContainer, Variable<matrix<double> > >() )
+    //.def( VariableIndexingPython<AllVariablesDataValueContainer, Variable<DataType> >() )
+    //.def( VariableIndexingPython<AllVariablesDataValueContainer, Variable<array_1d<DataType, 3> > >() )
+    //.def( VariableIndexingPython<AllVariablesDataValueContainer, Variable<vector<DataType> > >() )
+    //.def( VariableIndexingPython<AllVariablesDataValueContainer, Variable<matrix<DataType> > >() )
     //.def( VariableIndexingPython<AllVariablesDataValueContainer, Variable<ConvectionDiffusionSettings::Pointer > >() )
     //.def( VariableIndexingPython<AllVariablesDataValueContainer, Variable<RadiationSettings::Pointer > >() )
-    //.def( VariableIndexingPython<AllVariablesDataValueContainer, VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > >() )
+    //.def( VariableIndexingPython<AllVariablesDataValueContainer, VariableComponent<VectorComponentAdaptor<array_1d<DataType, 3> > > >() )
     //.def( self_ns::str( self ) )
     //;
 
@@ -327,13 +222,13 @@ void  AddContainersToPython()
     .def( VariableIndexingPython<DataValueContainer, Variable<std::string> >() )
     .def( VariableIndexingPython<DataValueContainer, Variable<bool> >() )
     .def( VariableIndexingPython<DataValueContainer, Variable<int> >() )
-    .def( VariableIndexingPython<DataValueContainer, Variable<double> >() )
-    .def( VariableIndexingPython<DataValueContainer, Variable<array_1d<double, 3> > >() )
-    .def( VariableIndexingPython<DataValueContainer, Variable<vector<double> > >() )
-    .def( VariableIndexingPython<DataValueContainer, Variable<matrix<double> > >() )
+    .def( VariableIndexingPython<DataValueContainer, Variable<DataType> >() )
+    .def( VariableIndexingPython<DataValueContainer, Variable<array_1d<DataType, 3> > >() )
+    .def( VariableIndexingPython<DataValueContainer, Variable<vector<DataType> > >() )
+    .def( VariableIndexingPython<DataValueContainer, Variable<matrix<DataType> > >() )
     .def( VariableIndexingPython<DataValueContainer, Variable<ConvectionDiffusionSettings::Pointer > >() )
     .def( VariableIndexingPython<DataValueContainer, Variable<RadiationSettings::Pointer > >() )
-    .def( VariableIndexingPython<DataValueContainer, VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > >() )
+    .def( VariableIndexingPython<DataValueContainer, VariableComponent<VectorComponentAdaptor<array_1d<DataType, 3> > > >() )
     .def( self_ns::str( self ) )
     ;
 
@@ -342,11 +237,11 @@ void  AddContainersToPython()
     .def( VariableIndexingPython<VariablesListDataValueContainer, Variable<std::string> >() )
     .def( VariableIndexingPython<VariablesListDataValueContainer, Variable<bool> >() )
     .def( VariableIndexingPython<VariablesListDataValueContainer, Variable<int> >() )
-    .def( VariableIndexingPython<VariablesListDataValueContainer, Variable<double> >() )
-    .def( VariableIndexingPython<VariablesListDataValueContainer, Variable<array_1d<double, 3> > >() )
-    .def( VariableIndexingPython<VariablesListDataValueContainer, Variable<vector<double> > >() )
-    .def( VariableIndexingPython<VariablesListDataValueContainer, Variable<matrix<double> > >() )
-    .def( VariableIndexingPython<VariablesListDataValueContainer, VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > >() )
+    .def( VariableIndexingPython<VariablesListDataValueContainer, Variable<DataType> >() )
+    .def( VariableIndexingPython<VariablesListDataValueContainer, Variable<array_1d<DataType, 3> > >() )
+    .def( VariableIndexingPython<VariablesListDataValueContainer, Variable<vector<DataType> > >() )
+    .def( VariableIndexingPython<VariablesListDataValueContainer, Variable<matrix<DataType> > >() )
+    .def( VariableIndexingPython<VariablesListDataValueContainer, VariableComponent<VectorComponentAdaptor<array_1d<DataType, 3> > > >() )
     .def( self_ns::str( self ) )
     ;
 
@@ -452,6 +347,7 @@ void  AddContainersToPython()
     KRATOS_REGISTER_IN_PYTHON_3D_VARIABLE_WITH_COMPONENTS( ANGULAR_VELOCITY )
     KRATOS_REGISTER_IN_PYTHON_3D_VARIABLE_WITH_COMPONENTS( ACCELERATION )
     KRATOS_REGISTER_IN_PYTHON_3D_VARIABLE_WITH_COMPONENTS( VELOCITY )
+    // std::cout << "DISPLACEMENT before exporting to Python: " << DISPLACEMENT << std::endl;
     KRATOS_REGISTER_IN_PYTHON_3D_VARIABLE_WITH_COMPONENTS( DISPLACEMENT )
     KRATOS_REGISTER_IN_PYTHON_3D_VARIABLE_WITH_COMPONENTS( ROTATION )
     KRATOS_REGISTER_IN_PYTHON_3D_VARIABLE_WITH_COMPONENTS( DELTA_ROTATION )

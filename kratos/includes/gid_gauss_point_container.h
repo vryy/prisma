@@ -46,14 +46,6 @@
 
 namespace Kratos
 {
-/**
- * Type definitions
- */
-typedef ModelPart::ElementsContainerType ElementsArrayType;
-typedef ModelPart::NodesContainerType NodesArrayType;
-typedef ModelPart::ConditionsContainerType ConditionsArrayType;
-typedef GeometryData::IntegrationMethod IntegrationMethodType;
-typedef GeometryData::KratosGeometryFamily KratosGeometryFamily;
 
 /**
  * Auxiliary class to store gauss point containers and perform result printing
@@ -62,13 +54,19 @@ typedef GeometryData::KratosGeometryFamily KratosGeometryFamily;
 class GidGaussPointsContainer
 {
 public:
+    /**
+     * Type definitions
+     */
+    typedef GeometryData::KratosGeometryFamily KratosGeometryFamily;
+    typedef ModelPart::DataType DataType;
+
     ///Constructor
     GidGaussPointsContainer( const char * gp_title, KratosGeometryFamily geometryFamily,
                              GiD_ElementType gid_element_type,
                              int number_of_integration_points,
                              std::vector<int> index_container )
         :
-        mGPTitle(gp_title),mKratosElementFamily(geometryFamily),
+        mGPTitle(gp_title), mKratosElementFamily(geometryFamily),
         mGidElementFamily(gid_element_type), mSize(number_of_integration_points),
         mIndexContainer(index_container) {}
 
@@ -158,7 +156,7 @@ public:
         }
     }
 
-    virtual void PrintResults( GiD_FILE ResultFile, Variable<double> rVariable, ModelPart& r_model_part,
+    virtual void PrintResults( GiD_FILE ResultFile, Variable<DataType> rVariable, ModelPart& r_model_part,
                                double SolutionTag, unsigned int value_index )
     {
         if( mMeshElements.size() != 0 || mMeshConditions.size() != 0 )
@@ -166,7 +164,7 @@ public:
             //WriteGaussPoints(ResultFile);
             GiD_fBeginResult(ResultFile,  (char *)(rVariable.Name()).c_str(), (char *)("Kratos"), SolutionTag,
                              GiD_Scalar, GiD_OnGaussPoints, mGPTitle, NULL, 0, NULL );
-            std::vector<double> ValuesOnIntPoint(mSize);
+            std::vector<DataType> ValuesOnIntPoint(mSize);
             if( mMeshElements.size() != 0 )
             {
                 for( ModelPart::ElementsContainerType::iterator it = mMeshElements.begin();
@@ -200,7 +198,7 @@ public:
     }
 
 
-    virtual void PrintResults( GiD_FILE ResultFile, Variable<array_1d<double,3> > rVariable, ModelPart& r_model_part,
+    virtual void PrintResults( GiD_FILE ResultFile, Variable<array_1d<DataType, 3> > rVariable, ModelPart& r_model_part,
                                double SolutionTag, unsigned int value_index )
     {
         if( mMeshElements.size() != 0 || mMeshConditions.size() != 0 )
@@ -208,7 +206,7 @@ public:
             //WriteGaussPoints(ResultFile);
             GiD_fBeginResult( ResultFile,  (char *)(rVariable.Name()).c_str(), (char *)("Kratos"), SolutionTag,
                              GiD_Vector, GiD_OnGaussPoints, mGPTitle, NULL, 0, NULL );
-            std::vector<array_1d<double,3> > ValuesOnIntPoint(mSize,ZeroVector(3));
+            std::vector<array_1d<DataType, 3> > ValuesOnIntPoint(mSize, ZeroVector(3));
             if( mMeshElements.size() != 0 )
             {
                 for( ModelPart::ElementsContainerType::iterator it = mMeshElements.begin();
@@ -248,7 +246,7 @@ public:
         }
     }
 
-    virtual void PrintResults( GiD_FILE ResultFile, Variable<array_1d<double,6> > rVariable, ModelPart& r_model_part,
+    virtual void PrintResults( GiD_FILE ResultFile, Variable<array_1d<DataType, 6> > rVariable, ModelPart& r_model_part,
                                double SolutionTag, unsigned int value_index )
     {
         if( mMeshElements.size() != 0 || mMeshConditions.size() != 0 )
@@ -256,7 +254,7 @@ public:
             //WriteGaussPoints(ResultFile);
             GiD_fBeginResult( ResultFile, (char *)(rVariable.Name()).c_str(), ( char*)("Kratos"),
                              SolutionTag, GiD_Matrix, GiD_OnGaussPoints, mGPTitle, NULL, 0, NULL );
-            std::vector<array_1d<double, 6> > ValuesOnIntPoint(mSize);
+            std::vector<array_1d<DataType, 6> > ValuesOnIntPoint(mSize);
             if( mMeshElements.size() != 0 )
             {
                 for( ModelPart::ElementsContainerType::iterator it = mMeshElements.begin();

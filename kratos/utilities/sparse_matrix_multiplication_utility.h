@@ -4,8 +4,8 @@
 //   _|\_\_|  \__,_|\__|\___/ ____/
 //                   Multi-Physics
 //
-//  License:		 BSD License
-//					 Kratos default license: kratos/license.txt
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Vicente Mataix Ferrandiz
 //
@@ -159,10 +159,10 @@ public:
         // Get access to A, B and C data
         const IndexType* index1_a = A.index1_data().begin();
         const IndexType* index2_a = A.index2_data().begin();
-        const double* values_a = A.value_data().begin();
+        const auto* values_a = A.value_data().begin();
         const IndexType* index1_b = B.index1_data().begin();
         const IndexType* index2_b = B.index2_data().begin();
-        const double* values_b = B.value_data().begin();
+        const auto* values_b = B.value_data().begin();
         IndexType* c_ptr = new IndexType[nrows + 1];
 
         c_ptr[0] = 0;
@@ -279,10 +279,10 @@ public:
         // Get access to A and B data
         const IndexType* index1_a = A.index1_data().begin();
         const IndexType* index2_a = A.index2_data().begin();
-        const double* values_a = A.value_data().begin();
+        const auto* values_a = A.value_data().begin();
         const IndexType* index1_b = B.index1_data().begin();
         const IndexType* index2_b = B.index2_data().begin();
-        const double* values_b = B.value_data().begin();
+        const auto* values_b = B.value_data().begin();
 
         IndexType max_row_width = 0;
 
@@ -385,11 +385,11 @@ public:
      * @param A The resulting matrix
      * @param B The second matrix to sum
      */
-    template <class AMatrix, class BMatrix>
+    template <class AMatrix, class BMatrix, typename TDataType>
     static void MatrixAdd(
         AMatrix& A,
         const BMatrix& B,
-        const double Factor = 1.0
+        const TDataType Factor = 1.0
         )
     {
         typedef typename value_type<AMatrix>::type ValueType;
@@ -409,10 +409,10 @@ public:
         // Get access to A and B data
         const IndexType* index1_a = A.index1_data().begin();
         const IndexType* index2_a = A.index2_data().begin();
-        const double* values_a = A.value_data().begin();
+        const auto* values_a = A.value_data().begin();
         const IndexType* index1_b = B.index1_data().begin();
         const IndexType* index2_b = B.index2_data().begin();
-        const double* values_b = B.value_data().begin();
+        const auto* values_b = B.value_data().begin();
 
         IndexType* new_a_ptr = new IndexType[nrows + 1];
         new_a_ptr[0] = 0;
@@ -520,11 +520,11 @@ public:
      * @param rA The resulting matrix
      * @param rB The second matrix to transpose
      */
-    template <class AMatrix, class BMatrix>
+    template <class AMatrix, class BMatrix, typename TDataType>
     static void TransposeMatrix(
         AMatrix& rA,
         const BMatrix& rB,
-        const double Factor = 1.0
+        const TDataType Factor = 1.0
         )
     {
         typedef typename value_type<AMatrix>::type ValueType;
@@ -623,7 +623,7 @@ public:
         C = CMatrix(NRows, NCols, nonzero_values);
         IndexType* index1_c = C.index1_data().begin();
         IndexType* index2_c = C.index2_data().begin();
-        double* values_c = C.value_data().begin();
+        auto* values_c = C.value_data().begin();
 
         index1_c[0] = 0;
         for (TSize i = 0; i < NRows; i++)
@@ -665,7 +665,7 @@ public:
 
                 for(IndexType j = 1; j < row_end - row_beg; ++j) {
                     const IndexType c = Columns[j + row_beg];
-                    const double v = Values[j + row_beg];
+                    const auto v = Values[j + row_beg];
 
                     SignedIndexType i = j - 1;
 

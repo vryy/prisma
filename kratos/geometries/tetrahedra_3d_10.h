@@ -80,6 +80,10 @@ public:
      */
     typedef typename BaseType::IndexType IndexType;
 
+    /**
+     * Type used for double value.
+     */
+    typedef typename BaseType::DataType DataType;
 
     /**
      * This typed used to return size or dimension in
@@ -352,7 +356,7 @@ public:
      * and for the other geometries it gives Characteristic length
      * otherwise.
      *
-     * @return double value contains length or Characteristic
+     * @return DataType value contains length or Characteristic
      * length
      * @see Area()
      * @see Volume()
@@ -360,7 +364,7 @@ public:
      *
      * :TODO: might be necessary to reimplement
      */
-    double Length() const override
+    DataType Length() const override
     {
         return sqrt( fabs( this->DeterminantOfJacobian( PointType() ) ) );
     }
@@ -372,26 +376,26 @@ public:
      * and for three dimensional geometries it gives surface area.
      *
      *
-     * @return double value contains area or surface area.
+     * @return DataType value contains area or surface area.
      * @see Length()
      * @see Volume()
      * @see DomainSize()
      *
      * :TODO: might be necessary to reimplement
      */
-    double Area() const override
+    DataType Area() const override
     {
         return Volume();
     }
 
 
-    double Volume() const override //Not a closed formula for a quadratic tetrahedra
+    DataType Volume() const override //Not a closed formula for a quadratic tetrahedra
     {
 
         Vector temp;
         this->DeterminantOfJacobian( temp, msGeometryData.DefaultIntegrationMethod() );
         const IntegrationPointsArrayType& integration_points = this->IntegrationPoints( msGeometryData.DefaultIntegrationMethod() );
-        double Volume = 0.00;
+        DataType Volume = 0.00;
 
         for ( unsigned int i = 0; i < integration_points.size(); i++ )
         {
@@ -409,14 +413,14 @@ public:
      * geometry it returns its length, for two dimensional it gives area
      * and for three dimensional geometries it gives its volume.
      *
-     * @return double value contains length, area or volume.
+     * @return DataType value contains length, area or volume.
      * @see Length()
      * @see Area()
      * @see Volume()
      *
      * :TODO: might be necessary to reimplement
      */
-    double DomainSize() const override
+    DataType DomainSize() const override
     {
         return  Volume();
     }
@@ -543,12 +547,12 @@ public:
      * TODO: TO BE VERIFIED
      * REF: Jacob Fish, A First Course in Finite Elements
      */
-    double ShapeFunctionValue( IndexType ShapeFunctionIndex, const CoordinatesArrayType& rPoint ) const override
+    DataType ShapeFunctionValue( IndexType ShapeFunctionIndex, const CoordinatesArrayType& rPoint ) const override
     {
-        const double zeta1 = rPoint[0];
-        const double zeta2 = rPoint[1];
-        const double zeta3 = rPoint[2];
-        const double zeta0 = 1. - zeta1 - zeta2 - zeta3;
+        const DataType zeta1 = rPoint[0];
+        const DataType zeta2 = rPoint[1];
+        const DataType zeta3 = rPoint[2];
+        const DataType zeta0 = 1. - zeta1 - zeta2 - zeta3;
 
         switch ( ShapeFunctionIndex )
         {
@@ -696,25 +700,25 @@ private:
             const CoordinatesArrayType& rPoint )
     {
         // Area coordinates, pg. 205, Vol. I, Carey, Oden, Becker FEM
-        const double zeta1 = rPoint[0];
-        const double zeta2 = rPoint[1];
-        const double zeta3 = rPoint[2];
-        const double zeta0 = 1. - zeta1 - zeta2 - zeta3;
+        const DataType zeta1 = rPoint[0];
+        const DataType zeta2 = rPoint[1];
+        const DataType zeta3 = rPoint[2];
+        const DataType zeta0 = 1. - zeta1 - zeta2 - zeta3;
 
-        const double dzeta0dxi = -1.;
-        const double dzeta1dxi =  1.;
-        const double dzeta2dxi =  0.;
-        const double dzeta3dxi =  0.;
+        const DataType dzeta0dxi = -1.;
+        const DataType dzeta1dxi =  1.;
+        const DataType dzeta2dxi =  0.;
+        const DataType dzeta3dxi =  0.;
 
-        const double dzeta0deta = -1.;
-        const double dzeta1deta =  0.;
-        const double dzeta2deta =  1.;
-        const double dzeta3deta =  0.;
+        const DataType dzeta0deta = -1.;
+        const DataType dzeta1deta =  0.;
+        const DataType dzeta2deta =  1.;
+        const DataType dzeta3deta =  0.;
 
-        const double dzeta0dzeta = -1.;
-        const double dzeta1dzeta =  0.;
-        const double dzeta2dzeta =  0.;
-        const double dzeta3dzeta =  1.;
+        const DataType dzeta0dzeta = -1.;
+        const DataType dzeta1dzeta =  0.;
+        const DataType dzeta2dzeta =  0.;
+        const DataType dzeta3dzeta =  1.;
 
         if ( result.size1() != 10 || result.size2() != 3 )
             result.resize( 10, 3, false );
@@ -810,10 +814,10 @@ private:
 
         for ( int pnt = 0; pnt < integration_points_number; pnt++ )
         {
-            const double zeta1 = integration_points[pnt].X();
-            const double zeta2 = integration_points[pnt].Y();
-            const double zeta3 = integration_points[pnt].Z();
-            const double zeta0 = 1. - zeta1 - zeta2 - zeta3;
+            const DataType zeta1 = integration_points[pnt].X();
+            const DataType zeta2 = integration_points[pnt].Y();
+            const DataType zeta3 = integration_points[pnt].Z();
+            const DataType zeta0 = 1. - zeta1 - zeta2 - zeta3;
 
             shape_function_values( pnt, 0 ) = zeta0*(2.*zeta0 - 1.);
 

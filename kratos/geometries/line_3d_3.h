@@ -44,7 +44,6 @@ namespace Kratos
 /**
 */
 template<class TPointType>
-
 class Line3D3 : public Geometry<TPointType>
 {
 public:
@@ -70,6 +69,11 @@ public:
     /** Redefinition of template parameter TPointType.
      */
     typedef TPointType PointType;
+
+    /**
+     * Type used for DataType value.
+     */
+    typedef typename BaseType::DataType DataType;
 
     /** Type used for indexing in geometry class.std::size_t used for indexing
     point or integration point access methods and also all other
@@ -304,21 +308,21 @@ public:
     and for the other geometries it gives Characteristic length
     otherwise.
 
-    @return double value contains length or Characteristic
+    @return DataType value contains length or Characteristic
     length
     @see Area()
     @see Volume()
     @see DomainSize()
     */
-    double Length() const override
+    DataType Length() const override
     {
         const TPointType& point0 = BaseType::GetPoint(0);
         const TPointType& point1 = BaseType::GetPoint(2);
-        const double lx = point0.X() - point1.X();
-        const double ly = point0.Y() - point1.Y();
-        const double lz = point0.Z() - point1.Z();
+        const DataType lx = point0.X() - point1.X();
+        const DataType ly = point0.Y() - point1.Y();
+        const DataType lz = point0.Z() - point1.Z();
 
-        const double length = lx * lx + ly * ly + lz * lz;
+        const DataType length = lx * lx + ly * ly + lz * lz;
 
         return sqrt( length );
     }
@@ -328,13 +332,13 @@ public:
     geometry it returns zero, for two dimensional it gives area
     and for three dimensional geometries it gives surface area.
 
-    @return double value contains area or surface
+    @return DataType value contains area or surface
     area.
     @see Length()
     @see Volume()
     @see DomainSize()
     */
-    double Area() const override
+    DataType Area() const override
     {
         return 0.00;
     }
@@ -345,20 +349,20 @@ public:
     geometry it returns its length, for two dimensional it gives area
     and for three dimensional geometries it gives its volume.
 
-    @return double value contains length, area or volume.
+    @return DataType value contains length, area or volume.
     @see Length()
     @see Area()
     @see Volume()
     */
-    double DomainSize() const override
+    DataType DomainSize() const override
     {
         const TPointType& point0 = BaseType::GetPoint(0);
         const TPointType& point1 = BaseType::GetPoint(2);
-        const double lx = point0.X() - point1.X();
-        const double ly = point0.Y() - point1.Y();
-        const double lz = point0.Z() - point1.Z();
+        const DataType lx = point0.X() - point1.X();
+        const DataType ly = point0.Y() - point1.Y();
+        const DataType lz = point0.Z() - point1.Z();
 
-        const double length = lx * lx + ly * ly + lz * lz;
+        const DataType length = lx * lx + ly * ly + lz * lz;
 
         return sqrt( length );
     }
@@ -490,7 +494,7 @@ public:
      * @param ThisMethod integration method which jacobians has to
      * be calculated in its integration points.
      *
-     * @return Matrix<double> Jacobian matrix \f$ J_i \f$ where \f$
+     * @return Matrix<DataType> Jacobian matrix \f$ J_i \f$ where \f$
      * i \f$ is the given integration point index of given
      * integration method.
      * @see DeterminantOfJacobian
@@ -506,7 +510,7 @@ public:
         Matrix ShapeFunctionsGradientInIntegrationPoint =
             shape_functions_gradients( IntegrationPointIndex );
         //values of shape functions in integration points
-        boost::numeric::ublas::vector<double> ShapeFunctionValuesInIntegrationPoint = ZeroVector( 3 );
+        boost::numeric::ublas::vector<DataType> ShapeFunctionValuesInIntegrationPoint = ZeroVector( 3 );
         ShapeFunctionValuesInIntegrationPoint = row( CalculateShapeFunctionsIntegrationPointsValues( ThisMethod ),
                                                 IntegrationPointIndex );
 
@@ -529,7 +533,7 @@ public:
      * @param rPoint point which jacobians has to
      * be calculated in it.
      *
-     * @return Matrix of double which is jacobian matrix \f$ J \f$ in given point.
+     * @return Matrix of DataType which is jacobian matrix \f$ J \f$ in given point.
      *
      * @see DeterminantOfJacobian
      * @see InverseOfJacobian
@@ -558,7 +562,7 @@ public:
      * method calculate determinant of jacobian in all
      * integrations points of given integration method.
      *
-     * @return Vector of double which is vector of determinants of
+     * @return Vector of DataType which is vector of determinants of
      * jacobians \f$ |J|_i \f$ where \f$ i=1,2,...,n \f$ is the
      * integration point index of given integration method.
      *
@@ -589,7 +593,7 @@ public:
      * @see Jacobian
      * @see InverseOfJacobian
      */
-    double DeterminantOfJacobian( IndexType IntegrationPointIndex, IntegrationMethod ThisMethod ) const override
+    DataType DeterminantOfJacobian( IndexType IntegrationPointIndex, IntegrationMethod ThisMethod ) const override
     {
         KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square" , "" );
         return 0.0;
@@ -607,7 +611,7 @@ public:
      * @see DeterminantOfJacobian
      * @see InverseOfJacobian
      */
-    double DeterminantOfJacobian( const CoordinatesArrayType& rPoint ) const override
+    DataType DeterminantOfJacobian( const CoordinatesArrayType& rPoint ) const override
     {
         KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square" , "" );
         return 0.0;
@@ -691,7 +695,7 @@ public:
     ///@name Shape Function
     ///@{
 
-    double ShapeFunctionValue( IndexType ShapeFunctionIndex, const CoordinatesArrayType& rPoint ) const override
+    DataType ShapeFunctionValue( IndexType ShapeFunctionIndex, const CoordinatesArrayType& rPoint ) const override
     {
         switch ( ShapeFunctionIndex )
         {
@@ -1011,7 +1015,7 @@ private:
 
         for ( int it_gp = 0; it_gp < integration_points_number; it_gp++ )
         {
-            double e = IntegrationPoints[it_gp].X();
+            DataType e = IntegrationPoints[it_gp].X();
             N( it_gp, 0 ) = 0.5 * ( e - 1 ) * e;
             N( it_gp, 2 ) = 1.0 - e * e;
             N( it_gp, 1 ) = 0.5 * ( 1 + e ) * e;
@@ -1030,7 +1034,7 @@ private:
 
         for ( unsigned int it_gp = 0; it_gp < IntegrationPoints.size(); it_gp++ )
         {
-            double e = IntegrationPoints[it_gp].X();
+            DataType e = IntegrationPoints[it_gp].X();
             DN_De[it_gp]( 0, 0 ) = e - 0.5;
             DN_De[it_gp]( 2, 0 ) = -2.0 * e;
             DN_De[it_gp]( 1, 0 ) = e + 0.5;

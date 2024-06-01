@@ -73,12 +73,18 @@ void  AddProcessInfoToPython()
 {
     using namespace boost::python;
 
-    typedef Variable<double> DoubleVariableType;
-    typedef VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<double, 3>>> VariableComponentType;
+    typedef KRATOS_DOUBLE_TYPE DataType;
+
+    typedef Variable<DataType> DoubleVariableType;
+    typedef VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<DataType, 3>>> VariableComponentType;
 
     class_<ProcessInfo, ProcessInfo::Pointer, bases<DataValueContainer, Flags>, boost::noncopyable>("ProcessInfo")
     .def(init<>())
     .def("CreateSolutionStepInfo", &ProcessInfo::CreateSolutionStepInfo)
+//              .def("CreateTimeStepInfo",(void (ProcessInfo::*)(std::size_t)) &ProcessInfo::CreateTimeStepInfo)
+//              .def("CreateTimeStepInfo",&ProcessInfo::CreateTimeStepInfo)
+//              .def("CloneTimeStepInfo",(void (ProcessInfo::*)(std::size_t) )&ProcessInfo::CloneTimeStepInfo)
+//              .def("SetAsTimeStepInfo",(void (ProcessInfo::*)()) &ProcessInfo::SetAsTimeStepInfo)
     .def(self_ns::str(self))
     ;
 
@@ -94,4 +100,3 @@ void  AddProcessInfoToPython()
 }  // namespace Python.
 
 } // Namespace Kratos
-

@@ -103,6 +103,8 @@ public:
 
     typedef std::size_t IndexType;
 
+    typedef TDataType DataType;
+
     typedef std::size_t EquationIdType;
 
     typedef VariablesListDataValueContainer SolutionStepsDataContainerType;

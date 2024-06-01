@@ -435,11 +435,11 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
             nnz += indices[i].size();
         }
 
-        A = boost::numeric::ublas::compressed_matrix<double>(indices.size(), indices.size(), nnz);
+        A = boost::numeric::ublas::compressed_matrix<TDataType>(indices.size(), indices.size(), nnz);
 
-        double* Avalues = A.value_data().begin();
-        std::size_t* Arow_indices = A.index1_data().begin();
-        std::size_t* Acol_indices = A.index2_data().begin();
+        auto* Avalues = A.value_data().begin();
+        auto* Arow_indices = A.index1_data().begin();
+        auto* Acol_indices = A.index2_data().begin();
 
         //filling the index1 vector - DO NOT MAKE PARALLEL THE FOLLOWING LOOP!
         Arow_indices[0] = 0;
@@ -1039,7 +1039,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
         int slave_index = 0;
         for (auto &slave_dof : slave_dofs_vector)
         {
-            double slave_value_calc = 0.0;
+            TDataType slave_value_calc = 0.0;
             for (IndexType master_index = 0; master_index < master_dofs_vector.size(); master_index++)
             {
                 slave_value_calc += master_dofs_vector[master_index]->GetSolutionStepValue() * relation_matrix(slave_index, master_index);
@@ -1073,14 +1073,14 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
 
         //contributions to the system
         VectorType master_weights_vector;
-        double constant = 0.0;
+        TDataType constant = 0.0;
 
         IndexType slave_equation_id = 0;
         EquationIdVectorType master_equation_ids = EquationIdVectorType(0);
 
         for (auto it = mGlobalMasterSlaveConstraints.begin(); it != mGlobalMasterSlaveConstraints.end(); ++it)
         {
-            double slave_dx_value = 0.0;
+            TDataType slave_dx_value = 0.0;
             //get the equation Ids of the constraint
             (it)->EquationIdsVector(slave_equation_id, master_equation_ids);
             if (slave_equation_id < BaseType::mEquationSystemSize)

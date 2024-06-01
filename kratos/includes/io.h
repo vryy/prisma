@@ -5,12 +5,12 @@
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 //
-// 	-	Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-// 	-	Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
-// 		in the documentation and/or other materials provided with the distribution.
-// 	-	All advertising materials mentioning features or use of this software must display the following acknowledgement:
-// 			This product includes Kratos Multi-Physics technology.
-// 	-	Neither the name of the CIMNE nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+//  -   Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+//  -   Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
+//      in the documentation and/or other materials provided with the distribution.
+//  -   All advertising materials mentioning features or use of this software must display the following acknowledgement:
+//          This product includes Kratos Multi-Physics technology.
+//  -   Neither the name of the CIMNE nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
 // THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
@@ -75,11 +75,11 @@ public:
     /// Pointer definition of IO
     KRATOS_CLASS_POINTER_DEFINITION(IO);
 
-	/// Local Flags
-	KRATOS_DEFINE_LOCAL_FLAG( READ );
-	KRATOS_DEFINE_LOCAL_FLAG( WRITE );
-	KRATOS_DEFINE_LOCAL_FLAG( APPEND );
-	KRATOS_DEFINE_LOCAL_FLAG( IGNORE_VARIABLES_ERROR );
+    /// Local Flags
+    KRATOS_DEFINE_LOCAL_FLAG( READ );
+    KRATOS_DEFINE_LOCAL_FLAG( WRITE );
+    KRATOS_DEFINE_LOCAL_FLAG( APPEND );
+    KRATOS_DEFINE_LOCAL_FLAG( IGNORE_VARIABLES_ERROR );
 
     typedef Node<3> NodeType;
 
@@ -99,10 +99,11 @@ public:
 
     typedef std::vector<std::size_t> PartitionIndicesType;
 
+    typedef KRATOS_DOUBLE_TYPE DataType;
+
     typedef std::size_t SizeType;
 
     typedef matrix<int> GraphType;
-
 
     ///@}
     ///@name Life Cycle
@@ -187,7 +188,7 @@ public:
     virtual void ReadInitialValues(ModelPart& rThisModelPart)
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling base class member. Please check the definition of derived class", "")
-    }    
+    }
 
     virtual void ReadInitialValues(NodesContainerType& rThisNodes, ElementsContainerType& rThisElements, ConditionsContainerType& rThisConditions)
     {
@@ -201,7 +202,7 @@ public:
         KRATOS_THROW_ERROR(std::logic_error, "Calling base class member. Please check the definition of derived class", "")
     }
 
-    virtual void ReadConditionalScalarVariableData(std::string variable_name, std::vector<SizeType>& rConditionIndices, std::vector<double>& rConditionalDataValues)
+    virtual void ReadConditionalScalarVariableData(std::string variable_name, std::vector<SizeType>& rConditionIndices, std::vector<DataType>& rConditionalDataValues)
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling base class member. Please check the definition of derived class", "")
     }
@@ -384,4 +385,4 @@ private:
 
 }  // namespace Kratos.
 
-#endif // KRATOS_IO_H_INCLUDED  defined 
+#endif // KRATOS_IO_H_INCLUDED  defined

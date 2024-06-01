@@ -80,6 +80,10 @@ public:
      */
     typedef typename BaseType::IndexType IndexType;
 
+    /**
+     * Type used for double value.
+     */
+    typedef typename BaseType::DataType DataType;
 
     /**
      * This typed used to return size or dimension in
@@ -325,7 +329,7 @@ public:
      * and for the other geometries it gives Characteristic length
      * otherwise.
      *
-     * @return double value contains length or Characteristic
+     * @return DataType value contains length or Characteristic
      * length
      * @see Area()
      * @see Volume()
@@ -333,9 +337,9 @@ public:
      *
      * :TODO: might be necessary to reimplement
      */
-    double Length() const override
+    DataType Length() const override
     {
-        const double param = 2.0396489026555;  //12/raiz(2);
+        const DataType param = 2.0396489026555;  //12/raiz(2);
         return  param * pow(Volume(), 0.33333333333333); //sqrt(fabs( DeterminantOfJacobian(PointType())));
     }
 
@@ -346,14 +350,14 @@ public:
      * and for three dimensional geometries it gives surface area.
      *
      *
-     * @return double value contains area or surface area.
+     * @return DataType value contains area or surface area.
      * @see Length()
      * @see Volume()
      * @see DomainSize()
      *
      * :TODO: might be necessary to reimplement
      */
-    double Area() const override
+    DataType Area() const override
     {
         return this->Volume();
     }
@@ -365,7 +369,7 @@ public:
      * geometry it returns its length, for two dimensional it gives area
      * and for three dimensional geometries it gives its volume.
      *
-     * @return double value contains length, area or volume.
+     * @return DataType value contains length, area or volume.
      * @see Length()
      * @see Area()
      * @see Volume()
@@ -373,33 +377,33 @@ public:
      * :TODO: might be necessary to reimplement
      */
 
-    double Volume() const  override //closed formula for the linear triangle
+    DataType Volume() const  override //closed formula for the linear triangle
     {
-        const double onesixth = 1.0/6.0;
+        const DataType onesixth = 1.0/6.0;
 
         const CoordinatesArrayType& rP0 = this->Points()[0].Coordinates();
         const CoordinatesArrayType& rP1 = this->Points()[1].Coordinates();
         const CoordinatesArrayType& rP2 = this->Points()[2].Coordinates();
         const CoordinatesArrayType& rP3 = this->Points()[3].Coordinates();
 
-        double x10 = rP1[0] - rP0[0];
-        double y10 = rP1[1] - rP0[1];
-        double z10 = rP1[2] - rP0[2];
+        DataType x10 = rP1[0] - rP0[0];
+        DataType y10 = rP1[1] - rP0[1];
+        DataType z10 = rP1[2] - rP0[2];
 
-        double x20 = rP2[0] - rP0[0];
-        double y20 = rP2[1] - rP0[1];
-        double z20 = rP2[2] - rP0[2];
+        DataType x20 = rP2[0] - rP0[0];
+        DataType y20 = rP2[1] - rP0[1];
+        DataType z20 = rP2[2] - rP0[2];
 
-        double x30 = rP3[0] - rP0[0];
-        double y30 = rP3[1] - rP0[1];
-        double z30 = rP3[2] - rP0[2];
+        DataType x30 = rP3[0] - rP0[0];
+        DataType y30 = rP3[1] - rP0[1];
+        DataType z30 = rP3[2] - rP0[2];
 
-        double detJ = x10 * y20 * z30 - x10 * y30 * z20 + y10 * z20 * x30 - y10 * x20 * z30 + z10 * x20 * y30 - z10 * y20 * x30;
+        DataType detJ = x10 * y20 * z30 - x10 * y30 * z20 + y10 * z20 * x30 - y10 * x20 * z30 + z10 * x20 * y30 - z10 * y20 * x30;
         return  detJ*onesixth;
     }
 
 
-    double DomainSize() const override
+    DataType DomainSize() const override
     {
 
         return Volume();
@@ -571,7 +575,7 @@ public:
      * @return the value of the shape function at the given point
      * TODO: TO BE VERIFIED
      */
-    double ShapeFunctionValue( IndexType ShapeFunctionIndex, const CoordinatesArrayType& rPoint) const override
+    DataType ShapeFunctionValue( IndexType ShapeFunctionIndex, const CoordinatesArrayType& rPoint) const override
     {
         switch( ShapeFunctionIndex )
         {
@@ -631,20 +635,20 @@ public:
             KRATOS_THROW_ERROR(std::logic_error,
                                "This integration method is not supported" , *this);
 
-        boost::numeric::ublas::bounded_matrix<double,4,3> DN_DX;
-        double x10 = this->Points()[1].X() - this->Points()[0].X();
-        double y10 = this->Points()[1].Y() - this->Points()[0].Y();
-        double z10 = this->Points()[1].Z() - this->Points()[0].Z();
+        boost::numeric::ublas::bounded_matrix<DataType,4,3> DN_DX;
+        DataType x10 = this->Points()[1].X() - this->Points()[0].X();
+        DataType y10 = this->Points()[1].Y() - this->Points()[0].Y();
+        DataType z10 = this->Points()[1].Z() - this->Points()[0].Z();
 
-        double x20 = this->Points()[2].X() - this->Points()[0].X();
-        double y20 = this->Points()[2].Y() - this->Points()[0].Y();
-        double z20 = this->Points()[2].Z() - this->Points()[0].Z();
+        DataType x20 = this->Points()[2].X() - this->Points()[0].X();
+        DataType y20 = this->Points()[2].Y() - this->Points()[0].Y();
+        DataType z20 = this->Points()[2].Z() - this->Points()[0].Z();
 
-        double x30 = this->Points()[3].X() - this->Points()[0].X();
-        double y30 = this->Points()[3].Y() - this->Points()[0].Y();
-        double z30 = this->Points()[3].Z() - this->Points()[0].Z();
+        DataType x30 = this->Points()[3].X() - this->Points()[0].X();
+        DataType y30 = this->Points()[3].Y() - this->Points()[0].Y();
+        DataType z30 = this->Points()[3].Z() - this->Points()[0].Z();
 
-        double detJ = x10 * y20 * z30 - x10 * y30 * z20 + y10 * z20 * x30 - y10 * x20 * z30 + z10 * x20 * y30 - z10 * y20 * x30;
+        DataType detJ = x10 * y20 * z30 - x10 * y30 * z20 + y10 * z20 * x30 - y10 * x20 * z30 + z10 * x20 * y30 - z10 * y20 * x30;
 
         DN_DX(0,0) = -y20 * z30 + y30 * z20 + y10 * z30 - z10 * y30 - y10 * z20 + z10 * y20;
         DN_DX(0,1) = -z20 * x30 + x20 * z30 - x10 * z30 + z10 * x30 + x10 * z20 - z10 * x20;
@@ -680,20 +684,20 @@ public:
             KRATOS_THROW_ERROR(std::logic_error,
                                "This integration method is not supported" , *this);
 
-        boost::numeric::ublas::bounded_matrix<double,4,3> DN_DX;
-        double x10 = this->Points()[1].X() - this->Points()[0].X();
-        double y10 = this->Points()[1].Y() - this->Points()[0].Y();
-        double z10 = this->Points()[1].Z() - this->Points()[0].Z();
+        boost::numeric::ublas::bounded_matrix<DataType,4,3> DN_DX;
+        DataType x10 = this->Points()[1].X() - this->Points()[0].X();
+        DataType y10 = this->Points()[1].Y() - this->Points()[0].Y();
+        DataType z10 = this->Points()[1].Z() - this->Points()[0].Z();
 
-        double x20 = this->Points()[2].X() - this->Points()[0].X();
-        double y20 = this->Points()[2].Y() - this->Points()[0].Y();
-        double z20 = this->Points()[2].Z() - this->Points()[0].Z();
+        DataType x20 = this->Points()[2].X() - this->Points()[0].X();
+        DataType y20 = this->Points()[2].Y() - this->Points()[0].Y();
+        DataType z20 = this->Points()[2].Z() - this->Points()[0].Z();
 
-        double x30 = this->Points()[3].X() - this->Points()[0].X();
-        double y30 = this->Points()[3].Y() - this->Points()[0].Y();
-        double z30 = this->Points()[3].Z() - this->Points()[0].Z();
+        DataType x30 = this->Points()[3].X() - this->Points()[0].X();
+        DataType y30 = this->Points()[3].Y() - this->Points()[0].Y();
+        DataType z30 = this->Points()[3].Z() - this->Points()[0].Z();
 
-        double detJ = x10 * y20 * z30 - x10 * y30 * z20 + y10 * z20 * x30 - y10 * x20 * z30 + z10 * x20 * y30 - z10 * y20 * x30;
+        DataType detJ = x10 * y20 * z30 - x10 * y30 * z20 + y10 * z20 * x30 - y10 * x20 * z30 + z10 * x20 * y30 - z10 * y20 * x30;
 
         DN_DX(0,0) = -y20 * z30 + y30 * z20 + y10 * z30 - z10 * y30 - y10 * z20 + z10 * y20;
         DN_DX(0,1) = -z20 * x30 + x20 * z30 - x10 * z30 + z10 * x30 + x10 * z20 - z10 * x20;
@@ -759,7 +763,7 @@ public:
     }
 
 
-    bool HasIntersection(const Point<3, double>& rLowPoint, const Point<3, double>& rHighPoint) const override
+    bool HasIntersection(const Point<3, DataType>& rLowPoint, const Point<3, DataType>& rHighPoint) const override
     {
         return false;
     }
@@ -773,7 +777,7 @@ public:
         // Determine on which side of the plane the points of the tetrahedron lie.
         int i = 0;
         int positive = 0, negative = 0, zero = 0;
-        array_1d<double,4> C;
+        array_1d<DataType,4> C;
         array_1d<int,4>  pos, neg, zer;
 
         noalias(C)   = ZeroVector(4);
@@ -793,7 +797,7 @@ public:
 
         for (i = 0; i < 4; ++i)
         {
-            const array_1d<double,3>& p = tetra[i].Coordinates();
+            const array_1d<DataType,3>& p = tetra[i].Coordinates();
             C[i] = plane.DistanceTo(p);
             if (C[i] > 0.00)
                 pos[positive++] = i;
@@ -819,9 +823,9 @@ public:
             return;
         }
 
-        double w0, w1, invCDiff;
-        array_1d<array_1d<double, 3 >, 4> intp;
-        array_1d<array_1d<double, 3 >, 4> V;
+        DataType w0, w1, invCDiff;
+        array_1d<array_1d<DataType, 3 >, 4> intp;
+        array_1d<array_1d<DataType, 3 >, 4> V;
 
         if (positive == 3)
         {
@@ -921,20 +925,20 @@ public:
     void GetPlanes(array_1d<Plane, 4>& plane) const
     {
         const BaseType& geom_1 = *this;
-        array_1d<double, 3> edge10 = geom_1[1].Coordinates() - geom_1[0].Coordinates();
-        array_1d<double, 3> edge20 = geom_1[2].Coordinates() - geom_1[0].Coordinates();
-        array_1d<double, 3> edge30 = geom_1[3].Coordinates() - geom_1[0].Coordinates();
-        array_1d<double, 3> edge21 = geom_1[2].Coordinates() - geom_1[1].Coordinates();
-        array_1d<double, 3> edge31 = geom_1[3].Coordinates() - geom_1[1].Coordinates();
+        array_1d<DataType, 3> edge10 = geom_1[1].Coordinates() - geom_1[0].Coordinates();
+        array_1d<DataType, 3> edge20 = geom_1[2].Coordinates() - geom_1[0].Coordinates();
+        array_1d<DataType, 3> edge30 = geom_1[3].Coordinates() - geom_1[0].Coordinates();
+        array_1d<DataType, 3> edge21 = geom_1[2].Coordinates() - geom_1[1].Coordinates();
+        array_1d<DataType, 3> edge31 = geom_1[3].Coordinates() - geom_1[1].Coordinates();
 
 
-        MathUtils<double>::UnitCrossProduct(plane[0].mNormal, edge20, edge10);  // <v0,v2,v1>
-        MathUtils<double>::UnitCrossProduct(plane[1].mNormal, edge10, edge30);  // <v0,v1,v3>
-        MathUtils<double>::UnitCrossProduct(plane[2].mNormal, edge30, edge20);  // <v0,v3,v2>
-        MathUtils<double>::UnitCrossProduct(plane[3].mNormal, edge21, edge31);  // <v1,v2,v3>
+        MathUtils<DataType>::UnitCrossProduct(plane[0].mNormal, edge20, edge10);  // <v0,v2,v1>
+        MathUtils<DataType>::UnitCrossProduct(plane[1].mNormal, edge10, edge30);  // <v0,v1,v3>
+        MathUtils<DataType>::UnitCrossProduct(plane[2].mNormal, edge30, edge20);  // <v0,v3,v2>
+        MathUtils<DataType>::UnitCrossProduct(plane[3].mNormal, edge21, edge31);  // <v1,v2,v3>
 
 
-        double det = inner_prod(edge10, plane[3].mNormal);
+        DataType det = inner_prod(edge10, plane[3].mNormal);
         if (det < 0.00)
         {
             // The normals are inner pointing, reverse their directions.

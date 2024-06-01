@@ -67,6 +67,9 @@ public:
     /// The index type definition
     typedef BaseType::IndexType IndexType;
 
+    /// The data type definition
+    typedef BaseType::DataType DataType;
+
     /// The DoF type definition
     typedef BaseType::DofType DofType;
 
@@ -85,7 +88,7 @@ public:
     /// The vector type definition
     typedef BaseType::VectorType VectorType;
 
-    /// The variable type definition (double)
+    /// The variable type definition (DataType)
     typedef BaseType::VariableType VariableType;
 
     /// The component variable type definition
@@ -139,7 +142,7 @@ public:
         IndexType Id,
         NodeType& rSlaveNode,
         const VariableType& rSlaveVariable,
-        const double Constant
+        const DataType Constant
         ) : MasterSlaveConstraint(Id)
     {
         // Resizing the member variables
@@ -166,7 +169,7 @@ public:
         IndexType Id,
         NodeType& rSlaveNode,
         const VariableComponentType& rSlaveVariable,
-        const double Constant
+        const DataType Constant
         ) : MasterSlaveConstraint(Id)
     {
         // Resizing the memeber variables
@@ -249,8 +252,8 @@ public:
         const VariableType& rMasterVariable,
         NodeType& rSlaveNode,
         const VariableType& rSlaveVariable,
-        const double Weight,
-        const double Constant
+        const DataType Weight,
+        const DataType Constant
         ) const override
     {
         return MasterSlaveConstraint::Pointer(new LinearConstraint(Id, rSlaveNode, rSlaveVariable, Constant));
@@ -273,8 +276,8 @@ public:
         const VariableComponentType& rMasterVariable,
         NodeType& rSlaveNode,
         const VariableComponentType& rSlaveVariable,
-        const double Weight,
-        const double Constant
+        const DataType Weight,
+        const DataType Constant
         ) const override
     {
         return MasterSlaveConstraint::Pointer(new LinearConstraint(Id, rSlaveNode, rSlaveVariable, Constant));

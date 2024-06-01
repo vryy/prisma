@@ -98,6 +98,11 @@ public:
     typedef TPointType PointType;
 
     /**
+     * Type used for double value.
+     */
+    typedef typename BaseType::DataType DataType;
+
+    /**
      * Type used for indexing in geometry class.
      * std::size_t used for indexing
      * point or integration point access methods and also all other
@@ -373,7 +378,7 @@ public:
      * In the current geometry this function returns the determinant of
      * jacobian
      *
-     * @return double value contains length or Characteristic
+     * @return DataType value contains length or Characteristic
      * length
      * @see Area()
      * @see Volume()
@@ -383,10 +388,10 @@ public:
      * :TODO: could be replaced by something more suitable
      * (comment by janosch)
      */
-    double Length() const override
+    DataType Length() const override
     {
         //return sqrt(fabs( DeterminantOfJacobian(PointType()))*0.5);
-        double length = 0.000;
+        DataType length = 0.000;
         length = 1.1283791670955 * sqrt( fabs( Area() ) );  // (4xA/Pi)^(1/2)
         return length;
     }
@@ -397,7 +402,7 @@ public:
      * geometry it returns zero, for two dimensional it gives area
      * and for three dimensional geometries it gives surface area.
      *
-     * @return double value contains area or surface
+     * @return DataType value contains area or surface
      * area.
      * @see Length()
      * @see Volume()
@@ -407,19 +412,19 @@ public:
      * :TODO: could be replaced by something more suitable
      * (comment by janosch)
      */
-    double Area() const override
+    DataType Area() const override
     {
         const PointType& p0 = this->operator [](0);
         const PointType& p1 = this->operator [](1);
         const PointType& p2 = this->operator [](2);
 
-        double x10 = p1.X() - p0.X();
-        double y10 = p1.Y() - p0.Y();
+        DataType x10 = p1.X() - p0.X();
+        DataType y10 = p1.Y() - p0.Y();
 
-        double x20 = p2.X() - p0.X();
-        double y20 = p2.Y() - p0.Y();
+        DataType x20 = p2.X() - p0.X();
+        DataType y20 = p2.Y() - p0.Y();
 
-        double detJ = x10 * y20-y10 * x20;
+        DataType detJ = x10 * y20-y10 * x20;
         return 0.5*detJ;
     }
 
@@ -429,24 +434,24 @@ public:
     {
         const BaseType& geom_1 = *this;
         const BaseType& geom_2 = rThisGeometry;
-        return NoDivTriTriIsect( static_cast<Point<3, double> >(geom_1[0].Coordinates()),
-                                 static_cast<Point<3, double> >(geom_1[1].Coordinates()),
-                                 static_cast<Point<3, double> >(geom_1[2].Coordinates()),
-                                 static_cast<Point<3, double> >(geom_2[0].Coordinates()),
-                                 static_cast<Point<3, double> >(geom_2[1].Coordinates()),
-                                 static_cast<Point<3, double> >(geom_2[2].Coordinates()) );
+        return NoDivTriTriIsect( static_cast<Point<3, DataType> >(geom_1[0].Coordinates()),
+                                 static_cast<Point<3, DataType> >(geom_1[1].Coordinates()),
+                                 static_cast<Point<3, DataType> >(geom_1[2].Coordinates()),
+                                 static_cast<Point<3, DataType> >(geom_2[0].Coordinates()),
+                                 static_cast<Point<3, DataType> >(geom_2[1].Coordinates()),
+                                 static_cast<Point<3, DataType> >(geom_2[2].Coordinates()) );
     }
 
 
     /// detect if  triangle and box are intersected
-    bool HasIntersection( const Point<3, double>& rLowPoint, const Point<3, double>& rHighPoint ) const override
+    bool HasIntersection( const Point<3, DataType>& rLowPoint, const Point<3, DataType>& rHighPoint ) const override
     {
         //return true;
         const BaseType& geom_1 = *this;
         //std::size_t dim        =  geom_1.WorkingSpaceDimension();
 
-        Point<3, double> boxcenter;
-        Point<3, double> boxhalfsize;
+        Point<3, DataType> boxcenter;
+        Point<3, DataType> boxhalfsize;
 
         boxcenter[0]   = 0.50 * (rLowPoint[0] + rHighPoint[0]);
         boxcenter[1]   = 0.50 * (rLowPoint[1] + rHighPoint[1]);
@@ -458,7 +463,7 @@ public:
         boxhalfsize[2] = 0.00;
 
         std::size_t size = geom_1.size();
-        std::vector<Point<3, double> > triverts;
+        std::vector<Point<3, DataType> > triverts;
         triverts.resize(size);
         for(unsigned int i = 0; i< size; i++ )
             triverts[i] =  geom_1.GetPoint(i);
@@ -475,7 +480,7 @@ public:
      * geometry it returns its length, for two dimensional it gives area
      * and for three dimensional geometries it gives its volume.
      *
-     * @return double value contains length, area or volume.
+     * @return DataType value contains length, area or volume.
      * @see Length()
      * @see Area()
      * @see Volume()
@@ -484,7 +489,7 @@ public:
      * :TODO: could be replaced by something more suitable
      * (comment by janosch)
      */
-    double DomainSize() const override
+    DataType DomainSize() const override
     {
         return this->Area();
     }
@@ -494,7 +499,7 @@ public:
      */
     bool IsInside( const CoordinatesArrayType& rPoint ) const override
     {
-        const double zero = 1E-8;
+        const DataType zero = 1E-8;
         if( ( rPoint[0] >= (0.0-zero) ) && ( rPoint[0] <= 1.0 + zero ) )
             if( ( rPoint[1] >= 0.0-zero ) && (rPoint[1] <= 1.0 + zero ) )
                 if(((1.0-(rPoint[0] + rPoint[1])) >= 0.0-zero) &&  ((1.0-(rPoint[0] + rPoint[1])) <= 1.0 + zero))
@@ -597,7 +602,7 @@ public:
      *
      * @return the value of the shape function at the given point
      */
-    double ShapeFunctionValue( IndexType ShapeFunctionIndex, const CoordinatesArrayType& rPoint ) const override
+    DataType ShapeFunctionValue( IndexType ShapeFunctionIndex, const CoordinatesArrayType& rPoint ) const override
     {
         switch ( ShapeFunctionIndex )
         {
@@ -634,12 +639,12 @@ public:
         const unsigned int integration_points_number =
             msGeometryData.IntegrationPointsNumber( ThisMethod );
 
-        boost::numeric::ublas::bounded_matrix<double,3,2> DN_DX;
-        double x10 = this->Points()[1].X() - this->Points()[0].X();
-        double y10 = this->Points()[1].Y() - this->Points()[0].Y();
+        boost::numeric::ublas::bounded_matrix<DataType,3,2> DN_DX;
+        DataType x10 = this->Points()[1].X() - this->Points()[0].X();
+        DataType y10 = this->Points()[1].Y() - this->Points()[0].Y();
 
-        double x20 = this->Points()[2].X() - this->Points()[0].X();
-        double y20 = this->Points()[2].Y() - this->Points()[0].Y();
+        DataType x20 = this->Points()[2].X() - this->Points()[0].X();
+        DataType y20 = this->Points()[2].Y() - this->Points()[0].Y();
 
         //Jacobian is calculated:
         //  |dx/dxi  dx/deta|	|x1-x0   x2-x0|
@@ -647,7 +652,7 @@ public:
         //  |dy/dxi  dy/deta|	|y1-y0   y2-y0|
 
 
-        double detJ = x10 * y20-y10 * x20;
+        DataType detJ = x10 * y20-y10 * x20;
 
         DN_DX(0,0) = -y20 + y10;
         DN_DX(0,1) =  x20 - x10;
@@ -674,12 +679,12 @@ public:
         const unsigned int integration_points_number =
             msGeometryData.IntegrationPointsNumber( ThisMethod );
 
-        boost::numeric::ublas::bounded_matrix<double,3,2> DN_DX;
-        double x10 = this->Points()[1].X() - this->Points()[0].X();
-        double y10 = this->Points()[1].Y() - this->Points()[0].Y();
+        boost::numeric::ublas::bounded_matrix<DataType,3,2> DN_DX;
+        DataType x10 = this->Points()[1].X() - this->Points()[0].X();
+        DataType y10 = this->Points()[1].Y() - this->Points()[0].Y();
 
-        double x20 = this->Points()[2].X() - this->Points()[0].X();
-        double y20 = this->Points()[2].Y() - this->Points()[0].Y();
+        DataType x20 = this->Points()[2].X() - this->Points()[0].X();
+        DataType y20 = this->Points()[2].Y() - this->Points()[0].Y();
 
         //Jacobian is calculated:
         //  |dx/dxi  dx/deta|	|x1-x0   x2-x0|
@@ -687,7 +692,7 @@ public:
         //  |dy/dxi  dy/deta|	|y1-y0   y2-y0|
 
 
-        double detJ = x10 * y20-y10 * x20;
+        DataType detJ = x10 * y20-y10 * x20;
 
         DN_DX(0,0) = -y20 + y10;
         DN_DX(0,1) =  x20 - x10;
@@ -1144,32 +1149,32 @@ private:
     *
     */
 
-    bool NoDivTriTriIsect( const Point<3,double>& V0,
-                           const Point<3,double>& V1,
-                           const Point<3,double>& V2,
-                           const Point<3,double>& U0,
-                           const Point<3,double>& U1,
-                           const Point<3,double>& U2) const
+    bool NoDivTriTriIsect( const Point<3,DataType>& V0,
+                           const Point<3,DataType>& V1,
+                           const Point<3,DataType>& V2,
+                           const Point<3,DataType>& U0,
+                           const Point<3,DataType>& U1,
+                           const Point<3,DataType>& U2) const
     {
         short index;
-        double d1,d2;
-        double du0,du1,du2,dv0,dv1,dv2;
-        double du0du1,du0du2,dv0dv1,dv0dv2;
-        double vp0,vp1,vp2;
-        double up0,up1,up2;
-        double bb,cc,max;
-        array_1d<double,2> isect1, isect2;
-        array_1d<double,3> D;
-        array_1d<double,3> E1,E2;
-        array_1d<double,3> N1,N2;
+        DataType d1,d2;
+        DataType du0,du1,du2,dv0,dv1,dv2;
+        DataType du0du1,du0du2,dv0dv1,dv0dv2;
+        DataType vp0,vp1,vp2;
+        DataType up0,up1,up2;
+        DataType bb,cc,max;
+        array_1d<DataType,2> isect1, isect2;
+        array_1d<DataType,3> D;
+        array_1d<DataType,3> E1,E2;
+        array_1d<DataType,3> N1,N2;
 
 
-        const double epsilon =  1E-6;
+        const DataType epsilon =  1E-6;
 
 // compute plane equation of triangle(V0,V1,V2) //
         noalias(E1) = V1-V0;
         noalias(E2) = V2-V0;
-        MathUtils<double>::CrossProduct(N1, E1, E2);
+        MathUtils<DataType>::CrossProduct(N1, E1, E2);
         d1=-inner_prod(N1,V0);
 // plane equation 1: N1.X+d1=0 //
 
@@ -1192,7 +1197,7 @@ private:
 // compute plane of triangle (U0,U1,U2) //
         noalias(E1) = U1 - U0;
         noalias(E2) = U2 - U0;
-        MathUtils<double>::CrossProduct(N2, E1, E2);
+        MathUtils<DataType>::CrossProduct(N2, E1, E2);
         d2=-inner_prod(N2,U0);
 // plane equation 2: N2.X+d2=0 //
 
@@ -1212,13 +1217,13 @@ private:
             return false;                   // no intersection occurs //
 
 // compute direction of intersection line //
-        MathUtils<double>::CrossProduct(D, N1, N2);
+        MathUtils<DataType>::CrossProduct(D, N1, N2);
 
 // compute and index to the largest component of D //
-        max=(double)fabs(D[0]);
+        max=(DataType)fabs(D[0]);
         index=0;
-        bb=(double)fabs(D[1]);
-        cc=(double)fabs(D[2]);
+        bb=(DataType)fabs(D[1]);
+        cc=(DataType)fabs(D[2]);
         if(bb>max)
         {
             max=bb,index=1;
@@ -1239,21 +1244,21 @@ private:
 
 
 // compute interval for triangle 1 //
-        double a,b,c,x0,x1;
+        DataType a,b,c,x0,x1;
         if( New_Compute_Intervals(vp0,vp1,vp2,dv0, dv1,dv2,dv0dv1,dv0dv2, a,b,c,x0,x1)==true )
         {
             return coplanar_tri_tri(N1,V0,V1,V2,U0,U1,U2);
         }
 
 // compute interval for triangle 2 //
-        double d,e,f,y0,y1;
+        DataType d,e,f,y0,y1;
         if( New_Compute_Intervals(up0, up1, up2, du0, du1, du2, du0du1, du0du2, d, e, f, y0, y1)==true )
         {
             return coplanar_tri_tri(N1,V0,V1,V2,U0,U1,U2);
         }
 
 
-        double xx,yy,xxyy,tmp;
+        DataType xx,yy,xxyy,tmp;
         xx=x0*x1;
         yy=y0*y1;
         xxyy=xx*yy;
@@ -1280,11 +1285,11 @@ private:
 
 
 // sort so that a<=b //
-    void Sort(double& a, double& b) const
+    void Sort(DataType& a, DataType& b) const
     {
         if(a>b)
         {
-            double c;
+            DataType c;
             c=a;
             a=b;
             b=c;
@@ -1294,19 +1299,19 @@ private:
 //*************************************************************************************
 //*************************************************************************************
 
-    bool New_Compute_Intervals( double& VV0,
-                                double& VV1,
-                                double& VV2,
-                                double& D0,
-                                double& D1,
-                                double& D2,
-                                double& D0D1,
-                                double& D0D2,
-                                double& A,
-                                double& B,
-                                double& C,
-                                double& X0,
-                                double& X1
+    bool New_Compute_Intervals( DataType& VV0,
+                                DataType& VV1,
+                                DataType& VV2,
+                                DataType& D0,
+                                DataType& D1,
+                                DataType& D2,
+                                DataType& D0D1,
+                                DataType& D0D2,
+                                DataType& A,
+                                DataType& B,
+                                DataType& C,
+                                DataType& X0,
+                                DataType& X1
                               ) const
     {
         if(D0D1>0.00)
@@ -1366,15 +1371,15 @@ private:
 //*************************************************************************************
 //*************************************************************************************
 
-    bool coplanar_tri_tri( const array_1d<double, 3>& N,
-                           const Point<3,double>& V0,
-                           const Point<3,double>& V1,
-                           const Point<3,double>& V2,
-                           const Point<3,double>& U0,
-                           const Point<3,double>& U1,
-                           const Point<3,double>& U2) const
+    bool coplanar_tri_tri( const array_1d<DataType, 3>& N,
+                           const Point<3,DataType>& V0,
+                           const Point<3,DataType>& V1,
+                           const Point<3,DataType>& V2,
+                           const Point<3,DataType>& U0,
+                           const Point<3,DataType>& U1,
+                           const Point<3,DataType>& U2) const
     {
-        array_1d<double, 3 > A;
+        array_1d<DataType, 3 > A;
         short i0,i1;
 
         // first project onto an axis-aligned plane, that maximizes the area //
@@ -1431,14 +1436,14 @@ private:
 
     bool Edge_Against_Tri_Edges(const short& i0,
                                 const short& i1,
-                                const Point<3,double>& V0,
-                                const Point<3,double>& V1,
-                                const Point<3,double>&U0,
-                                const Point<3,double>&U1,
-                                const Point<3,double>&U2) const
+                                const Point<3,DataType>& V0,
+                                const Point<3,DataType>& V1,
+                                const Point<3,DataType>&U0,
+                                const Point<3,DataType>&U1,
+                                const Point<3,DataType>&U2) const
     {
 
-        double Ax,Ay,Bx,By,Cx,Cy,e,d,f;
+        DataType Ax,Ay,Bx,By,Cx,Cy,e,d,f;
         Ax=V1[i0]-V0[i0];
         Ay=V1[i1]-V0[i1];
         // test edge U0,U1 against V0,V1 //
@@ -1461,20 +1466,20 @@ private:
 //   this edge to edge test is based on Franlin Antonio's gem:
 //   "Faster Line Segment Intersection", in Graphics Gems III,
 //   pp. 199-202
-    bool Edge_Edge_Test(double& Ax,
-                        double& Ay,
-                        double& Bx,
-                        double& By,
-                        double& Cx,
-                        double& Cy,
-                        double& e,
-                        double& d,
-                        double& f,
+    bool Edge_Edge_Test(DataType& Ax,
+                        DataType& Ay,
+                        DataType& Bx,
+                        DataType& By,
+                        DataType& Cx,
+                        DataType& Cy,
+                        DataType& e,
+                        DataType& d,
+                        DataType& f,
                         const short& i0,
                         const short& i1,
-                        const Point<3,double>&V0,
-                        const Point<3,double>&U0,
-                        const Point<3,double>&U1) const
+                        const Point<3,DataType>&V0,
+                        const Point<3,DataType>&U0,
+                        const Point<3,DataType>&U1) const
     {
         Bx=U0[i0]-U1[i0];
         By=U0[i1]-U1[i1];
@@ -1509,12 +1514,12 @@ private:
 
     bool Point_In_Tri(const short& i0,
                       const short& i1,
-                      const Point<3,double>& V0,
-                      const Point<3,double>& U0,
-                      const Point<3,double>& U1,
-                      const Point<3,double>& U2) const
+                      const Point<3,DataType>& V0,
+                      const Point<3,DataType>& U0,
+                      const Point<3,DataType>& U1,
+                      const Point<3,DataType>& U2) const
     {
-        double a,b,c,d0,d1,d2;
+        DataType a,b,c,d0,d1,d2;
         // is T1 completly inside T2? //
         // check if V0 is inside tri(U0,U1,U2) //
         a=U1[i1]-U0[i1];
@@ -1543,7 +1548,7 @@ private:
 //*************************************************************************************
 
 
-    inline bool TriBoxOverlap(Point<3, double>& boxcenter, Point<3, double>& boxhalfsize, std::vector< Point<3, double> >& triverts) const
+    inline bool TriBoxOverlap(Point<3, DataType>& boxcenter, Point<3, DataType>& boxhalfsize, std::vector< Point<3, DataType> >& triverts) const
     {
 
         /*    use separating axis theorem to test overlap between triangle and box */
@@ -1554,10 +1559,10 @@ private:
         /*    3) crossproduct(edge from tri, {x,y,z}-directin) */
         /*       this gives 3x3=9 more tests */
 
-        double min,max,d,p0,p1,p2,rad,fex,fey,fez;
-        array_1d<double,3 > v0,v1,v2;
-        array_1d<double,3 > axis;
-        array_1d<double,3 > normal, e0, e1 ,e2;
+        DataType min,max,d,p0,p1,p2,rad,fex,fey,fez;
+        array_1d<DataType,3 > v0,v1,v2;
+        array_1d<DataType,3 > axis;
+        array_1d<DataType,3 > normal, e0, e1 ,e2;
 //
 // 		  /* This is the fastest branch on Sun */
 // 		  /* move everything so that the boxcenter is in (0,0,0) */
@@ -1627,7 +1632,7 @@ private:
         /* Bullet 2: */
         /*  test if the box intersects the plane of the triangle */
         /*  compute plane equation of triangle: normal*x+d=0 */
-        MathUtils<double>::CrossProduct(normal, e0, e1);
+        MathUtils<DataType>::CrossProduct(normal, e0, e1);
         d=-inner_prod(normal,v0);  /* plane eq: normal.x+d=0 */
         if(!planeBoxOverlap(normal,d,boxhalfsize)) return false;
 
@@ -1639,11 +1644,11 @@ private:
 //*************************************************************************************
 //*************************************************************************************
 
-    void FindMinMax(const double& x0,
-                    const double& x1,
-                    const double& x2,
-                    double& min,
-                    double& max) const
+    void FindMinMax(const DataType& x0,
+                    const DataType& x1,
+                    const DataType& x2,
+                    DataType& min,
+                    DataType& max) const
     {
         min = max = x0;
         if(x1<min) min=x1;
@@ -1655,10 +1660,10 @@ private:
 //*************************************************************************************
 //*************************************************************************************
 
-    bool planeBoxOverlap(const array_1d<double,3 >& normal,  const double& d, const array_1d<double,3 >& maxbox) const
+    bool planeBoxOverlap(const array_1d<DataType,3 >& normal,  const DataType& d, const array_1d<DataType,3 >& maxbox) const
     {
         int q;
-        array_1d<double,3 >  vmin,vmax;
+        array_1d<DataType,3 >  vmin,vmax;
         for(q=0; q<=2; q++)
         {
             if(normal[q]>0.00)
@@ -1681,13 +1686,13 @@ private:
 //*************************************************************************************
 
     /*======================== X-tests ========================*/
-    unsigned int  AxisTest_X01(double& a,   double& b,
-                               double& fa,  double& fb,
-                               double& p0,  double& p2,
-                               double& min, double& max, double& rad,
-                               array_1d<double,3 >& v0,
-                               array_1d<double,3 >& v2,
-                               Point<3, double>& boxhalfsize
+    unsigned int  AxisTest_X01(DataType& a,   DataType& b,
+                               DataType& fa,  DataType& fb,
+                               DataType& p0,  DataType& p2,
+                               DataType& min, DataType& max, DataType& rad,
+                               array_1d<DataType,3 >& v0,
+                               array_1d<DataType,3 >& v2,
+                               Point<3, DataType>& boxhalfsize
                               ) const
     {
         p0 = a*v0[1] - b*v0[2];
@@ -1707,13 +1712,13 @@ private:
         else return 1;
     }
 
-    unsigned int  AxisTest_X2(double& a,   double& b,
-                              double& fa,  double& fb,
-                              double& p0,  double& p1,
-                              double& min, double& max, double& rad,
-                              array_1d<double,3 >& v0,
-                              array_1d<double,3 >& v1,
-                              Point<3, double>& boxhalfsize
+    unsigned int  AxisTest_X2(DataType& a,   DataType& b,
+                              DataType& fa,  DataType& fb,
+                              DataType& p0,  DataType& p1,
+                              DataType& min, DataType& max, DataType& rad,
+                              array_1d<DataType,3 >& v0,
+                              array_1d<DataType,3 >& v1,
+                              Point<3, DataType>& boxhalfsize
                              ) const
     {
         p0 = a*v0[1] - b*v0[2];
@@ -1736,13 +1741,13 @@ private:
 //*************************************************************************************
 
     /*======================== Y-tests ========================*/
-    unsigned int  AxisTest_Y02(double& a, double& b,
-                               double& fa,  double& fb,
-                               double& p0,  double& p2,
-                               double& min, double& max, double& rad,
-                               array_1d<double,3 >& v0,
-                               array_1d<double,3 >& v2,
-                               Point<3, double>& boxhalfsize
+    unsigned int  AxisTest_Y02(DataType& a, DataType& b,
+                               DataType& fa,  DataType& fb,
+                               DataType& p0,  DataType& p2,
+                               DataType& min, DataType& max, DataType& rad,
+                               array_1d<DataType,3 >& v0,
+                               array_1d<DataType,3 >& v2,
+                               Point<3, DataType>& boxhalfsize
                               ) const
     {
 
@@ -1763,13 +1768,13 @@ private:
         else return 1;
     }
 
-    unsigned int  AxisTest_Y1(double& a,   double& b,
-                              double& fa,  double& fb,
-                              double& p0,  double& p1,
-                              double& min, double& max, double& rad,
-                              array_1d<double,3 >& v0,
-                              array_1d<double,3 >& v1,
-                              Point<3, double>& boxhalfsize
+    unsigned int  AxisTest_Y1(DataType& a,   DataType& b,
+                              DataType& fa,  DataType& fb,
+                              DataType& p0,  DataType& p1,
+                              DataType& min, DataType& max, DataType& rad,
+                              array_1d<DataType,3 >& v0,
+                              array_1d<DataType,3 >& v1,
+                              Point<3, DataType>& boxhalfsize
                              ) const
 
     {

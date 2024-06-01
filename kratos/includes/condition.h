@@ -96,6 +96,8 @@ public:
 
     typedef typename NodeType::DofType DofType;
 
+    typedef typename DofType::DataType DataType;
+
     typedef std::vector<std::size_t> EquationIdVectorType;
 
     typedef std::vector<typename DofType::Pointer> DofsVectorType;
@@ -737,7 +739,7 @@ public:
     }
 
     /**
-     * @brief This function is designed to make the condition to assemble an rRHS vector identified by a variable rRHSVariable by assembling it to the nodes on the variable rDestinationVariable. (This is the double version)
+     * @brief This function is designed to make the condition to assemble an rRHS vector identified by a variable rRHSVariable by assembling it to the nodes on the variable rDestinationVariable. (This is the DataType version)
      * @details The "AddExplicit" FUNCTIONS THE ONLY FUNCTIONS IN WHICH A CONDITION IS ALLOWED TO WRITE ON ITS NODES. The caller is expected to ensure thread safety hence SET-/UNSET-LOCK MUST BE PERFORMED IN THE STRATEGY BEFORE CALLING THIS FUNCTION
      * @param rRHSVector input variable containing the RHS vector to be assembled
      * @param rRHSVariable variable describing the type of the RHS vector to be assembled
@@ -747,7 +749,7 @@ public:
     virtual void AddExplicitContribution(
         const VectorType& rRHSVector,
         const Variable<VectorType>& rRHSVariable,
-        const Variable<double >& rDestinationVariable,
+        const Variable<DataType>& rDestinationVariable,
         const ProcessInfo& rCurrentProcessInfo
         )
     {
@@ -765,7 +767,7 @@ public:
     virtual void AddExplicitContribution(
         const VectorType& rRHSVector,
         const Variable<VectorType>& rRHSVariable,
-        const Variable<array_1d<double,3> >& rDestinationVariable,
+        const Variable<array_1d<DataType, 3> >& rDestinationVariable,
         const ProcessInfo& rCurrentProcessInfo
         )
     {
@@ -796,25 +798,25 @@ public:
      * Calculate(..) methods are: OPTIONAL
      */
 
-    virtual void Calculate(const Variable<double >& rVariable,
-               double& Output,
+    virtual void Calculate(const Variable<DataType>& rVariable,
+               DataType& Output,
                const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
-    virtual void Calculate(const Variable< array_1d<double,3> >& rVariable,
-               array_1d<double,3>& Output,
+    virtual void Calculate(const Variable< array_1d<DataType, 3> >& rVariable,
+               array_1d<DataType, 3>& Output,
                const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
-    virtual void Calculate(const Variable<Vector >& rVariable,
+    virtual void Calculate(const Variable<Vector>& rVariable,
                Vector& Output,
                const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
-    virtual void Calculate(const Variable<Matrix >& rVariable,
+    virtual void Calculate(const Variable<Matrix>& rVariable,
                Matrix& Output,
                const ProcessInfo& rCurrentProcessInfo)
     {
@@ -842,20 +844,20 @@ public:
     {
     }
 
-    virtual void CalculateOnIntegrationPoints(const Variable<double>& rVariable,
-                          std::vector<double>& rValues,
+    virtual void CalculateOnIntegrationPoints(const Variable<DataType>& rVariable,
+                          std::vector<DataType>& rValues,
                           const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
-    virtual void CalculateOnIntegrationPoints(const Variable<array_1d<double, 3 > >& rVariable,
-                          std::vector<array_1d<double, 3 > >& rValues,
+    virtual void CalculateOnIntegrationPoints(const Variable<array_1d<DataType, 3> >& rVariable,
+                          std::vector<array_1d<DataType, 3> >& rValues,
                           const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
-    virtual void CalculateOnIntegrationPoints(const Variable<array_1d<double, 6 > >& rVariable,
-                          std::vector<array_1d<double, 6 > >& rValues,
+    virtual void CalculateOnIntegrationPoints(const Variable<array_1d<DataType, 6> >& rVariable,
+                          std::vector<array_1d<DataType, 6> >& rValues,
                           const ProcessInfo& rCurrentProcessInfo)
     {
     }
@@ -903,20 +905,20 @@ public:
     {
     }
 
-    virtual void SetValuesOnIntegrationPoints(const Variable<double>& rVariable,
-                         const std::vector<double>& rValues,
+    virtual void SetValuesOnIntegrationPoints(const Variable<DataType>& rVariable,
+                         const std::vector<DataType>& rValues,
                          const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
-    virtual void SetValuesOnIntegrationPoints(const Variable<array_1d<double, 3 > >& rVariable,
-                         const std::vector<array_1d<double, 3 > >& rValues,
+    virtual void SetValuesOnIntegrationPoints(const Variable<array_1d<DataType, 3> >& rVariable,
+                         const std::vector<array_1d<DataType, 3> >& rValues,
                          const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
-    virtual void SetValuesOnIntegrationPoints(const Variable<array_1d<double, 6 > >& rVariable,
-                         const std::vector<array_1d<double, 6 > >& rValues,
+    virtual void SetValuesOnIntegrationPoints(const Variable<array_1d<DataType, 6> >& rVariable,
+                         const std::vector<array_1d<DataType, 6> >& rValues,
                          const ProcessInfo& rCurrentProcessInfo)
     {
     }
@@ -948,22 +950,22 @@ public:
         this->CalculateOnIntegrationPoints(rVariable, rValues, rCurrentProcessInfo);
     }
 
-    void GetValuesOnIntegrationPoints(const Variable<double>& rVariable,
-                         std::vector<double>& rValues,
+    void GetValuesOnIntegrationPoints(const Variable<DataType>& rVariable,
+                         std::vector<DataType>& rValues,
                          const ProcessInfo& rCurrentProcessInfo)
     {
         this->CalculateOnIntegrationPoints(rVariable, rValues, rCurrentProcessInfo);
     }
 
-    void GetValuesOnIntegrationPoints(const Variable<array_1d<double, 3 > >& rVariable,
-                         std::vector<array_1d<double, 3 > >& rValues,
+    void GetValuesOnIntegrationPoints(const Variable<array_1d<DataType, 3> >& rVariable,
+                         std::vector<array_1d<DataType, 3> >& rValues,
                          const ProcessInfo& rCurrentProcessInfo)
     {
         this->CalculateOnIntegrationPoints(rVariable, rValues, rCurrentProcessInfo);
     }
 
-    void GetValuesOnIntegrationPoints(const Variable<array_1d<double, 6 > >& rVariable,
-                         std::vector<array_1d<double, 6 > >& rValues,
+    void GetValuesOnIntegrationPoints(const Variable<array_1d<DataType, 6> >& rVariable,
+                         std::vector<array_1d<DataType, 6> >& rValues,
                          const ProcessInfo& rCurrentProcessInfo)
     {
         this->CalculateOnIntegrationPoints(rVariable, rValues, rCurrentProcessInfo);
@@ -1057,7 +1059,7 @@ public:
      * @param rCurrentProcessInfo the current process info instance
      */
     virtual void AddMassMatrix(MatrixType& rLeftHandSideMatrix,
-                               double coeff, const ProcessInfo& rCurrentProcessInfo)
+                               DataType coeff, const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
@@ -1080,7 +1082,7 @@ public:
      * adds the inertia forces to the RHS --> performs residua = static_residua - coeff*M*acc
      * @param rCurrentProcessInfo the current process info instance
      */
-    virtual void AddInertiaForces(VectorType& rRightHandSideVector, double coeff,
+    virtual void AddInertiaForces(VectorType& rRightHandSideVector, DataType coeff,
                                   const ProcessInfo& rCurrentProcessInfo)
     {
     }
@@ -1089,7 +1091,7 @@ public:
      * adds the damping forces to the RHS, e.g performs residua = static_residua - coeff*D*vel
      * @param rCurrentProcessInfo the current process info instance
      */
-    virtual void AddDampingForces(VectorType& rRightHandSideVector, double coeff,
+    virtual void AddDampingForces(VectorType& rRightHandSideVector, DataType coeff,
                                   const ProcessInfo& rCurrentProcessInfo)
     {
     }

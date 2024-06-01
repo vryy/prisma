@@ -807,4 +807,4 @@ class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLegendreIntegrationPoints<10> : 
 
 }  // namespace Kratos.
 
-#endif // KRATOS_QUADRILATERAL_GAUSS_LEGENDRE_INTEGRATION_POINTS_H_INCLUDED  defined 
+#endif // KRATOS_QUADRILATERAL_GAUSS_LEGENDRE_INTEGRATION_POINTS_H_INCLUDED  defined

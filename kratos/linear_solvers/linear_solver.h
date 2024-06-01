@@ -124,6 +124,8 @@ public:
 
     typedef std::size_t  SizeType;
 
+    typedef typename TSparseSpaceType::DataType DataType;
+
     ///@}
     ///@name Life Cycle
     ///@{
@@ -297,17 +299,16 @@ public:
         mpReorderer = pNewReorderer;
     }
 
-    virtual void SetTolerance(double NewTolerance)
+    virtual void SetTolerance(DataType NewTolerance)
     {
-        std::cout << "WARNING: Accessed base function Kratos::LinearSolver::SetTolerance(double). This does nothing !" << std::endl;
+        std::cout << "WARNING: Accessed base function Kratos::LinearSolver::SetTolerance(" << DataTypeToString<DataType>::Get() << "). This does nothing !" << std::endl;
     }
 
-    virtual double GetTolerance()
+    virtual DataType GetTolerance()
     {
         std::cout << "WARNING: Accessed base function Kratos::LinearSolver::GetTolerance(). No tolerance defined, returning 0 !" << std::endl ;
         return 0;
     }
-
 
     ///@}
     ///@name Inquiry

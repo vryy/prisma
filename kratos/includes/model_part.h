@@ -102,11 +102,6 @@ public:
     /// Pointer definition of ModelPart
     KRATOS_CLASS_POINTER_DEFINITION(ModelPart);
 
-    typedef Kratos::Variable<double> DoubleVariableType;
-    typedef Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<double, 3>>> VariableComponentType;
-    typedef Matrix MatrixType;
-    typedef Vector VectorType;
-
     typedef Node < 3 > NodeType;
     typedef Properties PropertiesType;
     typedef Element ElementType;
@@ -118,11 +113,18 @@ public:
 
     typedef Mesh<NodeType, PropertiesType, ElementType, ConditionType> MeshType;
 
+    typedef MeshType::DataType DataType;
+
     typedef MeshType::IndexType IndexType;
 
     typedef MeshType::SizeType SizeType;
 
     typedef PointerVector<MeshType> MeshesContainerType;
+
+    typedef Kratos::Variable<DataType> DoubleVariableType;
+    typedef Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<DataType, 3>>> VariableComponentType;
+    typedef Matrix MatrixType;
+    typedef Vector VectorType;
 
     /// Nodes container. Which is a vector set of nodes with their Id's as key.
     typedef MeshType::NodesContainerType NodesContainerType;
@@ -194,8 +196,8 @@ public:
         usage. */
     typedef MeshType::ConditionConstantIterator ConditionConstantIterator;
 
-    /// Defining a table with double argument and result type as table type.
-    typedef Table<double,double> TableType;
+    /// Defining a table with DataType argument and result type as table type.
+    typedef Table<DataType, DataType> TableType;
 
     /// The container of the tables. A vector map of the tables.
     typedef PointerVectorMap<SizeType, TableType> TablesContainerType;
@@ -304,9 +306,9 @@ public:
 
     IndexType CloneTimeStep();
 
-    IndexType CreateTimeStep(double NewTime);
+    IndexType CreateTimeStep(DataType NewTime);
 
-    IndexType CloneTimeStep(double NewTime);
+    IndexType CloneTimeStep(DataType NewTime);
 
     void OverwriteSolutionStepData(IndexType SourceSolutionStepIndex, IndexType DestinationSourceSolutionStepIndex);
 
@@ -316,7 +318,7 @@ public:
 
     ///ATTENTION: this function does not touch the coordinates of the nodes.
     ///It just resets the database values to the values at the beginning of the time step
-    void ReduceTimeStep(ModelPart& rModelPart, double NewTime);
+    void ReduceTimeStep(ModelPart& rModelPart, DataType NewTime);
 
     ///@}
     ///@name Nodes
@@ -333,11 +335,11 @@ public:
 
     /** Inserts a node in the current mesh.
      */
-    NodeType::Pointer CreateNewNode(int Id, double x, double y, double z, VariablesList* pNewVariablesList, IndexType ThisIndex = 0);
+    NodeType::Pointer CreateNewNode(int Id, DataType x, DataType y, DataType z, VariablesList* pNewVariablesList, IndexType ThisIndex = 0);
 
-    NodeType::Pointer CreateNewNode(IndexType Id, double x, double y, double z, IndexType ThisIndex = 0);
+    NodeType::Pointer CreateNewNode(IndexType Id, DataType x, DataType y, DataType z, IndexType ThisIndex = 0);
 
-    NodeType::Pointer CreateNewNode(IndexType Id, double x, double y, double z, double* pThisData, IndexType ThisIndex = 0);
+    NodeType::Pointer CreateNewNode(IndexType Id, DataType x, DataType y, DataType z, DataType* pThisData, IndexType ThisIndex = 0);
 
     NodeType::Pointer CreateNewNode(IndexType NodeId, NodeType const& rSourceNode, IndexType ThisIndex = 0);
 
@@ -629,12 +631,12 @@ public:
     MasterSlaveConstraint::Pointer CreateNewMasterSlaveConstraint(const std::string& ConstraintName,
         const IndexType& Id, NodeType& rMasterNode, const DoubleVariableType& rMasterVariable,
         NodeType& rSlaveNode, const DoubleVariableType& rSlaveVariable,
-        const double& Weight, const double& Constant, const IndexType& ThisIndex = 0);
+        const DataType& Weight, const DataType& Constant, const IndexType& ThisIndex = 0);
 
     MasterSlaveConstraint::Pointer CreateNewMasterSlaveConstraint(const std::string& ConstraintName,
         const IndexType& Id, NodeType& rMasterNode, const VariableComponentType& rMasterVariable,
         NodeType& rSlaveNode, const VariableComponentType& rSlaveVariable,
-        const double& Weight, const double& Constant, const IndexType& ThisIndex = 0);
+        const DataType& Weight, const DataType& Constant, const IndexType& ThisIndex = 0);
 
     MasterSlaveConstraint::Pointer CreateNewMasterSlaveConstraintNoUnique(const std::string& ConstraintName,
         const IndexType& Id, DofsVectorType& rMasterDofsVector, DofsVectorType& rSlaveDofsVector,

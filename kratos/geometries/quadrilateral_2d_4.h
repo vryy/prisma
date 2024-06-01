@@ -95,6 +95,11 @@ public:
     typedef TPointType PointType;
 
     /**
+     * Type used for double value.
+     */
+    typedef typename BaseType::DataType DataType;
+
+    /**
      * Type used for indexing in geometry class.
      * std::size_t used for indexing
      * point or integration point access methods and also all other
@@ -376,7 +381,7 @@ public:
      * In the current geometry this function returns the determinant of
      * jacobian
      *
-     * @return double value contains length or Characteristic
+     * @return DataType value contains length or Characteristic
      * length
      * @see Area()
      * @see Volume()
@@ -386,10 +391,10 @@ public:
      * :TODO: could be replaced by something more suitable
      * (comment by janosch)
      */
-    double Length() const override
+    DataType Length() const override
     {
         //return sqrt(fabs( DeterminantOfJacobian(PointType())));
-        double length = 0.000;
+        DataType length = 0.000;
         length = sqrt( fabs( Area() ) );
         return length;
 
@@ -400,7 +405,7 @@ public:
      * geometry it returns zero, for two dimensional it gives area
      * and for three dimensional geometries it gives surface area.
      *
-     * @return double value contains area or surface
+     * @return DataType value contains area or surface
      * area.N
      * @see Length()
      * @see Volume()
@@ -410,13 +415,13 @@ public:
      * :TODO: could be replaced by something more suitable
      * (comment by janosch)
      */
-    double Area() const override
+    DataType Area() const override
     {
 
         Vector temp;
         this->DeterminantOfJacobian( temp, msGeometryData.DefaultIntegrationMethod() );
         const IntegrationPointsArrayType& integration_points = this->IntegrationPoints( msGeometryData.DefaultIntegrationMethod() );
-        double Area = 0.00;
+        DataType Area = 0.00;
 
         for ( unsigned int i = 0; i < integration_points.size(); i++ )
         {
@@ -435,7 +440,7 @@ public:
      * geometry it returns its length, for two dimensional it gives area
      * and for three dimensional geometries it gives its volume.
      *
-     * @return double value contains length, area or volume.
+     * @return DataType value contains length, area or volume.
      * @see Length()
      * @see Area()
      * @see Volume()
@@ -444,7 +449,7 @@ public:
      * :TODO: could be replaced by something more suitable
      * (comment by janosch)
      */
-    double DomainSize() const override
+    DataType DomainSize() const override
     {
         return Area();
     }
@@ -513,7 +518,7 @@ public:
      *
      * @return the value of the shape function at the given point
      */
-    double ShapeFunctionValue( IndexType ShapeFunctionIndex, const CoordinatesArrayType& rPoint ) const override
+    DataType ShapeFunctionValue( IndexType ShapeFunctionIndex, const CoordinatesArrayType& rPoint ) const override
     {
         switch ( ShapeFunctionIndex )
         {

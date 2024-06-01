@@ -181,6 +181,7 @@ namespace Kratos
       //DISPLACEMENT
       //movement
       KRATOS_REGISTER_3D_VARIABLE_WITH_COMPONENTS( DISPLACEMENT )
+      // std::cout << "Variable " << DISPLACEMENT << " is registerred" << std::endl;
       //reaction
       KRATOS_REGISTER_3D_VARIABLE_WITH_COMPONENTS( REACTION )
       //movement time derivatives
@@ -190,6 +191,7 @@ namespace Kratos
 
       //THERMAL DOFS
       KRATOS_REGISTER_VARIABLE( TEMPERATURE )
+      // std::cout << "Variable " << TEMPERATURE << " is registerred" << std::endl;
 
       //PRESSURE DOFS
       KRATOS_REGISTER_VARIABLE( PRESSURE )

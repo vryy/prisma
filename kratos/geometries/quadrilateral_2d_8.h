@@ -66,10 +66,9 @@ public:
     typedef TPointType PointType;
 
     /**
-     * Array of coordinates. Can be Nodes, Points or IntegrationPoints
+     * Type used for double value.
      */
-    //typedef typename BaseType::CoordinatesArrayType CoordinatesArrayType;
-
+    typedef typename BaseType::DataType DataType;
 
     /**
      * Type used for indexing in geometry class.
@@ -351,7 +350,7 @@ public:
      * and for the other geometries it gives Characteristic length
      * otherwise.
      *
-     * @return double value contains length or Characteristic
+     * @return DataType value contains length or Characteristic
      * length
      * @see Area()
      * @see Volume()
@@ -361,9 +360,9 @@ public:
      * :TODO: the characteristic length is to be reviewed
      * (comment by janosch)
      */
-    double Length() const override
+    DataType Length() const override
     {
-        double length = 0.000;
+        DataType length = 0.000;
         length = sqrt( fabs( Area() ) );
         return length;
     }
@@ -374,7 +373,7 @@ public:
      * geometry it returns zero, for two dimensional it gives area
      * and for three dimensional geometries it gives surface area.
      *
-     * @return double value contains area or surface
+     * @return DataType value contains area or surface
      * area.
      * @see Length()
      * @see Volume()
@@ -384,13 +383,13 @@ public:
      * :TODO: the characteristic area is to be reviewed
      * (comment by janosch)
      */
-    double Area() const override
+    DataType Area() const override
     {
 
         Vector temp;
         this->DeterminantOfJacobian( temp, msGeometryData.DefaultIntegrationMethod() );
         const IntegrationPointsArrayType& integration_points = this->IntegrationPoints( msGeometryData.DefaultIntegrationMethod() );
-        double Area = 0.00;
+        DataType Area = 0.00;
 
         for ( unsigned int i = 0; i < integration_points.size(); i++ )
         {
@@ -410,7 +409,7 @@ public:
      * this geometry depending to it's dimension. For one dimensional
      * geometry it returns its length, for two dimensional it gives area
      * and for three dimensional geometries it gives its volume.
-     * @return double value contains length, area or volume.
+     * @return DataType value contains length, area or volume.
      * @see Length()
      * @see Area()
      * @see Volume()
@@ -419,7 +418,7 @@ public:
      * :TODO: the characteristic domain size is to be reviewed
      * (comment by janosch)
      */
-    double DomainSize() const override
+    DataType DomainSize() const override
     {
         return Area();
     }
@@ -570,7 +569,7 @@ public:
 //     * @param ThisMethod integration method which jacobians has to
 //     * be calculated in its integration points.
 //     *
-//     * @return Matrix(double) Jacobian matrix \f$ J_i \f$ where \f$
+//     * @return Matrix(DataType) Jacobian matrix \f$ J_i \f$ where \f$
 //     * i \f$ is the given integration point index of given
 //     * integration method.
 //     * @see DeterminantOfJacobian
@@ -586,7 +585,7 @@ public:
 //        Matrix ShapeFunctionsGradientInIntegrationPoint =
 //            shape_functions_gradients( IntegrationPointIndex );
 //        //values of shape functions in integration points
-//        vector<double> ShapeFunctionValuesInIntegrationPoint = ZeroVector( 8 );
+//        vector<DataType> ShapeFunctionValuesInIntegrationPoint = ZeroVector( 8 );
 //        ShapeFunctionValuesInIntegrationPoint =
 //            row( CalculateShapeFunctionsIntegrationPointsValues(
 //                     ThisMethod ), IntegrationPointIndex );
@@ -620,7 +619,7 @@ public:
 //     * @param rPoint point which jacobians has to
 //     * be calculated in it.
 //     *
-//     * @return Matrix of double which is jacobian matrix \f$ J \f$ in given point.
+//     * @return Matrix of DataType which is jacobian matrix \f$ J \f$ in given point.
 //     *
 //     * @see DeterminantOfJacobian
 //     * @see InverseOfJacobian
@@ -655,7 +654,7 @@ public:
 //     * This method calculate determinant of jacobian in all
 //     * integrations points of given integration method.
 //     *
-//     * @return Vector of double which is vector of determinants of
+//     * @return Vector of DataType which is vector of determinants of
 //     * jacobians \f$ |J|_i \f$ where \f$ i=1,2,...,n \f$ is the
 //     * integration point index of given integration method.
 //     *
@@ -705,7 +704,7 @@ public:
 //     * @see Jacobian
 //     * @see InverseOfJacobian
 //     */
-//    virtual double DeterminantOfJacobian( IndexType IntegrationPointIndex, IntegrationMethod ThisMethod ) const
+//    virtual DataType DeterminantOfJacobian( IndexType IntegrationPointIndex, IntegrationMethod ThisMethod ) const
 //    {
 //        Matrix jacobian = ZeroMatrix( 2, 2 );
 //        jacobian = Jacobian( jacobian, IntegrationPointIndex, ThisMethod );
@@ -729,7 +728,7 @@ public:
 //     * @see DeterminantOfJacobian
 //     * @see InverseOfJacobian
 //     */
-//    virtual double DeterminantOfJacobian( const CoordinatesArrayType& rPoint ) const
+//    virtual DataType DeterminantOfJacobian( const CoordinatesArrayType& rPoint ) const
 //    {
 //        Matrix jacobian = ZeroMatrix( 2, 2 );
 //        jacobian = Jacobian( jacobian, rPoint );
@@ -807,7 +806,7 @@ public:
 //        Matrix tempMatrix = ZeroMatrix( 2, 2 );
 //        tempMatrix = Jacobian( tempMatrix, IntegrationPointIndex, ThisMethod );
 //        //determinant of jacobian
-//        double det_j = DeterminantOfJacobian( IntegrationPointIndex, ThisMethod );
+//        DataType det_j = DeterminantOfJacobian( IntegrationPointIndex, ThisMethod );
 //        //checking for singularity
 
 //        if ( det_j == 0.00 )
@@ -850,7 +849,7 @@ public:
 //        tempMatrix.resize( 2, 2, false );
 //        tempMatrix = this->Jacobian( tempMatrix, rPoint );
 //        //deteminant of Jacobian
-//        double det_j = DeterminantOfJacobian( rPoint );
+//        DataType det_j = DeterminantOfJacobian( rPoint );
 //        //checking for singularity
 
 //        if ( det_j == 0.00 )
@@ -923,7 +922,7 @@ public:
      *
      * @return the value of the shape function at the given point
      */
-    double ShapeFunctionValue( IndexType ShapeFunctionIndex, const CoordinatesArrayType& rPoint ) const override
+    DataType ShapeFunctionValue( IndexType ShapeFunctionIndex, const CoordinatesArrayType& rPoint ) const override
     {
         switch ( ShapeFunctionIndex )
         {

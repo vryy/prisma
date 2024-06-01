@@ -93,6 +93,11 @@ public:
     typedef TPointType PointType;
 
     /**
+     * Type used for double value.
+     */
+    typedef typename BaseType::DataType DataType;
+
+    /**
      * Type used for indexing in geometry class.
      * std::size_t used for indexing
      * point or integration point access methods and also all other
@@ -388,7 +393,7 @@ public:
      * In the current geometry this function returns the determinant of
      * jacobian
      *
-     * @return double value contains length or Characteristic
+     * @return DataType value contains length or Characteristic
      * length
      * @see Area()
      * @see Volume()
@@ -398,7 +403,7 @@ public:
      * :TODO: could be replaced by something more suitable
      * (comment by janosch)
      */
-    double Length() const override
+    DataType Length() const override
     {
         return sqrt( fabs( Area() ) );
     }
@@ -408,7 +413,7 @@ public:
      * geometry it returns zero, for two dimensional it gives area
      * and for three dimensional geometries it gives surface area.
      *
-     * @return double value contains area or surfacede
+     * @return DataType value contains area or surfacede
      * area.
      * @see Length()
      * @see Volume()
@@ -418,14 +423,14 @@ public:
      * :TODO: could be replaced by something more suitable
      * (comment by janosch)
      */
-    double Area() const override
+    DataType Area() const override
     {
 
         Vector temp;
         this->DeterminantOfJacobian( temp, msGeometryData.DefaultIntegrationMethod() );
 
         const IntegrationPointsArrayType& integration_points = this->IntegrationPoints( msGeometryData.DefaultIntegrationMethod() );
-        double area = 0.00;
+        DataType area = 0.00;
 
         for ( unsigned int i = 0; i < integration_points.size(); i++ )
         {
@@ -440,7 +445,7 @@ public:
      * geometry it returns its length, for two dimensional it gives area
      * and for three dimensional geometries it gives its volume.
      *
-     * @return double value contains length, area or volume.
+     * @return DataType value contains length, area or volume.
      * @see Length()
      * @see Area()
      * @see Volume()
@@ -449,7 +454,7 @@ public:
      * :TODO: could be replaced by something more suitable
      * (comment by janosch)
      */
-    double DomainSize() const override
+    DataType DomainSize() const override
     {
         return fabs( this->DeterminantOfJacobian( PointType() ) ) * 0.5;
     }
@@ -459,7 +464,7 @@ public:
      */
     bool IsInside( const CoordinatesArrayType& rPoint ) const override
     {
-        const double zero = 1E-8;
+        const DataType zero = 1E-8;
         if( ( rPoint[0] >= (0.0-zero) ) && ( rPoint[0] <= 1.0 + zero ) )
             if( ( rPoint[1] >= 0.0-zero ) && (rPoint[1] <= 1.0 + zero ) )
                 if(((1.0-(rPoint[0] + rPoint[1])) >= 0.0-zero) &&  ((1.0-(rPoint[0] + rPoint[1])) <= 1.0 + zero))
@@ -484,10 +489,10 @@ public:
      *
      * @return the value of the shape function at the given point
      */
-    double ShapeFunctionValue( IndexType ShapeFunctionIndex, const CoordinatesArrayType& rPoint ) const override
+    DataType ShapeFunctionValue( IndexType ShapeFunctionIndex, const CoordinatesArrayType& rPoint ) const override
     {
 
-        double thirdCoord = 1 - rPoint[0] - rPoint[1];
+        DataType thirdCoord = 1 - rPoint[0] - rPoint[1];
 
         switch ( ShapeFunctionIndex )
         {
@@ -654,9 +659,9 @@ public:
     Matrix& ShapeFunctionsLocalGradients( Matrix& rResult, const CoordinatesArrayType& rPoint ) const override
     {
         rResult.resize( 6, 2 ,false);
-        double thirdCoord = 1 - rPoint[0] - rPoint[1];
-        double thirdCoord_DX = -1;
-        double thirdCoord_DY = -1;
+        DataType thirdCoord = 1 - rPoint[0] - rPoint[1];
+        DataType thirdCoord_DX = -1;
+        DataType thirdCoord_DY = -1;
 
         noalias( rResult ) = ZeroMatrix( 6, 2 );
         rResult( 0, 0 ) = ( 4 * thirdCoord - 1 ) * thirdCoord_DX;
@@ -688,9 +693,9 @@ public:
     // Matrix& ShapeFunctionsGradients( Matrix& rResult, CoordinatesArrayType& rPoint ) const override
     // {
     //     rResult.resize( 6, 2 ,false);
-    //     double thirdCoord = 1 - rPoint[0] - rPoint[1];
-    //     double thirdCoord_DX = -1;
-    //     double thirdCoord_DY = -1;
+    //     DataType thirdCoord = 1 - rPoint[0] - rPoint[1];
+    //     DataType thirdCoord_DX = -1;
+    //     DataType thirdCoord_DY = -1;
 
     //     noalias( rResult ) = ZeroMatrix( 6, 2 );
     //     rResult( 0, 0 ) = ( 4 * thirdCoord - 1 ) * thirdCoord_DX;
@@ -888,7 +893,7 @@ private:
 
         for ( int pnt = 0; pnt < integration_points_number; pnt++ )
         {
-            double thirdCoord = 1 - integration_points[pnt].X() - integration_points[pnt].Y();
+            DataType thirdCoord = 1 - integration_points[pnt].X() - integration_points[pnt].Y();
 
             shape_function_values( pnt, 0 ) = thirdCoord * ( 2 * thirdCoord - 1 ) ;
             shape_function_values( pnt, 1 ) = integration_points[pnt].X() * ( 2 * integration_points[pnt].X() - 1 ) ;
@@ -932,9 +937,9 @@ private:
         for ( int pnt = 0; pnt < integration_points_number; pnt++ )
         {
             Matrix result( 6, 2 );
-            double thirdCoord = 1 - integration_points[pnt].X() - integration_points[pnt].Y();
-            double thirdCoord_DX = -1;
-            double thirdCoord_DY = -1;
+            DataType thirdCoord = 1 - integration_points[pnt].X() - integration_points[pnt].Y();
+            DataType thirdCoord_DX = -1;
+            DataType thirdCoord_DY = -1;
 
             noalias( result ) = ZeroMatrix( 6, 2 );
             result( 0, 0 ) = ( 4 * thirdCoord - 1 ) * thirdCoord_DX;

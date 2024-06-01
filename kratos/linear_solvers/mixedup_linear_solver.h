@@ -90,13 +90,15 @@ public:
     typedef typename TDenseSpaceType::MatrixType DenseMatrixType;
     typedef typename TDenseSpaceType::VectorType DenseVectorType;
     typedef std::size_t  SizeType;
+    typedef typename BaseType::DataType DataType;
     ///@}
+
     ///@name Life Cycle
     ///@{
     /// Default constructor.
     MixedUPLinearSolver (typename LinearSolver<TSparseSpaceType, TDenseSpaceType, TReordererType>::Pointer psolver_UU_block,
                          typename LinearSolver<TSparseSpaceType, TDenseSpaceType, TReordererType>::Pointer psolver_PP_block,
-                         double NewMaxTolerance,
+                         DataType NewMaxTolerance,
                          unsigned int NewMaxIterationsNumber,
                          unsigned int m
                         ) : BaseType (NewMaxTolerance, NewMaxIterationsNumber)
@@ -136,17 +138,17 @@ public:
     */
     virtual void Initialize (SparseMatrixType& rA, VectorType& rX, VectorType& rB)
     {
-	if (mBlocksAreAllocated == true)
-	{
-	    
-	    mpsolver_UU_block->Initialize(mK, mu, mru);
-	    mpsolver_PP_block->Initialize(mS, mp, mrp);
-	    mis_initialized = true;
-	}
-	else
-	{
-	  std::cout << "linear solver intialization is deferred to the moment at which blocks are available" << std::endl;
-	}
+    if (mBlocksAreAllocated == true)
+    {
+
+        mpsolver_UU_block->Initialize(mK, mu, mru);
+        mpsolver_PP_block->Initialize(mS, mp, mrp);
+        mis_initialized = true;
+    }
+    else
+    {
+      std::cout << "linear solver intialization is deferred to the moment at which blocks are available" << std::endl;
+    }
     }
     /** This function is designed to be called every time the coefficients change in the system
      * that is, normally at the beginning of each solve.
@@ -157,7 +159,7 @@ public:
     @param rB. Right hand side vector.
     */
     virtual void InitializeSolutionStep (SparseMatrixType& rA, VectorType& rX, VectorType& rB)
-    {     
+    {
         //copy to local matrices
         if (mBlocksAreAllocated == false)
         {
@@ -169,7 +171,7 @@ public:
             FillBlockMatrices (false, rA, mK, mG, mD, mS);
             mBlocksAreAllocated = true;
         }
-        
+
         if(mis_initialized == false) this->Initialize(rA,rX,rB);
 
         //initialize solvers
@@ -187,9 +189,10 @@ public:
     {
         unsigned int m = mm;
         unsigned int max_iter = BaseType::GetMaxIterationsNumber();
-        double tol = BaseType::GetTolerance();
+        DataType tol = BaseType::GetTolerance();
         gmres_solve (rA,rX,rB,m,max_iter,tol);
     }
+
     /** This function is designed to be called at the end of the solve step.
      * for example this is the place to remove any data that we do not want to save for later
     @param rA. System matrix
@@ -201,6 +204,7 @@ public:
         mpsolver_UU_block->FinalizeSolutionStep(mK, mu, mru);
         mpsolver_PP_block->FinalizeSolutionStep(mS, mp, mrp);
     }
+
     /** This function is designed to clean up all internal data in the solver.
      * Clear is designed to leave the solver object as if newly created.
      * After a clear a new Initialize is needed
@@ -214,10 +218,10 @@ public:
         mBlocksAreAllocated = false;
         mpsolver_UU_block->Clear();
         mpsolver_PP_block->Clear();
-	mu.clear();
-	mp.clear();
-	mru.clear();
-	mrp.clear();
+        mu.clear();
+        mp.clear();
+        mru.clear();
+        mrp.clear();
         mis_initialized = false;
     }
 
@@ -292,14 +296,14 @@ public:
         unsigned int n_pressure_dofs = 0;
         unsigned int tot_active_dofs = 0;
         for (ModelPart::DofsArrayType::iterator it = rdof_set.begin(); it!=rdof_set.end(); it++)
-		{
-		  if (it->EquationId() < rA.size1())
-		  {
-		      tot_active_dofs += 1;
-		      if (it->GetVariable().Key() == PRESSURE)
-			  n_pressure_dofs += 1;
-		  }
-		}
+        {
+          if (it->EquationId() < rA.size1())
+          {
+              tot_active_dofs += 1;
+              if (it->GetVariable().Key() == PRESSURE)
+              n_pressure_dofs += 1;
+          }
+        }
 
         if (tot_active_dofs != rA.size1() )
             KRATOS_THROW_ERROR (std::logic_error,"total system size does not coincide with the free dof map","");
@@ -351,17 +355,17 @@ public:
     ///@name Input and output
     ///@{
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const override
     {
         return "Linear solver";
     }
     /// Print information about this object.
-    virtual void PrintInfo (std::ostream& rOStream) const
+    void PrintInfo (std::ostream& rOStream) const override
     {
         rOStream << "Linear solver";
     }
     /// Print object's data.
-    virtual void PrintData (std::ostream& rOStream) const
+    void PrintData (std::ostream& rOStream) const override
     {
     }
     ///@}
@@ -387,7 +391,7 @@ protected:
         //get access to A data
         const std::size_t* index1 = rA.index1_data().begin();
         const std::size_t* index2 = rA.index2_data().begin();
-        const double*	   values = rA.value_data().begin();
+        const auto*        values = rA.value_data().begin();
 
         SparseMatrixType L(mpressure_indices.size(),mpressure_indices.size() );
 
@@ -404,12 +408,11 @@ protected:
             G.resize (mother_indices.size()   ,mpressure_indices.size() );
             D.resize (mpressure_indices.size(),mother_indices.size() );
             S.resize (mpressure_indices.size(),mpressure_indices.size() );
-	    
-	    mrp.resize(mpressure_indices.size() );
-	    mru.resize(mother_indices.size() );
-	    mp.resize(mpressure_indices.size());
-	    mu.resize(mother_indices.size());
 
+            mrp.resize(mpressure_indices.size() );
+            mru.resize(mother_indices.size() );
+            mp.resize(mpressure_indices.size());
+            mu.resize(mother_indices.size());
 
             //KRATOS_WATCH (mglobal_to_local_indexing);
             //allocate the blocks by push_back
@@ -424,7 +427,7 @@ protected:
                     for (unsigned int j=row_begin; j<row_end; j++)
                     {
                         unsigned int col_index = index2[j];
-                        double value = values[j];
+                        const auto value = values[j];
                         unsigned int local_col_id = mglobal_to_local_indexing[col_index];
                         if (mis_pressure_block[col_index] == false) //K block
                             K.push_back ( local_row_id, local_col_id, value);
@@ -437,7 +440,7 @@ protected:
                     for (unsigned int j=row_begin; j<row_end; j++)
                     {
                         unsigned int col_index = index2[j];
-                        double value = values[j];
+                        const auto value = values[j];
                         unsigned int local_col_id = mglobal_to_local_indexing[col_index];
                         if (mis_pressure_block[col_index] == false) //D block
                             D.push_back ( local_row_id, local_col_id, value);
@@ -470,7 +473,7 @@ protected:
                     for (unsigned int j=row_begin; j<row_end; j++)
                     {
                         unsigned int col_index = index2[j];
-                        double value = values[j];
+                        const auto value = values[j];
                         unsigned int local_col_id = mglobal_to_local_indexing[col_index];
                         if (mis_pressure_block[col_index] == false) //K block
                             K( local_row_id, local_col_id) = value;
@@ -483,7 +486,7 @@ protected:
                     for (unsigned int j=row_begin; j<row_end; j++)
                     {
                         unsigned int col_index = index2[j];
-                        double value = values[j];
+                        const auto value = values[j];
                         unsigned int local_col_id = mglobal_to_local_indexing[col_index];
                         if (mis_pressure_block[col_index] == false) //D block
                             D( local_row_id, local_col_id) = value;
@@ -540,16 +543,16 @@ private:
     SparseMatrixType mG;
     SparseMatrixType mD;
     SparseMatrixType mS;
-    
+
     Vector mrp;
     Vector mru;
     Vector mp;
     Vector mu;
-	
+
     ///@}
     ///@name Private Operators
     ///@{
-    inline void GeneratePlaneRotation (const double &dx, const double &dy, double &cs, double &sn)
+    inline void GeneratePlaneRotation (const DataType dx, const DataType dy, DataType& cs, DataType& sn)
     {
         if (dy == 0.0)
         {
@@ -563,15 +566,15 @@ private:
         }
         else
         {
-            const double rnorm = 1.0/sqrt (dx*dx + dy*dy);
+            const DataType rnorm = 1.0/sqrt (dx*dx + dy*dy);
             cs = fabs (dx) * rnorm;
             sn = cs * dy / dx;
         }
     }
 
-    inline void ApplyPlaneRotation (double &dx, double &dy, const double &cs, const double &sn)
+    inline void ApplyPlaneRotation (DataType& dx, DataType& dy, const DataType cs, const DataType sn)
     {
-        double temp  =  cs * dx + sn * dy;
+        DataType temp  =  cs * dx + sn * dy;
         dy = cs * dy - sn * dx;
         dx = temp;
     }
@@ -580,8 +583,8 @@ private:
     {
         for (unsigned int i=0; i<s.size(); i++)
             y[i] = s[i];
-        /*		for(unsigned int i=s.size(); i<y.size(); i++)
-        			y[i] = 0.0;*/
+        /*      for(unsigned int i=s.size(); i<y.size(); i++)
+                    y[i] = 0.0;*/
         // Backsolve:
         for (int i = k; i >= 0; --i)
         {
@@ -599,7 +602,7 @@ private:
                       const VectorType& b,
                       unsigned int& m,
                       unsigned int& max_iter,
-                      double& tol)
+                      DataType& tol)
     {
         const unsigned int dim = A.size1();
         if (m == 0)
@@ -615,7 +618,7 @@ private:
         //TSparseSpaceType::Copy(b, preconditioned_b); //preconditioned_b=b
         //apply preconditioner
         SolveBlockPreconditioner (b,preconditioned_b);
-        double normb = TSparseSpaceType::TwoNorm (preconditioned_b);
+        DataType normb = TSparseSpaceType::TwoNorm (preconditioned_b);
         /*KRATOS_WATCH(normb);*/
         if (normb < 1e-16) //ARBITRARY SMALL NUMBER!
         {
@@ -626,8 +629,8 @@ private:
         TSparseSpaceType::ScaleAndAdd (1.00, b, -1.00, r); //r = b - r
         //apply preconditioner and overwrite r
         SolveBlockPreconditioner (r,r);
-        const double rel_tol = tol*normb;
-        double beta = TSparseSpaceType::TwoNorm (r);
+        const DataType rel_tol = tol*normb;
+        DataType beta = TSparseSpaceType::TwoNorm (r);
         if (beta <= rel_tol)   //finalize!
         {
             tol = beta / normb;
@@ -655,7 +658,7 @@ private:
                     H (k, i) = TSparseSpaceType::Dot (V[k], w);
                     w -= H (k, i) * V[k];
                 }
-                const double normw = TSparseSpaceType::TwoNorm (w);
+                const DataType normw = TSparseSpaceType::TwoNorm (w);
                 H (i+1, i) = normw;
                 /*KRATOS_WATCH(normw);*/
                 // This breakdown is a good one ...
@@ -669,7 +672,7 @@ private:
                 ApplyPlaneRotation (H (i,i), H (i+1,i), cs (i), sn (i) );
                 ApplyPlaneRotation (s (i), s (i+1), cs (i), sn (i) );
                 beta = fabs (s (i+1) );
-		std::cout << "iter = " <<  j << "  estimated res ratio = " << beta << std::endl;
+        std::cout << "iter = " <<  j << "  estimated res ratio = " << beta << std::endl;
 //                 KRATOS_WATCH (beta);
                 if (beta <= rel_tol)
                 {
@@ -682,8 +685,8 @@ private:
             TSparseSpaceType::Mult (A,x,r);
             TSparseSpaceType::ScaleAndAdd (1.00, b, -1.00, r); //r = b - r
             beta = TSparseSpaceType::TwoNorm (r);
-            
-	    std::cout << "number of iterations at convergence = " << j << std::endl;
+
+        std::cout << "number of iterations at convergence = " << j << std::endl;
             if (beta < rel_tol)
             {
                 return 0;
@@ -730,21 +733,21 @@ private:
             rtot[mpressure_indices[i]] = rp[i];
     }
 
-    void ComputeDiagonalByLumping (SparseMatrixType& A,VectorType& diagA)
+    void ComputeDiagonalByLumping (const SparseMatrixType& A, VectorType& diagA)
     {
         if (diagA.size() != A.size1() )
             diagA.resize (A.size1() );
         //get access to A data
-        const std::size_t* index1 = A.index1_data().begin();
-//        const std::size_t* index2 = A.index2_data().begin();
-        const double*	   values = A.value_data().begin();
+        const auto* index1 = A.index1_data().begin();
+//        const auto* index2 = A.index2_data().begin();
+        const auto* values = A.value_data().begin();
 
         #pragma omp parallel for
         for (int i=0; i< static_cast<int>(A.size1()); i++)
         {
             unsigned int row_begin = index1[i];
             unsigned int row_end   = index1[i+1];
-            double temp = 0.0;
+            DataType temp = 0.0;
             for (unsigned int j=row_begin; j<row_end; j++)
                 temp += values[j]*values[j];
 
@@ -752,13 +755,13 @@ private:
         }
     }
 
-    double CheckMatrix (SparseMatrixType& A)
+    DataType CheckMatrix (const SparseMatrixType& A)
     {
         //get access to A data
-        const std::size_t* index1 = A.index1_data().begin();
-        const std::size_t* index2 = A.index2_data().begin();
-        const double*	   values = A.value_data().begin();
-        double norm = 0.0;
+        const auto* index1 = A.index1_data().begin();
+        const auto* index2 = A.index2_data().begin();
+        const auto* values = A.value_data().begin();
+        DataType norm = 0.0;
         for (unsigned int i=0; i<A.size1(); i++)
         {
             unsigned int row_begin = index1[i];
@@ -782,24 +785,24 @@ private:
         noalias(mu)  = ZeroVector(mother_indices.size());
         Vector uaux (mother_indices.size() );
         Vector paux (mpressure_indices.size() );
-	
+
         //get diagonal of K (to be removed)
         Vector diagK (mother_indices.size() );
         ComputeDiagonalByLumping (mK,diagK);
 
-	//get the u and p residuals
+    //get the u and p residuals
         GetUPart (rtot,mru);
         GetPPart (rtot,mrp);
 
-	//solve u block
+    //solve u block
         mpsolver_UU_block->Solve (mK,mu,mru);
 
-	//correct pressure block
+    //correct pressure block
         //rp -= D*u
         TSparseSpaceType::Mult (mD,mu,paux);
         TSparseSpaceType::UnaliasedAdd (mrp,-1.0,paux);
 
-	//solve pressure
+    //solve pressure
         //p = S⁻1*rp
         mpsolver_PP_block->Solve (mS,mp,mrp);
 
@@ -856,7 +859,7 @@ private:
             VectorType CurrentRow(K.size2());
 
             for (unsigned int i = 0; i < rL.size1(); i++) CurrentRow[i] = 0.0;
-            
+
             IndexVector Next = IndexVector(rL.size1());
 //IndexVector& Next = *pNext; // Keeps track of which columns were filled
             for (unsigned int m=0; m < rL.size1(); m++) Next[m] = -1;
@@ -933,20 +936,20 @@ private:
         }
         //KRATOS_WATCH(896)
         //add stabilization matrix L
-        /*				const std::size_t* L_index1 = rL.index1_data().begin();
-        				const std::size_t* L_index2 = rL.index2_data().begin();
-        				const double*	   L_values = rL.value_data().begin();
-        				for (unsigned int i=0; i<rL.size1(); i++)
-        				{
-        					unsigned int row_begin = L_index1[i];
-        					unsigned int row_end   = L_index1[i+1];
-        					diagA[i] = 0.0;
-        					for (unsigned int j=row_begin; j<row_end; j++)
-        					{
-        						unsigned int col = L_index2[j];
-        						rS(i,col) += L_values[j];
-        					}
-        				}*/
+        /*              const std::size_t* L_index1 = rL.index1_data().begin();
+                        const std::size_t* L_index2 = rL.index2_data().begin();
+                        const double*      L_values = rL.value_data().begin();
+                        for (unsigned int i=0; i<rL.size1(); i++)
+                        {
+                            unsigned int row_begin = L_index1[i];
+                            unsigned int row_end   = L_index1[i+1];
+                            diagA[i] = 0.0;
+                            for (unsigned int j=row_begin; j<row_end; j++)
+                            {
+                                unsigned int col = L_index2[j];
+                                rS(i,col) += L_values[j];
+                            }
+                        }*/
 
     }
 

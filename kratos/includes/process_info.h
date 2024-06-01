@@ -110,7 +110,10 @@ public:
     }
 
     /// Destructor.
-    virtual ~ProcessInfo() {}
+    virtual ~ProcessInfo()
+    {
+        // std::cout << "ProcessInfo destructor is called" << std::endl;
+    }
 
 
     ///@}

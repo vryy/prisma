@@ -78,6 +78,10 @@ public:
      */
     typedef typename BaseType::CoordinatesArrayType CoordinatesArrayType;
 
+    /**
+     * Type used for double value.
+     */
+    typedef typename BaseType::DataType DataType;
 
     /**
      * Type used for indexing in geometry class.
@@ -366,15 +370,15 @@ public:
      * and for the other geometries it gives Characteristic length
      * otherwise.
      *
-     * @return double value contains length or Characteristic
+     * @return DataType value contains length or Characteristic
      * length
      * @see Area()
      * @see Volume()
      * @see DomainSize()
      */
-    double Length() const override
+    DataType Length() const override
     {
-        double length = 0.000;
+        DataType length = 0.000;
         length = sqrt( fabs( Area() ) );
         return length;
     }
@@ -388,19 +392,19 @@ public:
      * this geometry depending to it's dimension. For one dimensional
      * geometry it returns zero, for two dimensional it gives area
      * and for three dimensional geometries it gives surface area.
-     * @return double value contains area or surface
+     * @return DataType value contains area or surface
      * area.
      * @see Length()
      * @see Volume()
      * @see DomainSize()
      */
-    double Area() const override
+    DataType Area() const override
     {
 
         Vector temp;
         this->DeterminantOfJacobian( temp, msGeometryData.DefaultIntegrationMethod() );
         const IntegrationPointsArrayType& integration_points = this->IntegrationPoints( msGeometryData.DefaultIntegrationMethod() );
-        double Area = 0.00;
+        DataType Area = 0.00;
 
         for ( unsigned int i = 0; i < integration_points.size(); i++ )
         {
@@ -423,12 +427,12 @@ public:
      * geometry it returns its length, for two dimensional it gives area
      * and for three dimensional geometries it gives its volume.
      *
-     * @return double value contains length, area or volume.
+     * @return DataType value contains length, area or volume.
      * @see Length()
      * @see Area()
      * @see Volume()
      */
-    double DomainSize() const override
+    DataType DomainSize() const override
     {
         return Area();
     }
@@ -497,14 +501,14 @@ public:
      *
      * @return the value of the shape function at the given point
      */
-    double ShapeFunctionValue( IndexType ShapeFunctionIndex, const CoordinatesArrayType& rPoint ) const override
+    DataType ShapeFunctionValue( IndexType ShapeFunctionIndex, const CoordinatesArrayType& rPoint ) const override
     {
-        double fx1 = 0.5 * ( rPoint[0] - 1 ) * rPoint[0];
-        double fx2 = 0.5 * ( rPoint[0] + 1 ) * rPoint[0];
-        double fx3 = 1 - rPoint[0] * rPoint[0];
-        double fy1 = 0.5 * ( rPoint[1] - 1 ) * rPoint[1];
-        double fy2 = 0.5 * ( rPoint[1] + 1 ) * rPoint[1];
-        double fy3 = 1 - rPoint[1] * rPoint[1];
+        DataType fx1 = 0.5 * ( rPoint[0] - 1 ) * rPoint[0];
+        DataType fx2 = 0.5 * ( rPoint[0] + 1 ) * rPoint[0];
+        DataType fx3 = 1 - rPoint[0] * rPoint[0];
+        DataType fy1 = 0.5 * ( rPoint[1] - 1 ) * rPoint[1];
+        DataType fy2 = 0.5 * ( rPoint[1] + 1 ) * rPoint[1];
+        DataType fy3 = 1 - rPoint[1] * rPoint[1];
 
         switch ( ShapeFunctionIndex )
         {
@@ -632,19 +636,19 @@ public:
      */
     Matrix& ShapeFunctionsLocalGradients( Matrix& rResult, const CoordinatesArrayType& rPoint ) const override
     {
-        double fx1 = 0.5 * ( rPoint[0] - 1 ) * rPoint[0];
-        double fx2 = 0.5 * ( rPoint[0] + 1 ) * rPoint[0];
-        double fx3 = 1 - rPoint[0] * rPoint[0];
-        double fy1 = 0.5 * ( rPoint[1] - 1 ) * rPoint[1];
-        double fy2 = 0.5 * ( rPoint[1] + 1 ) * rPoint[1];
-        double fy3 = 1 - rPoint[1] * rPoint[1];
+        DataType fx1 = 0.5 * ( rPoint[0] - 1 ) * rPoint[0];
+        DataType fx2 = 0.5 * ( rPoint[0] + 1 ) * rPoint[0];
+        DataType fx3 = 1 - rPoint[0] * rPoint[0];
+        DataType fy1 = 0.5 * ( rPoint[1] - 1 ) * rPoint[1];
+        DataType fy2 = 0.5 * ( rPoint[1] + 1 ) * rPoint[1];
+        DataType fy3 = 1 - rPoint[1] * rPoint[1];
 
-        double gx1 = 0.5 * ( 2 * rPoint[0] - 1 );
-        double gx2 = 0.5 * ( 2 * rPoint[0] + 1 );
-        double gx3 = -2.0 * rPoint[0];
-        double gy1 = 0.5 * ( 2 * rPoint[1] - 1 );
-        double gy2 = 0.5 * ( 2 * rPoint[1] + 1 );
-        double gy3 = -2.0 * rPoint[1];
+        DataType gx1 = 0.5 * ( 2 * rPoint[0] - 1 );
+        DataType gx2 = 0.5 * ( 2 * rPoint[0] + 1 );
+        DataType gx3 = -2.0 * rPoint[0];
+        DataType gy1 = 0.5 * ( 2 * rPoint[1] - 1 );
+        DataType gy2 = 0.5 * ( 2 * rPoint[1] + 1 );
+        DataType gy3 = -2.0 * rPoint[1];
 
         rResult.resize( 9, 2, false );
         noalias( rResult ) = ZeroMatrix( 9, 2 );
@@ -710,19 +714,19 @@ public:
      */
     // Matrix& ShapeFunctionsGradients( Matrix& rResult, PointType& rPoint ) const override
     // {
-    //     double fx1 = 0.5 * ( rPoint.X() - 1 ) * rPoint.X();
-    //     double fx2 = 0.5 * ( rPoint.X() + 1 ) * rPoint.X();
-    //     double fx3 = 1 - rPoint.X() * rPoint.X();
-    //     double fy1 = 0.5 * ( rPoint.Y() - 1 ) * rPoint.Y();
-    //     double fy2 = 0.5 * ( rPoint.Y() + 1 ) * rPoint.Y();
-    //     double fy3 = 1 - rPoint.Y() * rPoint.Y();
+    //     DataType fx1 = 0.5 * ( rPoint.X() - 1 ) * rPoint.X();
+    //     DataType fx2 = 0.5 * ( rPoint.X() + 1 ) * rPoint.X();
+    //     DataType fx3 = 1 - rPoint.X() * rPoint.X();
+    //     DataType fy1 = 0.5 * ( rPoint.Y() - 1 ) * rPoint.Y();
+    //     DataType fy2 = 0.5 * ( rPoint.Y() + 1 ) * rPoint.Y();
+    //     DataType fy3 = 1 - rPoint.Y() * rPoint.Y();
 
-    //     double gx1 = 0.5 * ( 2 * rPoint.X() - 1 );
-    //     double gx2 = 0.5 * ( 2 * rPoint.X() + 1 );
-    //     double gx3 = -2.0 * rPoint.X();
-    //     double gy1 = 0.5 * ( 2 * rPoint.Y() - 1 );
-    //     double gy2 = 0.5 * ( 2 * rPoint.Y() + 1 );
-    //     double gy3 = -2.0 * rPoint.Y();
+    //     DataType gx1 = 0.5 * ( 2 * rPoint.X() - 1 );
+    //     DataType gx2 = 0.5 * ( 2 * rPoint.X() + 1 );
+    //     DataType gx3 = -2.0 * rPoint.X();
+    //     DataType gy1 = 0.5 * ( 2 * rPoint.Y() - 1 );
+    //     DataType gy2 = 0.5 * ( 2 * rPoint.Y() + 1 );
+    //     DataType gy3 = -2.0 * rPoint.Y();
 
     //     rResult.resize( 9, 2, false );
     //     noalias( rResult ) = ZeroMatrix( 9, 2 );
@@ -769,26 +773,26 @@ public:
             noalias( rResult[i] ) = ZeroMatrix( 2, 2 );
         }
 
-        double fx1 = 0.5 * ( rPoint[0] - 1 ) * rPoint[0];
-        double fx2 = 0.5 * ( rPoint[0] + 1 ) * rPoint[0];
-        double fx3 = 1 - rPoint[0] * rPoint[0];
-        double fy1 = 0.5 * ( rPoint[1] - 1 ) * rPoint[1];
-        double fy2 = 0.5 * ( rPoint[1] + 1 ) * rPoint[1];
-        double fy3 = 1 - rPoint[1] * rPoint[1];
+        DataType fx1 = 0.5 * ( rPoint[0] - 1 ) * rPoint[0];
+        DataType fx2 = 0.5 * ( rPoint[0] + 1 ) * rPoint[0];
+        DataType fx3 = 1 - rPoint[0] * rPoint[0];
+        DataType fy1 = 0.5 * ( rPoint[1] - 1 ) * rPoint[1];
+        DataType fy2 = 0.5 * ( rPoint[1] + 1 ) * rPoint[1];
+        DataType fy3 = 1 - rPoint[1] * rPoint[1];
 
-        double gx1 = 0.5 * ( 2 * rPoint[0] - 1 );
-        double gx2 = 0.5 * ( 2 * rPoint[0] + 1 );
-        double gx3 = -2.0 * rPoint[0];
-        double gy1 = 0.5 * ( 2 * rPoint[1] - 1 );
-        double gy2 = 0.5 * ( 2 * rPoint[1] + 1 );
-        double gy3 = -2.0 * rPoint[1];
+        DataType gx1 = 0.5 * ( 2 * rPoint[0] - 1 );
+        DataType gx2 = 0.5 * ( 2 * rPoint[0] + 1 );
+        DataType gx3 = -2.0 * rPoint[0];
+        DataType gy1 = 0.5 * ( 2 * rPoint[1] - 1 );
+        DataType gy2 = 0.5 * ( 2 * rPoint[1] + 1 );
+        DataType gy3 = -2.0 * rPoint[1];
 
-        double hx1 = 1.0;
-        double hx2 = 1.0;
-        double hx3 = -2.0;
-        double hy1 = 1.0;
-        double hy2 = 1.0;
-        double hy3 = -2.0;
+        DataType hx1 = 1.0;
+        DataType hx2 = 1.0;
+        DataType hx3 = -2.0;
+        DataType hy1 = 1.0;
+        DataType hy2 = 1.0;
+        DataType hy3 = -2.0;
 
         rResult[0]( 0, 0 ) = hx1 * fy1;
         rResult[0]( 0, 1 ) = gx1 * gy1;
@@ -872,27 +876,27 @@ public:
             }
         }
 
-//        double fx1 = 0.5 * ( rPoint[0] - 1 ) * rPoint[0];
+//        DataType fx1 = 0.5 * ( rPoint[0] - 1 ) * rPoint[0];
 
-//        double fx2 = 0.5 * ( rPoint[0] + 1 ) * rPoint[0];
-//        double fx3 = 1 - rPoint[0] * rPoint[0];
-//        double fy1 = 0.5 * ( rPoint[1] - 1 ) * rPoint[1];
-//        double fy2 = 0.5 * ( rPoint[1] + 1 ) * rPoint[1];
-//        double fy3 = 1 - rPoint[1] * rPoint[1];
+//        DataType fx2 = 0.5 * ( rPoint[0] + 1 ) * rPoint[0];
+//        DataType fx3 = 1 - rPoint[0] * rPoint[0];
+//        DataType fy1 = 0.5 * ( rPoint[1] - 1 ) * rPoint[1];
+//        DataType fy2 = 0.5 * ( rPoint[1] + 1 ) * rPoint[1];
+//        DataType fy3 = 1 - rPoint[1] * rPoint[1];
 
-        double gx1 = 0.5 * ( 2 * rPoint[0] - 1 );
-        double gx2 = 0.5 * ( 2 * rPoint[0] + 1 );
-        double gx3 = -2.0 * rPoint[0];
-        double gy1 = 0.5 * ( 2 * rPoint[1] - 1 );
-        double gy2 = 0.5 * ( 2 * rPoint[1] + 1 );
-        double gy3 = -2.0 * rPoint[1];
+        DataType gx1 = 0.5 * ( 2 * rPoint[0] - 1 );
+        DataType gx2 = 0.5 * ( 2 * rPoint[0] + 1 );
+        DataType gx3 = -2.0 * rPoint[0];
+        DataType gy1 = 0.5 * ( 2 * rPoint[1] - 1 );
+        DataType gy2 = 0.5 * ( 2 * rPoint[1] + 1 );
+        DataType gy3 = -2.0 * rPoint[1];
 
-        double hx1 = 1.0;
-        double hx2 = 1.0;
-        double hx3 = -2.0;
-        double hy1 = 1.0;
-        double hy2 = 1.0;
-        double hy3 = -2.0;
+        DataType hx1 = 1.0;
+        DataType hx2 = 1.0;
+        DataType hx3 = -2.0;
+        DataType hy1 = 1.0;
+        DataType hy2 = 1.0;
+        DataType hy3 = -2.0;
 
         rResult[0][0]( 0, 0 ) = 0.0;
         rResult[0][0]( 0, 1 ) = hx1 * gy1;
@@ -1046,12 +1050,12 @@ private:
 
         for ( int pnt = 0; pnt < integration_points_number; pnt++ )
         {
-            double fx1 = 0.5 * ( integration_points[pnt].X() - 1 ) * integration_points[pnt].X();
-            double fx2 = 0.5 * ( integration_points[pnt].X() + 1 ) * integration_points[pnt].X();
-            double fx3 = 1 - integration_points[pnt].X() * integration_points[pnt].X();
-            double fy1 = 0.5 * ( integration_points[pnt].Y() - 1 ) * integration_points[pnt].Y();
-            double fy2 = 0.5 * ( integration_points[pnt].Y() + 1 ) * integration_points[pnt].Y();
-            double fy3 = 1 - integration_points[pnt].Y() * integration_points[pnt].Y();
+            DataType fx1 = 0.5 * ( integration_points[pnt].X() - 1 ) * integration_points[pnt].X();
+            DataType fx2 = 0.5 * ( integration_points[pnt].X() + 1 ) * integration_points[pnt].X();
+            DataType fx3 = 1 - integration_points[pnt].X() * integration_points[pnt].X();
+            DataType fy1 = 0.5 * ( integration_points[pnt].Y() - 1 ) * integration_points[pnt].Y();
+            DataType fy2 = 0.5 * ( integration_points[pnt].Y() + 1 ) * integration_points[pnt].Y();
+            DataType fy3 = 1 - integration_points[pnt].Y() * integration_points[pnt].Y();
 
             shape_function_values( pnt, 0 ) = ( fx1 * fy1 );
             shape_function_values( pnt, 1 ) = ( fx2 * fy1 );
@@ -1093,19 +1097,19 @@ private:
 
         for ( int pnt = 0; pnt < integration_points_number; pnt++ )
         {
-            double fx1 = 0.5 * ( integration_points[pnt].X() - 1 ) * integration_points[pnt].X();
-            double fx2 = 0.5 * ( integration_points[pnt].X() + 1 ) * integration_points[pnt].X();
-            double fx3 = 1 - integration_points[pnt].X() * integration_points[pnt].X();
-            double fy1 = 0.5 * ( integration_points[pnt].Y() - 1 ) * integration_points[pnt].Y();
-            double fy2 = 0.5 * ( integration_points[pnt].Y() + 1 ) * integration_points[pnt].Y();
-            double fy3 = 1 - integration_points[pnt].Y() * integration_points[pnt].Y();
+            DataType fx1 = 0.5 * ( integration_points[pnt].X() - 1 ) * integration_points[pnt].X();
+            DataType fx2 = 0.5 * ( integration_points[pnt].X() + 1 ) * integration_points[pnt].X();
+            DataType fx3 = 1 - integration_points[pnt].X() * integration_points[pnt].X();
+            DataType fy1 = 0.5 * ( integration_points[pnt].Y() - 1 ) * integration_points[pnt].Y();
+            DataType fy2 = 0.5 * ( integration_points[pnt].Y() + 1 ) * integration_points[pnt].Y();
+            DataType fy3 = 1 - integration_points[pnt].Y() * integration_points[pnt].Y();
 
-            double gx1 = 0.5 * ( 2 * integration_points[pnt].X() - 1 );
-            double gx2 = 0.5 * ( 2 * integration_points[pnt].X() + 1 );
-            double gx3 = -2.0 * integration_points[pnt].X();
-            double gy1 = 0.5 * ( 2 * integration_points[pnt].Y() - 1 );
-            double gy2 = 0.5 * ( 2 * integration_points[pnt].Y() + 1 );
-            double gy3 = -2.0 * integration_points[pnt].Y();
+            DataType gx1 = 0.5 * ( 2 * integration_points[pnt].X() - 1 );
+            DataType gx2 = 0.5 * ( 2 * integration_points[pnt].X() + 1 );
+            DataType gx3 = -2.0 * integration_points[pnt].X();
+            DataType gy1 = 0.5 * ( 2 * integration_points[pnt].Y() - 1 );
+            DataType gy2 = 0.5 * ( 2 * integration_points[pnt].Y() + 1 );
+            DataType gy3 = -2.0 * integration_points[pnt].Y();
 
             Matrix result( 9, 2 );
             result( 0, 0 ) = gx1 * fy1;

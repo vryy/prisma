@@ -4,8 +4,8 @@
 //   _|\_\_|  \__,_|\__|\___/ ____/
 //                   Multi-Physics
 //
-//  License:		 BSD License
-//					 Kratos default license: kratos/license.txt
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Pooyan Dadvand
 //
@@ -126,16 +126,16 @@ KRATOS_CATCH_WITH_BLOCK(MoreInfo,{})
 #endif
 
 
-#define KRATOS_CATCH_AND_THROW(ExceptionType, MoreInfo, Block) \
-catch(ExceptionType& e)                                        \
-{                                                              \
-Block                                                          \
-KRATOS_ERROR << e.what();                             \
+#define KRATOS_CATCH_AND_THROW(ExceptionType, MoreInfo, Block)  \
+catch(ExceptionType& e)                                         \
+{                                                               \
+Block                                                           \
+KRATOS_ERROR << e.what();                                       \
 }
 
-#define KRATOS_THROW_ERROR(ExceptionType, ErrorMessage, MoreInfo)    \
-{                                                              \
-KRATOS_ERROR << ErrorMessage << MoreInfo << std::endl;          \
+#define KRATOS_THROW_ERROR(ExceptionType, ErrorMessage, MoreInfo)   \
+{                                                                   \
+KRATOS_ERROR << ErrorMessage << MoreInfo << std::endl;              \
 }
 
 #define KRATOS_CATCH_WITH_BLOCK(MoreInfo,Block) \
@@ -149,8 +149,8 @@ KRATOS_CATCH_AND_THROW(std::invalid_argument,MoreInfo,Block) \
 KRATOS_CATCH_AND_THROW(std::domain_error,MoreInfo,Block)     \
 KRATOS_CATCH_AND_THROW(std::logic_error,MoreInfo,Block)      \
 KRATOS_CATCH_AND_THROW(std::runtime_error,MoreInfo,Block)    \
-catch(std::exception& e) { Block KRATOS_THROW_ERROR(std::runtime_error, e.what(), MoreInfo) } \
-catch(...) { Block KRATOS_THROW_ERROR(std::runtime_error, "Unknown error", MoreInfo) }
+catch(std::exception& e) { Block KRATOS_THROW_ERROR(std::runtime_error, e.what(), MoreInfo) }   \
+catch(...) { Block KRATOS_THROW_ERROR(std::runtime_error, "Unknown error", MoreInfo) }          \
 
 #define KRATOS_CATCH_BLOCK_BEGIN class ExceptionBlock{public: void operator()(void){
 #define KRATOS_CATCH_BLOCK_END }} exception_block; exception_block();
@@ -177,93 +177,105 @@ catch(...) { Block KRATOS_THROW_ERROR(std::runtime_error, "Unknown error", MoreI
 #ifdef KRATOS_DEFINE_VARIABLE_IMPLEMENTATION
 #undef KRATOS_DEFINE_VARIABLE_IMPLEMENTATION
 #endif
-#define KRATOS_DEFINE_VARIABLE_IMPLEMENTATION(module, type, name) \
-    KRATOS_EXPORT_MACRO(module) extern Variable<type > name;
+#define KRATOS_DEFINE_VARIABLE_IMPLEMENTATION(module, type, name)   \
+    KRATOS_EXPORT_MACRO(module) extern Variable<type > name;        \
 
 #ifdef KRATOS_DEFINE_VARIABLE
 #undef KRATOS_DEFINE_VARIABLE
 #endif
-#define KRATOS_DEFINE_VARIABLE(type, name) \
-    KRATOS_DEFINE_VARIABLE_IMPLEMENTATION(KRATOS_CORE, type, name)
+#define KRATOS_DEFINE_VARIABLE(type, name)                          \
+    KRATOS_DEFINE_VARIABLE_IMPLEMENTATION(KRATOS_CORE, type, name)  \
+
+#ifdef KRATOS_DEFINE_DOUBLE_VARIABLE
+#undef KRATOS_DEFINE_DOUBLE_VARIABLE
+#endif
+#define KRATOS_DEFINE_DOUBLE_VARIABLE(name)                          \
+    KRATOS_DEFINE_VARIABLE_IMPLEMENTATION(KRATOS_CORE, KRATOS_DOUBLE_TYPE, name)  \
 
 #ifdef KRATOS_DEFINE_APPLICATION_VARIABLE
 #undef KRATOS_DEFINE_APPLICATION_VARIABLE
 #endif
 #define KRATOS_DEFINE_APPLICATION_VARIABLE(application, type, name) \
-    KRATOS_API(application) extern Variable<type > name;
+    KRATOS_API(application) extern Variable<type > name;            \
 
 #ifdef KRATOS_DEFINE_3D_VARIABLE_WITH_COMPONENTS
 #undef KRATOS_DEFINE_3D_VARIABLE_WITH_COMPONENTS
 #endif
-#define KRATOS_DEFINE_3D_VARIABLE_WITH_COMPONENTS_IMPLEMENTATION(module, name) \
-    KRATOS_EXPORT_MACRO(module) extern Kratos::Variable<Kratos::array_1d<double, 3> > name; \
-    KRATOS_EXPORT_MACRO(module) extern Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<double, 3> > > name##_X;\
-    KRATOS_EXPORT_MACRO(module) extern Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<double, 3> > > name##_Y;\
-    KRATOS_EXPORT_MACRO(module) extern Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<double, 3> > > name##_Z;
+#define KRATOS_DEFINE_3D_VARIABLE_WITH_COMPONENTS_IMPLEMENTATION(module, name)                                                                          \
+    KRATOS_EXPORT_MACRO(module) extern Kratos::Variable<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> > name;                                                 \
+    KRATOS_EXPORT_MACRO(module) extern Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> > > name##_X;   \
+    KRATOS_EXPORT_MACRO(module) extern Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> > > name##_Y;   \
+    KRATOS_EXPORT_MACRO(module) extern Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> > > name##_Z;   \
 
 #ifdef KRATOS_DEFINE_3D_VARIABLE_WITH_COMPONENTS
 #undef KRATOS_DEFINE_3D_VARIABLE_WITH_COMPONENTS
 #endif
-#define KRATOS_DEFINE_3D_VARIABLE_WITH_COMPONENTS(name) \
-    KRATOS_DEFINE_3D_VARIABLE_WITH_COMPONENTS_IMPLEMENTATION(KRATOS_CORE, name)
+#define KRATOS_DEFINE_3D_VARIABLE_WITH_COMPONENTS(name)                         \
+    KRATOS_DEFINE_3D_VARIABLE_WITH_COMPONENTS_IMPLEMENTATION(KRATOS_CORE, name) \
 
 #ifdef KRATOS_DEFINE_3D_APPLICATION_VARIABLE_WITH_COMPONENTS
 #undef KRATOS_DEFINE_3D_APPLICATION_VARIABLE_WITH_COMPONENTS
 #endif
-#define KRATOS_DEFINE_3D_APPLICATION_VARIABLE_WITH_COMPONENTS(application, name) \
-  KRATOS_API(application) extern Kratos::Variable<Kratos::array_1d<double, 3> > name; \
-  KRATOS_API(application) extern Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<double, 3> > > name##_X;\
-  KRATOS_API(application) extern Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<double, 3> > > name##_Y;\
-  KRATOS_API(application) extern Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<double, 3> > > name##_Z;
+#define KRATOS_DEFINE_3D_APPLICATION_VARIABLE_WITH_COMPONENTS(application, name)                                                                \
+  KRATOS_API(application) extern Kratos::Variable<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> > name;                                               \
+  KRATOS_API(application) extern Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> > > name##_X; \
+  KRATOS_API(application) extern Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> > > name##_Y; \
+  KRATOS_API(application) extern Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> > > name##_Z; \
 
 #ifdef KRATOS_CREATE_VARIABLE
 #undef KRATOS_CREATE_VARIABLE
 #endif
-#define KRATOS_CREATE_VARIABLE(type, name) \
-    /*const*/ Kratos::Variable<type > name(#name);
+#define KRATOS_CREATE_VARIABLE(type, name)          \
+    /*const*/ Kratos::Variable<type > name(#name);  \
+
+#ifdef KRATOS_CREATE_DOUBLE_VARIABLE
+#undef KRATOS_CREATE_DOUBLE_VARIABLE
+#endif
+#define KRATOS_CREATE_DOUBLE_VARIABLE(name)          \
+    /*const*/ Kratos::Variable<KRATOS_DOUBLE_TYPE > name(#name);  \
 
 #ifdef KRATOS_CREATE_VARIABLE_WITH_ZERO
 #undef KRATOS_CREATE_VARIABLE_WITH_ZERO
 #endif
-#define KRATOS_CREATE_VARIABLE_WITH_ZERO(type, name, zero) \
-    /*const*/ Kratos::Variable<type> name(#name, zero);
+#define KRATOS_CREATE_VARIABLE_WITH_ZERO(type, name, zero)  \
+    /*const*/ Kratos::Variable<type> name(#name, zero);     \
 
 #ifdef KRATOS_CREATE_3D_VARIABLE_WITH_THIS_COMPONENTS
 #undef KRATOS_CREATE_3D_VARIABLE_WITH_THIS_COMPONENTS
 #endif
-#define KRATOS_CREATE_3D_VARIABLE_WITH_THIS_COMPONENTS(name, component1, component2, component3) \
-    /*const*/ Kratos::Variable<Kratos::array_1d<double, 3> > name(#name, Kratos::zero_vector<double>(3)); \
+#define KRATOS_CREATE_3D_VARIABLE_WITH_THIS_COMPONENTS(name, component1, component2, component3)                                    \
+    /*const*/ Kratos::Variable<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> > name(#name, Kratos::zero_vector<KRATOS_DOUBLE_TYPE>(3));   \
 \
-    /*const*/ Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<double, 3> > > \
-                  component1(#component1, Kratos::VectorComponentAdaptor<Kratos::array_1d<double, 3> >(name, 0)); \
+    /*const*/ Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> > >              \
+                  component1(#component1, Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> >(name, 0));   \
 \
-    /*const*/ Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<double, 3> > > \
-                  component2(#component2, Kratos::VectorComponentAdaptor<Kratos::array_1d<double, 3> >(name, 1)); \
+    /*const*/ Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> > >              \
+                  component2(#component2, Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> >(name, 1));   \
 \
-    /*const*/ Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<double, 3> > > \
-                  component3(#component3, Kratos::VectorComponentAdaptor<Kratos::array_1d<double, 3> >(name, 2));
+    /*const*/ Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> > >              \
+                  component3(#component3, Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> >(name, 2));   \
 
 #ifdef KRATOS_CREATE_3D_VARIABLE_WITH_COMPONENTS
 #undef KRATOS_CREATE_3D_VARIABLE_WITH_COMPONENTS
 #endif
-#define KRATOS_CREATE_3D_VARIABLE_WITH_COMPONENTS(name) \
-     KRATOS_CREATE_3D_VARIABLE_WITH_THIS_COMPONENTS(name, name##_X, name##_Y, name##_Z)
+#define KRATOS_CREATE_3D_VARIABLE_WITH_COMPONENTS(name)                                 \
+     KRATOS_CREATE_3D_VARIABLE_WITH_THIS_COMPONENTS(name, name##_X, name##_Y, name##_Z) \
 
 #ifdef KRATOS_REGISTER_VARIABLE
 #undef KRATOS_REGISTER_VARIABLE
 #endif
-#define KRATOS_REGISTER_VARIABLE(name) \
-    AddKratosComponent(name.Name(), name); \
-    KratosComponents<VariableData>::Add(name.Name(), name);
+#define KRATOS_REGISTER_VARIABLE(name)                      \
+    AddKratosComponent(name.Name(), name);                  \
+    KratosComponents<VariableData>::Add(name.Name(), name); \
 
 #ifdef KRATOS_REGISTER_3D_VARIABLE_WITH_COMPONENTS
 #undef KRATOS_REGISTER_3D_VARIABLE_WITH_COMPONENTS
 #endif
-#define KRATOS_REGISTER_3D_VARIABLE_WITH_COMPONENTS(name) \
-    KRATOS_REGISTER_VARIABLE(name) \
-    KRATOS_REGISTER_VARIABLE(name##_X) \
-    KRATOS_REGISTER_VARIABLE(name##_Y) \
-    KRATOS_REGISTER_VARIABLE(name##_Z)
+#define KRATOS_REGISTER_3D_VARIABLE_WITH_COMPONENTS(name)   \
+    KRATOS_REGISTER_VARIABLE(name)                          \
+    KRATOS_REGISTER_VARIABLE(name##_X)                      \
+    KRATOS_REGISTER_VARIABLE(name##_Y)                      \
+    KRATOS_REGISTER_VARIABLE(name##_Z)                      \
 
 #define KRATOS_DEPRECATED [[deprecated]]
 #define KRATOS_DEPRECATED_MESSAGE(deprecated_message) [[deprecated(deprecated_message)]]
@@ -277,45 +289,45 @@ catch(...) { Block KRATOS_THROW_ERROR(std::runtime_error, "Unknown error", MoreI
 #ifdef KRATOS_DEFINE_FLAG
 #undef KRATOS_DEFINE_FLAG
 #endif
-#define KRATOS_DEFINE_FLAG(name) \
-    extern const Kratos::Flags name;     \
-    extern const Kratos::Flags NOT_##name
+#define KRATOS_DEFINE_FLAG(name)            \
+    extern const Kratos::Flags name;        \
+    extern const Kratos::Flags NOT_##name   \
 
 #ifdef KRATOS_ADD_FLAG_TO_KRATOS_COMPONENTS
 #undef KRATOS_ADD_FLAG_TO_KRATOS_COMPONENTS
 #endif
 #define KRATOS_ADD_FLAG_TO_KRATOS_COMPONENTS(name)                  \
-    Kratos::KratosComponents<Kratos::Flags>::Add(#name, name)
+    Kratos::KratosComponents<Kratos::Flags>::Add(#name, name)       \
 
 #ifdef KRATOS_CREATE_FLAG
 #undef KRATOS_CREATE_FLAG
 #endif
-#define KRATOS_CREATE_FLAG(name, position)                  \
+#define KRATOS_CREATE_FLAG(name, position)                                  \
     const Kratos::Flags name(Kratos::Flags::Create(position));              \
-    const Kratos::Flags NOT_##name(Kratos::Flags::Create(position, false))
+    const Kratos::Flags NOT_##name(Kratos::Flags::Create(position, false))  \
 
 #ifdef KRATOS_REGISTER_FLAG
 #undef KRATOS_REGISTER_FLAG
 #endif
-#define KRATOS_REGISTER_FLAG(name)                  \
-    KRATOS_ADD_FLAG_TO_KRATOS_COMPONENTS(name);             \
-    KRATOS_ADD_FLAG_TO_KRATOS_COMPONENTS(NOT_##name)
+#define KRATOS_REGISTER_FLAG(name)                      \
+    KRATOS_ADD_FLAG_TO_KRATOS_COMPONENTS(name);         \
+    KRATOS_ADD_FLAG_TO_KRATOS_COMPONENTS(NOT_##name)    \
 
 
 
 #ifdef KRATOS_DEFINE_LOCAL_FLAG
 #undef KRATOS_DEFINE_LOCAL_FLAG
 #endif
-#define KRATOS_DEFINE_LOCAL_FLAG(name)		\
-  static const Kratos::Flags name;			\
-  static const Kratos::Flags NOT_##name
+#define KRATOS_DEFINE_LOCAL_FLAG(name)      \
+  static const Kratos::Flags name;          \
+  static const Kratos::Flags NOT_##name     \
 
 #ifdef KRATOS_CREATE_LOCAL_FLAG
 #undef KRATOS_CREATE_LOCAL_FLAG
 #endif
-#define KRATOS_CREATE_LOCAL_FLAG(class_name, name, position)		\
-  const Kratos::Flags class_name::name(Kratos::Flags::Create(position));		\
-  const Kratos::Flags class_name::NOT_##name(Kratos::Flags::Create(position, false))
+#define KRATOS_CREATE_LOCAL_FLAG(class_name, name, position)                            \
+  const Kratos::Flags class_name::name(Kratos::Flags::Create(position));                \
+  const Kratos::Flags class_name::NOT_##name(Kratos::Flags::Create(position, false))    \
 
 
 
@@ -328,39 +340,39 @@ catch(...) { Block KRATOS_THROW_ERROR(std::runtime_error, "Unknown error", MoreI
 #ifdef KRATOS_REGISTER_ELEMENT
 #undef KRATOS_REGISTER_ELEMENT
 #endif
-#define KRATOS_REGISTER_ELEMENT(name, reference) \
-    KratosComponents<Element >::Add(name, reference); \
-    Serializer::Register(name, reference);
+#define KRATOS_REGISTER_ELEMENT(name, reference)        \
+    KratosComponents<Element >::Add(name, reference);   \
+    Serializer::Register(name, reference);              \
 
 #ifdef KRATOS_REGISTER_CONDITION
 #undef KRATOS_REGISTER_CONDITION
 #endif
-#define KRATOS_REGISTER_CONDITION(name, reference) \
+#define KRATOS_REGISTER_CONDITION(name, reference)      \
     KratosComponents<Condition >::Add(name, reference); \
-    Serializer::Register(name, reference);
+    Serializer::Register(name, reference);              \
 
 #ifdef KRATOS_REGISTER_CONSTRAINT
 #undef KRATOS_REGISTER_CONSTRAINT
 #endif
-#define KRATOS_REGISTER_CONSTRAINT(name, reference) \
+#define KRATOS_REGISTER_CONSTRAINT(name, reference)                 \
     KratosComponents<MasterSlaveConstraint >::Add(name, reference); \
-    Serializer::Register(name, reference);
+    Serializer::Register(name, reference);                          \
 
 
 #ifdef KRATOS_REGISTER_IN_PYTHON_VARIABLE
 #undef KRATOS_REGISTER_IN_PYTHON_VARIABLE
 #endif
-#define KRATOS_REGISTER_IN_PYTHON_VARIABLE(variable) \
-	scope().attr(#variable) = boost::ref(variable);
+#define KRATOS_REGISTER_IN_PYTHON_VARIABLE(variable)    \
+    scope().attr(#variable) = boost::ref(variable);     \
 
 #ifdef KRATOS_REGISTER_IN_PYTHON_3D_VARIABLE_WITH_COMPONENTS
 #undef KRATOS_REGISTER_IN_PYTHON_3D_VARIABLE_WITH_COMPONENTS
 #endif
 #define KRATOS_REGISTER_IN_PYTHON_3D_VARIABLE_WITH_COMPONENTS(name) \
-    KRATOS_REGISTER_IN_PYTHON_VARIABLE(name) \
-    KRATOS_REGISTER_IN_PYTHON_VARIABLE(name##_X) \
-    KRATOS_REGISTER_IN_PYTHON_VARIABLE(name##_Y) \
-    KRATOS_REGISTER_IN_PYTHON_VARIABLE(name##_Z)
+    KRATOS_REGISTER_IN_PYTHON_VARIABLE(name)                        \
+    KRATOS_REGISTER_IN_PYTHON_VARIABLE(name##_X)                    \
+    KRATOS_REGISTER_IN_PYTHON_VARIABLE(name##_Y)                    \
+    KRATOS_REGISTER_IN_PYTHON_VARIABLE(name##_Z)                    \
 
 
 
@@ -403,8 +415,11 @@ typedef const char* PointerToConstCharType;
 /* #define KRATOS_REGISTER_LINEAR_SOLVER_BEGIN \ */
 /* template<class TFunction> ApplyToLinearSolver(String Name){ */
 
-
-
+template<typename TDataType> struct DataTypeToString;
+template<> struct DataTypeToString<int> { static inline std::string Get() {return "int";} };
+template<> struct DataTypeToString<bool> { static inline std::string Get() {return "bool";} };
+template<> struct DataTypeToString<double> { static inline std::string Get() {return "double";} };
+template<> struct DataTypeToString<long double> { static inline std::string Get() {return "long double";} };
 
 //Print Trace if defined
 //#define KRATOS_PRINT_TRACE
@@ -434,10 +449,10 @@ typedef const char* PointerToConstCharType;
 
 
 #define KRATOS_SERIALIZE_SAVE_BASE_CLASS(Serializer, BaseType) \
-	Serializer.save_base("BaseClass",*static_cast<const BaseType *>(this));
+    Serializer.save_base("BaseClass",*static_cast<const BaseType *>(this));
 
 #define KRATOS_SERIALIZE_LOAD_BASE_CLASS(Serializer, BaseType) \
-	Serializer.load_base("BaseClass",*static_cast<BaseType *>(this));
+    Serializer.load_base("BaseClass",*static_cast<BaseType *>(this));
 
 
 #endif /* KRATOS_DEFINE_H_INCLUDED  defined */

@@ -29,6 +29,8 @@ class Plane
 {
 public:
 
+    typedef KRATOS_DOUBLE_TYPE DataType;
+
     Plane()
     {
         noalias(mTriangleBary) = ZeroVector(3);
@@ -40,66 +42,66 @@ public:
     ~Plane() {}
 
     //----------------------------------------------------------------------------
-    Plane(const array_1d<double, 3>& normal, double& constant):
+    Plane(const array_1d<DataType, 3>& normal, const double constant):
         mNormal(normal),
         mConstant(constant)
     {
     }
     //----------------------------------------------------------------------------
-    Plane(const array_1d<double, 3>& normal, const array_1d<double, 3>& p):
+    Plane(const array_1d<DataType, 3>& normal, const array_1d<DataType, 3>& p):
         mNormal(normal)
     {
         mConstant = inner_prod(normal, p);
     }
     //----------------------------------------------------------------------------
-    Plane(const array_1d<double, 3>& p0,
-          const array_1d<double, 3>& p1,
-          const array_1d<double, 3>& p2)
+    Plane(const array_1d<DataType, 3>& p0,
+          const array_1d<DataType, 3>& p1,
+          const array_1d<DataType, 3>& p2)
     {
-        array_1d<double, 3> edge1 = p1 - p0;
-        array_1d<double, 3> edge2 = p2 - p0;
-        MathUtils<double>::UnitCrossProduct(mNormal, edge1, edge2);
+        array_1d<DataType, 3> edge1 = p1 - p0;
+        array_1d<DataType, 3> edge2 = p2 - p0;
+        MathUtils<DataType>::UnitCrossProduct(mNormal, edge1, edge2);
         mConstant =  inner_prod(mNormal, p0);
     }
 
 
-    void AssignPointsAndComputeParameters(array_1d<double, 3>& p0, array_1d<double, 3>& p1, array_1d<double, 3>& p2)
+    void AssignPointsAndComputeParameters(const array_1d<DataType, 3>& p0, const array_1d<DataType, 3>& p1, const array_1d<DataType, 3>& p2)
     {
-        array_1d<double, 3> edge1 = p1 - p0;
-        array_1d<double, 3> edge2 = p2 - p0;
-        MathUtils<double>::UnitCrossProduct(mNormal, edge1, edge2);
+        array_1d<DataType, 3> edge1 = p1 - p0;
+        array_1d<DataType, 3> edge2 = p2 - p0;
+        MathUtils<DataType>::UnitCrossProduct(mNormal, edge1, edge2);
         mConstant =  inner_prod(mNormal, p0);
     }
 
     //----------------------------------------------------------------------------
     /// Calcula la distancia del punto al plano
-    double DistanceTo(const array_1d<double, 3>& p)
+    DataType DistanceTo(const array_1d<DataType, 3>& p)
     {
         return  inner_prod(mNormal,p) - mConstant;
     }
 
     /// computa la distancia de un punto a un triangulo 3D
-    double DistPoint3Triangle3(
-        array_1d<double, 3>& rPoint,
-        array_1d<double, 3>& p0,
-        array_1d<double, 3>& p1,
-        array_1d<double, 3>& p2
+    DataType DistPoint3Triangle3(
+        array_1d<DataType, 3>& rPoint,
+        array_1d<DataType, 3>& p0,
+        array_1d<DataType, 3>& p1,
+        array_1d<DataType, 3>& p2
     )
     {
-        array_1d<double, 3> diff  = p0 - rPoint;
-        array_1d<double, 3> edge0 = p1 - p0;
-        array_1d<double, 3> edge1 = p2 - p0;
+        array_1d<DataType, 3> diff  = p0 - rPoint;
+        array_1d<DataType, 3> edge0 = p1 - p0;
+        array_1d<DataType, 3> edge1 = p2 - p0;
 
-        double a00 = inner_prod(edge0, edge0);
-        double a01 = inner_prod(edge0, edge1);
-        double a11 = inner_prod(edge1, edge1);
-        double b0  = inner_prod(diff,  edge0);
-        double b1  = inner_prod(diff,  edge1);
-        double c   = inner_prod(diff,  diff);
-        double det = std::fabs(a00*a11 - a01*a01);
-        double s = a01*b1 - a11*b0;
-        double t = a01*b0 - a00*b1;
-        double sqrDistance = 0.00;
+        DataType a00 = inner_prod(edge0, edge0);
+        DataType a01 = inner_prod(edge0, edge1);
+        DataType a11 = inner_prod(edge1, edge1);
+        DataType b0  = inner_prod(diff,  edge0);
+        DataType b1  = inner_prod(diff,  edge1);
+        DataType c   = inner_prod(diff,  diff);
+        DataType det = std::fabs(a00*a11 - a01*a01);
+        DataType s = a01*b1 - a11*b0;
+        DataType t = a01*b0 - a00*b1;
+        DataType sqrDistance = 0.00;
 
         if (s + t <= det)
         {
@@ -183,7 +185,7 @@ public:
             else  // region 0
             {
                 // minimum at interior point
-                double invDet = (1.00)/det;
+                DataType invDet = (1.00)/det;
                 s *= invDet;
                 t *= invDet;
                 sqrDistance = s*(a00*s + a01*t + (2.00)*b0) +
@@ -192,7 +194,7 @@ public:
         }
         else
         {
-            double tmp0, tmp1, numer, denom;
+            DataType tmp0, tmp1, numer, denom;
 
             if (s < 0.00)  // region 2
             {
@@ -325,9 +327,9 @@ public:
 
 
     //----------------------------------------------------------------------------
-    int WhichSide(const array_1d<double, 3>& p)
+    int WhichSide(const array_1d<DataType, 3>& p)
     {
-        double distance = DistanceTo(p);
+        DataType distance = DistanceTo(p);
         if (distance < 0.00)
             return -1;
         else if (distance > 0.00)
@@ -336,11 +338,12 @@ public:
             return 0;
     }
 
-    array_1d<double, 3> mTriangleBary;
-    array_1d<double, 3> mClosestPoint;
-    array_1d<double, 3> mNormal;
-    double mConstant;
+    array_1d<DataType, 3> mTriangleBary;
+    array_1d<DataType, 3> mClosestPoint;
+    array_1d<DataType, 3> mNormal;
+    DataType mConstant;
 };
-}
-#endif
 
+} // namespace Kratos
+
+#endif

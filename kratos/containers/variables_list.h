@@ -106,7 +106,7 @@ public:
 
     typedef std::size_t IndexType;
 
-    typedef double BlockType;
+    typedef KRATOS_DOUBLE_TYPE BlockType;
 
     typedef std::vector<IndexType> PositionsContainerType;
 

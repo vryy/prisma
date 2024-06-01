@@ -54,7 +54,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <boost/numeric/ublas/vector.hpp>
 #include "utilities/openmp_utils.h"
 
-//#define NO_PRECOND 
+//#define NO_PRECOND
 
 namespace Kratos
 {
@@ -88,17 +88,20 @@ public:
     /// Pointer definition of DeflatedGMRESSolver
     KRATOS_CLASS_POINTER_DEFINITION (DeflatedGMRESSolver);
     typedef IterativeSolver<TSparseSpaceType, TDenseSpaceType, TPreconditionerType, TReordererType> BaseType;
-    typedef typename TSparseSpaceType::MatrixType SparseMatrixType;    
+    typedef typename TSparseSpaceType::MatrixType SparseMatrixType;
     typedef typename TSparseSpaceType::VectorType VectorType;
     typedef typename TDenseSpaceType::MatrixType DenseMatrixType;
     typedef typename TDenseSpaceType::VectorType DenseVectorType;
     typedef std::size_t  SizeType;
+    typedef typename BaseType::DataType  DataType;
+    typedef DeflationUtils<SparseMatrixType, VectorType> DeflationUtilsType;
+
     ///@}
     ///@name Life Cycle
     ///@{
     /// Default constructor.
     DeflatedGMRESSolver (typename LinearSolver<TSparseSpaceType, TDenseSpaceType, TReordererType>::Pointer pred_solver,
-                         double NewMaxTolerance,
+                         DataType NewMaxTolerance,
                          unsigned int NewMaxIterationsNumber,
                          unsigned int m, unsigned int max_reduced_size
                         ) : BaseType (NewMaxTolerance, NewMaxIterationsNumber)
@@ -106,27 +109,31 @@ public:
         //saving the linear solvers to be used in the solution process
         //mpsolver_UU_block = psolver_UU_block;
         //mpsolver_PP_block = psolver_PP_block;
-	//this is the solver used at the prediction step before entering the GMRES loop... can be direct or iterative
-	mPred_solver = pred_solver;
+        //this is the solver used at the prediction step before entering the GMRES loop... can be direct or iterative
+        mPred_solver = pred_solver;
         mBlocksAreAllocated = false;
         mis_initialized = false;
         mm = m;
-	mmax_reduced_size=max_reduced_size;
-	KRATOS_WATCH("Quasi-deflated solver created")
-	std::cout<<"Krylov space size is"<< mm<<std::endl;
-	std::cout<<"Maximum deflated matrix size is"<< mmax_reduced_size<<std::endl;	
-	myfile.open("iterations.txt");
+        mmax_reduced_size=max_reduced_size;
+        KRATOS_WATCH("Quasi-deflated solver created")
+        std::cout<<"Krylov space size is"<< mm<<std::endl;
+        std::cout<<"Maximum deflated matrix size is"<< mmax_reduced_size<<std::endl;
+        myfile.open("iterations.txt");
     }
+
     /// Copy constructor.
     DeflatedGMRESSolver (const DeflatedGMRESSolver& Other)
     {
         KRATOS_THROW_ERROR (std::logic_error,"copy constructor not correctly implemented","");
     }
+
     /// Destructor.
     virtual ~DeflatedGMRESSolver() {}
     ///@}
+
     ///@name Operators
     ///@{
+
     /// Assignment operator.
     DeflatedGMRESSolver& operator= (const DeflatedGMRESSolver& Other)
     {
@@ -145,15 +152,15 @@ public:
     */
     virtual void Initialize (SparseMatrixType& rA, VectorType& rX, VectorType& rB)
     {
-	if (mBlocksAreAllocated == true)
-	{
-	    
-	    mis_initialized = true;
-	}
-	else
-	{
-	  std::cout << "linear solver intialization is deferred to the moment at which blocks are available" << std::endl;
-	}
+    if (mBlocksAreAllocated == true)
+    {
+
+        mis_initialized = true;
+    }
+    else
+    {
+      std::cout << "linear solver intialization is deferred to the moment at which blocks are available" << std::endl;
+    }
     }
     /** This function is designed to be called every time the coefficients change in the system
      * that is, normally at the beginning of each solve.
@@ -164,7 +171,7 @@ public:
     @param rB. Right hand side vector.
     */
     virtual void InitializeSolutionStep (SparseMatrixType& rA, VectorType& rX, VectorType& rB)
-    {     
+    {
         //copy to local matrices
         if (mBlocksAreAllocated == false)
         {
@@ -176,9 +183,9 @@ public:
             FillBlockMatrices (false, rA, mK, mG, mD, mS);
             mBlocksAreAllocated = true;
         }
-        
+
         if(mis_initialized == false) this->Initialize(rA,rX,rB);
-        
+
     }
 
     /** This function actually performs the solution work, eventually taking advantage of what was done before in the
@@ -191,9 +198,10 @@ public:
     {
         unsigned int m = mm;
         unsigned int max_iter = BaseType::GetMaxIterationsNumber();
-        double tol = BaseType::GetTolerance();
+        DataType tol = BaseType::GetTolerance();
         gmres_solve (rA,rX,rB,m,max_iter,tol);
-    } 
+    }
+
     /** This function is designed to be called at the end of the solve step.
      * for example this is the place to remove any data that we do not want to save for later
     @param rA. System matrix
@@ -202,8 +210,9 @@ public:
     */
     virtual void FinalizeSolutionStep (SparseMatrixType& rA, VectorType& rX, VectorType& rB)
     {
-        
+
     }
+
     /** This function is designed to clean up all internal data in the solver.
      * Clear is designed to leave the solver object as if newly created.
      * After a clear a new Initialize is needed
@@ -214,12 +223,12 @@ public:
         mG.clear();
         mD.clear();
         mS.clear();
-        mBlocksAreAllocated = false;        
-	mPred_solver->Clear();
-	mu.clear();
-	mp.clear();
-	mru.clear();
-	mrp.clear();
+        mBlocksAreAllocated = false;
+        mPred_solver->Clear();
+        mu.clear();
+        mp.clear();
+        mru.clear();
+        mrp.clear();
         mis_initialized = false;
     }
 
@@ -282,7 +291,7 @@ public:
      * which require knowledge on the spatial position of the nodes associated to a given dof.
      * This function is the place to eventually provide such data
      */
- void ProvideAdditionalData (
+    void ProvideAdditionalData (
         SparseMatrixType& rA,
         VectorType& rX,
         VectorType& rB,
@@ -294,14 +303,14 @@ public:
         unsigned int n_pressure_dofs = 0;
         unsigned int tot_active_dofs = 0;
         for (ModelPart::DofsArrayType::iterator it = rdof_set.begin(); it!=rdof_set.end(); it++)
-		{
-		  if (it->EquationId() < rA.size1())
-		  {
-		      tot_active_dofs += 1;
-		      if (it->GetVariable().Key() == PRESSURE)
-			  n_pressure_dofs += 1;
-		  }
-		}
+        {
+          if (it->EquationId() < rA.size1())
+          {
+              tot_active_dofs += 1;
+              if (it->GetVariable().Key() == PRESSURE)
+              n_pressure_dofs += 1;
+          }
+        }
 
         if (tot_active_dofs != rA.size1() )
             KRATOS_THROW_ERROR (std::logic_error,"total system size does not coincide with the free dof map","");
@@ -343,7 +352,8 @@ public:
             }
         }
     }
-/*
+
+    /*
     void ProvideAdditionalData (
         SparseMatrixType& rA,
         VectorType& rX,
@@ -362,8 +372,8 @@ public:
                 if (it->GetVariable().Key() == PRESSURE)
                     n_pressure_dofs += 1;
             }
-	//KRATOS_WATCH(rA.size1())
-	//KRATOS_WATCH(tot_active_dofs)
+    //KRATOS_WATCH(rA.size1())
+    //KRATOS_WATCH(tot_active_dofs)
 //         if (tot_active_dofs != rA.size1() )
 //             KRATOS_THROW_ERROR (std::logic_error,"total system size does not coincide with the free dof map","");
 
@@ -412,6 +422,7 @@ public:
     ///@name Inquiry
     ///@{
     ///@}
+
     ///@name Input and output
     ///@{
     /// Turn back information as a string.
@@ -419,16 +430,20 @@ public:
     {
         return "Linear solver";
     }
+
     /// Print information about this object.
     virtual void PrintInfo (std::ostream& rOStream) const
     {
         rOStream << "Linear solver";
     }
+
     /// Print object's data.
     virtual void PrintData (std::ostream& rOStream) const
     {
     }
+
     ///@}
+
     ///@name Friends
     ///@{
     ///@}
@@ -448,11 +463,12 @@ protected:
     void FillBlockMatrices (bool need_allocation, SparseMatrixType& rA, SparseMatrixType& K, SparseMatrixType& G, SparseMatrixType& D, SparseMatrixType& S )
     {
         KRATOS_TRY
-	KRATOS_WATCH("FILLING BLOCK MATRICES")
+
+        KRATOS_WATCH("FILLING BLOCK MATRICES")
         //get access to A data
-        const std::size_t* index1 = rA.index1_data().begin();
-        const std::size_t* index2 = rA.index2_data().begin();
-        const double*	   values = rA.value_data().begin();
+        const auto* index1 = rA.index1_data().begin();
+        const auto* index2 = rA.index2_data().begin();
+        const auto* values = rA.value_data().begin();
 
         SparseMatrixType L(mpressure_indices.size(),mpressure_indices.size() );
 
@@ -469,12 +485,11 @@ protected:
             G.resize (mother_indices.size()   ,mpressure_indices.size() );
             D.resize (mpressure_indices.size(),mother_indices.size() );
             S.resize (mpressure_indices.size(),mpressure_indices.size() );
-	    
-	    mrp.resize(mpressure_indices.size() );
-	    mru.resize(mother_indices.size() );
-	    mp.resize(mpressure_indices.size());
-	    mu.resize(mother_indices.size());
 
+            mrp.resize(mpressure_indices.size() );
+            mru.resize(mother_indices.size() );
+            mp.resize(mpressure_indices.size());
+            mu.resize(mother_indices.size());
 
             //KRATOS_WATCH (mglobal_to_local_indexing);
             //allocate the blocks by push_back
@@ -489,7 +504,7 @@ protected:
                     for (unsigned int j=row_begin; j<row_end; j++)
                     {
                         unsigned int col_index = index2[j];
-                        double value = values[j];
+                        const auto value = values[j];
                         unsigned int local_col_id = mglobal_to_local_indexing[col_index];
                         if (mis_pressure_block[col_index] == false) //K block
                             K.push_back ( local_row_id, local_col_id, value);
@@ -502,7 +517,7 @@ protected:
                     for (unsigned int j=row_begin; j<row_end; j++)
                     {
                         unsigned int col_index = index2[j];
-                        double value = values[j];
+                        const auto value = values[j];
                         unsigned int local_col_id = mglobal_to_local_indexing[col_index];
                         if (mis_pressure_block[col_index] == false) //D block
                             D.push_back ( local_row_id, local_col_id, value);
@@ -511,13 +526,10 @@ protected:
                     }
                 }
             }
-	
-            S = L;           
+
+            S = L;
             Vector diagK (mother_indices.size() );
             ComputeDiagonalByLumping (K,diagK);
-
-           
-
         }
         else //allocation is not needed so only do copying
         {
@@ -531,7 +543,7 @@ protected:
                     for (unsigned int j=row_begin; j<row_end; j++)
                     {
                         unsigned int col_index = index2[j];
-                        double value = values[j];
+                        const auto value = values[j];
                         unsigned int local_col_id = mglobal_to_local_indexing[col_index];
                         if (mis_pressure_block[col_index] == false) //K block
                             K( local_row_id, local_col_id) = value;
@@ -544,7 +556,7 @@ protected:
                     for (unsigned int j=row_begin; j<row_end; j++)
                     {
                         unsigned int col_index = index2[j];
-                        double value = values[j];
+                        const auto value = values[j];
                         unsigned int local_col_id = mglobal_to_local_indexing[col_index];
                         if (mis_pressure_block[col_index] == false) //D block
                             D( local_row_id, local_col_id) = value;
@@ -554,22 +566,16 @@ protected:
                 }
             }
 
-	S = L;
+            S = L;
 
             Vector diagK (mother_indices.size() );
             ComputeDiagonalByLumping (K,diagK);
-
-         
-
         }
-
-
-
-
 
         KRATOS_CATCH ("")
     }
     ///@}
+
     ///@name Protected Operations
     ///@{
     ///@}
@@ -605,17 +611,17 @@ private:
     SparseMatrixType mG;
     SparseMatrixType mD;
     SparseMatrixType mS;
-    
+
     Vector mrp;
     Vector mru;
     Vector mp;
     Vector mu;
-	
+
     std::ofstream myfile;
     ///@}
     ///@name Private Operators
     ///@{
-    inline void GeneratePlaneRotation (const double &dx, const double &dy, double &cs, double &sn)
+    inline void GeneratePlaneRotation (const DataType dx, const DataType dy, DataType& cs, DataType& sn)
     {
         if (dy == 0.0)
         {
@@ -629,15 +635,15 @@ private:
         }
         else
         {
-            const double rnorm = 1.0/sqrt (dx*dx + dy*dy);
+            const DataType rnorm = 1.0/sqrt (dx*dx + dy*dy);
             cs = fabs (dx) * rnorm;
             sn = cs * dy / dx;
         }
     }
 
-    inline void ApplyPlaneRotation (double &dx, double &dy, const double &cs, const double &sn)
+    inline void ApplyPlaneRotation (DataType& dx, DataType& dy, const DataType cs, const DataType sn)
     {
-        double temp  =  cs * dx + sn * dy;
+        DataType temp  =  cs * dx + sn * dy;
         dy = cs * dy - sn * dx;
         dx = temp;
     }
@@ -646,8 +652,8 @@ private:
     {
         for (unsigned int i=0; i<s.size(); i++)
             y[i] = s[i];
-        /*		for(unsigned int i=s.size(); i<y.size(); i++)
-        			y[i] = 0.0;*/
+        /*      for(unsigned int i=s.size(); i<y.size(); i++)
+                    y[i] = 0.0;*/
         // Backsolve:
         for (int i = k; i >= 0; --i)
         {
@@ -665,64 +671,64 @@ private:
                       const VectorType& b,
                       unsigned int& m,
                       unsigned int& max_iter,
-                      double& tol)
+                      DataType& tol)
     {
         const unsigned int dim = A.size1();
         if (m == 0)
             KRATOS_THROW_ERROR (std::logic_error,"the dimension of the GMRES krylov space can not be set to zero. Please change the value of m","")
             if (m > max_iter)
                 m = max_iter;
-	//KRATOS_WATCH("Krylov space size")
-	//KRATOS_WATCH(m)
+    //KRATOS_WATCH("Krylov space size")
+    //KRATOS_WATCH(m)
         VectorType s (m+1), sn (m+1), w (dim), r (dim), y (m+1);
-	/////////THINGS NECESSARY FOR DEFLATION///////////////////////////////////////////////////////////////////////////
-	SparseMatrixType S_deflated;											//
-	//THIS ww is the matrix W in vector form									//
-	std::vector<int> W;												//	
-															//
-	DeflationUtils::ConstructW(mmax_reduced_size, mS, W, S_deflated);						//
-	DeflationUtils::FillDeflatedMatrix(mS, W, S_deflated);								//	
-	int red_dim=S_deflated.size1();											//
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /////////THINGS NECESSARY FOR DEFLATION///////////////////////////////////////////////////////////////////////////
+        SparseMatrixType S_deflated;                                            //
+        //THIS ww is the matrix W in vector form                                    //
+        std::vector<int> W;                                             //
+                                                                //
+        DeflationUtilsType::ConstructW(mmax_reduced_size, mS, W, S_deflated);                       //
+        DeflationUtilsType::FillDeflatedMatrix(mS, W, S_deflated);                              //
+        int red_dim=S_deflated.size1();                                         //
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	Vector  cs (m+1);
+        Vector  cs (m+1);
         Matrix  H (m+1, m+1);
         int restart = 0;
-	int p_dim=mS.size1();
-	VectorType output(p_dim);//WT*lambda	
-	VectorType temp (dim,0.0);
+        int p_dim=mS.size1();
+        VectorType output(p_dim);//WT*lambda
+        VectorType temp (dim,0.0);
 
-        double normb = TSparseSpaceType::TwoNorm (b);
-	/*KRATOS_WATCH(normb);*/
+        DataType normb = TSparseSpaceType::TwoNorm (b);
+    /*KRATOS_WATCH(normb);*/
         if (normb < 1e-16) //ARBITRARY SMALL NUMBER!
         {
             normb = 1e-16;
         }
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//get the residual
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //get the residual
         //r = b - Ax
         TSparseSpaceType::Mult (A,x,r);
-        TSparseSpaceType::ScaleAndAdd (1.00, b, -1.00, r); //r = b - r	
-	
-	//CHECKING IF THE MATRIX IS INVERTIBLE!!!! If it is not (i.e. if S_deflated*Identity=0, we add a number to diagonal)
-	//CheckDeflatedMatrix(S_deflated);	
-
-#ifndef NO_PRECOND	
-	KRATOS_WATCH("SOLVING DEFLATED PRESSURE")
-	SolveDeflatedPressure( output, r, S_deflated, W);		
-	KRATOS_WATCH("SOLVED DEFLATED PRESSURE")
-	//update x: by modifying its part corresponding to pressure	
-	WritePPart (temp, output);		
-	TSparseSpaceType::ScaleAndAdd(1.00, temp, 1.00, x);	
-	
-	TSparseSpaceType::Mult (A,x,r);
         TSparseSpaceType::ScaleAndAdd (1.00, b, -1.00, r); //r = b - r
-	//KRATOS_WATCH(r)
+
+    //CHECKING IF THE MATRIX IS INVERTIBLE!!!! If it is not (i.e. if S_deflated*Identity=0, we add a number to diagonal)
+    //CheckDeflatedMatrix(S_deflated);
+
+#ifndef NO_PRECOND
+    KRATOS_WATCH("SOLVING DEFLATED PRESSURE")
+    SolveDeflatedPressure( output, r, S_deflated, W);
+    KRATOS_WATCH("SOLVED DEFLATED PRESSURE")
+    //update x: by modifying its part corresponding to pressure
+    WritePPart (temp, output);
+    TSparseSpaceType::ScaleAndAdd(1.00, temp, 1.00, x);
+
+    TSparseSpaceType::Mult (A,x,r);
+        TSparseSpaceType::ScaleAndAdd (1.00, b, -1.00, r); //r = b - r
+    //KRATOS_WATCH(r)
 #endif
-	
-	
-        const double rel_tol = tol*normb;
-        double beta = TSparseSpaceType::TwoNorm (r);
+
+
+        const DataType rel_tol = tol*normb;
+        DataType beta = TSparseSpaceType::TwoNorm (r);
         if (beta <= rel_tol)   //finalize!
         {
             tol = beta / normb;
@@ -742,7 +748,7 @@ private:
             s[0] = beta;
             for (unsigned int i = 0; (i < m) && (j <= max_iter); ++i, ++j)
             {
-                TSparseSpaceType::Mult (A,V[i],w); //w = A*V[i];	
+                TSparseSpaceType::Mult (A,V[i],w); //w = A*V[i];
 
                 for (unsigned int k = 0; k <= i; k++)
                 {
@@ -750,11 +756,11 @@ private:
                     w -= H (k, i) * V[k];
                 }
 #ifndef NO_PRECOND
-		Modify_w(  w,  W, dim, p_dim, red_dim);
+        Modify_w(  w,  W, dim, p_dim, red_dim);
 #endif
 
-                const double normw = TSparseSpaceType::TwoNorm (w);
-                H (i+1, i) = normw;                
+                const DataType normw = TSparseSpaceType::TwoNorm (w);
+                H (i+1, i) = normw;
                 // This breakdown is a good one ...
                 if (normw == 0)
                     TSparseSpaceType::Copy (V[i+1], w); //V[i+1] = w;
@@ -766,30 +772,30 @@ private:
                 ApplyPlaneRotation (H (i,i), H (i+1,i), cs (i), sn (i) );
                 ApplyPlaneRotation (s (i), s (i+1), cs (i), sn (i) );
                 beta = fabs (s (i+1) );
-		std::cout << "iter = " <<  j << "  estimated res ratio = " << beta << std::endl;
+        std::cout << "iter = " <<  j << "  estimated res ratio = " << beta << std::endl;
                 //KRATOS_WATCH (beta);
                 if (beta <= rel_tol)
                 {
                     this->Update (y, x, i, H, s, V);
-		   //WRITE THE NUMBER OF ITERATIONS INTO A FILE
-		   myfile <<j<<"\n";
-		   
+           //WRITE THE NUMBER OF ITERATIONS INTO A FILE
+           myfile <<j<<"\n";
+
 
                     return 0;
                 }
-		//IF WE SURPASS THE MAX ITERATION NUMBER WE WILL ALSO PRINT IT TO FILE
-		else if (j>=max_iter)
-			myfile <<j<<"\n";
+        //IF WE SURPASS THE MAX ITERATION NUMBER WE WILL ALSO PRINT IT TO FILE
+        else if (j>=max_iter)
+            myfile <<j<<"\n";
             }
-	    
-            this->Update (y,x, m - 1, H, s, V);	 
-	    
+
+            this->Update (y,x, m - 1, H, s, V);
+
             //r = b - Ax
             TSparseSpaceType::Mult (A,x,r);
-	    TSparseSpaceType::ScaleAndAdd (1.00, b, -1.00, r); //r = b - r	    
+        TSparseSpaceType::ScaleAndAdd (1.00, b, -1.00, r); //r = b - r
             beta = TSparseSpaceType::TwoNorm (r);
-            
-	    std::cout << "number of iterations at convergence = " << j << std::endl;
+
+        std::cout << "number of iterations at convergence = " << j << std::endl;
             if (beta < rel_tol)
             {
                 return 0;
@@ -803,71 +809,70 @@ private:
 
     void CheckDeflatedMatrix(SparseMatrixType& S_deflated)
     {
-    std::size_t reduced_size = S_deflated.size1();
+        std::size_t reduced_size = S_deflated.size1();
 
-    VectorType identity(reduced_size,1.0);
-    VectorType res(reduced_size,0.0);
-	TSparseSpaceType::Mult (S_deflated,identity,res);
+        VectorType identity(reduced_size,1.0);
+        VectorType res(reduced_size,0.0);
+        TSparseSpaceType::Mult (S_deflated,identity,res);
 
-KRATOS_WATCH(res)
-KRATOS_WATCH(norm_2(res))	
+        KRATOS_WATCH(res)
+        KRATOS_WATCH(norm_2(res))
     }
 
     //FUNCTION THAT SOLVES THE SYSTEM WTLW*lambda=WT*r or WTLW*d_lambda=WT*w.. in the first case output=W*lambda, in the second ouput=W*d_lambda
     //void SolveDeflatedPressure( VectorType& output, VectorType& r, SparseMatrixType& S_deflated, std::vector<int>& W, LUSkylineFactorization<TSparseSpaceType, TDenseSpaceType>& Factorization)
     void SolveDeflatedPressure( VectorType& output, VectorType& r, SparseMatrixType& S_deflated, std::vector<int>& W)
     {
-	///////////////////////////////////////////////////////////
-	// put here deflation i.e. solve for WTLWp=WTr fixing w
-	//ww is a deflation matrix W written in a vector format	
-	//extracted the part of the residual corresponding to the pressure - r_p
-	Vector rp;	
-	//get the lower part of the residual vector, corresponding to pressure dofs
-	GetPPart (r, rp);
-	std::size_t reduced_size = S_deflated.size1();
-	//std::size_t full_size = mS.size1();
-	VectorType WT_rp(reduced_size), lambda(reduced_size);
-	
-	//w_T_r is the residual multiplied by the WT
-	DeflationUtils::ApplyWtranspose(W, rp, WT_rp);	
-	mPred_solver->Solve(S_deflated, lambda, WT_rp);	
-	KRATOS_WATCH(norm_2(lambda) );
+        ///////////////////////////////////////////////////////////
+        // put here deflation i.e. solve for WTLWp=WTr fixing w
+        //ww is a deflation matrix W written in a vector format
+        //extracted the part of the residual corresponding to the pressure - r_p
+        Vector rp;
+        //get the lower part of the residual vector, corresponding to pressure dofs
+        GetPPart (r, rp);
+        std::size_t reduced_size = S_deflated.size1();
+        //std::size_t full_size = mS.size1();
+        VectorType WT_rp(reduced_size), lambda(reduced_size);
 
-	DeflationUtils::ApplyW(W, lambda, output);       
-	///////////////////////////////////////////////////////////////////////////////////////////////
+        //w_T_r is the residual multiplied by the WT
+        DeflationUtilsType::ApplyWtranspose(W, rp, WT_rp);
+        mPred_solver->Solve(S_deflated, lambda, WT_rp);
+        KRATOS_WATCH(norm_2(lambda) );
 
+        DeflationUtilsType::ApplyW(W, lambda, output);
+        ///////////////////////////////////////////////////////////////////////////////////////////////
     }
+
     //makes w orthogonal to W
     void Modify_w( VectorType& w, std::vector<int>& W, std::size_t full_glob_size, std::size_t full_size, std::size_t reduced_size)
     {
-    //std::size_t full_glob_size = A.size1();
-    //std::size_t reduced_size = S_deflated.size1();
-    //std::size_t full_size = mS.size1();
-	
+        //std::size_t full_glob_size = A.size1();
+        //std::size_t reduced_size = S_deflated.size1();
+        //std::size_t full_size = mS.size1();
 
-    VectorType wp (full_size); 
-    VectorType WT_wp(reduced_size); 
-    VectorType W_WT_wp (full_size); 
-    VectorType temp (full_glob_size);     
 
-    GetPPart(w,wp);
-    VectorType ModulusSquared(reduced_size);  
-    VectorType identity(full_size,1.0);
-    DeflationUtils::ApplyWtranspose(W, identity, ModulusSquared);
+        VectorType wp (full_size);
+        VectorType WT_wp(reduced_size);
+        VectorType W_WT_wp (full_size);
+        VectorType temp (full_glob_size);
 
-    DeflationUtils::ApplyWtranspose(W, wp, WT_wp);
-    //scale down Wt_wp with the squared modulus
-	
-    for(unsigned int i=0; i<reduced_size; i++)
-	{
-	WT_wp[i] /= ModulusSquared[i];
-	
-	}
+        GetPPart(w,wp);
+        VectorType ModulusSquared(reduced_size);
+        VectorType identity(full_size,1.0);
+        DeflationUtilsType::ApplyWtranspose(W, identity, ModulusSquared);
 
-    DeflationUtils::ApplyW(W, WT_wp, W_WT_wp);      
-        
-    wp-=W_WT_wp;
-    WritePPart(w,wp);
+        DeflationUtilsType::ApplyWtranspose(W, wp, WT_wp);
+        //scale down Wt_wp with the squared modulus
+
+        for(unsigned int i=0; i<reduced_size; i++)
+        {
+            WT_wp[i] /= ModulusSquared[i];
+        }
+
+        DeflationUtilsType::ApplyW(W, WT_wp, W_WT_wp);
+
+        wp-=W_WT_wp;
+        WritePPart(w,wp);
     }
 
     //this function extracts from a vector which has the size of the
@@ -906,21 +911,21 @@ KRATOS_WATCH(norm_2(res))
             rtot[mpressure_indices[i]] = rp[i];
     }
 
-    void ComputeDiagonalByLumping (SparseMatrixType& A,VectorType& diagA)
+    void ComputeDiagonalByLumping (const SparseMatrixType& A, VectorType& diagA)
     {
         if (diagA.size() != A.size1() )
             diagA.resize (A.size1() );
         //get access to A data
-        const std::size_t* index1 = A.index1_data().begin();
-//        const std::size_t* index2 = A.index2_data().begin();
-        const double*	   values = A.value_data().begin();
+        const auto* index1 = A.index1_data().begin();
+//        const auto* index2 = A.index2_data().begin();
+        const auto* values = A.value_data().begin();
 
         #pragma omp parallel for
         for (int i=0; i< static_cast<int>(A.size1()); i++)
         {
             unsigned int row_begin = index1[i];
             unsigned int row_end   = index1[i+1];
-            double temp = 0.0;
+            DataType temp = 0.0;
             for (unsigned int j=row_begin; j<row_end; j++)
                 temp += values[j]*values[j];
 
@@ -928,13 +933,13 @@ KRATOS_WATCH(norm_2(res))
         }
     }
 
-    double CheckMatrix (SparseMatrixType& A)
+    DataType CheckMatrix (const SparseMatrixType& A)
     {
         //get access to A data
-        const std::size_t* index1 = A.index1_data().begin();
-        const std::size_t* index2 = A.index2_data().begin();
-        const double*	   values = A.value_data().begin();
-        double norm = 0.0;
+        const auto* index1 = A.index1_data().begin();
+        const auto* index2 = A.index2_data().begin();
+        const auto* values = A.value_data().begin();
+        DataType norm = 0.0;
         for (unsigned int i=0; i<A.size1(); i++)
         {
             unsigned int row_begin = index1[i];
@@ -952,7 +957,7 @@ KRATOS_WATCH(norm_2(res))
         return sqrt (norm);
     }
 
-    
+
 
     /// Helper function for Sytem matrix functions
     void SortCols (
@@ -977,7 +982,7 @@ KRATOS_WATCH(norm_2(res))
         }
     }
 
-   
+
     ///@}
     ///@name Private Operations
     ///@{

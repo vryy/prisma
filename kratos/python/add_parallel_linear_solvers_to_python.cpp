@@ -5,12 +5,12 @@
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 //
-// 	-	Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-// 	-	Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
-// 		in the documentation and/or other materials provided with the distribution.
-// 	-	All advertising materials mentioning features or use of this software must display the following acknowledgement:
-// 			This product includes Kratos Multi-Physics technology.
-// 	-	Neither the name of the CIMNE nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+//  -   Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+//  -   Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
+//      in the documentation and/or other materials provided with the distribution.
+//  -   All advertising materials mentioning features or use of this software must display the following acknowledgement:
+//          This product includes Kratos Multi-Physics technology.
+//  -   Neither the name of the CIMNE nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
 // THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
@@ -64,8 +64,9 @@ void  AddParallelLinearSolversToPython()
 //nothing will be compiled if an openmp compiler is not found
 #ifdef _OPENMP
 
-    typedef ParallelUblasSpace<double, CompressedMatrix, Vector> ParallelSpaceType;
-    typedef UblasSpace<double, Matrix, Vector> ParallelLocalSpaceType;
+    typedef KRATOS_DOUBLE_TYPE DataType;
+    typedef ParallelUblasSpace<DataType, CompressedMatrix, Vector> ParallelSpaceType;
+    typedef UblasSpace<DataType, Matrix, Vector> ParallelLocalSpaceType;
     typedef LinearSolver<ParallelSpaceType,  ParallelLocalSpaceType> ParallelLinearSolverType;
     typedef IterativeSolver<ParallelSpaceType,  ParallelLocalSpaceType> ParallelIterativeSolverType;
     typedef CGSolver<ParallelSpaceType,  ParallelLocalSpaceType> ParallelCGSolverType;
@@ -107,26 +108,26 @@ void  AddParallelLinearSolversToPython()
     ;
 
     class_<ParallelCGSolverType, ParallelCGSolverType::Pointer, bases<ParallelIterativeSolverType> >("ParallelCGSolver")
-    .def(init<double>())
-    .def(init<double, unsigned int>())
-    .def(init<double, unsigned int,  ParallelPreconditionerType::Pointer>())
+    .def(init<DataType>())
+    .def(init<DataType, unsigned int>())
+    .def(init<DataType, unsigned int,  ParallelPreconditionerType::Pointer>())
     //.def("",&LinearSolverType::)
     .def(self_ns::str(self))
     ;
 
     //  class_<BICGSTABSolverType, BICGSTABSolverType::Pointer, bases<IterativeSolverType> >("ParallelBICGSTABSolver")
-    //		  .def(init<double>())
-    //		  .def(init<double, unsigned int>())
-    //		  .def(self_ns::str(self))
-    //		  .def(init<double, unsigned int,  PreconditionerType::Pointer>())
-    //		  ;
+    //        .def(init<DataType>())
+    //        .def(init<DataType, unsigned int>())
+    //        .def(self_ns::str(self))
+    //        .def(init<DataType, unsigned int,  PreconditionerType::Pointer>())
+    //        ;
     //
     //  class_<TFQMRSolverType, TFQMRSolverType::Pointer, bases<IterativeSolverType> >("ParallelTFQMRSolver")
-    //		  .def(init<double>())
-    //		  .def(init<double, unsigned int>())
-    //		  .def(self_ns::str(self))
-    //		  .def(init<double, unsigned int,  PreconditionerType::Pointer>())
-    //		  ;
+    //        .def(init<DataType>())
+    //        .def(init<DataType, unsigned int>())
+    //        .def(self_ns::str(self))
+    //        .def(init<DataType, unsigned int,  PreconditionerType::Pointer>())
+    //        ;
 
     typedef Reorderer<ParallelSpaceType,  ParallelLocalSpaceType > ParallelReordererType;
     typedef DirectSolver<ParallelSpaceType,  ParallelLocalSpaceType, ParallelReordererType > ParallelDirectSolverType;
@@ -150,10 +151,10 @@ void  AddParallelLinearSolversToPython()
     .def(self_ns::str(self))
     ;
 
-    //	typedef SuperLUSolver<SparseSpaceType, LocalSpaceType> SuperLUSolverType;
-    //	class_<SuperLUSolverType, bases<DirsectSolverType>, boost::noncopyable >
-    //		( "SuperLUSolver",
-    //			init<>() )
+    //  typedef SuperLUSolver<SparseSpaceType, LocalSpaceType> SuperLUSolverType;
+    //  class_<SuperLUSolverType, bases<DirsectSolverType>, boost::noncopyable >
+    //      ( "SuperLUSolver",
+    //          init<>() )
 
 
 //it will compile nothing if openmp is not found

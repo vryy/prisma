@@ -103,7 +103,7 @@ public:
     typedef PointerVectorSet<Element, IndexedObject> ElementsContainerType;
     typedef Element::EquationIdVectorType EquationIdVectorType;
     typedef Element::DofsVectorType DofsVectorType;
-    typedef boost::numeric::ublas::compressed_matrix<double> CompressedMatrixType;
+    typedef boost::numeric::ublas::compressed_matrix<TDataType> CompressedMatrixType;
 
     /// DoF types definition
     typedef ModelPart::NodeType NodeType;
@@ -323,7 +323,7 @@ public:
 
         double start_solve = OpenMPUtils::GetCurrentTime();
 
-        double norm_b;
+        TDataType norm_b;
         if (TSparseSpace::Size(b) != 0)
             norm_b = TSparseSpace::TwoNorm(b);
         else
@@ -407,7 +407,7 @@ public:
         double start_solve = OpenMPUtils::GetCurrentTime();
         std::cout << "Begin Internal-System-Solve-With-Physics" << std::endl;
 
-        double norm_b;
+        TDataType norm_b;
         if (TSparseSpace::Size(b) != 0)
             norm_b = TSparseSpace::TwoNorm(b);
         else
@@ -947,7 +947,7 @@ public:
         const double start_apply = OpenMPUtils::GetCurrentTime();
 
         std::size_t system_size = A.size1();
-        std::vector<double> scaling_factors (system_size, 0.0);
+        std::vector<TDataType> scaling_factors (system_size, 0.0);
 
         const int ndofs = static_cast<int>(BaseType::mDofSet.size());
 
@@ -962,9 +962,9 @@ public:
 
         }
 
-        double* Avalues = A.value_data().begin();
-        std::size_t* Arow_indices = A.index1_data().begin();
-        std::size_t* Acol_indices = A.index2_data().begin();
+        auto* Avalues = A.value_data().begin();
+        auto* Arow_indices = A.index1_data().begin();
+        auto* Acol_indices = A.index2_data().begin();
 
         //detect if there is a line of all zeros and set the diagonal to a 1 if this happens
         #pragma omp parallel for firstprivate(system_size)
@@ -993,7 +993,7 @@ public:
         {
             std::size_t col_begin = Arow_indices[k];
             std::size_t col_end = Arow_indices[k+1];
-            double k_factor = scaling_factors[k];
+            TDataType k_factor = scaling_factors[k];
             if (k_factor == 0)
             {
                 // zero out the whole row, except the diagonal
@@ -1187,7 +1187,7 @@ protected:
             mT = TSystemMatrixType(indices.size(), indices.size(), nnz);
             mConstantVector.resize(indices.size(), false);
 
-            double *Tvalues = mT.value_data().begin();
+            auto *Tvalues = mT.value_data().begin();
             IndexType *Trow_indices = mT.index1_data().begin();
             IndexType *Tcol_indices = mT.index2_data().begin();
 
@@ -1268,8 +1268,8 @@ protected:
                         AssembleRowContribution(mT, transformation_matrix, i_global, i, master_equation_ids);
 
                         // Assemble constant vector
-                        const double constant_value = constant_vector[i];
-                        double& r_value = mConstantVector[i_global];
+                        const auto constant_value = constant_vector[i];
+                        auto& r_value = mConstantVector[i_global];
                         #pragma omp atomic
                         r_value += constant_value;
                     }
@@ -1408,7 +1408,7 @@ protected:
             SparseMatrixMultiplicationUtility::MatrixMultiplication(auxiliar_A_matrix, mT, rA); //A = auxilar * T   NOTE: here we are overwriting the old A matrix!
             auxiliar_A_matrix.resize(0, 0, false);                                              //free memory
 
-            double max_diag = 0.0;
+            TDataType max_diag = 0.0;
             for(IndexType i = 0; i < rA.size1(); ++i) {
                 max_diag = std::max(std::abs(rA(i,i)), max_diag);
             }
@@ -1502,7 +1502,7 @@ protected:
 
         A = CompressedMatrixType(indices.size(), indices.size(), nnz);
 
-        double* Avalues = A.value_data().begin();
+        auto* Avalues = A.value_data().begin();
         std::size_t* Arow_indices = A.index1_data().begin();
         std::size_t* Acol_indices = A.index2_data().begin();
 
@@ -1547,8 +1547,8 @@ protected:
         for (unsigned int i_local = 0; i_local < local_size; i_local++) {
             unsigned int i_global = EquationId[i_local];
 
-            double& r_a = b[i_global];
-            const double& v_a = RHS_Contribution(i_local);
+            auto& r_a = b[i_global];
+            const auto& v_a = RHS_Contribution(i_local);
             #pragma omp atomic
             r_a += v_a;
 
@@ -1571,8 +1571,8 @@ protected:
             unsigned int i_global = EquationId[i_local];
 
             // ASSEMBLING THE SYSTEM VECTOR
-            double& b_value = b[i_global];
-            const double& rhs_value = RHS_Contribution[i_local];
+            auto& b_value = b[i_global];
+            const auto& rhs_value = RHS_Contribution[i_local];
 
             #pragma omp atomic
             b_value += rhs_value;
@@ -1718,7 +1718,7 @@ private:
         if (EquationId.size() == 0)
             return;
 
-        double* values_vector = A.value_data().begin();
+        auto* values_vector = A.value_data().begin();
         std::size_t* index1_vector = A.index1_data().begin();
         std::size_t* index2_vector = A.index2_data().begin();
 
@@ -1729,8 +1729,8 @@ private:
         size_t last_pos = ForwardFind(EquationId[0],left_limit,index2_vector);
         size_t last_found = EquationId[0];
 
-        double& r_a = values_vector[last_pos];
-        const double& v_a = Alocal(i_local,0);
+        auto& r_a = values_vector[last_pos];
+        const auto& v_a = Alocal(i_local,0);
         #pragma omp atomic
         r_a +=  v_a;
 
@@ -1746,8 +1746,8 @@ private:
                 pos = last_pos;
             }
 
-            double& r = values_vector[pos];
-            const double& v = Alocal(i_local,j);
+            auto& r = values_vector[pos];
+            const auto& v = Alocal(i_local,j);
             #pragma omp atomic
             r +=  v;
 

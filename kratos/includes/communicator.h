@@ -101,6 +101,8 @@ public:
 
     typedef Mesh<NodeType, PropertiesType, ElementType, ConditionType> MeshType;
 
+    typedef MeshType::DataType DataType;
+
     typedef MeshType::IndexType IndexType;
 
     typedef MeshType::SizeType SizeType;
@@ -564,7 +566,7 @@ public:
         return true;
     }
 
-    virtual bool SumAll(double& rValue) const
+    virtual bool SumAll(DataType& rValue) const
     {
         // #if defined(KRATOS_USING_MPI )
         // 	std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;
@@ -580,7 +582,7 @@ public:
         return true;
     }
 
-    virtual bool MinAll(double& rValue) const
+    virtual bool MinAll(DataType& rValue) const
     {
         // #if defined(KRATOS_USING_MPI )
         // 	std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;
@@ -604,7 +606,7 @@ public:
         return true;
     }
 
-    virtual bool MaxAll(double& rValue) const
+    virtual bool MaxAll(DataType& rValue) const
     {
         // #if defined(KRATOS_USING_MPI )
         // 	std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;
@@ -646,7 +648,7 @@ public:
         return true;
     }
 
-    virtual bool SynchronizeVariable(Variable<double> const& ThisVariable)
+    virtual bool SynchronizeVariable(Variable<DataType> const& ThisVariable)
     {
         // #if defined(KRATOS_USING_MPI )
         //  std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;
@@ -654,7 +656,7 @@ public:
         return true;
     }
 
-    virtual bool SynchronizeVariable(Variable<array_1d<double, 3 > > const& ThisVariable)
+    virtual bool SynchronizeVariable(Variable<array_1d<DataType, 3 > > const& ThisVariable)
     {
         // #if defined(KRATOS_USING_MPI )
         //  std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;
@@ -679,7 +681,7 @@ public:
     }
 
     // This function is for test and will be changed. Pooyan.
-    virtual bool SynchronizeCurrentDataToMin(Variable<double> const& ThisVariable)
+    virtual bool SynchronizeCurrentDataToMin(Variable<DataType> const& ThisVariable)
     {
         /*#if defined(KRATOS_USING_MPI )
                 std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;
@@ -697,7 +699,7 @@ public:
 
     }
 
-    virtual bool AssembleCurrentData(Variable<double> const& ThisVariable)
+    virtual bool AssembleCurrentData(Variable<DataType> const& ThisVariable)
     {
         /*#if defined(KRATOS_USING_MPI )
                 std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;
@@ -706,7 +708,7 @@ public:
 
     }
 
-    virtual bool AssembleCurrentData(Variable<array_1d<double, 3 > > const& ThisVariable)
+    virtual bool AssembleCurrentData(Variable<array_1d<DataType, 3 > > const& ThisVariable)
     {
         // #if defined(KRATOS_USING_MPI )
         // 	std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;
@@ -742,7 +744,7 @@ public:
 
     }
 
-    virtual bool AssembleNonHistoricalData(Variable<double> const& ThisVariable)
+    virtual bool AssembleNonHistoricalData(Variable<DataType> const& ThisVariable)
     {
         /*#if defined(KRATOS_USING_MPI )
                 std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;
@@ -751,7 +753,7 @@ public:
 
     }
 
-    virtual bool AssembleNonHistoricalData(Variable<array_1d<double, 3 > > const& ThisVariable)
+    virtual bool AssembleNonHistoricalData(Variable<array_1d<DataType, 3 > > const& ThisVariable)
     {
         // #if defined(KRATOS_USING_MPI )
         // 	std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;
@@ -761,7 +763,7 @@ public:
     }
 
 
-    virtual bool AssembleNonHistoricalData(Variable<vector<array_1d<double,3> > > const& ThisVariable)
+    virtual bool AssembleNonHistoricalData(Variable<vector<array_1d<DataType,3> > > const& ThisVariable)
     {
         // #if defined(KRATOS_USING_MPI )
         //  std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;
@@ -796,7 +798,7 @@ public:
         return true;
     }
 
-    virtual bool SynchronizeElementalNonHistoricalVariable(Variable<double> const& ThisVariable)
+    virtual bool SynchronizeElementalNonHistoricalVariable(Variable<DataType> const& ThisVariable)
     {
         /*#if defined(KRATOS_USING_MPI )
                 std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;
@@ -804,7 +806,7 @@ public:
         return true;
     }
 
-    virtual bool SynchronizeElementalNonHistoricalVariable(Variable<array_1d<double, 3 > > const& ThisVariable)
+    virtual bool SynchronizeElementalNonHistoricalVariable(Variable<array_1d<DataType, 3 > > const& ThisVariable)
     {
         /*#if defined(KRATOS_USING_MPI )
                 std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;
@@ -812,7 +814,7 @@ public:
         return true;
     }
 
-    virtual bool SynchronizeElementalNonHistoricalVariable(Variable<vector<array_1d<double,3> > > const& ThisVariable)
+    virtual bool SynchronizeElementalNonHistoricalVariable(Variable<vector<array_1d<DataType,3> > > const& ThisVariable)
     {
         /*#if defined(KRATOS_USING_MPI )
                 std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;

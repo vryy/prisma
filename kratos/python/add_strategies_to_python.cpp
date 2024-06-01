@@ -5,12 +5,12 @@
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 //
-// 	-	Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-// 	-	Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
-// 		in the documentation and/or other materials provided with the distribution.
-// 	-	All advertising materials mentioning features or use of this software must display the following acknowledgement:
-// 			This product includes Kratos Multi-Physics technology.
-// 	-	Neither the name of the CIMNE nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+//  -   Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+//  -   Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
+//      in the documentation and/or other materials provided with the distribution.
+//  -   All advertising materials mentioning features or use of this software must display the following acknowledgement:
+//          This product includes Kratos Multi-Physics technology.
+//  -   Neither the name of the CIMNE nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
 // THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
@@ -82,20 +82,19 @@ namespace Kratos
     {
         using namespace boost::python;
 
-
-
-        typedef UblasSpace<double, CompressedMatrix, Vector> SparseSpaceType;
-        typedef UblasSpace<double, Matrix, Vector> LocalSpaceType;
+        typedef KRATOS_DOUBLE_TYPE DataType;
+        typedef UblasSpace<DataType, CompressedMatrix, Vector> SparseSpaceType;
+        typedef UblasSpace<DataType, Matrix, Vector> LocalSpaceType;
 
         //ADDED BY PAOLO (next two)
 
-        double Dot(SparseSpaceType& dummy, const SparseSpaceType::VectorType& rX, const SparseSpaceType::VectorType& rY)
+        DataType Dot(SparseSpaceType& dummy, const SparseSpaceType::VectorType& rX, const SparseSpaceType::VectorType& rY)
         {
             return dummy.Dot(rX, rY);
         }
 
-        void ScaleAndAdd(SparseSpaceType& dummy, const double A, const SparseSpaceType::VectorType& rX, const double B, SparseSpaceType::VectorType& rY)
-        //(const double A,const  VectorType& rX, const double B, VectorType& rY) // rY = (A * rX) + (B * rY)
+        void ScaleAndAdd(SparseSpaceType& dummy, const DataType A, const SparseSpaceType::VectorType& rX, const DataType B, SparseSpaceType::VectorType& rY)
+        //(const DataType A,const  VectorType& rX, const DataType B, VectorType& rY) // rY = (A * rX) + (B * rY)
         {
             dummy.ScaleAndAdd(A, rX, B, rY);
         }
@@ -157,12 +156,12 @@ namespace Kratos
             dummy.Clear(x);
         }
 
-        double TwoNorm(SparseSpaceType& dummy, const SparseSpaceType::VectorType& x)
+        DataType TwoNorm(SparseSpaceType& dummy, const SparseSpaceType::VectorType& x)
         {
             return dummy.TwoNorm(x);
         }
 
-        void UnaliasedAdd(SparseSpaceType& dummy, SparseSpaceType::VectorType& x, const double A, const SparseSpaceType::VectorType& rY) // x+= a*Y
+        void UnaliasedAdd(SparseSpaceType& dummy, SparseSpaceType::VectorType& x, const DataType A, const SparseSpaceType::VectorType& rY) // x+= a*Y
         {
             dummy.UnaliasedAdd(x, A, rY);
         }
@@ -181,7 +180,7 @@ namespace Kratos
         {
             for (ModelPart::NodeIterator i = rNodes.begin(); i != rNodes.end(); ++i)
             {
-                const array_1d<double, 3 > & disp = i->FastGetSolutionStepValue(DISPLACEMENT);
+                const array_1d<DataType, 3> & disp = i->FastGetSolutionStepValue(DISPLACEMENT);
                 (i)->X() = (i)->X0() + disp[0];
                 (i)->Y() = (i)->Y0() + disp[1];
                 (i)->Z() = (i)->Z0() + disp[2];
@@ -198,17 +197,17 @@ namespace Kratos
             return dummy.CreateEmptyVectorPointer();
         }
 
-        // 	boost::shared_ptr< CompressedMatrix > CreateEmptyMatrixPointer()
-        // 	{
-        // 		boost::shared_ptr<CompressedMatrix> pNewMat = boost::shared_ptr<CompressedMatrix>(new CompressedMatrix() );
-        // 		return pNewMat;
-        // 	}
+        //  boost::shared_ptr< CompressedMatrix > CreateEmptyMatrixPointer()
+        //  {
+        //      boost::shared_ptr<CompressedMatrix> pNewMat = boost::shared_ptr<CompressedMatrix>(new CompressedMatrix() );
+        //      return pNewMat;
+        //  }
         //
-        // 	boost::shared_ptr< Vector > CreateEmptyVectorPointer()
-        // 	{
-        // 		boost::shared_ptr<Vector > pNewVec = boost::shared_ptr<Vector >(new Vector() );
-        // 		return pNewVec;
-        // 	}
+        //  boost::shared_ptr< Vector > CreateEmptyVectorPointer()
+        //  {
+        //      boost::shared_ptr<Vector > pNewVec = boost::shared_ptr<Vector >(new Vector() );
+        //      return pNewVec;
+        //  }
 
         CompressedMatrix& GetMatRef(boost::shared_ptr<CompressedMatrix>& dummy)
         {
@@ -246,24 +245,24 @@ namespace Kratos
 
         void AddStrategiesToPython()
         {
-	  //typedef UblasSpace<double, CompressedMatrix, Vector> SparseSpaceType; //already done up in this file
-	  //typedef UblasSpace<double, Matrix, Vector> LocalSpaceType; //already done up in this file
+      //typedef UblasSpace<DataType, CompressedMatrix, Vector> SparseSpaceType; //already done up in this file
+      //typedef UblasSpace<DataType, Matrix, Vector> LocalSpaceType; //already done up in this file
 
-            // 			def("CreateEmptyMatrixPointer",CreateEmptyMatrixPointer);
-            // 			def("CreateEmptyVectorPointer",CreateEmptyVectorPointer);
+            //          def("CreateEmptyMatrixPointer",CreateEmptyMatrixPointer);
+            //          def("CreateEmptyVectorPointer",CreateEmptyVectorPointer);
 
             class_< boost::shared_ptr<CompressedMatrix> >("CompressedMatrixPointer", init<boost::shared_ptr<CompressedMatrix> >())
                     .def("GetReference", GetMatRef, return_value_policy<reference_existing_object > ())
-                    //    				.def("GetReference", GetRef, return_internal_reference<1>() )
+                    //                  .def("GetReference", GetRef, return_internal_reference<1>() )
                     ;
 
-            // // // 			class_< CompressedMatrix , boost::noncopyable >("CompressedMatrix", init< >() );
+            // // //            class_< CompressedMatrix , boost::noncopyable >("CompressedMatrix", init< >() );
 
 
             class_< boost::shared_ptr<Vector> >("VectorPointer", init< boost::shared_ptr<Vector> >())
                     .def("GetReference", GetVecRef, return_value_policy<reference_existing_object > ())
                     ;
-            // // // 			class_< Vector , boost::noncopyable >("Vector", init< >() );
+            // // //            class_< Vector , boost::noncopyable >("Vector", init< >() );
 
             typedef LinearSolver<SparseSpaceType, LocalSpaceType > LinearSolverType;
             typedef SolvingStrategy< SparseSpaceType, LocalSpaceType, LinearSolverType > BaseSolvingStrategyType;
@@ -288,9 +287,9 @@ namespace Kratos
                     .def("MoveMesh", &BaseSolvingStrategyType::MoveMesh)
                     .def("Clear", &BaseSolvingStrategyType::Clear)
                     .def("Check", &BaseSolvingStrategyType::Check)
-					.def("InitializeSolutionStep", &BaseSolvingStrategyType::InitializeSolutionStep)
-					.def("FinalizeSolutionStep", &BaseSolvingStrategyType::FinalizeSolutionStep)
-					.def("SolveSolutionStep", &BaseSolvingStrategyType::SolveSolutionStep)
+                    .def("InitializeSolutionStep", &BaseSolvingStrategyType::InitializeSolutionStep)
+                    .def("FinalizeSolutionStep", &BaseSolvingStrategyType::FinalizeSolutionStep)
+                    .def("SolveSolutionStep", &BaseSolvingStrategyType::SolveSolutionStep)
                     //.def("GetModelPart", &BaseSolvingStrategyType::GetModelPart )
                     ;
 
@@ -316,7 +315,7 @@ namespace Kratos
 
             class_< AdaptiveResidualBasedNewtonRaphsonStrategy< SparseSpaceType, LocalSpaceType, LinearSolverType >, bases< BaseSolvingStrategyType >, boost::noncopyable >
                     ("AdaptiveResidualBasedNewtonRaphsonStrategy",
-                    init < ModelPart&, BaseSchemeType::Pointer, LinearSolverType::Pointer, TConvergenceCriteriaType::Pointer, int, int, bool, bool, bool, double, double, int
+                    init < ModelPart&, BaseSchemeType::Pointer, LinearSolverType::Pointer, TConvergenceCriteriaType::Pointer, int, int, bool, bool, bool, DataType, DataType, int
                     >())
                     ;
 
@@ -389,23 +388,23 @@ namespace Kratos
             class_< DisplacementCriteria<SparseSpaceType, LocalSpaceType >,
                     bases<ConvergenceCriteria< SparseSpaceType, LocalSpaceType > >,
                     boost::noncopyable >
-                    ("DisplacementCriteria", init< double, double>())
+                    ("DisplacementCriteria", init< DataType, DataType>())
                     .def("SetEchoLevel", &DisplacementCriteria<SparseSpaceType, LocalSpaceType >::SetEchoLevel);
 
-	    class_< IncrementalDisplacementCriteria<SparseSpaceType, LocalSpaceType >,
+            class_< IncrementalDisplacementCriteria<SparseSpaceType, LocalSpaceType >,
                     bases<ConvergenceCriteria< SparseSpaceType, LocalSpaceType > >,
                     boost::noncopyable >
-                    ("IncrementalDisplacementCriteria", init< double, double>());
+                    ("IncrementalDisplacementCriteria", init< DataType, DataType>());
 
             class_<ResidualCriteria<SparseSpaceType, LocalSpaceType >,
                     bases<ConvergenceCriteria< SparseSpaceType, LocalSpaceType > >,
                     boost::noncopyable >
-                    ("ResidualCriteria", init< double, double>());
+                    ("ResidualCriteria", init< DataType, DataType>());
 
-            /*			class_< ResidualCriteria< SparseSpaceType >,
+            /*          class_< ResidualCriteria< SparseSpaceType >,
                                              bases<ConvergenceCriteria< SparseSpaceType > >,
                                              boost::noncopyable >
-                                            ("ResidualCriteria", init<Model::Pointer, double >() );
+                                            ("ResidualCriteria", init<Model::Pointer, DataType >() );
 
                                     class_< AndCriteria< SparseSpaceType >,
                                              bases<ConvergenceCriteria< SparseSpaceType > >,

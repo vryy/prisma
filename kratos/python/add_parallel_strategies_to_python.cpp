@@ -5,12 +5,12 @@
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 //
-// 	-	Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-// 	-	Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
-// 		in the documentation and/or other materials provided with the distribution.
-// 	-	All advertising materials mentioning features or use of this software must display the following acknowledgement:
-// 			This product includes Kratos Multi-Physics technology.
-// 	-	Neither the name of the CIMNE nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+//  -   Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+//  -   Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
+//      in the documentation and/or other materials provided with the distribution.
+//  -   All advertising materials mentioning features or use of this software must display the following acknowledgement:
+//          This product includes Kratos Multi-Physics technology.
+//  -   Neither the name of the CIMNE nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
 // THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
@@ -81,9 +81,9 @@ using namespace boost::python;
 
 #ifdef _OPENMP //nothing will be compiled if an openmp compiler is not found
 
-
-typedef ParallelUblasSpace<double, CompressedMatrix, Vector> ParallelSparseSpaceType;
-typedef UblasSpace<double, Matrix, Vector> ParallelLocalSpaceType;
+typedef KRATOS_DOUBLE_TYPE DataType;
+typedef ParallelUblasSpace<DataType, CompressedMatrix, Vector> ParallelSparseSpaceType;
+typedef UblasSpace<DataType, Matrix, Vector> ParallelLocalSpaceType;
 
 void ParallelResizeMatrix(ParallelSparseSpaceType& dummy, ParallelSparseSpaceType::MatrixType& A, unsigned int i1, unsigned int i2)
 {
@@ -115,7 +115,7 @@ void ParallelClearVector(ParallelSparseSpaceType& dummy, ParallelSparseSpaceType
     dummy.Clear(x);
 }
 
-double ParallelTwoNorm(ParallelSparseSpaceType& dummy, ParallelSparseSpaceType::VectorType& x)
+DataType ParallelTwoNorm(ParallelSparseSpaceType& dummy, ParallelSparseSpaceType::VectorType& x)
 {
     return dummy.TwoNorm(x);
 }
@@ -124,7 +124,7 @@ void ParallelMoveMesh( Scheme< ParallelSparseSpaceType, ParallelLocalSpaceType >
 {
     for(ModelPart::NodeIterator i = rNodes.begin() ; i != rNodes.end() ; ++i)
     {
-        const array_1d<double,3>& disp = i->FastGetSolutionStepValue(DISPLACEMENT);
+        const array_1d<DataType, 3>& disp = i->FastGetSolutionStepValue(DISPLACEMENT);
         (i)->X() = (i)->X0() + disp[0];
         (i)->Y() = (i)->Y0() + disp[1];
         (i)->Z() = (i)->Z0() + disp[2];
@@ -147,8 +147,8 @@ void  AddParallelStrategiesToPython()
 {
 //nothing will be compiled if an openmp compiler is not found
 #ifdef _OPENMP
-//			typedef ParallelUblasSpace<double, CompressedMatrix, Vector> ParallelSparseSpaceType;
-//			typedef UblasSpace<double, Matrix, Vector> ParallelLocalSpaceType;
+//          typedef ParallelUblasSpace<DataType, CompressedMatrix, Vector> ParallelSparseSpaceType;
+//          typedef UblasSpace<DataType, Matrix, Vector> ParallelLocalSpaceType;
 
     typedef LinearSolver<ParallelSparseSpaceType, ParallelLocalSpaceType > ParallelLinearSolverType;
     typedef SolvingStrategy< ParallelSparseSpaceType, ParallelLocalSpaceType, ParallelLinearSolverType > ParallelBaseSolvingStrategyType;
@@ -176,7 +176,7 @@ void  AddParallelStrategiesToPython()
 
     class_< ResidualBasedLinearStrategy< ParallelSparseSpaceType, ParallelLocalSpaceType, ParallelLinearSolverType >,bases< ParallelBaseSolvingStrategyType >,  boost::noncopyable >
     ("ParallelResidualBasedLinearStrategy",
-     init<ModelPart&,ParallelBaseSchemeType::Pointer, ParallelLinearSolverType::Pointer, bool, bool, bool, bool	>() )
+     init<ModelPart&,ParallelBaseSchemeType::Pointer, ParallelLinearSolverType::Pointer, bool, bool, bool, bool >() )
     ;
 
     typedef ConvergenceCriteria< ParallelSparseSpaceType, ParallelLocalSpaceType > TConvergenceCriteriaType;
@@ -232,17 +232,17 @@ void  AddParallelStrategiesToPython()
     class_< DisplacementCriteria<ParallelSparseSpaceType, ParallelLocalSpaceType >,
             bases<ConvergenceCriteria< ParallelSparseSpaceType, ParallelLocalSpaceType > >,
             boost::noncopyable >
-            ("ParallelDisplacementCriteria", init< double, double>() );
+            ("ParallelDisplacementCriteria", init< DataType, DataType>() );
 
-    /*			class_< ResidualCriteria< ParallelSparseSpaceType >,
-    			         bases<ConvergenceCriteria< ParallelSparseSpaceType > >,
-    			         boost::noncopyable >
-    			        ("ResidualCriteria", init<Model::Pointer, double >() );
+    /*          class_< ResidualCriteria< ParallelSparseSpaceType >,
+                         bases<ConvergenceCriteria< ParallelSparseSpaceType > >,
+                         boost::noncopyable >
+                        ("ResidualCriteria", init<Model::Pointer, DataType >() );
 
-    			class_< AndCriteria< ParallelSparseSpaceType >,
-    			         bases<ConvergenceCriteria< ParallelSparseSpaceType > >,
-    			         boost::noncopyable >
-    			        ("AndCriteria", init<Model::Pointer, ConvergenceCriteria< ParallelSparseSpaceType >::Pointer, ConvergenceCriteria< ParallelSparseSpaceType >::Pointer >()*/
+                class_< AndCriteria< ParallelSparseSpaceType >,
+                         bases<ConvergenceCriteria< ParallelSparseSpaceType > >,
+                         boost::noncopyable >
+                        ("AndCriteria", init<Model::Pointer, ConvergenceCriteria< ParallelSparseSpaceType >::Pointer, ConvergenceCriteria< ParallelSparseSpaceType >::Pointer >()*/
     //);
 
     //********************************************************************
@@ -252,11 +252,11 @@ void  AddParallelStrategiesToPython()
     //Builder and Solver
     typedef BuilderAndSolver< ParallelSparseSpaceType, ParallelLocalSpaceType, ParallelLinearSolverType > ParallelBuilderAndSolverType;
 
-    class_< ParallelBuilderAndSolverType::DofsArrayType, boost::noncopyable >("ParallelDofsArrayType",	init<>() );
+    class_< ParallelBuilderAndSolverType::DofsArrayType, boost::noncopyable >("ParallelDofsArrayType",  init<>() );
 
     ParallelBuilderAndSolverType::DofsArrayType&(ParallelBuilderAndSolverType::*ParallelBuilderAndSolver_GetDofSet)() = &ParallelBuilderAndSolverType::GetDofSet;
 
-    class_< ParallelBuilderAndSolverType, boost::noncopyable >("ParallelBuilderAndSolver",	init<ParallelLinearSolverType::Pointer>() )
+    class_< ParallelBuilderAndSolverType, boost::noncopyable >("ParallelBuilderAndSolver",  init<ParallelLinearSolverType::Pointer>() )
     .def("SetCalculateReactionsFlag", &ParallelBuilderAndSolverType::SetCalculateReactionsFlag )
     .def("GetCalculateReactionsFlag", &ParallelBuilderAndSolverType::GetCalculateReactionsFlag )
     .def("SetDofSetIsInitializedFlag", &ParallelBuilderAndSolverType::SetDofSetIsInitializedFlag )
@@ -292,11 +292,10 @@ void  AddParallelStrategiesToPython()
 
     class_< ParallelResidualBasedEliminationBuilderAndSolverDeactivationType, bases<ParallelBuilderAndSolverType>, boost::noncopyable> ("ParallelResidualBasedEliminationBuilderAndSolverDeactivation", init< ParallelLinearSolverType::Pointer>() );
 
-
     //********************************************************************
     //********************************************************************
 
-    class_< ParallelSparseSpaceType, boost::noncopyable >("ParallelUblasSparseSpace",	init<>() )
+    class_< ParallelSparseSpaceType, boost::noncopyable >("ParallelUblasSparseSpace",   init<>() )
     .def("ClearMatrix", ParallelClearMatrix )
     .def("ClearVector", ParallelClearVector )
     .def("ResizeMatrix", ParallelResizeMatrix )
@@ -310,8 +309,6 @@ void  AddParallelStrategiesToPython()
 #endif
 }
 
-
 }  // namespace Python.
 
 } // Namespace Kratos
-

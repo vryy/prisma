@@ -113,13 +113,15 @@ public:
 
     typedef LinearSolver<TSparseSpaceType, TDenseSpaceType, TReordererType> BaseType;
 
-    typedef typename TSparseSpaceType::MatrixType SparseMatrixType;
+    typedef typename BaseType::SparseMatrixType SparseMatrixType;
 
-    typedef typename TSparseSpaceType::VectorType VectorType;
+    typedef typename BaseType::VectorType VectorType;
 
-    typedef typename TDenseSpaceType::MatrixType DenseMatrixType;
+    typedef typename BaseType::DenseMatrixType DenseMatrixType;
 
-    typedef  TPreconditionerType PreconditionerType;
+    typedef typename BaseType::DataType DataType;
+
+    typedef TPreconditionerType PreconditionerType;
 
     ///@}
     ///@name Life Cycle
@@ -136,7 +138,7 @@ public:
     {
     }
 
-    IterativeSolver(double NewTolerance)
+    IterativeSolver(DataType NewTolerance)
         : mResidualNorm(0)
         , mIterationsNumber(0)
         , mBNorm(0)
@@ -146,7 +148,7 @@ public:
     {
     }
 
-    IterativeSolver(double NewTolerance, unsigned int NewMaxIterationsNumber)
+    IterativeSolver(DataType NewTolerance, unsigned int NewMaxIterationsNumber)
         : mResidualNorm(0)
         , mIterationsNumber(0)
         , mBNorm(0)
@@ -154,7 +156,7 @@ public:
         , mTolerance(NewTolerance)
         , mMaxIterationsNumber(NewMaxIterationsNumber) {}
 
-    IterativeSolver(double NewTolerance, unsigned int NewMaxIterationsNumber, typename TPreconditionerType::Pointer pNewPreconditioner) :
+    IterativeSolver(DataType NewTolerance, unsigned int NewMaxIterationsNumber, typename TPreconditionerType::Pointer pNewPreconditioner) :
         mResidualNorm(0), mIterationsNumber(0), mBNorm(0),
         mpPreconditioner(pNewPreconditioner),
         mTolerance(NewTolerance),
@@ -308,24 +310,24 @@ public:
         return mIterationsNumber;
     }
 
-    virtual void SetTolerance(double NewTolerance)
+    void SetTolerance(DataType NewTolerance) override
     {
         mTolerance = NewTolerance;
     }
 
-    virtual double GetTolerance()
+    DataType GetTolerance() override
     {
         return mTolerance;
     }
 
-    virtual void SetResidualNorm(double NewResidualNorm)
+    virtual void SetResidualNorm(DataType NewResidualNorm)
     {
         if (mIterationsNumber == 1)
             mFirstResidualNorm = NewResidualNorm;
         mResidualNorm = NewResidualNorm;
     }
 
-    virtual double GetResidualNorm()
+    virtual DataType GetResidualNorm()
     {
         return mResidualNorm;
     }
@@ -349,7 +351,7 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const override
     {
         std::stringstream buffer;
         buffer << "Iterative solver with " << GetPreconditioner()->Info();
@@ -357,13 +359,13 @@ public:
     }
 
     /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << Info();
     }
 
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
         if (mBNorm == 0.00)
             if (mResidualNorm != 0.00)
@@ -402,13 +404,13 @@ protected:
     ///@name Protected member Variables
     ///@{
 
-    double mResidualNorm;
+    DataType mResidualNorm;
 
-    double mFirstResidualNorm;
+    DataType mFirstResidualNorm;
 
     unsigned int mIterationsNumber;
 
-    double mBNorm;
+    DataType mBNorm;
 
     ///@}
     ///@name Protected Operators
@@ -461,7 +463,7 @@ private:
     /// A counted pointer to the preconditioner object.
     //      typename TStopCriteriaType::Pointer mpStopCriteria;
 
-    double mTolerance;
+    DataType mTolerance;
 
     unsigned int mMaxIterationsNumber;
 

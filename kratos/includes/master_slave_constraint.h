@@ -92,6 +92,9 @@ public:
     /// The DoF type definition
     typedef typename NodeType::DofType DofType;
 
+    /// The data type definition
+    typedef typename DofType::DataType DataType;
+
     /// The DoF pointer vector type definition
     typedef std::vector< typename DofType::Pointer > DofPointerVectorType;
 
@@ -104,11 +107,11 @@ public:
     /// The vector type definition
     typedef Vector VectorType;
 
-    /// The variable type definition (double)
-    typedef Kratos::Variable<double> VariableType;
+    /// The variable type definition (DataType)
+    typedef Kratos::Variable<DataType> VariableType;
 
     /// The component variable type definition
-    typedef Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<double, 3>>> VariableComponentType;
+    typedef Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<DataType, 3>>> VariableComponentType;
 
     /// Pointer definition of MasterSlaveConstraint
     KRATOS_CLASS_POINTER_DEFINITION(MasterSlaveConstraint);
@@ -199,8 +202,8 @@ public:
         const VariableType& rMasterVariable,
         NodeType& rSlaveNode,
         const VariableType& rSlaveVariable,
-        const double Weight,
-        const double Constant
+        const DataType Weight,
+        const DataType Constant
         ) const
     {
         KRATOS_TRY
@@ -227,8 +230,8 @@ public:
         const VariableComponentType& rMasterVariable,
         NodeType& rSlaveNode,
         const VariableComponentType& rSlaveVariable,
-        const double Weight,
-        const double Constant
+        const DataType Weight,
+        const DataType Constant
         ) const
     {
         KRATOS_ERROR << "Create not implemented in MasterSlaveConstraintBaseClass";

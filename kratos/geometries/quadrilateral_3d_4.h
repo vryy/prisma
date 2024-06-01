@@ -84,6 +84,11 @@ public:
     typedef TPointType PointType;
 
     /**
+     * Type used for double value.
+     */
+    typedef typename BaseType::DataType DataType;
+
+    /**
      * Type used for indexing in geometry class.
      * std::size_t used for indexing
      * point or integration point access methods and also all other
@@ -366,7 +371,7 @@ public:
      * In the current geometry this function returns the determinant of
      * jacobian
      *
-     * @return double value contains length or Characteristic
+     * @return DataType value contains length or Characteristic
      * length
      * @see Area()
      * @see Volume()
@@ -376,7 +381,7 @@ public:
      * :TODO: could be replaced by something more suitable
      * (comment by janosch)
      */
-    double Length() const override
+    DataType Length() const override
     {
         return std::sqrt( Area() );
     }
@@ -386,7 +391,7 @@ public:
      * geometry it returns zero, for two dimensional it gives area
      * and for three dimensional geometries it gives surface area.
      *
-     * @return double value contains area or surface
+     * @return DataType value contains area or surface
      * area.
      * @see Length()
      * @see Volume()
@@ -396,7 +401,7 @@ public:
      * :TODO: could be replaced by something more suitable
      * (comment by janosch)
      */
-    double Area() const override
+    DataType Area() const override
     {
         // Old
 
@@ -416,40 +421,40 @@ public:
         const TPointType& p3 = this->Points()[2];
         const TPointType& p4 = this->Points()[3];
 
-        double p1x = p1.X();
-        double p1y = p1.Y();
-        double p1z = p1.Z();
+        DataType p1x = p1.X();
+        DataType p1y = p1.Y();
+        DataType p1z = p1.Z();
 
-        double p2x = p2.X();
-        double p2y = p2.Y();
-        double p2z = p2.Z();
+        DataType p2x = p2.X();
+        DataType p2y = p2.Y();
+        DataType p2z = p2.Z();
 
-        double p3x = p3.X();
-        double p3y = p3.Y();
-        double p3z = p3.Z();
+        DataType p3x = p3.X();
+        DataType p3y = p3.Y();
+        DataType p3z = p3.Z();
 
-        double p4x = p4.X();
-        double p4y = p4.Y();
-        double p4z = p4.Z();
+        DataType p4x = p4.X();
+        DataType p4y = p4.Y();
+        DataType p4z = p4.Z();
 
-        double pos = 0.5 + 0.5 / std::sqrt(3.0);
-        double w = 0.25;
+        DataType pos = 0.5 + 0.5 / std::sqrt(3.0);
+        DataType w = 0.25;
 
-        double C1  = pos*(p1z - p2z + p3z - p4z);
-        double C2  = pos*(p1y - p2y + p3y - p4y);
-        double C3  = pos*(p1x - p2x + p3x - p4x);
-        double C4  = C1 - p1z + p2z;
-        double C5  = C1 + p1z - p2z;
-        double C6  = C2 + p1y - p2y;
-        double C7  = C2 - p1y + p2y;
-        double C8  = C3 - p1x + p2x;
-        double C9  = C3 + p1x - p2x;
-        double C10 = C1 - p1z + p4z;
-        double C11 = C2 - p1y + p4y;
-        double C12 = C3 - p1x + p4x;
-        double C13 = C1 + p1z - p4z;
-        double C14 = C2 + p1y - p4y;
-        double C15 = C3 + p1x - p4x;
+        DataType C1  = pos*(p1z - p2z + p3z - p4z);
+        DataType C2  = pos*(p1y - p2y + p3y - p4y);
+        DataType C3  = pos*(p1x - p2x + p3x - p4x);
+        DataType C4  = C1 - p1z + p2z;
+        DataType C5  = C1 + p1z - p2z;
+        DataType C6  = C2 + p1y - p2y;
+        DataType C7  = C2 - p1y + p2y;
+        DataType C8  = C3 - p1x + p2x;
+        DataType C9  = C3 + p1x - p2x;
+        DataType C10 = C1 - p1z + p4z;
+        DataType C11 = C2 - p1y + p4y;
+        DataType C12 = C3 - p1x + p4x;
+        DataType C13 = C1 + p1z - p4z;
+        DataType C14 = C2 + p1y - p4y;
+        DataType C15 = C3 + p1x - p4x;
 
         return w * (
             std::sqrt( std::pow(C4*C11 - C7*C10, 2) + std::pow(C4*C12 - C8*C10, 2) + std::pow(C7*C12 - C8*C11, 2)) +
@@ -464,7 +469,7 @@ public:
      * geometry it returns its length, for two dimensional it gives area
      * and for three dimensional geometries it gives its volume.
      *
-     * @return double value contains length, area or volume.
+     * @return DataType value contains length, area or volume.
      * @see Length()
      * @see Area()
      * @see Volume()
@@ -473,7 +478,7 @@ public:
      * :TODO: could be replaced by something more suitable
      * (comment by janosch)
      */
-    double DomainSize() const override
+    DataType DomainSize() const override
     {
         // Old
 
@@ -485,14 +490,14 @@ public:
     }
 
 
-    double Volume() const override
+    DataType Volume() const override
     {
         // Old
 
         //Vector temp;
         //DeterminantOfJacobian( temp, msGeometryData.DefaultIntegrationMethod() );
         //const IntegrationPointsArrayType& integration_points = this->IntegrationPoints( msGeometryData.DefaultIntegrationMethod() );
-        //double Volume = 0.00;
+        //DataType Volume = 0.00;
 
         //for ( unsigned int i = 0; i < integration_points.size(); i++ )
         //{
@@ -525,8 +530,8 @@ public:
     CoordinatesArrayType& PointLocalCoordinates( CoordinatesArrayType& rResult, const CoordinatesArrayType& rPoint,
         bool force_error = true ) const override
     {
-        boost::numeric::ublas::bounded_matrix<double,3,4> X;
-        boost::numeric::ublas::bounded_matrix<double,3,2> DN;
+        boost::numeric::ublas::bounded_matrix<DataType,3,4> X;
+        boost::numeric::ublas::bounded_matrix<DataType,3,2> DN;
         for(unsigned int i=0; i<this->size();i++)
         {
             X(0,i ) = this->GetPoint( i ).X();
@@ -534,7 +539,7 @@ public:
             X(2,i ) = this->GetPoint( i ).Z();
         }
 
-        double tol = 1.0e-8;
+        DataType tol = 1.0e-8;
         int maxiter = 1000;
 
         Matrix J = ZeroMatrix( 2, 2 );
@@ -543,7 +548,7 @@ public:
         //starting with xi = 0
         rResult = ZeroVector( 3 );
         Vector DeltaXi = ZeroVector( 2 );
-        array_1d<double,3> CurrentGlobalCoords;
+        array_1d<DataType,3> CurrentGlobalCoords;
 
 
         //Newton iteration:
@@ -564,7 +569,7 @@ public:
             Vector res = prod(trans(DN),CurrentGlobalCoords);
 
             //deteminant of Jacobian
-            double det_j = J( 0, 0 ) * J( 1, 1 ) - J( 0, 1 ) * J( 1, 0 );
+            DataType det_j = J( 0, 0 ) * J( 1, 1 ) - J( 0, 1 ) * J( 1, 0 );
 
             //filling matrix
             invJ( 0, 0 ) = ( J( 1, 1 ) ) / ( det_j );
@@ -604,8 +609,8 @@ public:
     CoordinatesArrayType& PointLocalCoordinates( CoordinatesArrayType& rResult, const CoordinatesArrayType& rPoint, const Matrix& DeltaPosition,
         bool force_error = true ) const override
     {
-        boost::numeric::ublas::bounded_matrix<double,3,4> X;
-        boost::numeric::ublas::bounded_matrix<double,3,2> DN;
+        boost::numeric::ublas::bounded_matrix<DataType,3,4> X;
+        boost::numeric::ublas::bounded_matrix<DataType,3,2> DN;
         for(unsigned int i=0; i<this->size();i++)
         {
             X(0,i ) = this->GetPoint( i ).X() - DeltaPosition( i, 0 );
@@ -613,7 +618,7 @@ public:
             X(2,i ) = this->GetPoint( i ).Z() - DeltaPosition( i, 2 );
         }
 
-        double tol = 1.0e-8;
+        DataType tol = 1.0e-8;
         int maxiter = 1000;
 
         Matrix J = ZeroMatrix( 2, 2 );
@@ -622,7 +627,7 @@ public:
         //starting with xi = 0
         rResult = ZeroVector( 3 );
         Vector DeltaXi = ZeroVector( 2 );
-        array_1d<double,3> CurrentGlobalCoords;
+        array_1d<DataType,3> CurrentGlobalCoords;
 
 
         //Newton iteration:
@@ -643,7 +648,7 @@ public:
             Vector res = prod(trans(DN),CurrentGlobalCoords);
 
             //deteminant of Jacobian
-            double det_j = J( 0, 0 ) * J( 1, 1 ) - J( 0, 1 ) * J( 1, 0 );
+            DataType det_j = J( 0, 0 ) * J( 1, 1 ) - J( 0, 1 ) * J( 1, 0 );
 
             //filling matrix
             invJ( 0, 0 ) = ( J( 1, 1 ) ) / ( det_j );
@@ -826,7 +831,7 @@ public:
      * @param ThisMethod integration method which jacobians has to
      * be calculated in its integration points.
      *
-     * @return Matrix<double> Jacobian matrix \f$ J_i \f$ where \f$
+     * @return Matrix<DataType> Jacobian matrix \f$ J_i \f$ where \f$
      * i \f$ is the given integration point index of given
      * integration method.
      *
@@ -844,7 +849,7 @@ public:
             shape_functions_gradients( IntegrationPointIndex );
         //values of shape functions in integration points
 //         Vector ShapeFunctionValuesInIntegrationPoint = ZeroVector( 4 );
-//         /*vector<double>*/
+//         /*vector<DataType>*/
 //         ShapeFunctionValuesInIntegrationPoint = row(
 //                 CalculateShapeFunctionsIntegrationPointsValues( ThisMethod ),
 //                 IntegrationPointIndex );
@@ -881,7 +886,7 @@ public:
        * @param rPoint point which jacobians has to
     * be calculated in it.
     *
-    * @return Matrix of double which is jacobian matrix \f$ J \f$ in given point.
+    * @return Matrix of DataType which is jacobian matrix \f$ J \f$ in given point.
     *
     * @see DeterminantOfJacobian
     * @see InverseOfJacobian
@@ -920,7 +925,7 @@ public:
      * This method calculates determinant of jacobian in all
      * integrations points of given integration method.
      *
-     * @return Vector of double which is vector of determinants of
+     * @return Vector of DataType which is vector of determinants of
      * jacobians \f$ |J|_i \f$ where \f$ i=1,2,...,n \f$ is the
      * integration point index of given integration method.
      *
@@ -955,7 +960,7 @@ public:
      * @see Jacobian
      * @see InverseOfJacobian
      */
-    double DeterminantOfJacobian( IndexType IntegrationPointIndex, IntegrationMethod ThisMethod ) const override
+    DataType DeterminantOfJacobian( IndexType IntegrationPointIndex, IntegrationMethod ThisMethod ) const override
     {
         KRATOS_THROW_ERROR( std::logic_error, "Quadrilateral3D4::DeterminantOfJacobian", "Jacobian is not square" );
         return 0.0;
@@ -986,7 +991,7 @@ public:
      * point in space this needs to be reviewed
      * (comment by janosch)
      */
-    double DeterminantOfJacobian( const CoordinatesArrayType& rPoint ) const override
+    DataType DeterminantOfJacobian( const CoordinatesArrayType& rPoint ) const override
     {
         KRATOS_THROW_ERROR( std::logic_error, "Quadrilateral3D4::DeterminantOfJacobian", "Jacobian is not square" );
         return 0.0;
@@ -1123,7 +1128,7 @@ public:
      *
      * @return the value of the shape function at the given point
      */
-    double ShapeFunctionValue( IndexType ShapeFunctionIndex, const CoordinatesArrayType& rPoint ) const override
+    DataType ShapeFunctionValue( IndexType ShapeFunctionIndex, const CoordinatesArrayType& rPoint ) const override
     {
         switch ( ShapeFunctionIndex )
         {

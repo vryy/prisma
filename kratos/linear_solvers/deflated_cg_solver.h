@@ -115,6 +115,8 @@ public:
 
     typedef typename TDenseSpaceType::VectorType DenseVectorType;
 
+    typedef DeflationUtils<SparseMatrixType, SparseVectorType> DeflationUtilsType;
+
     ///@}
     ///@name Life Cycle
     ///@{
@@ -337,11 +339,11 @@ private:
         if (massume_constant_structure == false || mw.size() == 0)
         {
 //             std::cout << "constructing the W matrix and the reduced size one" << std::endl;
-            DeflationUtils::ConstructW(mmax_reduced_size, rA, mw, mAdeflated);
+            DeflationUtilsType::ConstructW(mmax_reduced_size, rA, mw, mAdeflated);
         }
 
         //fill reduced matrix mmAdeflated
-        DeflationUtils::FillDeflatedMatrix(rA, mw, mAdeflated);
+        DeflationUtilsType::FillDeflatedMatrix(rA, mw, mAdeflated);
 
         std::size_t reduced_size = mAdeflated.size1();
 
@@ -371,14 +373,14 @@ private:
 //             std::cout << "********** ||r|| = " << TSparseSpaceType::TwoNorm(r) << std::endl;
 
         // th = W^T * r -> form reduced problem
-        DeflationUtils::ApplyWtranspose(mw, r, th);
+        DeflationUtilsType::ApplyWtranspose(mw, r, th);
         // 	TSparseSpaceType::TransposeMult(W, r, th);
 
         // Solve mAdeflated * th = dh
         Factorization.backForwardSolve(reduced_size, th, dh);
 
         // t = W * dh -> transfer reduced problem to large scale one
-        DeflationUtils::ApplyW(mw, dh, t);
+        DeflationUtilsType::ApplyW(mw, dh, t);
         // 	TSparseSpaceType::Mult(W, dh, t);
 
         // rX = rX + t
@@ -395,14 +397,14 @@ private:
         this->PreconditionedMult(rA, r, t);
 
         // th = W^T * t
-        DeflationUtils::ApplyWtranspose(mw, t, th);
+        DeflationUtilsType::ApplyWtranspose(mw, t, th);
         //	TSparseSpaceType::TransposeMult(W, t, th);
 
         // Solve mAdeflated * th = dh
         Factorization.backForwardSolve(reduced_size, th, dh);
 
         // p = W * dh
-        DeflationUtils::ApplyW(mw, dh, p);
+        DeflationUtilsType::ApplyW(mw, dh, p);
         // 	TSparseSpaceType::Mult(W, dh, p);
 
         // p = r - p
@@ -448,14 +450,14 @@ private:
             TSparseSpaceType::Mult(rA, r, t);
 
             // th = W^T * t
-            DeflationUtils::ApplyWtranspose(mw, t, th);
+            DeflationUtilsType::ApplyWtranspose(mw, t, th);
             // 	    TSparseSpaceType::TransposeMult(W, t, th);
 
             // Solve mAdeflated * th = dh
             Factorization.backForwardSolve(reduced_size, th, dh);
 
             // t = W * dh
-            DeflationUtils::ApplyW(mw, dh, t);
+            DeflationUtilsType::ApplyW(mw, dh, t);
             // TSparseSpaceType::Mult(W, dh, t);
 
             // t = r - t

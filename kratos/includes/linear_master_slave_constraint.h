@@ -67,6 +67,9 @@ public:
     /// The index type definition
     typedef BaseType::IndexType IndexType;
 
+    /// The data type definition
+    typedef BaseType::DataType DataType;
+
     /// The DoF type definition
     typedef BaseType::DofType DofType;
 
@@ -85,7 +88,7 @@ public:
     /// The vector type definition
     typedef BaseType::VectorType VectorType;
 
-    /// The variable type definition (double)
+    /// The variable type definition (DataType)
     typedef BaseType::VariableType VariableType;
 
     /// The component variable type definition
@@ -149,8 +152,8 @@ public:
         const VariableType& rMasterVariable,
         NodeType& rSlaveNode,
         const VariableType& rSlaveVariable,
-        const double Weight,
-        const double Constant
+        const DataType Weight,
+        const DataType Constant
         ) : MasterSlaveConstraint(Id)
     {
         // Resizing the memeber variables
@@ -184,8 +187,8 @@ public:
         const VariableComponentType& rMasterVariable,
         NodeType& rSlaveNode,
         const VariableComponentType& rSlaveVariable,
-        const double Weight,
-        const double Constant
+        const DataType Weight,
+        const DataType Constant
         ) : MasterSlaveConstraint(Id)
     {
         // Resizing the memeber variables
@@ -275,8 +278,8 @@ public:
         const VariableType& rMasterVariable,
         NodeType& rSlaveNode,
         const VariableType& rSlaveVariable,
-        const double Weight,
-        const double Constant
+        const DataType Weight,
+        const DataType Constant
         ) const override
     {
         return MasterSlaveConstraint::Pointer(new LinearMasterSlaveConstraint(Id, rMasterNode, rMasterVariable, rSlaveNode, rSlaveVariable, Weight, Constant));
@@ -299,8 +302,8 @@ public:
         const VariableComponentType& rMasterVariable,
         NodeType& rSlaveNode,
         const VariableComponentType& rSlaveVariable,
-        const double Weight,
-        const double Constant
+        const DataType Weight,
+        const DataType Constant
         ) const override
     {
         return MasterSlaveConstraint::Pointer(new LinearMasterSlaveConstraint(Id, rMasterNode, rMasterVariable, rSlaveNode, rSlaveVariable, Weight, Constant));
@@ -450,7 +453,7 @@ public:
 
         // Apply the constraint to the slave dofs
         for (IndexType i = 0; i < mRelationMatrix.size1(); ++i) {
-            double aux = mConstantVector[i];
+            DataType aux = mConstantVector[i];
             for(IndexType j = 0; j < mRelationMatrix.size2(); ++j) {
                 aux += mRelationMatrix(i,j) * master_dofs_values[j];
             }

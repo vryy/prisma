@@ -88,6 +88,11 @@ public:
     typedef TPointType PointType;
 
     /**
+     * Type used for double value.
+     */
+    typedef typename BaseType::DataType DataType;
+
+    /**
      * Type used for indexing in geometry class.
      * std::size_t used for indexing
      * point or integration point access methods and also all other
@@ -395,7 +400,7 @@ public:
      * In the current geometry this function returns the determinant of
      * jacobian
      *
-     * @return double value contains length or Characteristic
+     * @return DataType value contains length or Characteristic
      * length
      * @see Area()
      * @see Volume()
@@ -405,7 +410,7 @@ public:
      * :TODO: could be replaced by something more suitable
      * (comment by janosch)
      */
-    double Length() const override
+    DataType Length() const override
     {
         return std::sqrt(2.0*Area());
     }
@@ -415,7 +420,7 @@ public:
      * geometry it returns zero, for two dimensional it gives area
      * and for three dimensional geometries it gives surface area.
      *
-     * @return double value contains area or surface
+     * @return DataType value contains area or surface
      * area.
      * @see Length()
      * @see Volume()
@@ -425,24 +430,24 @@ public:
      * :TODO: could be replaced by something more suitable
      * (comment by janosch)
      */
-    double Area() const override
+    DataType Area() const override
     {
-        array_1d<double, 3> p0 = 0.5 * (BaseType::GetPoint( 0 ) + BaseType::GetPoint( 3 ));
-        array_1d<double, 3> p1 = 0.5 * (BaseType::GetPoint( 1 ) + BaseType::GetPoint( 4 ));
-        array_1d<double, 3> p2 = 0.5 * (BaseType::GetPoint( 2 ) + BaseType::GetPoint( 5 ));
+        array_1d<DataType, 3> p0 = 0.5 * (BaseType::GetPoint( 0 ) + BaseType::GetPoint( 3 ));
+        array_1d<DataType, 3> p1 = 0.5 * (BaseType::GetPoint( 1 ) + BaseType::GetPoint( 4 ));
+        array_1d<DataType, 3> p2 = 0.5 * (BaseType::GetPoint( 2 ) + BaseType::GetPoint( 5 ));
 
         //heron formula
         Vector side_a = ( p0 - p1 );
-        double a = MathUtils<double>::Norm3( side_a );
+        DataType a = MathUtils<DataType>::Norm3( side_a );
         Vector side_b = ( p1 - p2 );
-        double b = MathUtils<double>::Norm3( side_b );
+        DataType b = MathUtils<DataType>::Norm3( side_b );
         Vector side_c = ( p2 - p0 );
-        double c = MathUtils<double>::Norm3( side_c );
-        double s = ( a + b + c ) / 2;
+        DataType c = MathUtils<DataType>::Norm3( side_c );
+        DataType s = ( a + b + c ) / 2;
         return( sqrt( s*( s - a )*( s - b )*( s - c ) ) );
     }
 
-    double Volume() const override
+    DataType Volume() const override
     {
         return Area();
     }
@@ -452,7 +457,7 @@ public:
      * geometry it returns its length, for two dimensional it gives area
      * and for three dimensional geometries it gives its volume.
      *
-     * @return double value contains length, area or volume.
+     * @return DataType value contains length, area or volume.
      * @see Length()
      * @see Area()
      * @see Volume()
@@ -461,7 +466,7 @@ public:
      * :TODO: could be replaced by something more suitable
      * (comment by janosch)
      */
-    double DomainSize() const override
+    DataType DomainSize() const override
     {
         return Area();
     }
@@ -496,7 +501,7 @@ public:
      * @param ThisMethod integration method which jacobians has to
      * be calculated in its integration points.
      *
-     * @return Matrix<double> Jacobian matrix \f$ J_i \f$ where \f$
+     * @return Matrix<DataType> Jacobian matrix \f$ J_i \f$ where \f$
      * i \f$ is the given integration point index of given
      * integration method.
      *
@@ -507,9 +512,9 @@ public:
                       IndexType IntegrationPointIndex,
                       IntegrationMethod ThisMethod ) const override
     {
-        array_1d<double, 3> p0 = 0.5 * (BaseType::GetPoint( 0 ) + BaseType::GetPoint( 3 ));
-        array_1d<double, 3> p1 = 0.5 * (BaseType::GetPoint( 1 ) + BaseType::GetPoint( 4 ));
-        array_1d<double, 3> p2 = 0.5 * (BaseType::GetPoint( 2 ) + BaseType::GetPoint( 5 ));
+        array_1d<DataType, 3> p0 = 0.5 * (BaseType::GetPoint( 0 ) + BaseType::GetPoint( 3 ));
+        array_1d<DataType, 3> p1 = 0.5 * (BaseType::GetPoint( 1 ) + BaseType::GetPoint( 4 ));
+        array_1d<DataType, 3> p2 = 0.5 * (BaseType::GetPoint( 2 ) + BaseType::GetPoint( 5 ));
 
         rResult.resize( 3, 2 );
         rResult( 0, 0 ) = -( p0[0] ) + ( p1[0] ); //on the Gauss points (J is constant at each element)
@@ -534,7 +539,7 @@ public:
     @param DeltaPosition Matrix with the nodes position increment which describes
     the configuration where the jacobian has to be calculated.
 
-    @return Matrix<double> Jacobian matrix \f$ J_i \f$ where \f$
+    @return Matrix<DataType> Jacobian matrix \f$ J_i \f$ where \f$
     i \f$ is the given integration point index of given
     integration method.
 
@@ -546,9 +551,9 @@ public:
                       IntegrationMethod ThisMethod,
                       const Matrix& DeltaPosition ) const override
     {
-        array_1d<double, 3> p0 = 0.5 * (BaseType::GetPoint( 0 ) + BaseType::GetPoint( 3 ));
-        array_1d<double, 3> p1 = 0.5 * (BaseType::GetPoint( 1 ) + BaseType::GetPoint( 4 ));
-        array_1d<double, 3> p2 = 0.5 * (BaseType::GetPoint( 2 ) + BaseType::GetPoint( 5 ));
+        array_1d<DataType, 3> p0 = 0.5 * (BaseType::GetPoint( 0 ) + BaseType::GetPoint( 3 ));
+        array_1d<DataType, 3> p1 = 0.5 * (BaseType::GetPoint( 1 ) + BaseType::GetPoint( 4 ));
+        array_1d<DataType, 3> p2 = 0.5 * (BaseType::GetPoint( 2 ) + BaseType::GetPoint( 5 ));
 
         Matrix deltaPosMid(3, 3);
         for(unsigned int i = 0; i < 3; i++)
@@ -578,16 +583,16 @@ public:
        * @param rPoint point which jacobians has to
     * be calculated in it.
     *
-    * @return Matrix of double which is jacobian matrix \f$ J \f$ in given point.
+    * @return Matrix of DataType which is jacobian matrix \f$ J \f$ in given point.
     *
     * @see DeterminantOfJacobian
     * @see InverseOfJacobian
      */
     Matrix& Jacobian( Matrix& rResult, const CoordinatesArrayType& rPoint ) const override
     {
-        array_1d<double, 3> p0 = 0.5 * (BaseType::GetPoint( 0 ) + BaseType::GetPoint( 3 ));
-        array_1d<double, 3> p1 = 0.5 * (BaseType::GetPoint( 1 ) + BaseType::GetPoint( 4 ));
-        array_1d<double, 3> p2 = 0.5 * (BaseType::GetPoint( 2 ) + BaseType::GetPoint( 5 ));
+        array_1d<DataType, 3> p0 = 0.5 * (BaseType::GetPoint( 0 ) + BaseType::GetPoint( 3 ));
+        array_1d<DataType, 3> p1 = 0.5 * (BaseType::GetPoint( 1 ) + BaseType::GetPoint( 4 ));
+        array_1d<DataType, 3> p2 = 0.5 * (BaseType::GetPoint( 2 ) + BaseType::GetPoint( 5 ));
 
         rResult.resize( 3, 2 );
         rResult( 0, 0 ) = -( p0[0] ) + ( p1[0] ); //on the Gauss points (J is constant at each element)
@@ -607,7 +612,7 @@ public:
      * This method calculates determinant of jacobian in all
      * integrations points of given integration method.
      *
-     * @return Vector of double which is vector of determinants of
+     * @return Vector of DataType which is vector of determinants of
      * jacobians \f$ |J|_i \f$ where \f$ i=1,2,...,n \f$ is the
      * integration point index of given integration method.
      *
@@ -617,17 +622,17 @@ public:
     Vector& DeterminantOfJacobian( Vector& rResult,
                                    IntegrationMethod ThisMethod ) const override
     {
-        array_1d<double, 3> p0 = 0.5 * (BaseType::GetPoint( 0 ) + BaseType::GetPoint( 3 ));
-        array_1d<double, 3> p1 = 0.5 * (BaseType::GetPoint( 1 ) + BaseType::GetPoint( 4 ));
-        array_1d<double, 3> p2 = 0.5 * (BaseType::GetPoint( 2 ) + BaseType::GetPoint( 5 ));
+        array_1d<DataType, 3> p0 = 0.5 * (BaseType::GetPoint( 0 ) + BaseType::GetPoint( 3 ));
+        array_1d<DataType, 3> p1 = 0.5 * (BaseType::GetPoint( 1 ) + BaseType::GetPoint( 4 ));
+        array_1d<DataType, 3> p2 = 0.5 * (BaseType::GetPoint( 2 ) + BaseType::GetPoint( 5 ));
 
-        array_1d<double, 3> Tangent1( p1 - p0 );
-        array_1d<double, 3> Tangent2( p2 - p0 );
+        array_1d<DataType, 3> Tangent1( p1 - p0 );
+        array_1d<DataType, 3> Tangent2( p2 - p0 );
 
-        array_1d<double, 3> Normal;
-        MathUtils<double>::CrossProduct( Normal, Tangent1, Tangent2);
+        array_1d<DataType, 3> Normal;
+        MathUtils<DataType>::CrossProduct( Normal, Tangent1, Tangent2);
 
-        double detJ = norm_2(Normal);
+        DataType detJ = norm_2(Normal);
 
         //for all integration points
         if ( rResult.size() != this->IntegrationPointsNumber( ThisMethod ) )
@@ -661,18 +666,18 @@ public:
      * @see Jacobian
      * @see InverseOfJacobian
      */
-    double DeterminantOfJacobian( IndexType IntegrationPointIndex,
+    DataType DeterminantOfJacobian( IndexType IntegrationPointIndex,
                                   IntegrationMethod ThisMethod ) const override
     {
-        array_1d<double, 3> p0 = 0.5 * (BaseType::GetPoint( 0 ) + BaseType::GetPoint( 3 ));
-        array_1d<double, 3> p1 = 0.5 * (BaseType::GetPoint( 1 ) + BaseType::GetPoint( 4 ));
-        array_1d<double, 3> p2 = 0.5 * (BaseType::GetPoint( 2 ) + BaseType::GetPoint( 5 ));
+        array_1d<DataType, 3> p0 = 0.5 * (BaseType::GetPoint( 0 ) + BaseType::GetPoint( 3 ));
+        array_1d<DataType, 3> p1 = 0.5 * (BaseType::GetPoint( 1 ) + BaseType::GetPoint( 4 ));
+        array_1d<DataType, 3> p2 = 0.5 * (BaseType::GetPoint( 2 ) + BaseType::GetPoint( 5 ));
 
-        array_1d<double, 3> Tangent1( p1 - p0 );
-        array_1d<double, 3> Tangent2( p2 - p0 );
+        array_1d<DataType, 3> Tangent1( p1 - p0 );
+        array_1d<DataType, 3> Tangent2( p2 - p0 );
 
-        array_1d<double, 3> Normal;
-        MathUtils<double>::CrossProduct( Normal, Tangent1, Tangent2);
+        array_1d<DataType, 3> Normal;
+        MathUtils<DataType>::CrossProduct( Normal, Tangent1, Tangent2);
 
         return norm_2(Normal);
     }
@@ -702,17 +707,17 @@ public:
      * point in space this needs to be reviewed
      * (comment by janosch)
      */
-    double DeterminantOfJacobian( const CoordinatesArrayType& rPoint ) const override
+    DataType DeterminantOfJacobian( const CoordinatesArrayType& rPoint ) const override
     {
-        array_1d<double, 3> p0 = 0.5 * (BaseType::GetPoint( 0 ) + BaseType::GetPoint( 3 ));
-        array_1d<double, 3> p1 = 0.5 * (BaseType::GetPoint( 1 ) + BaseType::GetPoint( 4 ));
-        array_1d<double, 3> p2 = 0.5 * (BaseType::GetPoint( 2 ) + BaseType::GetPoint( 5 ));
+        array_1d<DataType, 3> p0 = 0.5 * (BaseType::GetPoint( 0 ) + BaseType::GetPoint( 3 ));
+        array_1d<DataType, 3> p1 = 0.5 * (BaseType::GetPoint( 1 ) + BaseType::GetPoint( 4 ));
+        array_1d<DataType, 3> p2 = 0.5 * (BaseType::GetPoint( 2 ) + BaseType::GetPoint( 5 ));
 
-        array_1d<double, 3> Tangent1( p1 - p0 );
-        array_1d<double, 3> Tangent2( p2 - p0 );
+        array_1d<DataType, 3> Tangent1( p1 - p0 );
+        array_1d<DataType, 3> Tangent2( p2 - p0 );
 
-        array_1d<double, 3> Normal;
-        MathUtils<double>::CrossProduct( Normal, Tangent1, Tangent2);
+        array_1d<DataType, 3> Normal;
+        MathUtils<DataType>::CrossProduct( Normal, Tangent1, Tangent2);
 
         return norm_2(Normal);
     }
@@ -910,7 +915,7 @@ public:
      *
      * @return the value of the shape function at the given point
      */
-    double ShapeFunctionValue( IndexType ShapeFunctionIndex,
+    DataType ShapeFunctionValue( IndexType ShapeFunctionIndex,
                                const CoordinatesArrayType& rPoint ) const override
     {
         switch ( ShapeFunctionIndex )

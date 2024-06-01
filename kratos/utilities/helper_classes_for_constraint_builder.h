@@ -48,6 +48,9 @@ typedef Kratos::Vector VectorType;
 typedef IndexedObject::IndexType IndexType;
 typedef std::vector<IndexType> VectorIndexType;
 
+/// Value type definition
+typedef KRATOS_DOUBLE_TYPE DataType;
+
 ///@}
 ///@name  Enum's
 ///@{
@@ -190,14 +193,14 @@ public:
     /**
      * @brief Function to get the value of left-hand side or right-hand side
      */
-    const double& LHS() const {return mLhsValue;}
-    const double& RHS() const {return mRhsValue;}
+    const DataType& LHS() const {return mLhsValue;}
+    const DataType& RHS() const {return mRhsValue;}
 
     /**
      * @brief Function to set the lefthand side of the constraint (the slave dof value)
      * @param LhsValue the value of the lhs (the slave dof value)
      */
-    void SetLeftHandSide(const double LhsValue)
+    void SetLeftHandSide(const DataType LhsValue)
     {
         mLockObject.SetLock();
         mLhsValue = LhsValue;
@@ -208,12 +211,12 @@ public:
      * @brief Function to update the righthand side of the constraint (the combination of all the master dof values and constants)
      * @param RHSValue the value of the lhs (the slave dof value)
      */
-    void SetRightHandSide(const double RhsValue)
+    void SetRightHandSide(const DataType RhsValue)
     {
         mRhsValue = RhsValue;
     }
 
-    void UpdateRightHandSide(const double RhsValueUpdate)
+    void UpdateRightHandSide(const DataType RhsValueUpdate)
     {
         mLockObject.SetLock();
         mRhsValue = mRhsValue + RhsValueUpdate;
@@ -248,7 +251,7 @@ public:
      * @param rConstant the elemental right hand side
      */
     virtual void CalculateLocalSystem(VectorType &rMasterWeightsVector,
-                                      double &rConstant)
+                                      DataType &rConstant)
     {
         if (rMasterWeightsVector.size() != this->NumberOfMasters())
             rMasterWeightsVector.resize(this->NumberOfMasters(), false);
@@ -277,7 +280,7 @@ public:
     /**
      * @brief This method adds a new master
      */
-    void AddMaster(const IndexType MasterEquationId, const double Weight)
+    void AddMaster(const IndexType MasterEquationId, const DataType Weight)
     {
         const int index = GetMasterEquationIdPosition(MasterEquationId);
         if (index >= 0) {
@@ -348,11 +351,11 @@ private:
     ///@name Member Variables
     ///@{
 
-    double mLhsValue;
-    double mRhsValue;
+    DataType mLhsValue;
+    DataType mRhsValue;
 
     EquationIdVectorType mMasterEquationIdVector;
-    std::vector<double> mMasterWeightsVector;
+    std::vector<DataType> mMasterWeightsVector;
 
     LockObject mLockObject;
 
@@ -414,7 +417,7 @@ struct LocalIndices
     VectorIndexType master_index_vector; // indicies corresponding to master DOFs
     VectorIndexType slave_index_vector; // indicies corresponding to slave DOFs
 
-    std::vector<double> container_master_weights; // list of master weights in the order in which they are processed
+    std::vector<DataType> container_master_weights; // list of master weights in the order in which they are processed
     std::vector<IndexType> container_master_slaves; // list of slave indices corresponding to each master processed
     std::vector<IndexType> processed_master_indices; // list of master indices in the order in which they are processed.
 };
@@ -446,7 +449,7 @@ public:
     ///@name Type Definitions
     ///@{
     typedef Internals::AuxiliaryGlobalMasterSlaveConstraint AuxiliaryGlobalMasterSlaveRelationType;
-    typedef std::vector<Dof<KRATOS_DOUBLE_TYPE>::Pointer> DofsVectorType;
+    typedef std::vector<Dof<DataType>::Pointer> DofsVectorType;
     typedef typename TDenseSpace::MatrixType LocalSystemMatrixType;
     typedef typename TDenseSpace::VectorType LocalSystemVectorType;
     typedef Internals::LocalIndices LocalIndicesType;
@@ -608,7 +611,7 @@ private:
         IndexType slave_equation_id;
         EquationIdVectorType master_equation_ids;
         VectorType master_weights_vector;
-        double slave_constant;
+        DataType slave_constant;
 
         for (auto& slave_index : mLocalIndices.slave_index_vector) { // Loop over all the slaves for this container
             // Get the global equation for this constraint
@@ -618,7 +621,7 @@ private:
             global_master_slave_constraint->CalculateLocalSystem(master_weights_vector, slave_constant);
 
             IndexType master_index = 0;
-            double master_weight = 0.0;
+            DataType master_weight = 0.0;
             IndexType i_master = 0;
             for (auto&  master_eq_id : master_equation_ids)
             { // Loop over all the masters the slave has
@@ -677,9 +680,9 @@ private:
         IndexType slave_equation_id;
         EquationIdVectorType master_equation_ids;
         VectorType master_weights_vector;
-        double slave_constant;
+        DataType slave_constant;
         VectorType master_weights_vector_other;
-        double constant_other;
+        DataType constant_other;
 
         for (auto& slave_index : mLocalIndices.slave_index_vector) { // Loop over all the slaves for this container
             // Get the global equation for this constraint
@@ -689,7 +692,7 @@ private:
             global_master_slave_constraint->CalculateLocalSystem(master_weights_vector, slave_constant);
 
             IndexType master_index = 0;
-            double master_weight = 0.0;
+            DataType master_weight = 0.0;
             IndexType i_master = 0;
             for (auto&  master_eq_id : master_equation_ids)
             { // Loop over all the masters the slave has

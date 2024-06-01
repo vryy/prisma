@@ -84,6 +84,11 @@ public:
     typedef TPointType PointType;
 
     /**
+     * Type used for double value.
+     */
+    typedef typename BaseType::DataType DataType;
+
+    /**
      * Type used for indexing in geometry class.
      * std::size_t used for indexing
      * point or integration point access methods and also all other
@@ -368,7 +373,7 @@ public:
      * :TODO: could be replaced by something more suitable
      * (comment by janosch)
      */
-    double Length() const override
+    DataType Length() const override
     {
         return std::sqrt( 2.0 * Area() );
     }
@@ -388,16 +393,16 @@ public:
      * :TODO: could be replaced by something more suitable
      * (comment by janosch)
      */
-    double Area() const override
+    DataType Area() const override
     {
         //heron formula
         Vector side_a = ( this->GetPoint( 0 ) - this->GetPoint( 1 ) );
-        double a = MathUtils<double>::Norm3( side_a );
+        DataType a = MathUtils<DataType>::Norm3( side_a );
         Vector side_b = ( this->GetPoint( 1 ) - this->GetPoint( 2 ) );
-        double b = MathUtils<double>::Norm3( side_b );
+        DataType b = MathUtils<DataType>::Norm3( side_b );
         Vector side_c = ( this->GetPoint( 2 ) - this->GetPoint( 0 ) );
-        double c = MathUtils<double>::Norm3( side_c );
-        double s = ( a + b + c ) / 2;
+        DataType c = MathUtils<DataType>::Norm3( side_c );
+        DataType s = ( a + b + c ) / 2;
         return( sqrt( s*( s - a )*( s - b )*( s - c ) ) );
     }
 
@@ -415,7 +420,7 @@ public:
      * :TODO: could be replaced by something more suitable
      * (comment by janosch)
      */
-    double DomainSize() const override
+    DataType DomainSize() const override
     {
         return( Area() );
     }
@@ -425,7 +430,7 @@ public:
      */
     bool IsInside( const CoordinatesArrayType& rPoint ) const override
     {
-        const double zero = 1E-8;
+        const DataType zero = 1E-8;
         if( ( rPoint[0] >= (0.0-zero) ) && ( rPoint[0] <= 1.0 + zero ) )
             if( ( rPoint[1] >= 0.0-zero ) && (rPoint[1] <= 1.0 + zero ) )
                 if(((1.0-(rPoint[0] + rPoint[1])) >= 0.0-zero) &&  ((1.0-(rPoint[0] + rPoint[1])) <= 1.0 + zero))
@@ -437,8 +442,8 @@ public:
     CoordinatesArrayType& PointLocalCoordinates( CoordinatesArrayType& rResult, const CoordinatesArrayType& rPoint,
             bool force_error = true ) const override
     {
-        boost::numeric::ublas::bounded_matrix<double,3,3> X;
-        boost::numeric::ublas::bounded_matrix<double,3,2> DN;
+        boost::numeric::ublas::bounded_matrix<DataType,3,3> X;
+        boost::numeric::ublas::bounded_matrix<DataType,3,2> DN;
         for(unsigned int i=0; i<this->size();i++)
         {
             X(0,i ) = this->GetPoint( i ).X();
@@ -446,7 +451,7 @@ public:
             X(2,i ) = this->GetPoint( i ).Z();
         }
 
-        double tol = 1.0e-8;
+        DataType tol = 1.0e-8;
         int maxiter = 1000;
 
         Matrix J = ZeroMatrix( 2, 2 );
@@ -455,7 +460,7 @@ public:
         //starting with xi = 0
         rResult = ZeroVector( 3 );
         Vector DeltaXi = ZeroVector( 2 );
-        array_1d<double,3> CurrentGlobalCoords;
+        array_1d<DataType,3> CurrentGlobalCoords;
 
 
         //Newton iteration:
@@ -476,7 +481,7 @@ public:
             Vector res = prod(trans(DN),CurrentGlobalCoords);
 
             //deteminant of Jacobian
-            double det_j = J( 0, 0 ) * J( 1, 1 ) - J( 0, 1 ) * J( 1, 0 );
+            DataType det_j = J( 0, 0 ) * J( 1, 1 ) - J( 0, 1 ) * J( 1, 0 );
 
             //filling matrix
             invJ( 0, 0 ) = ( J( 1, 1 ) ) / ( det_j );
@@ -511,8 +516,8 @@ public:
     CoordinatesArrayType& PointLocalCoordinates( CoordinatesArrayType& rResult, const CoordinatesArrayType& rPoint,
             const Matrix& DeltaPosition, bool force_error = true ) const override
     {
-        boost::numeric::ublas::bounded_matrix<double,3,3> X;
-        boost::numeric::ublas::bounded_matrix<double,3,2> DN;
+        boost::numeric::ublas::bounded_matrix<DataType,3,3> X;
+        boost::numeric::ublas::bounded_matrix<DataType,3,2> DN;
         for(unsigned int i=0; i<this->size();i++)
         {
             X(0,i ) = this->GetPoint( i ).X() - DeltaPosition( i, 0 );
@@ -520,7 +525,7 @@ public:
             X(2,i ) = this->GetPoint( i ).Z() - DeltaPosition( i, 2 );
         }
 
-        double tol = 1.0e-8;
+        DataType tol = 1.0e-8;
         int maxiter = 1000;
 
         Matrix J = ZeroMatrix( 2, 2 );
@@ -529,7 +534,7 @@ public:
         //starting with xi = 0
         rResult = ZeroVector( 3 );
         Vector DeltaXi = ZeroVector( 2 );
-        array_1d<double,3> CurrentGlobalCoords;
+        array_1d<DataType,3> CurrentGlobalCoords;
 
 
         //Newton iteration:
@@ -550,7 +555,7 @@ public:
             Vector res = prod(trans(DN),CurrentGlobalCoords);
 
             //deteminant of Jacobian
-            double det_j = J( 0, 0 ) * J( 1, 1 ) - J( 0, 1 ) * J( 1, 0 );
+            DataType det_j = J( 0, 0 ) * J( 1, 1 ) - J( 0, 1 ) * J( 1, 0 );
 
             //filling matrix
             invJ( 0, 0 ) = ( J( 1, 1 ) ) / ( det_j );
@@ -768,7 +773,7 @@ public:
      * @see Jacobian
      * @see InverseOfJacobian
      */
-    double DeterminantOfJacobian( IndexType IntegrationPointIndex, IntegrationMethod ThisMethod ) const override
+    DataType DeterminantOfJacobian( IndexType IntegrationPointIndex, IntegrationMethod ThisMethod ) const override
     {
         KRATOS_THROW_ERROR( std::logic_error, "Triangle3D::DeterminantOfJacobian", "Jacobian is not square" );
         return 0.0;
@@ -799,7 +804,7 @@ public:
      * point in space this needs to be reviewed
      * (comment by janosch)
      */
-    double DeterminantOfJacobian( const CoordinatesArrayType& rPoint ) const override
+    DataType DeterminantOfJacobian( const CoordinatesArrayType& rPoint ) const override
     {
         KRATOS_THROW_ERROR( std::logic_error, "Triangle3D::DeterminantOfJacobian", "Jacobian is not square" );
         return 0.0;
@@ -954,7 +959,7 @@ public:
      *
      * @return the value of the shape function at the given point
      */
-    double ShapeFunctionValue( IndexType ShapeFunctionIndex, const CoordinatesArrayType& rPoint ) const override
+    DataType ShapeFunctionValue( IndexType ShapeFunctionIndex, const CoordinatesArrayType& rPoint ) const override
     {
         switch ( ShapeFunctionIndex )
         {

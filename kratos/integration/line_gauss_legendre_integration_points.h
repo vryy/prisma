@@ -498,4 +498,4 @@ class KRATOS_API(KRATOS_CORE) LineGaussLegendreIntegrationPoints<10> : public Li
 
 }  // namespace Kratos.
 
-#endif // KRATOS_LINE_GAUSS_LEGENDRE_INTEGRATION_POINTS_H_INCLUDED  defined 
+#endif // KRATOS_LINE_GAUSS_LEGENDRE_INTEGRATION_POINTS_H_INCLUDED  defined

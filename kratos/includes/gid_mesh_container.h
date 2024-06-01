@@ -40,14 +40,7 @@
 
 namespace Kratos
 {
-/**
- * Type definitions
- */
-typedef ModelPart::ElementsContainerType ElementsArrayType;
-typedef ModelPart::NodesContainerType NodesArrayType;
-typedef ModelPart::ConditionsContainerType ConditionsArrayType;
-typedef GeometryData::IntegrationMethod IntegrationMethodType;
-typedef GeometryData::KratosGeometryFamily KratosGeometryFamily;
+
 /**
  * Auxiliary class to store meshes of different element types and to
  * write these meshes to an output file
@@ -55,6 +48,11 @@ typedef GeometryData::KratosGeometryFamily KratosGeometryFamily;
 class GidMeshContainer
 {
 public:
+    /**
+     * Type definitions
+     */
+    typedef GeometryData::KratosGeometryFamily KratosGeometryFamily;
+
     ///Constructor
     GidMeshContainer ( GeometryData::KratosGeometryType geometryType,
                        GiD_ElementType elementType, const char* mesh_title )

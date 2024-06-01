@@ -91,35 +91,18 @@ namespace Kratos
 /*@{ */
 
 /** This class defines utility for aggregation of node clusters to be used in deflated solvers.
-Detail class definition.
-
-\URL[Example of use html]{ extended_documentation/no_ex_of_use.html}
-
-        \URL[Example of use pdf]{ extended_documentation/no_ex_of_use.pdf}
-
-          \URL[Example of use doc]{ extended_documentation/no_ex_of_use.doc}
-
-                \URL[Example of use ps]{ extended_documentation/no_ex_of_use.ps}
-
-
-                        \URL[Extended documentation html]{ extended_documentation/no_ext_doc.html}
-
-                          \URL[Extended documentation pdf]{ extended_documentation/no_ext_doc.pdf}
-
-                                \URL[Extended documentation doc]{ extended_documentation/no_ext_doc.doc}
-
-                                  \URL[Extended documentation ps]{ extended_documentation/no_ext_doc.ps}
-
-
  */
+template<typename TSparseMatrixType, typename TSparseVectorType>
 class DeflationUtils
 {
 public:
     /**@name Type Definitions */
     /*@{ */
-    typedef boost::numeric::ublas::compressed_matrix<double> SparseMatrixType;
+    typedef TSparseMatrixType SparseMatrixType;
 
-    typedef boost::numeric::ublas::vector<double> SparseVectorType;
+    typedef TSparseVectorType SparseVectorType;
+
+    typedef typename SparseVectorType::value_type DataType;
 
     /*@} */
     /**@name Life Cycle
@@ -139,7 +122,7 @@ public:
     /*@{ */
     ///visualize aggregates. This function assumes that neighbours are calculated and builds the connectivity matrix
     ///then writes it to a nodal variable so that it can be used for visualizing it.
-    void VisualizeAggregates(ModelPart::NodesContainerType& rNodes, Variable<double>& rVariable, const int max_reduced_size)
+    void VisualizeAggregates(ModelPart::NodesContainerType& rNodes, Variable<DataType>& rVariable, const int max_reduced_size)
     {
         SparseMatrixType A(rNodes.size(),rNodes.size());
         SparseMatrixType Adeflated;
@@ -168,7 +151,7 @@ public:
 
             //filling the first neighbours list
             indices.push_back(index_i);
-            for( WeakPointerVector< Node<3> >::iterator i =	neighb_nodes.begin();
+            for( WeakPointerVector< Node<3> >::iterator i = neighb_nodes.begin();
                     i != neighb_nodes.end(); i++)
             {
 
@@ -232,12 +215,12 @@ public:
         std::vector<std::set<std::size_t> > deflatedANZ(reduced_size);
 
         // Loop over non-zero structure of A and build non-zero structure of deflatedA
-        SparseMatrixType::iterator1 a_iterator = rA.begin1();
+        typename SparseMatrixType::iterator1 a_iterator = rA.begin1();
 
         for (std::size_t i = 0; i < full_size; i++)
         {
 #ifndef BOOST_UBLAS_NO_NESTED_CLASS_RELATION
-            for (SparseMatrixType::iterator2 row_iterator = a_iterator.begin() ;
+            for (typename SparseMatrixType::iterator2 row_iterator = a_iterator.begin() ;
                     row_iterator != a_iterator.end() ; ++row_iterator)
             {
 #else
@@ -294,7 +277,7 @@ public:
         }
 
         KRATOS_WATCH(reduced_size);
-        std::cout << "reduction factor ="<<double(full_size)/double(reduced_size)<<std::endl;
+        std::cout << "reduction factor ="<<DataType(full_size)/DataType(reduced_size)<<std::endl;
 
 
         KRATOS_CATCH("")
@@ -400,23 +383,23 @@ public:
     {
         KRATOS_TRY
 
-        double* abegin = Ah.value_data().begin();
+        DataType* abegin = Ah.value_data().begin();
         int size = Ah.value_data().size();
         #pragma omp parallel for
         for (int i = 0; i < size; i++)
         {
             *(abegin+i) = 0.0;
         }
-//	TSparseSpaceType::SetToZero(Ah);
+//      TSparseSpaceType::SetToZero(Ah);
 
         // Now building Ah
-        SparseMatrixType::const_iterator1 a_iterator = rA.begin1();
+        typename SparseMatrixType::const_iterator1 a_iterator = rA.begin1();
         int full_size = rA.size1();
 
         for (int i = 0; i < full_size; i++)
         {
 #ifndef BOOST_UBLAS_NO_NESTED_CLASS_RELATION
-            for (SparseMatrixType::const_iterator2 row_iterator = a_iterator.begin() ;
+            for (typename SparseMatrixType::const_iterator2 row_iterator = a_iterator.begin() ;
                     row_iterator != a_iterator.end() ; ++row_iterator)
             {
 #else
@@ -431,10 +414,7 @@ public:
             a_iterator++;
         }
 
-
-
         std::cout << "********** W^T * A * W built!" << std::endl;
-
 
         KRATOS_CATCH("");
     }

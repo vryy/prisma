@@ -60,7 +60,7 @@ namespace Kratos
 @see Node
 @see IntegrationPoint
 */
-template<std::size_t TDimension, class TDataType = double>
+template<std::size_t TDimension, class TDataType = KRATOS_DOUBLE_TYPE>
 class Point : public array_1d<TDataType, TDimension>
 {
 public:
@@ -75,6 +75,8 @@ public:
     typedef Point<TDimension, TDataType> Type;
 
     typedef BaseType CoordinatesArrayType;
+
+    typedef TDataType DataType;
 
     typedef typename std::size_t SizeType;
 

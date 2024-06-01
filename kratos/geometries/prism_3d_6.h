@@ -71,6 +71,10 @@ public:
      */
     typedef typename BaseType::IndexType IndexType;
 
+    /**
+     * Type used for double value.
+     */
+    typedef typename BaseType::DataType DataType;
 
     /**
      * This typed used to return size or dimension in
@@ -327,7 +331,7 @@ public:
      * and for the other geometries it gives Characteristic length
      * otherwise.
      *
-     * @return double value contains length or Characteristic
+     * @return DataType value contains length or Characteristic
      * length
      * @see Area()
      * @see Volume()
@@ -335,12 +339,12 @@ public:
      *
      * :TODO: might be necessary to reimplement
      */
-    double Length() const override
+    DataType Length() const override
     {
         Vector temp;
         this->DeterminantOfJacobian( temp, msGeometryData.DefaultIntegrationMethod() );
         const IntegrationPointsArrayType& integration_points = this->IntegrationPoints( msGeometryData.DefaultIntegrationMethod() );
-        double Volume = 0.00;
+        DataType Volume = 0.00;
 
         for ( unsigned int i = 0; i < integration_points.size(); i++ )
         {
@@ -358,27 +362,27 @@ public:
      * and for three dimensional geometries it gives surface area.
      *
      *
-     * @return double value contains area or surface area.
+     * @return DataType value contains area or surface area.
      * @see Length()
      * @see Volume()
      * @see DomainSize()
      *
      * :TODO: might be necessary to reimplement
      */
-    double Area() const override
+    DataType Area() const override
     {
         return fabs( this->DeterminantOfJacobian( PointType() ) ) * 0.5;
     }
 
 
 
-    double Volume() const override
+    DataType Volume() const override
     {
 
         Vector temp;
         this->DeterminantOfJacobian( temp, msGeometryData.DefaultIntegrationMethod() );
         const IntegrationPointsArrayType& integration_points = this->IntegrationPoints( msGeometryData.DefaultIntegrationMethod() );
-        double Volume = 0.00;
+        DataType Volume = 0.00;
 
         for ( unsigned int i = 0; i < integration_points.size(); i++ )
         {
@@ -398,14 +402,14 @@ public:
      * geometry it returns its length, for two dimensional it gives area
      * and for three dimensional geometries it gives its volume.
      *
-     * @return double value contains length, area or volume.
+     * @return DataType value contains length, area or volume.
      * @see Length()
      * @see Area()
      * @see Volume()
      *
      * :TODO: might be necessary to reimplement
      */
-    double DomainSize() const override
+    DataType DomainSize() const override
     {
         return fabs( this->DeterminantOfJacobian( PointType() ) ) * 0.5;
     }
@@ -585,7 +589,7 @@ public:
      * @return the value of the shape function at the given point
      * TODO: TO BE VERIFIED
      */
-    double ShapeFunctionValue( IndexType ShapeFunctionIndex,
+    DataType ShapeFunctionValue( IndexType ShapeFunctionIndex,
                                const CoordinatesArrayType& rPoint ) const override
     {
         switch ( ShapeFunctionIndex )

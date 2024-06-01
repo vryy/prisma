@@ -4,8 +4,8 @@
 //   _|\_\_|  \__,_|\__|\___/ ____/
 //                   Multi-Physics
 //
-//  License:		 BSD License
-//					 Kratos default license: kratos/license.txt
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Riccardo Rossi
 //                   Janosch Stascheit
@@ -82,7 +82,9 @@ public:
     KRATOS_CLASS_POINTER_DEFINITION(GidIO);
 
     ///typedefs
-	typedef IO BaseType;
+    typedef IO BaseType;
+
+    typedef BaseType::DataType DataType;
 
     ///Flags for mesh writing
 //             enum WriteDeformedMeshFlag{WriteDeformed, WriteUndeformed};
@@ -229,7 +231,7 @@ public:
         mGidGaussPointContainers.push_back( TGaussPointContainer( "lin1_element_gp",
                                             GeometryData::KratosGeometryFamily::Kratos_Linear, GiD_Linear, 1, gp_indices ) );
 
-	//case Point with 1 gauss point //Gid does not accept this kind of gauss point (october 18th 2014)
+    //case Point with 1 gauss point //Gid does not accept this kind of gauss point (october 18th 2014)
         //mGidGaussPointContainers.push_back( TGaussPointContainer( "point1_element_gp",
         //                                    GeometryData::KratosGeometryFamily::Kratos_Point, GiD_Point, 1, gp_indices ) );
 
@@ -554,10 +556,10 @@ public:
 
     ///functions for writing nodal results
 
-	///////////////////////////////////////////////////////////////////////
-	//////                  HISTORICAL DATABASE BLOCK                 /////
-	///////////////////////////////////////////////////////////////////////
-	 /**
+    ///////////////////////////////////////////////////////////////////////
+    //////                  HISTORICAL DATABASE BLOCK                 /////
+    ///////////////////////////////////////////////////////////////////////
+     /**
      * writes nodal results for variables of type bool
      */
     void WriteNodalResults( Variable<bool> const& rVariable,
@@ -582,9 +584,9 @@ public:
 
     ///functions for writing nodal results
     /**
-     * writes nodal results for variables of type double
+     * writes nodal results for variables of type DataType
      */
-    void WriteNodalResults( Variable<double> const& rVariable,
+    void WriteNodalResults( Variable<DataType> const& rVariable,
                             NodesContainerType& rNodes, double SolutionTag,
                             std::size_t SolutionStepNumber)
     {
@@ -604,10 +606,10 @@ public:
     }
 
     /**
-     * writes nodal results for variables of type array_1d<double, 3>
+     * writes nodal results for variables of type array_1d<DataType, 3>
      * (e.g. DISPLACEMENT)
      */
-    void WriteNodalResults( Variable<array_1d<double, 3> > const& rVariable,
+    void WriteNodalResults( Variable<array_1d<DataType, 3> > const& rVariable,
                             NodesContainerType& rNodes,
                             double SolutionTag, std::size_t SolutionStepNumber)
     {
@@ -620,7 +622,7 @@ public:
         for (NodesContainerType::iterator i_node = rNodes.begin();
                 i_node != rNodes.end() ; ++i_node)
         {
-            array_1d<double, 3>& temp = i_node->GetSolutionStepValue( rVariable,
+            const array_1d<DataType, 3>& temp = i_node->GetSolutionStepValue( rVariable,
                                         SolutionStepNumber );
             GiD_fWriteVector( mResultFile, i_node->Id(), temp[0], temp[1], temp[2] );
         }
@@ -712,7 +714,7 @@ public:
 
     }
 
-   void WriteLocalAxesOnNodes( Variable<array_1d<double, 3> > const& rVariable,
+   void WriteLocalAxesOnNodes( Variable<array_1d<DataType, 3> > const& rVariable,
                             NodesContainerType& rNodes,
                             double SolutionTag, std::size_t SolutionStepNumber)
     {
@@ -726,7 +728,7 @@ public:
         for (NodesContainerType::iterator i_node = rNodes.begin();
                 i_node != rNodes.end() ; ++i_node)
         {
-            array_1d<double, 3>& temp = i_node->GetSolutionStepValue( rVariable,
+            const array_1d<DataType, 3>& temp = i_node->GetSolutionStepValue( rVariable,
                                         SolutionStepNumber );
             GiD_fWriteLocalAxes( mResultFile, i_node->Id(), temp[0], temp[1], temp[2] );
         }
@@ -735,10 +737,10 @@ public:
         Timer::Stop("Writing Results");
 
     }
-   	///////////////////////////////////////////////////////////////////////
-	//////                 NON- HISTORICAL DATABASE BLOCK                 /////
-	///////////////////////////////////////////////////////////////////////
-	 /**
+    ///////////////////////////////////////////////////////////////////////
+    //////                 NON- HISTORICAL DATABASE BLOCK                 /////
+    ///////////////////////////////////////////////////////////////////////
+     /**
      * writes nodal results for variables of type bool
      */
     void WriteNodalResultsNonHistorical( Variable<bool> const& rVariable, NodesContainerType& rNodes, double SolutionTag)
@@ -760,9 +762,9 @@ public:
 
     ///functions for writing nodal results
     /**
-     * writes nodal results for variables of type double
+     * writes nodal results for variables of type DataType
      */
-    void WriteNodalResultsNonHistorical( Variable<double> const& rVariable, NodesContainerType& rNodes, double SolutionTag)
+    void WriteNodalResultsNonHistorical( Variable<DataType> const& rVariable, NodesContainerType& rNodes, double SolutionTag)
     {
 
         Timer::Start("Writing Results");
@@ -779,10 +781,10 @@ public:
     }
 
     /**
-     * writes nodal results for variables of type array_1d<double, 3>
+     * writes nodal results for variables of type array_1d<DataType, 3>
      * (e.g. DISPLACEMENT)
      */
-    void WriteNodalResultsNonHistorical( Variable<array_1d<double, 3> > const& rVariable, NodesContainerType& rNodes, double SolutionTag)
+    void WriteNodalResultsNonHistorical( Variable<array_1d<DataType, 3> > const& rVariable, NodesContainerType& rNodes, double SolutionTag)
     {
         Timer::Start("Writing Results");
 
@@ -792,7 +794,7 @@ public:
         for (NodesContainerType::iterator i_node = rNodes.begin();
                 i_node != rNodes.end() ; ++i_node)
         {
-            array_1d<double, 3>& temp = i_node->GetValue( rVariable);
+            const array_1d<DataType, 3>& temp = i_node->GetValue( rVariable);
             GiD_fWriteVector( mResultFile, i_node->Id(), temp[0], temp[1], temp[2] );
         }
         GiD_fEndResult(mResultFile);
@@ -877,7 +879,7 @@ public:
 
     }
 
-   void WriteLocalAxesOnNodesNonHistorical( Variable<array_1d<double, 3> > const& rVariable, NodesContainerType& rNodes, double SolutionTag)
+   void WriteLocalAxesOnNodesNonHistorical( Variable<array_1d<DataType, 3> > const& rVariable, NodesContainerType& rNodes, double SolutionTag)
     {
         Timer::Start("Writing Results");
 
@@ -888,7 +890,7 @@ public:
         for (NodesContainerType::iterator i_node = rNodes.begin();
                 i_node != rNodes.end() ; ++i_node)
         {
-            array_1d<double, 3>& temp = i_node->GetSolutionStepValue( rVariable);
+            const array_1d<DataType, 3>& temp = i_node->GetSolutionStepValue( rVariable);
             GiD_fWriteLocalAxes( mResultFile, i_node->Id(), temp[0], temp[1], temp[2] );
         }
         GiD_fEndResult(mResultFile);
@@ -928,7 +930,7 @@ public:
                     mResultFile = GiD_fOpenPostResultFile((char*)(file_name.str()).c_str(), mMode);
                     mResultFileOpen = true;
                 }
-				mMeshFile = mResultFile;
+                mMeshFile = mResultFile;
             }
         }
         if ( mUseMultiFile == SingleFile )
@@ -937,8 +939,8 @@ public:
             {
                 std::stringstream file_name;
                 file_name << mResultFileName << ".post.bin";
-		         //KRATOS_WATCH(file_name.str())
-		        mResultFile = GiD_fOpenPostResultFile((char*)(file_name.str()).c_str(), mMode);
+                 //KRATOS_WATCH(file_name.str())
+                mResultFile = GiD_fOpenPostResultFile((char*)(file_name.str()).c_str(), mMode);
                 if ( mResultFile == 0) //error handler can not be zero
                 {
                     std::stringstream buffer;
@@ -946,7 +948,7 @@ public:
                     KRATOS_THROW_ERROR(std::runtime_error, buffer.str(), "");
                 }
                 mResultFileOpen = true;
-				mMeshFile = mResultFile;
+                mMeshFile = mResultFile;
             }
             if ( mMode == GiD_PostAscii && ! mMeshFileOpen )
             {
@@ -1147,7 +1149,7 @@ void WriteCircleMesh( MeshType& rThisMesh )
                         break;
         }
         if ( mWriteConditions == WriteConditions || mWriteConditions == WriteConditionsOnly )
-		{
+        {
             for ( MeshType::ConditionsContainerType::iterator conditions_iterator =
                         rThisMesh.ConditionsBegin();
                     conditions_iterator != rThisMesh.ConditionsEnd(); conditions_iterator++ )
@@ -1155,7 +1157,7 @@ void WriteCircleMesh( MeshType& rThisMesh )
                         it != mGidMeshContainers.end(); it++ )
                     if ( it->AddCondition( conditions_iterator ) )
                         break;
-		}
+        }
 //         mNodeList.clear();
 
         for ( typename std::vector<TMeshContainer>::iterator it = mGidMeshContainers.begin();
@@ -1214,11 +1216,11 @@ void WriteCircleMesh( MeshType& rThisMesh )
 
     ///functions for printing results on gauss points
     /**
-     * Prints variables of type double on gauss points of the complete mesh
+     * Prints variables of type DataType on gauss points of the complete mesh
      * @param rVariable the given variable name
      * @param r_model_part the current model part
      */
-    virtual void PrintOnGaussPoints( const Variable<double>& rVariable, ModelPart& r_model_part,
+    virtual void PrintOnGaussPoints( const Variable<DataType>& rVariable, ModelPart& r_model_part,
                                      double SolutionTag, int value_index = 0 )
     {
         KRATOS_TRY;
@@ -1238,11 +1240,11 @@ void WriteCircleMesh( MeshType& rThisMesh )
     }
 
     /**
-     * Prints variables of type double on gauss points of the complete mesh
+     * Prints variables of type DataType on gauss points of the complete mesh
      * @param rVariable the given variable name
      * @param r_model_part the current model part
      */
-    virtual void PrintOnGaussPoints( const Variable<array_1d<double,3> >& rVariable, ModelPart& r_model_part, double SolutionTag, int value_index = 0 )
+    virtual void PrintOnGaussPoints( const Variable<array_1d<DataType, 3> >& rVariable, ModelPart& r_model_part, double SolutionTag, int value_index = 0 )
     {
         KRATOS_TRY;
 
@@ -1261,7 +1263,7 @@ void WriteCircleMesh( MeshType& rThisMesh )
     }
 
     /**
-     * Prints variables of type double on gauss points of the complete mesh
+     * Prints variables of type DataType on gauss points of the complete mesh
      * @param rVariable the given variable name
      * @param r_model_part the current model part
      */
@@ -1284,7 +1286,7 @@ void WriteCircleMesh( MeshType& rThisMesh )
     }
 
     /**
-     * Prints variables of type double on gauss points of the complete mesh
+     * Prints variables of type DataType on gauss points of the complete mesh
      * @param rVariable the given variable name
      * @param r_model_part the current model part
      */

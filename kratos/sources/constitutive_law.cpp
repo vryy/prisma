@@ -18,40 +18,42 @@
 
 namespace Kratos
 {
-    const unsigned int ConstitutiveLaw::msIndexVoigt3D6C [6][2] = { {0, 0}, {1, 1}, {2, 2}, {0, 1}, {1, 2}, {0, 2} };
-    const unsigned int ConstitutiveLaw::msIndexVoigt2D4C [4][2] = { {0, 0}, {1, 1}, {2, 2}, {0, 1} };
-    const unsigned int ConstitutiveLaw::msIndexVoigt2D3C [3][2] = { {0, 0}, {1, 1}, {0, 1} };
 
-    /**
-     * Flags related to the Parameters of the Contitutive Law
-     */
-    KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, COMPUTE_STRAIN,              0 );
-    KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, COMPUTE_STRESS,              1 );
-    KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, COMPUTE_CONSTITUTIVE_TENSOR, 2 );
-    KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, COMPUTE_STRAIN_ENERGY,       3 );
+typedef ConstitutiveLaw::DataType DataType;
+const unsigned int ConstitutiveLaw::msIndexVoigt3D6C [6][2] = { {0, 0}, {1, 1}, {2, 2}, {0, 1}, {1, 2}, {0, 2} };
+const unsigned int ConstitutiveLaw::msIndexVoigt2D4C [4][2] = { {0, 0}, {1, 1}, {2, 2}, {0, 1} };
+const unsigned int ConstitutiveLaw::msIndexVoigt2D3C [3][2] = { {0, 0}, {1, 1}, {0, 1} };
 
-    KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, ISOCHORIC_TENSOR_ONLY,       4 );
-    KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, VOLUMETRIC_TENSOR_ONLY,      5 );
+/**
+ * Flags related to the Parameters of the Contitutive Law
+ */
+KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, COMPUTE_STRAIN,              0 );
+KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, COMPUTE_STRESS,              1 );
+KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, COMPUTE_CONSTITUTIVE_TENSOR, 2 );
+KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, COMPUTE_STRAIN_ENERGY,       3 );
 
-    KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, TOTAL_TENSOR,                6 );
+KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, ISOCHORIC_TENSOR_ONLY,       4 );
+KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, VOLUMETRIC_TENSOR_ONLY,      5 );
 
-    KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, FINALIZE_MATERIAL_RESPONSE,  7 );
+KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, TOTAL_TENSOR,                6 );
+
+KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, FINALIZE_MATERIAL_RESPONSE,  7 );
 
 
-    /**
-     * Flags related to the Features of the Contitutive Law
-     */
-    KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, FINITE_STRAINS,              8 );
-    KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, INFINITESIMAL_STRAINS,       9 );
+/**
+ * Flags related to the Features of the Contitutive Law
+ */
+KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, FINITE_STRAINS,              8 );
+KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, INFINITESIMAL_STRAINS,       9 );
 
-    KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, THREE_DIMENSIONAL_LAW,      10 );
-    KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, PLANE_STRAIN_LAW,           11 );
-    KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, PLANE_STRESS_LAW,           12 );
-    KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, AXISYMMETRIC_LAW,           13 );
+KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, THREE_DIMENSIONAL_LAW,      10 );
+KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, PLANE_STRAIN_LAW,           11 );
+KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, PLANE_STRESS_LAW,           12 );
+KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, AXISYMMETRIC_LAW,           13 );
 
-    KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, U_P_LAW,                    14 );
-    KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, ISOTROPIC,                  15 );
-    KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, ANISOTROPIC,                16 );
+KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, U_P_LAW,                    14 );
+KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, ISOTROPIC,                  15 );
+KRATOS_CREATE_LOCAL_FLAG( ConstitutiveLaw, ANISOTROPIC,                16 );
 
 /**
  * Constructor.
@@ -140,7 +142,7 @@ bool ConstitutiveLaw::Has(const Variable<int>& rThisVariable)
  * @param rThisVariable the variable to be checked for
  * @return true if the variable is defined in the constitutive law
  */
-bool ConstitutiveLaw::Has(const Variable<double>& rThisVariable)
+bool ConstitutiveLaw::Has(const Variable<DataType>& rThisVariable)
 {
     return false;
 }
@@ -169,9 +171,9 @@ bool ConstitutiveLaw::Has(const Variable<Matrix>& rThisVariable)
  * returns whether this constitutive Law has specified variable
  * @param rThisVariable the variable to be checked for
  * @return true if the variable is defined in the constitutive law
- * NOTE: fixed size array of 3 doubles (e.g. for 2D stresses, plastic strains, ...)
+ * NOTE: fixed size array of 3 DataTypes (e.g. for 2D stresses, plastic strains, ...)
  */
-bool ConstitutiveLaw::Has(const Variable<array_1d<double, 3 > >& rThisVariable)
+bool ConstitutiveLaw::Has(const Variable<array_1d<DataType, 3 > >& rThisVariable)
 {
     return false;
 }
@@ -180,9 +182,9 @@ bool ConstitutiveLaw::Has(const Variable<array_1d<double, 3 > >& rThisVariable)
  * returns whether this constitutive Law has specified variable
  * @param rThisVariable the variable to be checked for
  * @return true if the variable is defined in the constitutive law
- * NOTE: fixed size array of 6 doubles (e.g. for stresses, plastic strains, ...)
+ * NOTE: fixed size array of 6 DataTypes (e.g. for stresses, plastic strains, ...)
  */
-bool ConstitutiveLaw::Has(const Variable<array_1d<double, 6 > >& rThisVariable)
+bool ConstitutiveLaw::Has(const Variable<array_1d<DataType, 6 > >& rThisVariable)
 {
     return false;
 }
@@ -215,7 +217,7 @@ int& ConstitutiveLaw::GetValue(const Variable<int>& rThisVariable, int& rValue)
  * @param rValue a reference to the returned value
  * @param rValue output: the value of the specified variable
  */
-double& ConstitutiveLaw::GetValue(const Variable<double>& rThisVariable, double& rValue)
+DataType& ConstitutiveLaw::GetValue(const Variable<DataType>& rThisVariable, DataType& rValue)
 {
     return rValue;
 }
@@ -257,8 +259,8 @@ std::string& ConstitutiveLaw::GetValue(const Variable<std::string>& rThisVariabl
  * @param rValue a reference to the returned value
  * @return the value of the specified variable
  */
-array_1d<double, 3 > & ConstitutiveLaw::GetValue(const Variable<array_1d<double, 3 > >& rThisVariable,
-        array_1d<double, 3 > & rValue)
+array_1d<DataType, 3 > & ConstitutiveLaw::GetValue(const Variable<array_1d<DataType, 3 > >& rThisVariable,
+        array_1d<DataType, 3 > & rValue)
 {
     return rValue;
 }
@@ -269,8 +271,8 @@ array_1d<double, 3 > & ConstitutiveLaw::GetValue(const Variable<array_1d<double,
  * @param rValue a reference to the returned value
  * @return the value of the specified variable
  */
-array_1d<double, 6 > & ConstitutiveLaw::GetValue(const Variable<array_1d<double, 6 > >& rThisVariable,
-        array_1d<double, 6 > & rValue)
+array_1d<DataType, 6 > & ConstitutiveLaw::GetValue(const Variable<array_1d<DataType, 6 > >& rThisVariable,
+        array_1d<DataType, 6 > & rValue)
 {
     return rValue;
 }
@@ -298,13 +300,13 @@ void ConstitutiveLaw::SetValue(const Variable<int>& rThisVariable,
 {}
 
 /**
- * @brief Sets the value of a specified variable (double)
+ * @brief Sets the value of a specified variable (DataType)
  * @param rVariable the variable to be returned
  * @param rValue new value of the specified variable
  * @param rCurrentProcessInfo the process info
  */
-void ConstitutiveLaw::SetValue(const Variable<double>& rVariable,
-                               const double& rValue,
+void ConstitutiveLaw::SetValue(const Variable<DataType>& rVariable,
+                               const DataType& rValue,
                                const ProcessInfo& rCurrentProcessInfo)
 {}
 
@@ -334,8 +336,8 @@ void ConstitutiveLaw::SetValue(const Variable<Matrix >& rVariable,
  * @param rValue new value of the specified variable
  * @param rCurrentProcessInfo the process info
  */
-void ConstitutiveLaw::SetValue(const Variable<array_1d<double, 3 > >& rVariable,
-                               const array_1d<double, 3 > & rValue,
+void ConstitutiveLaw::SetValue(const Variable<array_1d<DataType, 3 > >& rVariable,
+                               const array_1d<DataType, 3 > & rValue,
                                const ProcessInfo& rCurrentProcessInfo)
 {}
 
@@ -345,8 +347,8 @@ void ConstitutiveLaw::SetValue(const Variable<array_1d<double, 3 > >& rVariable,
  * @param rValue new value of the specified variable
  * @param rCurrentProcessInfo the process info
  */
-void ConstitutiveLaw::SetValue(const Variable<array_1d<double, 6 > >& rVariable,
-                               const array_1d<double, 6 > & rValue,
+void ConstitutiveLaw::SetValue(const Variable<array_1d<DataType, 6 > >& rVariable,
+                               const array_1d<DataType, 6 > & rValue,
                                const ProcessInfo& rCurrentProcessInfo)
 {}
 
@@ -396,13 +398,13 @@ int& ConstitutiveLaw::CalculateValue(Parameters& rParameterValues, const Variabl
 }
 
 /**
- * returns the value of a specified variable (double)
+ * returns the value of a specified variable (DataType)
  * @param rParameterValues the needed parameters for the CL calculation
  * @param rThisVariable the variable to be returned
  * @param rValue a reference to the returned value
  * @param rValue output: the value of the specified variable
  */
-double& ConstitutiveLaw::CalculateValue(Parameters& rParameterValues, const Variable<double>& rThisVariable, double& rValue)
+DataType& ConstitutiveLaw::CalculateValue(Parameters& rParameterValues, const Variable<DataType>& rThisVariable, DataType& rValue)
 {
     return rValue;
 }
@@ -438,8 +440,8 @@ Matrix& ConstitutiveLaw::CalculateValue(Parameters& rParameterValues, const Vari
  * @param rValue a reference to the returned value
  * @param rValue output: the value of the specified variable
  */
-array_1d<double, 3 > & ConstitutiveLaw::CalculateValue(Parameters& rParameterValues, const Variable<array_1d<double, 3 > >& rVariable,
-        array_1d<double, 3 > & rValue)
+array_1d<DataType, 3 > & ConstitutiveLaw::CalculateValue(Parameters& rParameterValues, const Variable<array_1d<DataType, 3 > >& rVariable,
+        array_1d<DataType, 3 > & rValue)
 {
     return rValue;
 }
@@ -452,8 +454,8 @@ array_1d<double, 3 > & ConstitutiveLaw::CalculateValue(Parameters& rParameterVal
  * @param rValue a reference to the returned value
  * @param rValue output: the value of the specified variable
  */
-array_1d<double, 6 > & ConstitutiveLaw::CalculateValue(Parameters& rParameterValues, const Variable<array_1d<double, 6 > >& rVariable,
-        array_1d<double, 6 > & rValue)
+array_1d<DataType, 6 > & ConstitutiveLaw::CalculateValue(Parameters& rParameterValues, const Variable<array_1d<DataType, 6 > >& rVariable,
+        array_1d<DataType, 6 > & rValue)
 {
     return rValue;
 }
@@ -858,11 +860,11 @@ Vector& ConstitutiveLaw::TransformStrains (Vector& rStrainVector,
 
         case StrainMeasure_Almansi:
         {
-            Matrix StrainMatrix = MathUtils<double>::StrainVectorToTensor( rStrainVector );
+            Matrix StrainMatrix = MathUtils<DataType>::StrainVectorToTensor( rStrainVector );
 
             CoVariantPushForward (StrainMatrix,rF);  //Almansi
 
-            rStrainVector = MathUtils<double>::StrainTensorToVector( StrainMatrix, rStrainVector.size() );
+            rStrainVector = MathUtils<DataType>::StrainTensorToVector( StrainMatrix, rStrainVector.size() );
         }
         break;
 
@@ -887,11 +889,11 @@ Vector& ConstitutiveLaw::TransformStrains (Vector& rStrainVector,
         {
         case StrainMeasure_GreenLagrange:
         {
-            Matrix StrainMatrix = MathUtils<double>::StrainVectorToTensor( rStrainVector );
+            Matrix StrainMatrix = MathUtils<DataType>::StrainVectorToTensor( rStrainVector );
 
             CoVariantPullBack (StrainMatrix,rF);  //GreenLagrange
 
-            rStrainVector = MathUtils<double>::StrainTensorToVector( StrainMatrix, rStrainVector.size() );
+            rStrainVector = MathUtils<DataType>::StrainTensorToVector( StrainMatrix, rStrainVector.size() );
         }
         break;
 
@@ -940,17 +942,17 @@ Vector& ConstitutiveLaw::TransformStrains (Vector& rStrainVector,
  */
 Matrix& ConstitutiveLaw::TransformStresses (Matrix& rStressMatrix,
         const Matrix &rF,
-        const double &rdetF,
+        const DataType &rdetF,
         StressMeasure rStressInitial,
         StressMeasure rStressFinal)
 {
     Vector StressVector;
 
-    StressVector = MathUtils<double>::StressTensorToVector( rStressMatrix );
+    StressVector = MathUtils<DataType>::StressTensorToVector( rStressMatrix );
 
     StressVector=TransformStresses(StressVector,rF,rdetF,rStressInitial,rStressFinal);
 
-    rStressMatrix = MathUtils<double>::StressVectorToTensor( StressVector );
+    rStressMatrix = MathUtils<DataType>::StressVectorToTensor( StressVector );
 
     return rStressMatrix;
 }
@@ -966,7 +968,7 @@ Matrix& ConstitutiveLaw::TransformStresses (Matrix& rStressMatrix,
  */
 Vector& ConstitutiveLaw::TransformStresses (Vector& rStressVector,
         const Matrix &rF,
-        const double &rdetF,
+        const DataType &rdetF,
         StressMeasure rStressInitial,
         StressMeasure rStressFinal)
 {
@@ -1015,7 +1017,7 @@ Vector& ConstitutiveLaw::TransformStresses (Vector& rStressVector,
  */
 Vector& ConstitutiveLaw::TransformPK1Stresses (Vector& rStressVector,
         const Matrix &rF,
-        const double &rdetF,
+        const DataType &rdetF,
         StressMeasure rStressFinal)
 {
     unsigned int size = rF.size1(); //WorkingSpaceDimension();
@@ -1027,38 +1029,38 @@ Vector& ConstitutiveLaw::TransformPK1Stresses (Vector& rStressVector,
 
     case StressMeasure_PK2:
     {
-        Matrix StressMatrix = MathUtils<double>::StressVectorToTensor( rStressVector );
+        Matrix StressMatrix = MathUtils<DataType>::StressVectorToTensor( rStressVector );
         Matrix InvF ( size, size );
-        double J;
-        MathUtils<double>::InvertMatrix( rF, InvF, J );
+        DataType J;
+        MathUtils<DataType>::InvertMatrix( rF, InvF, J );
 
         StressMatrix = prod( InvF, StressMatrix ); //PK2
 
-        rStressVector = MathUtils<double>::StressTensorToVector( StressMatrix, rStressVector.size() );
+        rStressVector = MathUtils<DataType>::StressTensorToVector( StressMatrix, rStressVector.size() );
     }
     break;
 
     case StressMeasure_Kirchhoff:
     {
-        Matrix StressMatrix = MathUtils<double>::StressVectorToTensor( rStressVector );
+        Matrix StressMatrix = MathUtils<DataType>::StressVectorToTensor( rStressVector );
         Matrix InvF ( size, size );
-        double J;
-        MathUtils<double>::InvertMatrix( rF, InvF, J );
+        DataType J;
+        MathUtils<DataType>::InvertMatrix( rF, InvF, J );
 
         StressMatrix = prod( InvF, StressMatrix ); //PK2
 
         ContraVariantPushForward (StressMatrix,rF); //Kirchhoff
 
-        rStressVector = MathUtils<double>::StressTensorToVector( StressMatrix, rStressVector.size() );
+        rStressVector = MathUtils<DataType>::StressTensorToVector( StressMatrix, rStressVector.size() );
     }
     break;
 
     case StressMeasure_Cauchy:
     {
-        Matrix StressMatrix = MathUtils<double>::StressVectorToTensor( rStressVector );
+        Matrix StressMatrix = MathUtils<DataType>::StressVectorToTensor( rStressVector );
         Matrix InvF ( size, size );
-        double J;
-        MathUtils<double>::InvertMatrix( rF, InvF, J );
+        DataType J;
+        MathUtils<DataType>::InvertMatrix( rF, InvF, J );
 
         StressMatrix = prod( InvF, StressMatrix ); //PK2
 
@@ -1066,7 +1068,7 @@ Vector& ConstitutiveLaw::TransformPK1Stresses (Vector& rStressVector,
 
         StressMatrix/=J; //Cauchy
 
-        rStressVector = MathUtils<double>::StressTensorToVector( StressMatrix, rStressVector.size() );
+        rStressVector = MathUtils<DataType>::StressTensorToVector( StressMatrix, rStressVector.size() );
     }
     break;
 
@@ -1087,7 +1089,7 @@ Vector& ConstitutiveLaw::TransformPK1Stresses (Vector& rStressVector,
  */
 Vector& ConstitutiveLaw::TransformPK2Stresses (Vector& rStressVector,
         const Matrix &rF,
-        const double &rdetF,
+        const DataType &rdetF,
         StressMeasure rStressFinal)
 {
 
@@ -1095,11 +1097,11 @@ Vector& ConstitutiveLaw::TransformPK2Stresses (Vector& rStressVector,
     {
     case StressMeasure_PK1:
     {
-        Matrix StressMatrix = MathUtils<double>::StressVectorToTensor( rStressVector );
+        Matrix StressMatrix = MathUtils<DataType>::StressVectorToTensor( rStressVector );
 
         StressMatrix = prod( rF, StressMatrix ); //PK1
 
-        rStressVector = MathUtils<double>::StressTensorToVector( StressMatrix, rStressVector.size() );
+        rStressVector = MathUtils<DataType>::StressTensorToVector( StressMatrix, rStressVector.size() );
     }
     break;
 
@@ -1108,25 +1110,25 @@ Vector& ConstitutiveLaw::TransformPK2Stresses (Vector& rStressVector,
 
     case StressMeasure_Kirchhoff:
     {
-        Matrix StressMatrix = MathUtils<double>::StressVectorToTensor( rStressVector );
+        Matrix StressMatrix = MathUtils<DataType>::StressVectorToTensor( rStressVector );
 
         ContraVariantPushForward (StressMatrix,rF); //Kirchhoff
 
-        rStressVector = MathUtils<double>::StressTensorToVector( StressMatrix, rStressVector.size() );
+        rStressVector = MathUtils<DataType>::StressTensorToVector( StressMatrix, rStressVector.size() );
     }
     break;
 
     case StressMeasure_Cauchy:
     {
 
-        Matrix StressMatrix = MathUtils<double>::StressVectorToTensor( rStressVector );
+        Matrix StressMatrix = MathUtils<DataType>::StressVectorToTensor( rStressVector );
 
         ContraVariantPushForward (StressMatrix,rF); //Kirchhoff
 
         if(rdetF!=0)
             StressMatrix/=rdetF; //Cauchy
 
-        rStressVector = MathUtils<double>::StressTensorToVector( StressMatrix, rStressVector.size() );
+        rStressVector = MathUtils<DataType>::StressTensorToVector( StressMatrix, rStressVector.size() );
 
     }
     break;
@@ -1148,7 +1150,7 @@ Vector& ConstitutiveLaw::TransformPK2Stresses (Vector& rStressVector,
  */
 Vector& ConstitutiveLaw::TransformKirchhoffStresses (Vector& rStressVector,
         const Matrix &rF,
-        const double &rdetF,
+        const DataType &rdetF,
         StressMeasure rStressFinal)
 {
 
@@ -1156,23 +1158,23 @@ Vector& ConstitutiveLaw::TransformKirchhoffStresses (Vector& rStressVector,
     {
     case StressMeasure_PK1:
     {
-        Matrix StressMatrix = MathUtils<double>::StressVectorToTensor( rStressVector );
+        Matrix StressMatrix = MathUtils<DataType>::StressVectorToTensor( rStressVector );
 
         ContraVariantPullBack (StressMatrix,rF);  //PK2
 
         StressMatrix = prod( rF, StressMatrix ); //PK1
 
-        rStressVector = MathUtils<double>::StressTensorToVector( StressMatrix, rStressVector.size() );
+        rStressVector = MathUtils<DataType>::StressTensorToVector( StressMatrix, rStressVector.size() );
     }
     break;
 
     case StressMeasure_PK2:
     {
-        Matrix StressMatrix = MathUtils<double>::StressVectorToTensor( rStressVector );
+        Matrix StressMatrix = MathUtils<DataType>::StressVectorToTensor( rStressVector );
 
         ContraVariantPullBack (StressMatrix,rF);  //PK2
 
-        rStressVector = MathUtils<double>::StressTensorToVector( StressMatrix, rStressVector.size() );
+        rStressVector = MathUtils<DataType>::StressTensorToVector( StressMatrix, rStressVector.size() );
     }
     break;
 
@@ -1203,7 +1205,7 @@ Vector& ConstitutiveLaw::TransformKirchhoffStresses (Vector& rStressVector,
  */
 Vector& ConstitutiveLaw::TransformCauchyStresses (Vector& rStressVector,
         const Matrix &rF,
-        const double &rdetF,
+        const DataType &rdetF,
         StressMeasure rStressFinal)
 {
 
@@ -1213,13 +1215,13 @@ Vector& ConstitutiveLaw::TransformCauchyStresses (Vector& rStressVector,
     {
         rStressVector*=rdetF; //Kirchhoff
 
-        Matrix StressMatrix = MathUtils<double>::StressVectorToTensor( rStressVector );
+        Matrix StressMatrix = MathUtils<DataType>::StressVectorToTensor( rStressVector );
 
         ContraVariantPullBack (StressMatrix,rF);  //PK2
 
         StressMatrix = prod( rF, StressMatrix ); //PK1
 
-        rStressVector = MathUtils<double>::StressTensorToVector( StressMatrix, rStressVector.size() );
+        rStressVector = MathUtils<DataType>::StressTensorToVector( StressMatrix, rStressVector.size() );
     }
     break;
 
@@ -1227,11 +1229,11 @@ Vector& ConstitutiveLaw::TransformCauchyStresses (Vector& rStressVector,
     {
         rStressVector*=rdetF; //Kirchhoff
 
-        Matrix StressMatrix = MathUtils<double>::StressVectorToTensor( rStressVector );
+        Matrix StressMatrix = MathUtils<DataType>::StressVectorToTensor( rStressVector );
 
         ContraVariantPullBack (StressMatrix,rF);  //PK2
 
-        rStressVector = MathUtils<double>::StressTensorToVector( StressMatrix, rStressVector.size() );
+        rStressVector = MathUtils<DataType>::StressTensorToVector( StressMatrix, rStressVector.size() );
     }
     break;
 
@@ -1270,8 +1272,8 @@ void ConstitutiveLaw::PullBackConstitutiveMatrix ( Matrix& rConstitutiveMatrix,
     rConstitutiveMatrix.clear();
 
     Matrix InverseF ( 3, 3 );
-    double detF = 0;
-    MathUtils<double>::InvertMatrix( rF, InverseF, detF);
+    DataType detF = 0;
+    MathUtils<DataType>::InvertMatrix( rF, InverseF, detF);
 
     ConstitutiveMatrixTransformation( rConstitutiveMatrix, OriginalConstitutiveMatrix, InverseF );
 }
@@ -1348,8 +1350,8 @@ void ConstitutiveLaw::ContraVariantPullBack( Matrix& rMatrix,
 {
     unsigned int size = rF.size1(); //WorkingSpaceDimension();
     Matrix InvF ( size, size );
-    double J;
-    MathUtils<double>::InvertMatrix( rF, InvF, J );
+    DataType J;
+    MathUtils<DataType>::InvertMatrix( rF, InvF, J );
 
     Matrix temp ( size, size );
 
@@ -1367,8 +1369,8 @@ void ConstitutiveLaw::CoVariantPushForward( Matrix& rMatrix,
 {
     unsigned int size = rF.size1(); //WorkingSpaceDimension();
     Matrix InvF ( size, size );
-    double J;
-    MathUtils<double>::InvertMatrix( rF, InvF, J );
+    DataType J;
+    MathUtils<DataType>::InvertMatrix( rF, InvF, J );
 
     Matrix temp ( size, size );
 
@@ -1450,7 +1452,7 @@ void ConstitutiveLaw::ConstitutiveMatrixTransformation ( Matrix& rConstitutiveMa
 /**
  * This method performs a pull-back or a push-forward between two constitutive tensor components
  */
-double& ConstitutiveLaw::TransformConstitutiveComponent(double & rCabcd,
+DataType& ConstitutiveLaw::TransformConstitutiveComponent(DataType & rCabcd,
         const Matrix & rConstitutiveMatrix,
         const Matrix & rF,
         const unsigned int& a, const unsigned int& b,
@@ -1459,7 +1461,7 @@ double& ConstitutiveLaw::TransformConstitutiveComponent(double & rCabcd,
 {
 
     rCabcd = 0;
-    double Cijkl=0;
+    DataType Cijkl=0;
 
     unsigned int dimension = rF.size1();
 
@@ -1487,7 +1489,7 @@ double& ConstitutiveLaw::TransformConstitutiveComponent(double & rCabcd,
  * This method gets the constitutive tensor components
  * from a consitutive matrix supplied in voigt notation
  */
-double& ConstitutiveLaw::GetConstitutiveComponent(double & rCabcd,
+DataType& ConstitutiveLaw::GetConstitutiveComponent(DataType & rCabcd,
         const Matrix& rConstitutiveMatrix,
         const unsigned int& a, const unsigned int& b,
         const unsigned int& c, const unsigned int& d)
@@ -1696,10 +1698,10 @@ double& ConstitutiveLaw::GetConstitutiveComponent(double & rCabcd,
  * NOTE: the CalculateTangent flag is defined as int to allow for distinctive variants of the tangent
  * @param SaveInternalVariables flag whether or not to store internal (history) variables
  */
- void ConstitutiveLaw::CalculateVolumetricResponse(const double VolumetricStrain,
+ void ConstitutiveLaw::CalculateVolumetricResponse(const DataType VolumetricStrain,
                      const Matrix& DeformationGradient,
-                     double& VolumetricStress,
-                     double& AlgorithmicBulk,
+                     DataType& VolumetricStress,
+                     DataType& AlgorithmicBulk,
                      const ProcessInfo& rCurrentProcessInfo,
                      const Properties& rMaterialProperties,
                      const GeometryType& rElementGeometry,
@@ -1745,6 +1747,39 @@ void ConstitutiveLaw::CalculateCauchyStresses(Vector& Cauchy_StressVector,
 {
 }
 
+std::ostream& operator<<(std::ostream& os, const ConstitutiveLaw::PlasticCode& p)
+{
+    switch (p)
+    {
+        case ConstitutiveLaw::PlasticCode::ELASTIC:
+            os << "elastic";
+            break;
+        case ConstitutiveLaw::PlasticCode::PLASTIC:
+            os << "plastic";
+            break;
+        case ConstitutiveLaw::PlasticCode::RETURN_ON_SMOOTH_PLANE:
+            os << "smooth";
+            break;
+        case ConstitutiveLaw::PlasticCode::RETURN_ON_EDGE:
+            os << "edge";
+            break;
+        case ConstitutiveLaw::PlasticCode::RETURN_ON_LEFT_EDGE:
+            os << "left";
+            break;
+        case ConstitutiveLaw::PlasticCode::RETURN_ON_RIGHT_EDGE:
+            os << "right";
+            break;
+        case ConstitutiveLaw::PlasticCode::RETURN_ON_CORNER:
+            os << "corner";
+            break;
+        case ConstitutiveLaw::PlasticCode::RETURN_ON_APEX:
+            os << "apex";
+            break;
+        default:
+            break;
+    }
+    return os;
+}
 
 template class KRATOS_API(KRATOS_CORE) KratosComponents<ConstitutiveLaw >;
 // template class KRATOS_API(KRATOS_CORE) KratosComponents< Variable<ConstitutiveLaw::Pointer> >;

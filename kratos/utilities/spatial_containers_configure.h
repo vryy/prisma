@@ -125,8 +125,9 @@ public:
            MAX_LEVEL = 16,
            MIN_LEVEL = 2
          };
-    typedef Point<3, double>                                PointType;  /// always the point 3D
-    typedef std::vector<double>::iterator                   DistanceIteratorType;
+    typedef KRATOS_DOUBLE_TYPE                              DataType;
+    typedef Point<3, DataType>                              PointType;  /// always the point 3D
+    typedef std::vector<DataType>::iterator                 DistanceIteratorType;
     typedef ModelPart::ElementsContainerType::ContainerType ContainerType;
     typedef ContainerType::value_type                       PointerType;
     typedef ContainerType::iterator                         IteratorType;

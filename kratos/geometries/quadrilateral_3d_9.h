@@ -65,10 +65,9 @@ public:
     typedef TPointType PointType;
 
     /**
-     * Array of coordinates. Can be Nodes, Points or IntegrationPoints
+     * Type used for double value.
      */
-    typedef typename BaseType::CoordinatesArrayType CoordinatesArrayType;
-
+    typedef typename BaseType::DataType DataType;
 
     /**
      * Type used for indexing in geometry class.
@@ -121,16 +120,16 @@ public:
     ShapeFunctionsValuesContainerType;
 
     /**
-             * A fourth order tensor used as shape functions' local
-             * gradients container in geometry.
+     * A fourth order tensor used as shape functions' local
+     * gradients container in geometry.
      */
     typedef typename BaseType::ShapeFunctionsLocalGradientsContainerType
     ShapeFunctionsLocalGradientsContainerType;
 
     /**
-             * A third order tensor to hold jacobian matrices evaluated at
-             * integration points. Jacobian and InverseOfJacobian functions
-             * return this type as their result.
+     * A third order tensor to hold jacobian matrices evaluated at
+     * integration points. Jacobian and InverseOfJacobian functions
+     * return this type as their result.
      */
     typedef typename BaseType::JacobiansType JacobiansType;
 
@@ -155,15 +154,19 @@ public:
     */
     typedef typename BaseType::ShapeFunctionsThirdDerivativesType ShapeFunctionsThirdDerivativesType;
 
-
     /**
-             * Type of the normal vector used for normal to edges in geomety.
+     * Type of the normal vector used for normal to edges in geomety.
      */
     typedef typename BaseType::NormalType NormalType;
 
     /**
-              * Life Cycle
-                          */
+     * Array of coordinates. Can be Nodes, Points or IntegrationPoints
+     */
+    typedef typename BaseType::CoordinatesArrayType CoordinatesArrayType;
+
+    /**
+     * Life Cycle
+     */
 
     Quadrilateral3D9( const PointType& Point1, const PointType& Point2,
                       const PointType& Point3, const PointType& Point4,
@@ -357,13 +360,13 @@ public:
      * and for the other geometries it gives Characteristic length
      * otherwise.
      *
-     * @return double value contains length or Characteristic
+     * @return DataType value contains length or Characteristic
      * length
      * @see Area()
      * @see Volume()
      * @see DomainSize()
      */
-    double Length() const override
+    DataType Length() const override
     {
         return std::sqrt( Area() );
     }
@@ -377,22 +380,22 @@ public:
      * this geometry depending to it's dimension. For one dimensional
      * geometry it returns zero, for two dimensional it gives area
      * and for three dimensional geometries it gives surface area.
-     * @return double value contains area or surface
+     * @return DataType value contains area or surface
      * area.
      * @see Length()
      * @see Volume()
      * @see DomainSize()
      */
-    double Area() const override
+    DataType Area() const override
     {
         JacobiansType J;
         this->Jacobian( J, msGeometryData.DefaultIntegrationMethod() );
         const IntegrationPointsArrayType& integration_points = this->IntegrationPoints( msGeometryData.DefaultIntegrationMethod() );
 
-        double Area = 0.0;
+        DataType Area = 0.0;
         for ( unsigned int i = 0; i < integration_points.size(); i++ )
         {
-            double dA = std::sqrt(MathUtils<double>::Det(Matrix(prod(trans(J[i]), J[i]))));
+            DataType dA = std::sqrt(MathUtils<DataType>::Det(Matrix(prod(trans(J[i]), J[i]))));
             Area += dA * integration_points[i].Weight();
         }
 
@@ -400,7 +403,7 @@ public:
     }
 
 
-    double Volume() const override
+    DataType Volume() const override
     {
         return Area();
     }
@@ -417,12 +420,12 @@ public:
      * geometry it returns its length, for two dimensional it gives area
      * and for three dimensional geometries it gives its volume.
      *
-     * @return double value contains length, area or volume.
+     * @return DataType value contains length, area or volume.
      * @see Length()
      * @see Area()
      * @see Volume()
      */
-    double DomainSize() const override
+    DataType DomainSize() const override
     {
         return Area();
     }
@@ -442,12 +445,12 @@ public:
     CoordinatesArrayType& PointLocalCoordinates( CoordinatesArrayType& rResult, const CoordinatesArrayType& rPoint,
             bool force_error = true ) const override
     {
-        double tol = 1.0e-8;
+        DataType tol = 1.0e-8;
         int maxiter = 1000;
         //check orientation of surface
         std::vector< unsigned int> orientation( 3 );
 
-        double dummy = this->GetPoint( 0 ).X();
+        DataType dummy = this->GetPoint( 0 ).X();
 
         if ( fabs( this->GetPoint( 1 ).X() - dummy ) <= tol && fabs( this->GetPoint( 2 ).X() - dummy ) <= tol && fabs( this->GetPoint( 3 ).X() - dummy ) <= tol )
             orientation[0] = 0;
@@ -526,7 +529,7 @@ public:
             }
 
             //deteminant of Jacobian
-            double det_j = J( 0, 0 ) * J( 1, 1 ) - J( 0, 1 ) * J( 1, 0 );
+            DataType det_j = J( 0, 0 ) * J( 1, 1 ) - J( 0, 1 ) * J( 1, 0 );
 
             //filling matrix
             invJ( 0, 0 ) = ( J( 1, 1 ) ) / ( det_j );
@@ -543,14 +546,14 @@ public:
 
             noalias( rResult ) += DeltaXi;
 
-            if ( MathUtils<double>::Norm3( DeltaXi ) > 30 )
+            if ( MathUtils<DataType>::Norm3( DeltaXi ) > 30 )
             {
                 if (force_error)
                     KRATOS_THROW_ERROR(std::logic_error,"computation of local coordinates failed at iteration ", k)
                 break;
             }
 
-            if ( MathUtils<double>::Norm3( DeltaXi ) < tol )
+            if ( MathUtils<DataType>::Norm3( DeltaXi ) < tol )
             {
                 if ( !( fabs( CurrentGlobalCoords( orientation[2] ) ) <= tol ) )
                     rResult( 0 ) = 2.0;
@@ -566,12 +569,12 @@ public:
     CoordinatesArrayType& PointLocalCoordinates( CoordinatesArrayType& rResult, const CoordinatesArrayType& rPoint, const Matrix& DeltaPosition,
         bool force_error = true ) const override
     {
-        double tol = 1.0e-8;
+        DataType tol = 1.0e-8;
         int maxiter = 1000;
         //check orientation of surface
         std::vector< unsigned int> orientation( 3 );
 
-        double dummy = this->GetPoint( 0 ).X() - DeltaPosition( 0, 0 );
+        DataType dummy = this->GetPoint( 0 ).X() - DeltaPosition( 0, 0 );
 
         if ( fabs( this->GetPoint( 1 ).X() - DeltaPosition( 1, 0 ) - dummy ) <= tol
           && fabs( this->GetPoint( 2 ).X() - DeltaPosition( 2, 0 ) - dummy ) <= tol
@@ -656,7 +659,7 @@ public:
             }
 
             //deteminant of Jacobian
-            double det_j = J( 0, 0 ) * J( 1, 1 ) - J( 0, 1 ) * J( 1, 0 );
+            DataType det_j = J( 0, 0 ) * J( 1, 1 ) - J( 0, 1 ) * J( 1, 0 );
 
             //filling matrix
             invJ( 0, 0 ) = ( J( 1, 1 ) ) / ( det_j );
@@ -673,14 +676,14 @@ public:
 
             noalias( rResult ) += DeltaXi;
 
-            if ( MathUtils<double>::Norm3( DeltaXi ) > 30 )
+            if ( MathUtils<DataType>::Norm3( DeltaXi ) > 30 )
             {
                 if (force_error)
                     KRATOS_THROW_ERROR(std::logic_error,"computation of local coordinates failed at iteration ", k)
                 break;
             }
 
-            if ( MathUtils<double>::Norm3( DeltaXi ) < tol )
+            if ( MathUtils<DataType>::Norm3( DeltaXi ) < tol )
             {
                 if ( !( fabs( CurrentGlobalCoords( orientation[2] ) ) <= tol ) )
                     rResult( 0 ) = 2.0;
@@ -830,7 +833,7 @@ public:
      * @param ThisMethod integration method which jacobians has to
      * be calculated in its integration points.
      *
-     * @return Matrix(double) Jacobian matrix \f$ J_i \f$ where \f$
+     * @return Matrix(DataType) Jacobian matrix \f$ J_i \f$ where \f$
      * i \f$ is the given integration point index of given
      * integration method.
      *
@@ -849,8 +852,8 @@ public:
             CalculateShapeFunctionsIntegrationPointsLocalGradients( ThisMethod );
         Matrix ShapeFunctionsGradientInIntegrationPoint = shape_functions_gradients( IntegrationPointIndex );
         //values of shape functions in integration points
-        boost::numeric::ublas::vector<double> ShapeFunctionValuesInIntegrationPoint = ZeroVector( 9 );
-        /*vector<double>*/
+        boost::numeric::ublas::vector<DataType> ShapeFunctionValuesInIntegrationPoint = ZeroVector( 9 );
+        /*vector<DataType>*/
         ShapeFunctionValuesInIntegrationPoint = row(
                 CalculateShapeFunctionsIntegrationPointsValues( ThisMethod ), IntegrationPointIndex );
 
@@ -879,7 +882,7 @@ public:
       *
       * @param rPoint point which jacobians has to
       * be calculated in it.
-      * @return Matrix of double which is jacobian matrix \f$ J \f$ in given point.
+      * @return Matrix of DataType which is jacobian matrix \f$ J \f$ in given point.
       *
       * @see DeterminantOfJacobian
       * @see InverseOfJacobian
@@ -917,7 +920,7 @@ public:
      * method calculate determinant of jacobian in all
      * integrations points of given integration method.
      *
-     * @return Vector of double which is vector of determinants of
+     * @return Vector of DataType which is vector of determinants of
      * jacobians \f$ |J|_i \f$ where \f$ i=1,2,...,n \f$ is the
      * integration point index of given integration method.
      *
@@ -953,7 +956,7 @@ public:
      * @see InverseOfJacobian
      * KLUDGE: works only with explicitly generated Matrix object
      */
-    double DeterminantOfJacobian( IndexType IntegrationPointIndex,
+    DataType DeterminantOfJacobian( IndexType IntegrationPointIndex,
                                   IntegrationMethod ThisMethod ) const override
     {
         KRATOS_THROW_ERROR( std::logic_error, "Quadrilateral3D9::DeterminantOfJacobian", "Jacobian is not square" );
@@ -981,7 +984,7 @@ public:
      * KLUDGE: PointType needed for proper functionality
      * KLUDGE: works only with explicitly generated Matrix object
      */
-    double DeterminantOfJacobian( const CoordinatesArrayType& rPoint ) const override
+    DataType DeterminantOfJacobian( const CoordinatesArrayType& rPoint ) const override
     {
         KRATOS_THROW_ERROR( std::logic_error, "Quadrilateral3D9::DeterminantOfJacobian", "Jacobian is not square" );
         return 0.0;
@@ -1121,15 +1124,15 @@ public:
      *
      * @return the value of the shape function at the given point
      */
-    double ShapeFunctionValue( IndexType ShapeFunctionIndex,
+    DataType ShapeFunctionValue( IndexType ShapeFunctionIndex,
                                        const CoordinatesArrayType& rPoint ) const override
     {
-        double fx1 = 0.5 * ( rPoint[0] - 1 ) * rPoint[0];
-        double fx2 = 0.5 * ( rPoint[0] + 1 ) * rPoint[0];
-        double fx3 = 1 - rPoint[0] * rPoint[0];
-        double fy1 = 0.5 * ( rPoint[1] - 1 ) * rPoint[1];
-        double fy2 = 0.5 * ( rPoint[1] + 1 ) * rPoint[1];
-        double fy3 = 1 - rPoint[1] * rPoint[1];
+        DataType fx1 = 0.5 * ( rPoint[0] - 1 ) * rPoint[0];
+        DataType fx2 = 0.5 * ( rPoint[0] + 1 ) * rPoint[0];
+        DataType fx3 = 1 - rPoint[0] * rPoint[0];
+        DataType fy1 = 0.5 * ( rPoint[1] - 1 ) * rPoint[1];
+        DataType fy2 = 0.5 * ( rPoint[1] + 1 ) * rPoint[1];
+        DataType fy3 = 1 - rPoint[1] * rPoint[1];
 
         switch ( ShapeFunctionIndex )
         {
@@ -1325,19 +1328,19 @@ public:
      */
     Matrix& ShapeFunctionsLocalGradients( Matrix& rResult, const CoordinatesArrayType& rPoint ) const override
     {
-        double fx1 = 0.5 * ( rPoint[0] - 1 ) * rPoint[0];
-        double fx2 = 0.5 * ( rPoint[0] + 1 ) * rPoint[0];
-        double fx3 = 1 - rPoint[0] * rPoint[0];
-        double fy1 = 0.5 * ( rPoint[1] - 1 ) * rPoint[1];
-        double fy2 = 0.5 * ( rPoint[1] + 1 ) * rPoint[1];
-        double fy3 = 1 - rPoint[1] * rPoint[1];
+        DataType fx1 = 0.5 * ( rPoint[0] - 1 ) * rPoint[0];
+        DataType fx2 = 0.5 * ( rPoint[0] + 1 ) * rPoint[0];
+        DataType fx3 = 1 - rPoint[0] * rPoint[0];
+        DataType fy1 = 0.5 * ( rPoint[1] - 1 ) * rPoint[1];
+        DataType fy2 = 0.5 * ( rPoint[1] + 1 ) * rPoint[1];
+        DataType fy3 = 1 - rPoint[1] * rPoint[1];
 
-        double gx1 = 0.5 * ( 2 * rPoint[0] - 1 );
-        double gx2 = 0.5 * ( 2 * rPoint[0] + 1 );
-        double gx3 = -2.0 * rPoint[0];
-        double gy1 = 0.5 * ( 2 * rPoint[1] - 1 );
-        double gy2 = 0.5 * ( 2 * rPoint[1] + 1 );
-        double gy3 = -2.0 * rPoint[1];
+        DataType gx1 = 0.5 * ( 2 * rPoint[0] - 1 );
+        DataType gx2 = 0.5 * ( 2 * rPoint[0] + 1 );
+        DataType gx3 = -2.0 * rPoint[0];
+        DataType gy1 = 0.5 * ( 2 * rPoint[1] - 1 );
+        DataType gy2 = 0.5 * ( 2 * rPoint[1] + 1 );
+        DataType gy3 = -2.0 * rPoint[1];
 
         rResult.resize( 9, 2, false );
         noalias( rResult ) = ZeroMatrix( 9, 2 );
@@ -1403,19 +1406,19 @@ public:
      */
     // Matrix& ShapeFunctionsGradients( Matrix& rResult, PointType& rPoint ) override
     // {
-    //     double fx1 = 0.5 * ( rPoint.X() - 1 ) * rPoint.X();
-    //     double fx2 = 0.5 * ( rPoint.X() + 1 ) * rPoint.X();
-    //     double fx3 = 1 - rPoint.X() * rPoint.X();
-    //     double fy1 = 0.5 * ( rPoint.Y() - 1 ) * rPoint.Y();
-    //     double fy2 = 0.5 * ( rPoint.Y() + 1 ) * rPoint.Y();
-    //     double fy3 = 1 - rPoint.Y() * rPoint.Y();
+    //     DataType fx1 = 0.5 * ( rPoint.X() - 1 ) * rPoint.X();
+    //     DataType fx2 = 0.5 * ( rPoint.X() + 1 ) * rPoint.X();
+    //     DataType fx3 = 1 - rPoint.X() * rPoint.X();
+    //     DataType fy1 = 0.5 * ( rPoint.Y() - 1 ) * rPoint.Y();
+    //     DataType fy2 = 0.5 * ( rPoint.Y() + 1 ) * rPoint.Y();
+    //     DataType fy3 = 1 - rPoint.Y() * rPoint.Y();
 
-    //     double gx1 = 0.5 * ( 2 * rPoint.X() - 1 );
-    //     double gx2 = 0.5 * ( 2 * rPoint.X() + 1 );
-    //     double gx3 = -2.0 * rPoint.X();
-    //     double gy1 = 0.5 * ( 2 * rPoint.Y() - 1 );
-    //     double gy2 = 0.5 * ( 2 * rPoint.Y() + 1 );
-    //     double gy3 = -2.0 * rPoint.Y();
+    //     DataType gx1 = 0.5 * ( 2 * rPoint.X() - 1 );
+    //     DataType gx2 = 0.5 * ( 2 * rPoint.X() + 1 );
+    //     DataType gx3 = -2.0 * rPoint.X();
+    //     DataType gy1 = 0.5 * ( 2 * rPoint.Y() - 1 );
+    //     DataType gy2 = 0.5 * ( 2 * rPoint.Y() + 1 );
+    //     DataType gy3 = -2.0 * rPoint.Y();
 
     //     rResult.resize( 9, 2, false );
     //     noalias( rResult ) = ZeroMatrix( 9, 2 );
@@ -1463,26 +1466,26 @@ public:
             noalias( rResult[i] ) = ZeroMatrix( 2, 2 );
         }
 
-        double fx1 = 0.5 * ( rPoint[0] - 1 ) * rPoint[0];
-        double fx2 = 0.5 * ( rPoint[0] + 1 ) * rPoint[0];
-        double fx3 = 1 - rPoint[0] * rPoint[0];
-        double fy1 = 0.5 * ( rPoint[1] - 1 ) * rPoint[1];
-        double fy2 = 0.5 * ( rPoint[1] + 1 ) * rPoint[1];
-        double fy3 = 1 - rPoint[1] * rPoint[1];
+        DataType fx1 = 0.5 * ( rPoint[0] - 1 ) * rPoint[0];
+        DataType fx2 = 0.5 * ( rPoint[0] + 1 ) * rPoint[0];
+        DataType fx3 = 1 - rPoint[0] * rPoint[0];
+        DataType fy1 = 0.5 * ( rPoint[1] - 1 ) * rPoint[1];
+        DataType fy2 = 0.5 * ( rPoint[1] + 1 ) * rPoint[1];
+        DataType fy3 = 1 - rPoint[1] * rPoint[1];
 
-        double gx1 = 0.5 * ( 2 * rPoint[0] - 1 );
-        double gx2 = 0.5 * ( 2 * rPoint[0] + 1 );
-        double gx3 = -2.0 * rPoint[0];
-        double gy1 = 0.5 * ( 2 * rPoint[1] - 1 );
-        double gy2 = 0.5 * ( 2 * rPoint[1] + 1 );
-        double gy3 = -2.0 * rPoint[1];
+        DataType gx1 = 0.5 * ( 2 * rPoint[0] - 1 );
+        DataType gx2 = 0.5 * ( 2 * rPoint[0] + 1 );
+        DataType gx3 = -2.0 * rPoint[0];
+        DataType gy1 = 0.5 * ( 2 * rPoint[1] - 1 );
+        DataType gy2 = 0.5 * ( 2 * rPoint[1] + 1 );
+        DataType gy3 = -2.0 * rPoint[1];
 
-        double hx1 = 1.0;
-        double hx2 = 1.0;
-        double hx3 = -2.0;
-        double hy1 = 1.0;
-        double hy2 = 1.0;
-        double hy3 = -2.0;
+        DataType hx1 = 1.0;
+        DataType hx2 = 1.0;
+        DataType hx3 = -2.0;
+        DataType hy1 = 1.0;
+        DataType hy2 = 1.0;
+        DataType hy3 = -2.0;
 
         rResult[0]( 0, 0 ) = hx1 * fy1;
         rResult[0]( 0, 1 ) = gx1 * gy1;
@@ -1567,36 +1570,36 @@ public:
             }
         }
 
-//                 double fx1 = 0.5*(rPoint[0]-1)*rPoint[0];
-//                 double fx2 = 0.5*(rPoint[0]+1)*rPoint[0];
-//                 double fx3 = 1-rPoint[0]*rPoint[0];
-//                 double fy1 = 0.5*(rPoint[1]-1)*rPoint[1];
-//                 double fy2 = 0.5*(rPoint[1]+1)*rPoint[1];
-//                 double fy3 = 1-rPoint[1]*rPoint[1];
+//                 DataType fx1 = 0.5*(rPoint[0]-1)*rPoint[0];
+//                 DataType fx2 = 0.5*(rPoint[0]+1)*rPoint[0];
+//                 DataType fx3 = 1-rPoint[0]*rPoint[0];
+//                 DataType fy1 = 0.5*(rPoint[1]-1)*rPoint[1];
+//                 DataType fy2 = 0.5*(rPoint[1]+1)*rPoint[1];
+//                 DataType fy3 = 1-rPoint[1]*rPoint[1];
 
-        double gx1 = 0.5 * ( 2 * rPoint[0] - 1 );
+        DataType gx1 = 0.5 * ( 2 * rPoint[0] - 1 );
 
-        double gx2 = 0.5 * ( 2 * rPoint[0] + 1 );
+        DataType gx2 = 0.5 * ( 2 * rPoint[0] + 1 );
 
-        double gx3 = -2.0 * rPoint[0];
+        DataType gx3 = -2.0 * rPoint[0];
 
-        double gy1 = 0.5 * ( 2 * rPoint[1] - 1 );
+        DataType gy1 = 0.5 * ( 2 * rPoint[1] - 1 );
 
-        double gy2 = 0.5 * ( 2 * rPoint[1] + 1 );
+        DataType gy2 = 0.5 * ( 2 * rPoint[1] + 1 );
 
-        double gy3 = -2.0 * rPoint[1];
+        DataType gy3 = -2.0 * rPoint[1];
 
-        double hx1 = 1.0;
+        DataType hx1 = 1.0;
 
-        double hx2 = 1.0;
+        DataType hx2 = 1.0;
 
-        double hx3 = -2.0;
+        DataType hx3 = -2.0;
 
-        double hy1 = 1.0;
+        DataType hy1 = 1.0;
 
-        double hy2 = 1.0;
+        DataType hy2 = 1.0;
 
-        double hy3 = -2.0;
+        DataType hy3 = -2.0;
 
         rResult[0][0]( 0, 0 ) = 0.0;
 
@@ -1814,12 +1817,12 @@ private:
 
         for ( int pnt = 0; pnt < integration_points_number; pnt++ )
         {
-            double fx1 = 0.5 * ( integration_points[pnt].X() - 1 ) * integration_points[pnt].X();
-            double fx2 = 0.5 * ( integration_points[pnt].X() + 1 ) * integration_points[pnt].X();
-            double fx3 = 1 - integration_points[pnt].X() * integration_points[pnt].X();
-            double fy1 = 0.5 * ( integration_points[pnt].Y() - 1 ) * integration_points[pnt].Y();
-            double fy2 = 0.5 * ( integration_points[pnt].Y() + 1 ) * integration_points[pnt].Y();
-            double fy3 = 1 - integration_points[pnt].Y() * integration_points[pnt].Y();
+            DataType fx1 = 0.5 * ( integration_points[pnt].X() - 1 ) * integration_points[pnt].X();
+            DataType fx2 = 0.5 * ( integration_points[pnt].X() + 1 ) * integration_points[pnt].X();
+            DataType fx3 = 1 - integration_points[pnt].X() * integration_points[pnt].X();
+            DataType fy1 = 0.5 * ( integration_points[pnt].Y() - 1 ) * integration_points[pnt].Y();
+            DataType fy2 = 0.5 * ( integration_points[pnt].Y() + 1 ) * integration_points[pnt].Y();
+            DataType fy3 = 1 - integration_points[pnt].Y() * integration_points[pnt].Y();
 
             shape_function_values( pnt, 0 ) = ( fx1 * fy1 );
             shape_function_values( pnt, 1 ) = ( fx2 * fy1 );
@@ -1861,19 +1864,19 @@ private:
 
         for ( int pnt = 0; pnt < integration_points_number; pnt++ )
         {
-            double fx1 = 0.5 * ( integration_points[pnt].X() - 1 ) * integration_points[pnt].X();
-            double fx2 = 0.5 * ( integration_points[pnt].X() + 1 ) * integration_points[pnt].X();
-            double fx3 = 1 - integration_points[pnt].X() * integration_points[pnt].X();
-            double fy1 = 0.5 * ( integration_points[pnt].Y() - 1 ) * integration_points[pnt].Y();
-            double fy2 = 0.5 * ( integration_points[pnt].Y() + 1 ) * integration_points[pnt].Y();
-            double fy3 = 1 - integration_points[pnt].Y() * integration_points[pnt].Y();
+            DataType fx1 = 0.5 * ( integration_points[pnt].X() - 1 ) * integration_points[pnt].X();
+            DataType fx2 = 0.5 * ( integration_points[pnt].X() + 1 ) * integration_points[pnt].X();
+            DataType fx3 = 1 - integration_points[pnt].X() * integration_points[pnt].X();
+            DataType fy1 = 0.5 * ( integration_points[pnt].Y() - 1 ) * integration_points[pnt].Y();
+            DataType fy2 = 0.5 * ( integration_points[pnt].Y() + 1 ) * integration_points[pnt].Y();
+            DataType fy3 = 1 - integration_points[pnt].Y() * integration_points[pnt].Y();
 
-            double gx1 = 0.5 * ( 2 * integration_points[pnt].X() - 1 );
-            double gx2 = 0.5 * ( 2 * integration_points[pnt].X() + 1 );
-            double gx3 = -2.0 * integration_points[pnt].X();
-            double gy1 = 0.5 * ( 2 * integration_points[pnt].Y() - 1 );
-            double gy2 = 0.5 * ( 2 * integration_points[pnt].Y() + 1 );
-            double gy3 = -2.0 * integration_points[pnt].Y();
+            DataType gx1 = 0.5 * ( 2 * integration_points[pnt].X() - 1 );
+            DataType gx2 = 0.5 * ( 2 * integration_points[pnt].X() + 1 );
+            DataType gx3 = -2.0 * integration_points[pnt].X();
+            DataType gy1 = 0.5 * ( 2 * integration_points[pnt].Y() - 1 );
+            DataType gy2 = 0.5 * ( 2 * integration_points[pnt].Y() + 1 );
+            DataType gy3 = -2.0 * integration_points[pnt].Y();
 
             Matrix result( 9, 2 );
             result( 0, 0 ) = gx1 * fy1;

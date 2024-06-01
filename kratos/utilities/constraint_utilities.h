@@ -50,6 +50,8 @@ namespace Kratos
 class ConstraintUtilities
 {
 public:
+    typedef KRATOS_DOUBLE_TYPE DataType;
+
     /**
      * @brief This method resets the values of the slave dofs
      * @param rModelPart The model of the problem to solve

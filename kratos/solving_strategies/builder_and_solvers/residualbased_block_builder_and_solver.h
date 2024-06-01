@@ -599,7 +599,7 @@ public:
     {
         KRATOS_TRY
 
-        double norm_b;
+        TDataType norm_b;
         if (TSparseSpace::Size(b) != 0)
             norm_b = TSparseSpace::TwoNorm(b);
         else
@@ -638,7 +638,7 @@ public:
     {
         KRATOS_TRY
 
-        double norm_b;
+        TDataType norm_b;
         if (TSparseSpace::Size(b) != 0)
             norm_b = TSparseSpace::TwoNorm(b);
         else
@@ -691,6 +691,7 @@ public:
 
         Build(pScheme, r_model_part, A, b);
 
+        // KRATOS_WATCH(A)
 
         Timer::Stop("Build");
 
@@ -1020,7 +1021,7 @@ public:
         TSystemVectorType& b)
     {
         std::size_t system_size = A.size1();
-        std::vector<double> scaling_factors (system_size, 0.0f);
+        std::vector<TDataType> scaling_factors (system_size, 0.0f);
 //!!!POTENTIAL BUGS: it only works if the dofs are numberred consecutively
         for (typename DofsArrayType::iterator dof_iterator = BaseType::mDofSet.begin(); dof_iterator != BaseType::mDofSet.end(); ++dof_iterator)
         {
@@ -1034,9 +1035,9 @@ public:
             }
         }
 
-        double* Avalues = A.value_data().begin();
-        std::size_t* Arow_indices = A.index1_data().begin();
-        std::size_t* Acol_indices = A.index2_data().begin();
+        auto* Avalues = A.value_data().begin();
+        auto* Arow_indices = A.index1_data().begin();
+        auto* Acol_indices = A.index2_data().begin();
 
         //detect if there is a line of all zeros and set the diagonal to a 1 if this happens
 //        #pragma omp parallel for
@@ -1066,7 +1067,7 @@ public:
         // and compute the sum of diagonal according to each type of dofs
         std::size_t key, row;
         std::map<std::size_t, std::size_t> dof_numbers;
-        std::map<std::size_t, double> diag_values;
+        std::map<std::size_t, TDataType> diag_values;
         for (typename DofsArrayType::iterator dof_iterator = BaseType::mDofSet.begin(); dof_iterator != BaseType::mDofSet.end(); ++dof_iterator)
         {
             key = dof_iterator->GetVariable().Key();
@@ -1083,7 +1084,7 @@ public:
             }
         }
 
-        for (std::map<std::size_t, double>::iterator it = diag_values.begin(); it != diag_values.end(); ++it)
+        for (auto it = diag_values.begin(); it != diag_values.end(); ++it)
             it->second /= dof_numbers[it->first];
 
         // iterate through all dofs and set the respective diagonal
@@ -1128,7 +1129,7 @@ public:
         {
             std::size_t col_begin = Arow_indices[k];
             std::size_t col_end = Arow_indices[k+1];
-            double k_factor = scaling_factors[k];
+            const auto k_factor = scaling_factors[k];
             if (k_factor == 0)
             {
                 // zero out the whole row, except the diagonal
@@ -1597,9 +1598,9 @@ private:
 #ifdef _OPENMP
     inline void AssembleRowContribution(TSystemMatrixType& A, const Matrix& Alocal, const unsigned int i, const unsigned int i_local, Element::EquationIdVectorType& EquationId) const
     {
-        double* values_vector = A.value_data().begin();
-        std::size_t* index1_vector = A.index1_data().begin();
-        std::size_t* index2_vector = A.index2_data().begin();
+        auto* values_vector = A.value_data().begin();
+        auto* index1_vector = A.index1_data().begin();
+        auto* index2_vector = A.index2_data().begin();
 
         size_t left_limit = index1_vector[i];
 //  size_t right_limit = index1_vector[i+1];

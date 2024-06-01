@@ -47,13 +47,15 @@ public:
 
     typedef std::size_t IndexType;
 
+    typedef typename TSparseSpaceType::DataType DataType;
+
 
     int     size;
     int*    rowIndex;
     int*    perm;
-    double* entriesL;
-    double* entriesD;
-    double* entriesU;
+    DataType* entriesL;
+    DataType* entriesD;
+    DataType* entriesU;
 
     void clear()
     {
@@ -77,7 +79,7 @@ public:
     void copyFromCSRMatrix( SparseMatrixType& A)
     {
         int i, j, newi, newj, indexj, ordering, *invperm;
-        double entry;
+        DataType entry;
 
         // First of all, if there was another factorization stored in this object, erase it
         clear();
@@ -280,7 +282,7 @@ public:
         }
 //                 for (i=0; i<size; i++)
 //                 {
-//                     for (CSRMatrix<double>::RowIteratorType row_iterator =A[i].begin() ;
+//                     for (CSRMatrix<DataType>::RowIteratorType row_iterator =A[i].begin() ;
 //                         row_iterator != A[i].end() ; ++row_iterator)
 //                     { // Changed by Pooyan!!!
 //                         j= row_iterator->first; // Changed by Pooyan!!!
@@ -314,9 +316,9 @@ public:
         }
 
         // Allocate variables for skyline format entries
-        entriesL= new double[rowIndex[size]];
-        entriesD= new double[         size ];
-        entriesU= new double[rowIndex[size]];
+        entriesL= new DataType[rowIndex[size]];
+        entriesD= new DataType[         size ];
+        entriesU= new DataType[rowIndex[size]];
         for (i=0; i<rowIndex[size]; i++)
         {
             entriesL[i]=0.0;
@@ -366,7 +368,7 @@ public:
 
 //                 for (i=0; i<size; i++)
 //                 {
-//                     for (CSRMatrix<double>::RowIteratorType row_iterator =A[i].begin() ;
+//                     for (CSRMatrix<DataType>::RowIteratorType row_iterator =A[i].begin() ;
 //                     row_iterator != A[i].end() ; ++row_iterator)
 //                     { // Changed by Pooyan!!!
 //                         j= row_iterator->first; // Changed by Pooyan!!!
@@ -415,7 +417,7 @@ public:
         int i, j, k;
         int indexEntry, indexL, indexU;
         int jBeginRow, jBeginCol, jBeginMult, iBeginCol;
-        double sum;
+        DataType sum;
 
 
         if(entriesD[0] == 0.00)
@@ -501,20 +503,20 @@ public:
     //***************************************************************************************************
     //*
     //***************************************************************************************************
-    /* bugfix janosch void backForwardSolve(int vector_size, Vector<double>& b, Vector<double>& x) // n, b, x*/
+    /* bugfix janosch void backForwardSolve(int vector_size, Vector<DataType>& b, Vector<DataType>& x) // n, b, x*/
     void backForwardSolve(int vector_size, const VectorType& b, VectorType& x) const // n, b, x
     {
         // y = L^-1 * perm[b] ;
         // y = U^-1 * y ;
         // x = invperm[y];
         int i, j, indexL, indexU;
-        double sum, *y;
+        DataType sum, *y;
         if (this->size != vector_size)
         {
             throw std::runtime_error("matrix and vector have different sizes at LUSkylineFactorization::backForwardSolve");
         }
 
-        y= new double[size];
+        y= new DataType[size];
         for (i=0; i<size; i++)
         {
             j= i-rowIndex[i+1]+rowIndex[i];
@@ -679,7 +681,7 @@ private:
     /*        void CopyFromCSRMatrix(SparseMatrixType A)
             {
                 int i, j, indexj;
-                double entry;
+                DataType entry;
 
                 // First of all, if there was another factorization stored in this object, erase it
                 this->clear();
@@ -725,9 +727,9 @@ private:
                 }
 
                 // Allocate variables for skyline format entries
-                double* entriesL= new double[rowIndex[size]];
-                double* entriesD= new double[         size ];
-                double* entriesU= new double[rowIndex[size]];
+                DataType* entriesL= new DataType[rowIndex[size]];
+                DataType* entriesD= new DataType[         size ];
+                DataType* entriesU= new DataType[rowIndex[size]];
                 for (i=0; i<rowIndex[size]; i++)
                 {
                     entriesL[i]=0.0;

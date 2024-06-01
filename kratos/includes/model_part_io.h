@@ -1,11 +1,11 @@
-//    |  /           | 
-//    ' /   __| _` | __|  _ \   __| 
+//    |  /           |
+//    ' /   __| _` | __|  _ \   __|
 //    . \  |   (   | |   (   |\__ \.
-//   _|\_\_|  \__,_|\__|\___/ ____/ 
-//                   Multi-Physics  
+//   _|\_\_|  \__,_|\__|\___/ ____/
+//                   Multi-Physics
 //
-//  License:		 BSD License 
-//					 Kratos default license: kratos/license.txt
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Pooyan Dadvand
 //
@@ -97,17 +97,19 @@ public:
 
     typedef std::size_t SizeType;
 
+    typedef ModelPart::DataType DataType;
+
     ///@}
     ///@name Life Cycle
     ///@{
 
     /// Constructor with  filenames.
-	ModelPartIO(std::string const& Filename, const Flags Options = IO::READ|IO::NOT_IGNORE_VARIABLES_ERROR);
+    ModelPartIO(std::string const& Filename, const Flags Options = IO::READ|IO::NOT_IGNORE_VARIABLES_ERROR);
 
 
     /// Constructor with filenames.
 //       ModelPartIO(std::string const& InputFilename, std::string const& OutputFilename)
-// 	: mNumberOfLines(0), mInput(std::ifstream(InputFilename.c_str())), mOutput(std::ofstream(OutputFilename.c_str()))
+//  : mNumberOfLines(0), mInput(std::ifstream(InputFilename.c_str())), mOutput(std::ofstream(OutputFilename.c_str()))
 //       {
 //       }
 
@@ -157,7 +159,7 @@ public:
 
     virtual void ReadConditionalScalarVariableData(std::string variable_name, std::vector<SizeType>& rConditionIndices, std::vector<int>& rConditionalDataValues);
 
-    virtual void ReadConditionalScalarVariableData(std::string variable_name, std::vector<SizeType>& rConditionIndices, std::vector<double>& rConditionalDataValues);
+    virtual void ReadConditionalScalarVariableData(std::string variable_name, std::vector<SizeType>& rConditionIndices, std::vector<DataType>& rConditionalDataValues);
 
 //       void ReadGeometries(NodesContainerType& rThisNodes, GeometriesContainerType& rResults);
 
@@ -166,8 +168,6 @@ public:
     virtual void WriteMesh(MeshType & rThisMesh);
 
     virtual void ReadModelPart(ModelPart & rThisModelPart);
-
-
 
     virtual void WriteModelPart(ModelPart & rThisModelPart);
 
@@ -195,7 +195,6 @@ public:
                                          PartitionIndicesContainerType const& NodesAllPartitions,
                                          PartitionIndicesContainerType const& ElementsAllPartitions,
                                          PartitionIndicesContainerType const& ConditionsAllPartitions);
-
 
     ///@}
     ///@name Access
@@ -256,9 +255,9 @@ protected:
     ///@name Protected Operations
     ///@{
 
-	virtual ModelPartIO::SizeType ReorderedNodeId(ModelPartIO::SizeType NodeId);
-	virtual ModelPartIO::SizeType ReorderedElementId(ModelPartIO::SizeType ElementId);
-	virtual ModelPartIO::SizeType ReorderedConditionId(ModelPartIO::SizeType ConditionId);
+    virtual ModelPartIO::SizeType ReorderedNodeId(ModelPartIO::SizeType NodeId);
+    virtual ModelPartIO::SizeType ReorderedElementId(ModelPartIO::SizeType ElementId);
+    virtual ModelPartIO::SizeType ReorderedConditionId(ModelPartIO::SizeType ConditionId);
 
     ///@}
     ///@name Protected  Access
@@ -311,7 +310,7 @@ protected:
 
     void ReadModelPartDataBlock(ModelPart& rModelPart);
 
-	template<class TablesContainerType>
+    template<class TablesContainerType>
     void ReadTableBlock(TablesContainerType& rTables);
 
     void ReadTableBlock(ModelPart::TablesContainerType& rTables);
@@ -328,24 +327,19 @@ protected:
 
     void ReadElementsBlock(NodesContainerType& rThisNodes, PropertiesContainerType& rThisProperties, ElementsContainerType& rThisElements);
 
-
     void ReadConditionsBlock(ModelPart& rModelPart);
 
     void ReadConditionsBlock(NodesContainerType& rThisNodes, PropertiesContainerType& rThisProperties, ConditionsContainerType& rThisConditions);
-
 
     void ReadNodalDataBlock(ModelPart& rThisModelPart);
 
     template<class TVariableType>
     void ReadNodalDofVariableData(NodesContainerType& rThisNodes, TVariableType& rVariable);
 
-
     void ReadNodalFlags(NodesContainerType& rThisNodes, Flags const& rFlags);
 
     template<class TVariableType>
     void ReadNodalScalarVariableData(NodesContainerType& rThisNodes, TVariableType& rVariable);
-
-
 
     template<class TVariableType, class TDataType>
     void ReadNodalVectorialVariableData(NodesContainerType& rThisNodes, TVariableType& rVariable, TDataType Dummy);
@@ -355,14 +349,12 @@ protected:
     template<class TVariableType>
     void ReadElementalScalarVariableData(ElementsContainerType& rThisElements, TVariableType& rVariable);
 
-
     template<class TVariableType, class TDataType>
     void ReadElementalVectorialVariableData(ElementsContainerType& rThisElements, TVariableType& rVariable, TDataType Dummy);
     void ReadConditionalDataBlock(ConditionsContainerType& rThisConditions);
 
     template<class TVariableType>
     void ReadConditionalScalarVariableData(ConditionsContainerType& rThisConditions, TVariableType& rVariable);
-
 
     template<class TVariableType, class TDataType>
     void ReadConditionalVectorialVariableData(ConditionsContainerType& rThisConditions, TVariableType& rVariable, TDataType Dummy);
@@ -372,48 +364,43 @@ protected:
 
     SizeType ReadElementsConnectivitiesBlock(ConnectivitiesContainerType& rThisConnectivities);
 
-
     SizeType ReadConditionsConnectivitiesBlock(ConnectivitiesContainerType& rThisConnectivities);
 
     void FillNodalConnectivitiesFromElementBlock(ConnectivitiesContainerType& rNodalConnectivities);
 
     void FillNodalConnectivitiesFromConditionBlock(ConnectivitiesContainerType& rNodalConnectivities);
 
-
     void ReadCommunicatorDataBlock(Communicator& rThisCommunicator, NodesContainerType& rThisNodes);
 
     void ReadCommunicatorLocalNodesBlock(Communicator& rThisCommunicator, NodesContainerType& rThisNodes);
-
 
     void ReadCommunicatorGhostNodesBlock(Communicator& rThisCommunicator, NodesContainerType& rThisNodes);
 
     void ReadMeshBlock(ModelPart& rModelPart);
 
-	
     void ReadMeshDataBlock(MeshType& rMesh);
-
 
     void ReadMeshNodesBlock(ModelPart& rModelPart, MeshType& rMesh);
 
     void ReadMeshElementsBlock(ModelPart& rModelPart, MeshType& rMesh);
 
     void ReadMeshConditionsBlock(ModelPart& rModelPart, MeshType& rMesh);
-    
+
     void ReadMeshPropertiesBlock(ModelPart& rModelPart, MeshType& rMesh);
 
-	void ReadSubModelPartBlock(ModelPart& rMainModelPart, ModelPart& rParentModelPart);
+    void ReadSubModelPartBlock(ModelPart& rMainModelPart, ModelPart& rParentModelPart);
 
-	void ReadSubModelPartTablesBlock(ModelPart& rMainModelPart, ModelPart& rSubModelPart);
+    void ReadSubModelPartTablesBlock(ModelPart& rMainModelPart, ModelPart& rSubModelPart);
 
-	void ReadSubModelPartPropertiesBlock(ModelPart& rMainModelPart, ModelPart& rSubModelPart);
+    void ReadSubModelPartPropertiesBlock(ModelPart& rMainModelPart, ModelPart& rSubModelPart);
 
-	void ReadSubModelPartNodesBlock(ModelPart& rMainModelPart, ModelPart& rSubModelPart);
+    void ReadSubModelPartNodesBlock(ModelPart& rMainModelPart, ModelPart& rSubModelPart);
 
-	void ReadSubModelPartElementsBlock(ModelPart& rMainModelPart, ModelPart& rSubModelPart);
+    void ReadSubModelPartElementsBlock(ModelPart& rMainModelPart, ModelPart& rSubModelPart);
 
-	void ReadSubModelPartConditionsBlock(ModelPart& rMainModelPart, ModelPart& rSubModelPart);
+    void ReadSubModelPartConditionsBlock(ModelPart& rMainModelPart, ModelPart& rSubModelPart);
 
-	void DivideModelPartDataBlock(OutputFilesContainerType& OutputFiles);
+    void DivideModelPartDataBlock(OutputFilesContainerType& OutputFiles);
 
     void DivideTableBlock(OutputFilesContainerType& OutputFiles);
 
@@ -425,11 +412,8 @@ protected:
     void DivideElementsBlock(OutputFilesContainerType& OutputFiles,
                              PartitionIndicesContainerType const& ElementsAllPartitions);
 
-
-
     void DivideConditionsBlock(OutputFilesContainerType& OutputFiles,
                                PartitionIndicesContainerType const& ConditionsAllPartitions);
-
 
     void DivideNodalDataBlock(OutputFilesContainerType& OutputFiles,
                               PartitionIndicesContainerType const& NodesAllPartitions);
@@ -462,10 +446,10 @@ protected:
                                          PartitionIndicesContainerType const& ElementsAllPartitions,
                                          PartitionIndicesContainerType const& ConditionsAllPartitions);
 
-	void DivideSubModelPartBlock(OutputFilesContainerType& OutputFiles,
-		PartitionIndicesContainerType const& NodesAllPartitions,
-		PartitionIndicesContainerType const& ElementsAllPartitions,
-		PartitionIndicesContainerType const& ConditionsAllPartitions);
+    void DivideSubModelPartBlock(OutputFilesContainerType& OutputFiles,
+        PartitionIndicesContainerType const& NodesAllPartitions,
+        PartitionIndicesContainerType const& ElementsAllPartitions,
+        PartitionIndicesContainerType const& ConditionsAllPartitions);
 
     void DivideMeshDataBlock(OutputFilesContainerType& OutputFiles);
 
@@ -556,11 +540,9 @@ protected:
         return rValue;
     }
 
-
     ModelPartIO& ReadWord(std::string& Word);
 
     ModelPartIO& ReadBlock(std::string& Block, std::string const& BlockName);
-
 
     char SkipWhiteSpaces();
 
@@ -571,8 +553,6 @@ protected:
     bool CheckStatement(std::string const& rStatement, std::string const& rGivenWord);
 
     void ResetInput();
-
-
 
     ///@}
     ///@name Private  Access
@@ -593,7 +573,6 @@ protected:
 
     /// Copy constructor.
     ModelPartIO(ModelPartIO const& rOther);
-
 
     ///@}
 
@@ -629,5 +608,4 @@ protected:
 
 }  // namespace Kratos.
 
-#endif // KRATOS_MODEL_PART_IO_H_INCLUDED  defined 
-
+#endif // KRATOS_MODEL_PART_IO_H_INCLUDED  defined
