@@ -62,6 +62,7 @@ namespace Kratos
 ///@name Kratos Classes
 ///@{
 
+/// This class defines the node
 /** The node class from Kratos is defined in this class
 */
 template<std::size_t TDimension, class TDofType = Dof<KRATOS_DOUBLE_TYPE> >
@@ -135,7 +136,7 @@ public:
         , mSolutionStepsNodalData()
         , mInitialPosition()
     {
-        KRATOS_THROW_ERROR(std::logic_error, "calling the default constructor for the node ... illegal operation!!","");
+        KRATOS_ERROR <<  "Calling the default constructor for the node ... illegal operation!!" << std::endl;
         CreateSolutionStepData();
 
 #ifdef _OPENMP
@@ -267,7 +268,8 @@ public:
 #endif
     }
 
-    /** Constructor using coordinates stored in given array. Initialize
+    /**
+     * Constructor using coordinates stored in given array. Initialize
     this point with the coordinates in the array. */
     template<class TVectorType>
     Node(IndexType NewId, vector_expression<TVectorType> const&  rOtherCoordinates)
@@ -323,7 +325,7 @@ public:
 
 
     /// Destructor.
-    virtual ~Node()
+    ~Node() override
     {
 #ifdef _OPENMP
         omp_destroy_lock(&mnode_lock);
@@ -398,7 +400,6 @@ public:
         mInitialPosition = rOther.mInitialPosition;
 
         return *this;
-
     }
 
     bool operator==(const Node& rOther)
@@ -450,31 +451,6 @@ public:
     ///@name Nodal Data
     ///@{
 
-//       void CreateSolutionStepData(IndexType SolutionStepIndex = IndexType())
-//  {
-//    if(mSolutionStepsNodalData->find(SolutionStepIndex) == mSolutionStepsNodalData->end())
-//      mSolutionStepsNodalData->insert(SolutionStepIndex, DataValueContainer());
-
-//  }
-
-//       void CloneSolutionStepNodalData(IndexType SolutionStepIndex, IndexType SourceSolutionStepIndex)
-//  {
-//    SolutionStepsNodalDataContainerType::iterator i;
-//    if(mSolutionStepsNodalData->find(SolutionStepIndex) == mSolutionStepsNodalData->end())
-//      {
-//        if((i = mSolutionStepsNodalData->find(SourceSolutionStepIndex)) == mSolutionStepsNodalData->end())
-//      mSolutionStepsNodalData->insert(SolutionStepIndex, DataValueContainer());
-//        else
-//      mSolutionStepsNodalData->insert(SolutionStepIndex, *i);
-//      }
-//  }
-
-//       void CloneSolutionStepNodalData(IndexType SolutionStepIndex, DataValueContainer const &  SourceSolutionStepData)
-//  {
-//    if(mSolutionStepsNodalData->find(SolutionStepIndex) == mSolutionStepsNodalData->end())
-//      mSolutionStepsNodalData->insert(SolutionStepIndex, SourceSolutionStepData);
-//  }
-
     void CreateSolutionStepData()
     {
         mSolutionStepsNodalData.PushFront();
@@ -499,50 +475,6 @@ public:
         mSolutionStepsNodalData.AssignData(mSolutionStepsNodalData.Data(SourceSolutionStepIndex), DestinationSourceSolutionStepIndex);
     }
 
-//       void CloneSolutionStepNodalData(VariablesListDataValueContainer const &  SourceSolutionStepData)
-//  {
-//    if(!mSolutionStepsNodalData.empty())
-//            mSolutionStepsNodalData.push_front(SourceSolutionStepData);
-//  }
-
-//       void OverwriteSolutionStepNodalData(IndexType SolutionStepIndex, IndexType SourceSolutionStepIndex, IndexType OldSolutionStepIndex)
-//  {
-//    SolutionStepsNodalDataContainerType::iterator i;
-//    SolutionStepsNodalDataContainerType::iterator i_old;
-//    if(mSolutionStepsNodalData.find(SolutionStepIndex) == mSolutionStepsNodalData.end())
-//      {
-//        if((i_old = mSolutionStepsNodalData.find(OldSolutionStepIndex)) == mSolutionStepsNodalData.end())
-//      {
-//        if((i = mSolutionStepsNodalData.find(SourceSolutionStepIndex)) == mSolutionStepsNodalData.end())
-//          mSolutionStepsNodalData.insert(SolutionStepIndex, DataValueContainer());
-//        else
-//          mSolutionStepsNodalData.insert(SolutionStepIndex, *i);
-//      }
-//        else
-//      {
-//        i_old.base()->first = SolutionStepIndex;
-//        i_old.base()->second = *i;
-//      }
-//      }
-//  }
-
-//       void OverwriteSolutionStepNodalData(IndexType SolutionStepIndex, DataValueContainer const &  SourceSolutionStepData)
-//  {
-//    if(mSolutionStepsNodalData.find(SolutionStepIndex) == mSolutionStepsNodalData.end())
-//        if((i_old = mSolutionStepsNodalData.find(OldSolutionStepIndex)) == mSolutionStepsNodalData.end())
-//      mSolutionStepsNodalData.insert(SolutionStepIndex, SourceSolutionStepData);
-//        else
-//      {
-//        i_old.base()->first = SolutionStepIndex;
-//        i_old.base()->second = SourceSolutionStepData;
-//      }
-//  }
-
-//       void RemoveSolutionStepNodalData(IndexType SolutionStepIndex)
-//  {
-//      mSolutionStepsNodalData.erase(SolutionStepIndex);
-//  }
-
     void ClearSolutionStepsData()
     {
         mSolutionStepsNodalData.Clear();
@@ -552,38 +484,6 @@ public:
     {
         mSolutionStepsNodalData.SetVariablesList(pVariablesList);
     }
-
-
-//       DataValueContainer::Pointer pSolutionStepNodalData(IndexType SolutionStepIndex)
-//  {
-//    SolutionStepsNodalDataContainerType::iterator i;
-//    if((i = mSolutionStepsNodalData.find(SolutionStepIndex)) == mSolutionStepsNodalData.end())
-//      KRATOS_THROW_ERROR(std::invalid_argument, "Solution step index out of range.", *this);
-
-//    return (i.base()->second);
-//  }
-
-//       template<class TVariableType> typename TVariableType::Type& GetSolutionStepValue(const TVariableType& rThisVariable)
-//  {
-//    if(mSolutionStepsNodalData.empty())
-//       CreateSolutionStepData(0);
-
-//    return mSolutionStepsNodalData.back().GetValue(rThisVariable);
-//  }
-
-//       template<class TVariableType> typename TVariableType::Type& GetSolutionStepValue(const TVariableType& rThisVariable, IndexType SolutionStepIndex)
-//  {
-//    SolutionStepsNodalDataContainerType::iterator i;
-//    if((i = mSolutionStepsNodalData.find(SolutionStepIndex)) == mSolutionStepsNodalData.end())
-//      KRATOS_THROW_ERROR(std::invalid_argument, "Solution step index out of range.", *this);
-
-//    return i->GetValue(rThisVariable);
-//  }
-
-//       VariablesListDataValueContainer& SolutionStepNodalData()
-//  {
-//    return mSolutionStepsNodalData;
-//  }
 
     VariablesListDataValueContainer& SolutionStepData()
     {
@@ -601,6 +501,16 @@ public:
     }
 
     const DataValueContainer& Data() const
+    {
+        return mData;
+    }
+
+    DataValueContainer& GetData()
+    {
+        return mData;
+    }
+
+    const DataValueContainer& GetData() const
     {
         return mData;
     }
@@ -789,12 +699,12 @@ public:
         mInitialPosition.Z() = Z;
     }
 
-    VariablesList * pGetVariablesList()
+    VariablesList* pGetVariablesList()
     {
         return mSolutionStepsNodalData.pGetVariablesList();
     }
 
-    const VariablesList * pGetVariablesList() const
+    const VariablesList* pGetVariablesList() const
     {
         return mSolutionStepsNodalData.pGetVariablesList();
     }
@@ -803,7 +713,12 @@ public:
     ///@name Dofs
     ///@{
 
-    //advanced functions by Riccardo
+    /**
+     * @brief Get DoF  position with a given position
+     * @param rDofVariable Name of the variable to search the position
+     * @tparam TVariableType The variable type template argument
+     * @return The position of the given DoF variable
+     */
     template<class TVariableType>
     inline unsigned int GetDofPosition(TVariableType const& rDofVariable) const
     {
@@ -821,8 +736,8 @@ public:
     template<class TVariableType>
     inline const DofType& GetDof(TVariableType const& rDofVariable, int pos) const
     {
-        typename DofsContainerType::const_iterator it_begin=mDofs.begin();
-        typename DofsContainerType::const_iterator it_end=mDofs.end();
+        typename DofsContainerType::const_iterator it_begin = mDofs.begin();
+        typename DofsContainerType::const_iterator it_end = mDofs.end();
         typename DofsContainerType::const_iterator it;
         //if the guess is exact return the guess
         if(pos < it_end-it_begin)
@@ -856,7 +771,12 @@ public:
         return *(it);
     }
 
-    /** retuns the Dof asociated with variable  */
+    /**
+     * @brief Get DoF for a given variable
+     * @param rDofVariable Name of the variable
+     * @tparam TVariableType The variable type template argument
+     * @return The DoF associated to the given variable
+     */
     template<class TVariableType>
     inline const DofType& GetDof(TVariableType const& rDofVariable) const
     {
@@ -901,7 +821,12 @@ public:
         KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
     }
 
-    /** retuns a counted pointer to the Dof asociated with variable  */
+    /**
+     * @brief Get DoF counted pointer for a given variable
+     * @param rDofVariable Name of the variable
+     * @tparam TVariableType The variable type template argument
+     * @return The DoF associated to the given variable
+     */
     template<class TVariableType>
     inline const typename DofType::Pointer pGetDof(TVariableType const& rDofVariable) const
     {
@@ -909,9 +834,7 @@ public:
         if ( it!= mDofs.end() )
             return *(it.base());
 
-        std::stringstream buffer;
-        buffer << "Not existant DOF in node #" << Id() << " for variable : " << rDofVariable.Name();
-        KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+        KRATOS_ERROR <<  "Non-existent DOF in node #" << Id() << " for variable : " << rDofVariable.Name() << std::endl;
     }
 
     /**
@@ -922,7 +845,7 @@ public:
      * @return The DoF associated to the given variable
      */
     template<class TVariableType>
-    inline const typename DofType::Pointer pGetDof(
+    inline typename DofType::Pointer pGetDof(
         TVariableType const& rDofVariable,
         int Position
         ) const
@@ -1080,7 +1003,6 @@ public:
 protected:
     ///@name Protected static Member Variables
     ///@{
-
 
     ///@}
     ///@name Protected member Variables
