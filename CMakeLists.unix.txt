@@ -316,8 +316,9 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 set(KRATOS_PYTHON TRUE)
 
+# enable Bezier geometry for specific applications
 if((${ISOGEOMETRIC_APPLICATION} MATCHES ON) OR (${FINITE_CELL_APPLICATION} MATCHES ON))
-add_definitions( -DENABLE_BEZIER_GEOMETRY )
+    add_definitions( -DENABLE_BEZIER_GEOMETRY )
 endif()
 
 #include subdirectories
@@ -330,7 +331,6 @@ add_subdirectory(applications)
 if(${INSTALL_EMBEDDED_PYTHON} MATCHES ON )
   add_subdirectory(embedded_python)
 endif(${INSTALL_EMBEDDED_PYTHON} MATCHES ON )
-
 
 
 if(${MPI_NEEDED} MATCHES ON )
