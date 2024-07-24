@@ -21,7 +21,11 @@ namespace Kratos
         std::cout << " ' /   __| _` | __|  _ \\   __|" << std::endl;
         std::cout << " . \\  |   (   | |   (   |\\__ \\" << std::endl;
         std::cout << "_|\\_\\_|  \\__,_|\\__|\\___/ ____/" << std::endl;
-        std::cout << "         Multi-Physics (Python 2 version)" << std::endl;
+        #if PY_MAJOR_VERSION==3
+        std::cout << "         Multi-Physics (with interface to Python 3)" << std::endl;
+        #else
+        std::cout << "         Multi-Physics (with interface to Python 2)" << std::endl;
+        #endif
         std::cout << "   maintained by Hoang-Giang Bui" << std::endl;
         std::cout << "     Ruhr University Bochum     2013-2021" << std::endl;
         std::cout << "     Helmholtz-Zentrum Hereon   2022-2024" << std::endl;
