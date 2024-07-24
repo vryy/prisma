@@ -1088,11 +1088,17 @@ public:
             it->second /= dof_numbers[it->first];
 
         // iterate through all dofs and set the respective diagonal
+#ifdef _OPENMP
         int number_of_threads = omp_get_max_threads();
+#else
+        int number_of_threads = 1;
+#endif
         vector<unsigned int> dofs_partition;
         CreatePartition(number_of_threads, BaseType::mDofSet.size(), dofs_partition);
 
+#ifdef _OPENMP
         #pragma omp parallel for private(key, row) shared(diag_values)
+#endif
         for (int k = 0; k < number_of_threads; k++)
         {
             typename DofsArrayType::iterator dof_begin = BaseType::mDofSet.begin() + dofs_partition[k];
@@ -1124,7 +1130,9 @@ public:
             }
         }
 
+#ifdef _OPENMP
         #pragma omp parallel for
+#endif
         for (int k = 0; k < static_cast<int>(system_size); ++k)
         {
             std::size_t col_begin = Arow_indices[k];

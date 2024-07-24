@@ -20,6 +20,10 @@
 #include <unordered_set>
 #include <unordered_map>
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 /* External includes */
 
 /* Project includes */
@@ -1126,6 +1130,7 @@ protected:
             const auto it_const_begin = rModelPart.MasterSlaveConstraints().begin();
             std::vector<std::unordered_set<IndexType>> indices(BaseType::mDofSet.size());
 
+#ifdef _OPENMP
             std::vector<omp_lock_t> lock_array(indices.size());
 
             for(std::size_t i = 0; i < indices.size(); ++i)
@@ -1168,6 +1173,33 @@ protected:
 
             for(std::size_t i = 0; i < indices.size(); ++i)
                 omp_destroy_lock(&lock_array[i]);
+#else
+            {
+                Element::EquationIdVectorType slave_ids(3);
+                Element::EquationIdVectorType master_ids(3);
+                std::unordered_map<IndexType, std::unordered_set<IndexType>> temp_indices;
+
+                for (int i_const = 0; i_const < static_cast<int>(rModelPart.MasterSlaveConstraints().size()); ++i_const) {
+                    auto it_const = it_const_begin + i_const;
+
+                    // Detect if the constraint is active or not. If the user did not make any choice the constraint
+                    // It is active by default
+                    bool constraint_is_active = true;
+                    if( it_const->IsDefined(ACTIVE) ) {
+                        constraint_is_active = it_const->Is(ACTIVE);
+                    }
+
+                    if(constraint_is_active) {
+                        it_const->EquationIdVector(slave_ids, master_ids, r_current_process_info);
+
+                        // Slave DoFs
+                        for (auto &id_i : slave_ids) {
+                            temp_indices[id_i].insert(master_ids.begin(), master_ids.end());
+                        }
+                    }
+                }
+            }
+#endif
 
             mSlaveIds.clear();
             mMasterIds.clear();
@@ -1453,18 +1485,21 @@ protected:
 
         const std::size_t equation_size = BaseType::mEquationSystemSize;
 
-        std::vector< omp_lock_t > lock_array(equation_size);
-
-        for(std::size_t i = 0; i < equation_size; ++i)
-            omp_init_lock(&lock_array[i]);
-
         std::vector<std::unordered_set<std::size_t> > indices(equation_size);
+#ifdef _OPENMP
         #pragma omp parallel for firstprivate(equation_size)
+#endif
         for (int iii = 0; iii < static_cast<int>(equation_size); iii++) {
             indices[iii].reserve(40);
         }
 
         Element::EquationIdVectorType ids(3, 0);
+
+#ifdef _OPENMP
+        std::vector< omp_lock_t > lock_array(equation_size);
+
+        for(std::size_t i = 0; i < equation_size; ++i)
+            omp_init_lock(&lock_array[i]);
 
         #pragma omp parallel for firstprivate(nelements, ids)
         for (int iii=0; iii<nelements; iii++) {
@@ -1493,6 +1528,25 @@ protected:
         //destroy locks
         for(std::size_t i = 0; i < equation_size; ++i)
             omp_destroy_lock(&lock_array[i]);
+#else
+        for (int iii=0; iii<nelements; iii++) {
+            typename ElementsContainerType::iterator i_element = el_begin + iii;
+            i_element->EquationIdVector(ids, CurrentProcessInfo);
+            for (std::size_t i = 0; i < ids.size(); i++) {
+                auto& row_indices = indices[ids[i]];
+                row_indices.insert(ids.begin(), ids.end());
+            }
+        }
+
+        for (int iii = 0; iii<nconditions; iii++) {
+            typename ConditionsArrayType::iterator i_condition = cond_begin + iii;
+            i_condition->EquationIdVector(ids, CurrentProcessInfo);
+            for (std::size_t i = 0; i < ids.size(); i++) {
+                auto& row_indices = indices[ids[i]];
+                row_indices.insert(ids.begin(), ids.end());
+            }
+        }
+#endif
 
         //count the row sizes
         unsigned int nnz = 0;
@@ -1512,7 +1566,9 @@ protected:
             Arow_indices[i+1] = Arow_indices[i] + indices[i].size();
         }
 
+#ifdef _OPENMP
         #pragma omp parallel for
+#endif
         for (int i = 0; i < static_cast<int>(A.size1()); i++) {
             const unsigned int row_begin = Arow_indices[i];
             const unsigned int row_end = Arow_indices[i+1];
