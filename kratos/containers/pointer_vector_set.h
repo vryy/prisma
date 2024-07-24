@@ -635,7 +635,11 @@ protected:
 
 private:
 
+    #ifdef __APPLE__
+    class CompareKey : public std::__binary_function<TPointerType, TPointerType, typename TCompareType::result_type>
+    #else
     class CompareKey : public std::binary_function<TPointerType, TPointerType, typename TCompareType::result_type>
+    #endif
     {
     public:
         typename TCompareType::result_type operator()(key_type a, TPointerType b) const
@@ -652,7 +656,11 @@ private:
         }
     };
 
+    #ifdef __APPLE__
+    class EqualKeyTo : public std::__binary_function<TPointerType, TPointerType, typename TEqualType::result_type>
+    #else
     class EqualKeyTo : public std::binary_function<TPointerType, TPointerType, typename TEqualType::result_type>
+    #endif
     {
         key_type mKey;
     public:

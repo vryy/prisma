@@ -75,7 +75,11 @@ class Model;
  */
 class KRATOS_API(KRATOS_CORE) ModelPart : public DataValueContainer, public Flags
 {
+    #ifdef __APPLE__
+    class GetModelPartName : public std::__unary_function<const ModelPart* const, std::string>
+    #else
     class GetModelPartName : public std::unary_function<const ModelPart* const, std::string>
+    #endif
     {
     public:
         std::string const& operator()(const ModelPart& rModelPart) const

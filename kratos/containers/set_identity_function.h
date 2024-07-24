@@ -4,8 +4,8 @@
 //   _|\_\_|  \__,_|\__|\___/ ____/
 //                   Multi-Physics 
 //
-//  License:		 BSD License 
-//					 Kratos default license: kratos/license.txt
+//  License:         BSD License 
+//                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Pooyan Dadvand
 //                    
@@ -24,27 +24,29 @@
 
 namespace Kratos
 {
-	///@}
-	///@name Kratos Classes
-	///@{
+    ///@}
+    ///@name Kratos Classes
+    ///@{
 
-	/// Identity function is for having the object also as key in sets
-	/**
-	*/
-	template<class TDataType> class SetIdentityFunction : public std::unary_function<TDataType, TDataType>
-	{
-	public:
-		TDataType& operator()(TDataType& data)
-		{
-			return data;
-		}
-		const TDataType& operator()(const TDataType& data) const
-		{
-			return data;
-		}
-	};
+    /// Identity function is for having the object also as key in sets
+    #ifdef __APPLE__
+    template<class TDataType> class SetIdentityFunction : public std::__unary_function<TDataType, TDataType>
+    #else
+    template<class TDataType> class SetIdentityFunction : public std::unary_function<TDataType, TDataType>
+    #endif
+    {
+    public:
+        TDataType& operator()(TDataType& data)
+        {
+            return data;
+        }
+        const TDataType& operator()(const TDataType& data) const
+        {
+            return data;
+        }
+    };
 
-	///@}
+    ///@}
 
 
 }  // namespace Kratos.

@@ -576,7 +576,11 @@ protected:
     ///@}
 
 private:
+    #ifdef __APPLE__
+    class CompareKey : public std::__binary_function<value_type, key_type, bool>
+    #else
     class CompareKey : public std::binary_function<value_type, key_type, bool>
+    #endif
     {
     public:
         bool operator()(value_type const& a, key_type b) const
@@ -597,7 +601,11 @@ private:
 //       bool operator()(value_type& a, value_type& b) const
 //       {return TCompareType()(a.first, b.first);}
 //     };
+    #ifdef __APPLE__
+    class EqualKeyTo : public std::__binary_function<value_type&, value_type&, bool>
+    #else
     class EqualKeyTo : public std::binary_function<value_type&, value_type&, bool>
+    #endif
     {
         key_type mKey;
     public:

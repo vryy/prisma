@@ -68,7 +68,11 @@ namespace Kratos
 template<std::size_t TDimension, class TDofType = Dof<KRATOS_DOUBLE_TYPE> >
 class Node : public Point<TDimension, typename TDofType::DataType>,  public IndexedObject, public Flags
 {
+    #ifdef __APPLE__
+    class GetDofKey : public std::__unary_function<TDofType, VariableData::KeyType>
+    #else
     class GetDofKey : public std::unary_function<TDofType, VariableData::KeyType>
+    #endif
     {
     public:
         VariableData::KeyType operator()(TDofType  const & This)
