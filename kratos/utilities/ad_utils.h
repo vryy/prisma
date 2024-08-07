@@ -18,6 +18,9 @@ see kratos/LICENSE.txt
 #include <adolc/adtl.h>     // Tapeless double
 #endif
 
+#include <iostream>
+#include <vector>
+
 namespace Kratos
 {
 
