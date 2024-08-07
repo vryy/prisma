@@ -1757,6 +1757,9 @@ std::ostream& operator<<(std::ostream& os, const ConstitutiveLaw::PlasticCode& p
         case ConstitutiveLaw::PlasticCode::PLASTIC:
             os << "plastic";
             break;
+        case ConstitutiveLaw::PlasticCode::FAILURE:
+            os << "failure";
+            break;
         case ConstitutiveLaw::PlasticCode::RETURN_ON_SMOOTH_PLANE:
             os << "smooth";
             break;
@@ -1776,6 +1779,7 @@ std::ostream& operator<<(std::ostream& os, const ConstitutiveLaw::PlasticCode& p
             os << "apex";
             break;
         default:
+            os << "failed";
             break;
     }
     return os;

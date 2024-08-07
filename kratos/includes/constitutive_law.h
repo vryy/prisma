@@ -76,15 +76,16 @@ public:
     // enum type for plasticity code
     enum class PlasticCode : char
     {
-        ELASTIC = 0,
-        PLASTIC = 1,
-        RETURN_ON_SMOOTH_PLANE = 2,
-        RETURN_ON_EDGE = 3,
-        RETURN_ON_LEFT_EDGE = 4,
-        RETURN_ON_RIGHT_EDGE = 5,
-        RETURN_ON_CORNER = 6,
-        RETURN_ON_APEX = 7,
-        RETURN_FAILED = -1
+        ELASTIC   = 0,
+        PLASTIC   = 1,
+        FAILURE   = 8,
+        RETURN_ON_SMOOTH_PLANE  = 2,
+        RETURN_ON_EDGE          = 3,
+        RETURN_ON_LEFT_EDGE     = 4,
+        RETURN_ON_RIGHT_EDGE    = 5,
+        RETURN_ON_CORNER        = 6,
+        RETURN_ON_APEX          = 7,
+        RETURN_FAILED           = -1
     };
 
     /**
