@@ -43,13 +43,13 @@ void Model::Reset()
     mRootModelPartMap.clear();
 }
 
-void Model::CreateRootModelPart(const std::string ModelPartName, ModelPart::IndexType NewBufferSize)
+void Model::CreateRootModelPart(const std::string& ModelPartName, ModelPart::IndexType NewBufferSize)
 {
     ModelPart* p_model_part = new ModelPart(ModelPartName, NewBufferSize, *this );
     mRootModelPartMap[ModelPartName] = std::unique_ptr<ModelPart>(p_model_part); // note that i create it separately since Model is friend of ModelPart but unique_ptr is not
 }
 
-ModelPart& Model::CreateModelPart( const std::string ModelPartName, ModelPart::IndexType NewBufferSize )
+ModelPart& Model::CreateModelPart( const std::string& ModelPartName, ModelPart::IndexType NewBufferSize )
 {
     KRATOS_TRY
 
@@ -77,21 +77,21 @@ ModelPart& Model::CreateModelPart( const std::string ModelPartName, ModelPart::I
     KRATOS_CATCH("")
 }
 
-void Model::DeleteModelPart( const std::string ModelPartName  )
+void Model::DeleteModelPart( const std::string& rModelPartName  )
 {
     KRATOS_TRY
 
-    if(this->HasModelPart(ModelPartName)) {
-        mRootModelPartMap.erase(ModelPartName); //NOTE: the corresponding variable list should NOT be removed
+    if(this->HasModelPart(rModelPartName)) {
+        mRootModelPartMap.erase(rModelPartName); //NOTE: the corresponding variable list should NOT be removed
     } else {
         // KRATOS_WARNING("Model") << "Attempting to delete inexisting modelpart : " << ModelPartName << std::endl;
-        std::cout << "Model" << "Attempting to delete inexisting modelpart : " << ModelPartName << std::endl; // hbui: 29/6/2022 temporary use this because KRATOS_WARNING is not defined
+        std::cout << "Model" << "Attempting to delete inexisting modelpart : " << rModelPartName << std::endl; // hbui: 29/6/2022 temporary use this because KRATOS_WARNING is not defined
     }
 
     KRATOS_CATCH("")
 }
 
-void Model::RenameModelPart( const std::string OldName, const std::string NewName )
+void Model::RenameModelPart( const std::string& OldName, const std::string& NewName )
 {
     KRATOS_TRY
 
