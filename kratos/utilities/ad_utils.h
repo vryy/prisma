@@ -36,6 +36,12 @@ inline double AD_Helper_GetValue<adtl::adouble>(const adtl::adouble& v) {return 
 #endif
 
 template<typename TDataType>
+inline double AD_Helper_GetValue2(const TDataType& v) {return v.val().val();}
+
+template<>
+inline double AD_Helper_GetValue2<double>(const double& v) {return v;}
+
+template<typename TDataType>
 inline double AD_Helper_GetADValue(const TDataType& v, const unsigned int index) {return v.dx(index);}
 
 template<>
