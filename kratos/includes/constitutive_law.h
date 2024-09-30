@@ -85,7 +85,8 @@ public:
         RETURN_ON_RIGHT_EDGE    = 5,
         RETURN_ON_CORNER        = 6,
         RETURN_ON_APEX          = 7,
-        RETURN_FAILED           = -1
+        RETURN_FAILED           = -1,
+        RETURN_INVALID          = -2,
     };
 
     /**
