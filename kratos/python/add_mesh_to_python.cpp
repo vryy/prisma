@@ -551,10 +551,10 @@ void  AddMeshToPython()
     //.def(self_ns::str(self))
     //      ;
 
-    class_<GeometricalObject, GeometricalObject::Pointer, bases<GeometricalObject::BaseType, Flags > >("GeometricalObject", init<int>())
+    class_<GeometricalObject, GeometricalObject::Pointer, bases<IndexedObject, Flags> >("GeometricalObject", init<int>())
     ;
 
-    class_<Element, Element::Pointer, bases<Element::BaseType, Flags > >("Element", init<int>())
+    class_<Element, Element::Pointer, bases<Element::BaseType> >("Element", init<int>())
     //.def(init<int, const Point<3>& >())
     .add_property("Properties", GetPropertiesFromElement, SetPropertiesFromElement)
     .def("__setitem__", SetValueHelperFunction< Element, Variable< array_1d<DataType, 3>  > >)
@@ -676,7 +676,7 @@ void  AddMeshToPython()
     PointerVectorSetPythonInterface<MeshType::ElementsContainerType>::CreateInterface("ElementsArray")
     ;
 
-    class_<Condition, Condition::Pointer, bases<Condition::BaseType, Flags > >("Condition", init<int>())
+    class_<Condition, Condition::Pointer, bases<Condition::BaseType> >("Condition", init<int>())
     //.def(init<int, const Point<3>& >())
     .add_property("Properties", GetPropertiesFromCondition, SetPropertiesFromCondition)
     .def("__setitem__", SetValueHelperFunction< Condition, Variable< array_1d<DataType, 3>  > >)

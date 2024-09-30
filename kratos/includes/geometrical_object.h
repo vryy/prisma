@@ -1,31 +1,18 @@
-// Kratos Multi-Physics
+//    |  /           |
+//    ' /   __| _` | __|  _ \   __|
+//    . \  |   (   | |   (   |\__ `
+//   _|\_\_|  \__,_|\__|\___/ ____/
+//                   Multi-Physics
 //
-// Copyright (c) 2016 Pooyan Dadvand, Riccardo Rossi, CIMNE (International Center for Numerical Methods in Engineering)
-// All rights reserved.
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
-// Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+//  Main authors:    Pooyan Dadvand
+//                   Riccardo Rossi
 //
-// 	-	Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-// 	-	Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
-// 		in the documentation and/or other materials provided with the distribution.
-// 	-	All advertising materials mentioning features or use of this software must display the following acknowledgement:
-// 			This product includes Kratos Multi-Physics technology.
-// 	-	Neither the name of the CIMNE nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
-// THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// HOLDERS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED ANDON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
-// THE USE OF THISSOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-
-
 
 #if !defined(KRATOS_GEOMETRICAL_OBJECT_H_INCLUDED )
 #define  KRATOS_GEOMETRICAL_OBJECT_H_INCLUDED
-
-
 
 // System includes
 #include <string>
@@ -33,16 +20,14 @@
 #include <sstream>
 #include <cstddef>
 
-
 // External includes
-
 
 // Project includes
 #include "includes/define.h"
 #include "includes/node.h"
+#include "containers/flags.h"
 #include "geometries/geometry.h"
 #include "utilities/indexed_object.h"
-
 
 namespace Kratos
 {
@@ -66,10 +51,14 @@ namespace Kratos
 ///@name Kratos Classes
 ///@{
 
-/// Short class definition.
-/** Detail class definition.
+/**
+ * @class GeometricalObject
+ * @ingroup KratosCore
+ * @brief This defines the geometrical object, base definition of the element and condition entities
+ * @details Derives from IndexedObject, so it has an ID, and from Flags
+ * @author Pooyan Dadvand
 */
-class GeometricalObject : public IndexedObject
+class GeometricalObject : public IndexedObject, public Flags
 {
 public:
     ///@name Type Definitions
@@ -77,15 +66,17 @@ public:
 
     /// Pointer definition of GeometricalObject
     KRATOS_CLASS_POINTER_DEFINITION(GeometricalObject);
-    
-    typedef IndexedObject BaseType;
-    
+
+    /// Definition of the node type
     typedef Node < 3 > NodeType;
 
+    /// The geometry type definition
     typedef Geometry<NodeType> GeometryType;
 
+    /// Defines the index type
     typedef std::size_t IndexType;
 
+    /// Defines the result type
     typedef std::size_t result_type;
 
     ///@}
@@ -93,21 +84,27 @@ public:
     ///@{
 
     /// Default constructor.
-    GeometricalObject(IndexType NewId = 0) : BaseType(NewId),
-        mpGeometry()
+    GeometricalObject(IndexType NewId = 0)
+        : IndexedObject(NewId),
+          Flags(),
+          mpGeometry()
     {}
-    
+
     /// Default constructor.
-    GeometricalObject(IndexType NewId, GeometryType::Pointer pGeometry) : BaseType(NewId),
-        mpGeometry(pGeometry)
+    GeometricalObject(IndexType NewId, GeometryType::Pointer pGeometry)
+        : IndexedObject(NewId),
+          Flags(),
+          mpGeometry(pGeometry)
     {}
 
     /// Destructor.
-    virtual ~GeometricalObject() {}
+    ~GeometricalObject() override {}
 
     /// Copy constructor.
-    GeometricalObject(GeometricalObject const& rOther) : BaseType(rOther.Id()),
-        mpGeometry(rOther.mpGeometry) 
+    GeometricalObject(GeometricalObject const& rOther)
+        : IndexedObject(rOther.Id()),
+          Flags(rOther),
+          mpGeometry(rOther.mpGeometry)
     {}
 
 
@@ -118,7 +115,8 @@ public:
     /// Assignment operator.
     GeometricalObject& operator=(GeometricalObject const& rOther)
     {
-        BaseType::operator=(rOther);
+        IndexedObject::operator=(rOther);
+        Flags::operator =(rOther);
         return *this;
     }
 
@@ -126,29 +124,71 @@ public:
     ///@name Operations
     ///@{
 
-
     ///@}
     ///@name Access
     ///@{
-      
+
+    /**
+     * @brief Returns the pointer to the geometry
+     * @return The pointer of the geometry
+     */
     GeometryType::Pointer pGetGeometry()
     {
         return mpGeometry;
     }
 
+    /**
+     * @brief Returns the pointer to the geometry (const version)
+     * @return The pointer of the geometry
+     */
     const GeometryType::Pointer pGetGeometry() const
     {
         return mpGeometry;
     }
 
+    /**
+     * @brief Returns the reference of the geometry
+     * @return The reference of the geometry
+     */
     GeometryType& GetGeometry()
     {
         return *mpGeometry;
     }
 
+    /**
+     * @brief Returns the reference of the geometry (const version)
+     * @return The reference of the geometry
+     */
     GeometryType const& GetGeometry() const
     {
         return *mpGeometry;
+    }
+
+    /**
+     * @brief Returns the flags of the object
+     * @return The  flags of the object
+     */
+    Flags& GetFlags()
+    {
+        return *this;
+    }
+
+    /**
+     * @brief Returns the flags of the object (const version)
+     * @return The  flags of the object
+     */
+    Flags const& GetFlags() const
+    {
+        return *this;
+    }
+
+    /**
+     * @brief Sets the flags of the object
+     * @param rThisFlags The flags to be set
+     */
+    void SetFlags(Flags const& rThisFlags)
+    {
+        Flags::operator=(rThisFlags);
     }
 
     ///@}
@@ -161,22 +201,22 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const override
     {
         std::stringstream buffer;
-        buffer << "geometrical object # "
+        buffer << "Geometrical object # "
                << Id();
         return buffer.str();
     }
 
     /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << Info();
     }
 
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
     }
 
@@ -233,12 +273,9 @@ private:
     ///@}
     ///@name Member Variables
     ///@{
-      
-    /**
-     * pointer to the condition geometry
-     */
-    GeometryType::Pointer mpGeometry;
-    
+
+    GeometryType::Pointer mpGeometry; /// Pointer to the entity geometry
+
     ///@}
     ///@name Private Operators
     ///@{
@@ -247,7 +284,7 @@ private:
     ///@}
     ///@name Private Operations
     ///@{
-      
+
 
     ///@}
     ///@name Serialization
@@ -255,15 +292,17 @@ private:
 
     friend class Serializer;
 
-    virtual void save(Serializer& rSerializer) const
+    void save(Serializer& rSerializer) const override
     {
         KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, IndexedObject );
+        KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, Flags );
         rSerializer.save("Geometry",mpGeometry);
     }
 
-    virtual void load(Serializer& rSerializer)
+    void load(Serializer& rSerializer) override
     {
         KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, IndexedObject );
+        KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, Flags );
         rSerializer.load("Geometry",mpGeometry);
     }
 
@@ -317,6 +356,4 @@ inline std::ostream& operator << (std::ostream& rOStream,
 
 }  // namespace Kratos.
 
-#endif // KRATOS_GEOMETRICAL_OBJECT_H_INCLUDED  defined 
-
-
+#endif // KRATOS_GEOMETRICAL_OBJECT_H_INCLUDED  defined

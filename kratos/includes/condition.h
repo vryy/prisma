@@ -5,7 +5,7 @@
 //                   Multi-Physics
 //
 //  License:         BSD License
-//                   Kratos default license: kratos/license.txt
+//                     Kratos default license: kratos/license.txt
 //
 //  Main authors:    Pooyan Dadvand
 //
@@ -21,8 +21,6 @@
 #include "includes/properties.h"
 #include "includes/process_info.h"
 #include "includes/geometrical_object.h"
-#include "utilities/indexed_object.h"
-#include "containers/flags.h"
 
 
 namespace Kratos
@@ -56,7 +54,7 @@ namespace Kratos
  * not all of them have to be implemented if they are not needed for
  * the actual problem
  */
-class Condition : public GeometricalObject, public Flags
+class Condition : public GeometricalObject
 {
 public:
     ///@name Type Definitions
@@ -127,7 +125,6 @@ public:
      */
     Condition(IndexType NewId = 0)
         : BaseType(NewId)
-        , Flags()
         , mpProperties(new PropertiesType)
     {
     }
@@ -137,7 +134,6 @@ public:
      */
     Condition(IndexType NewId, const NodesArrayType& ThisNodes)
         : BaseType(NewId,GeometryType::Pointer(new GeometryType(ThisNodes)))
-        , Flags()
         , mpProperties(new PropertiesType)
     {
     }
@@ -147,7 +143,6 @@ public:
      */
     Condition(IndexType NewId, GeometryType::Pointer pGeometry)
         : BaseType(NewId,pGeometry)
-        , Flags()
         , mpProperties(new PropertiesType)
     {
     }
@@ -157,7 +152,6 @@ public:
      */
     Condition(IndexType NewId, GeometryType::Pointer pGeometry, PropertiesType::Pointer pProperties)
         : BaseType(NewId,pGeometry)
-        , Flags()
         , mpProperties(pProperties)
     {
     }
@@ -166,14 +160,13 @@ public:
 
     Condition(Condition const& rOther)
         : BaseType(rOther)
-        , Flags(rOther)
         , mpProperties(rOther.mpProperties)
     {
     }
 
     /// Destructor.
 
-    virtual ~Condition()
+    ~Condition() override
     {
     }
 
@@ -191,7 +184,6 @@ public:
     Condition & operator=(Condition const& rOther)
     {
         BaseType::operator=(rOther);
-        Flags::operator =(rOther);
         mpProperties = rOther.mpProperties;
 
         return *this;
@@ -231,11 +223,7 @@ public:
     virtual Pointer Create(IndexType NewId, NodesArrayType const& ThisNodes,
                PropertiesType::Pointer pProperties) const
     {
-        std::stringstream ss;
-        ss << "Condition " << typeid(*this).name() << ": "
-           << __FUNCTION__ << " is not implemented";
-
-        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+        KRATOS_ERROR << "Please implement the First Create method in your derived Condition" << Info() << std::endl;
     }
 
     /**
@@ -249,11 +237,7 @@ public:
                            GeometryType::Pointer pGeom,
                            PropertiesType::Pointer pProperties) const
     {
-        std::stringstream ss;
-        ss << "Condition " << typeid(*this).name() << ": "
-           << __FUNCTION__ << " is not implemented";
-
-        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+        KRATOS_ERROR << "Please implement the Second Create method in your derived Condition" << Info() << std::endl;
     }
 
     /**
@@ -267,11 +251,7 @@ public:
                            std::vector<GeometryType::Pointer> pGeom,
                            PropertiesType::Pointer pProperties) const
     {
-        std::stringstream ss;
-        ss << "Condition " << typeid(*this).name() << ": "
-           << __FUNCTION__ << " is not implemented";
-
-        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+        KRATOS_ERROR << "Please implement the Third Create method in your derived Condition" << Info() << std::endl;
     }
 
     /**
@@ -283,11 +263,7 @@ public:
      */
     virtual Pointer Clone (IndexType NewId, NodesArrayType const& ThisNodes) const
     {
-        std::stringstream ss;
-        ss << "Condition " << typeid(*this).name() << ": "
-           << __FUNCTION__ << " is not implemented";
-
-        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+        KRATOS_ERROR << "Please implement the Clone method in your derived Condition" << Info() << std::endl;
     }
 
     /**
@@ -302,13 +278,10 @@ public:
      * @param rCurrentProcessInfo the current process info instance
      */
     virtual void EquationIdVector(EquationIdVectorType& rResult,
-                  const ProcessInfo& rCurrentProcessInfo) const
+                                  const ProcessInfo& rCurrentProcessInfo) const
     {
-        std::stringstream ss;
-        ss << "Condition " << typeid(*this).name() << ": "
-           << __FUNCTION__ << " is not implemented";
-
-        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
+                     << __FUNCTION__ << " is not implemented";
     }
 
     /**
@@ -319,11 +292,8 @@ public:
     virtual void GetDofList(DofsVectorType& rConditionDofList,
                             const ProcessInfo& rCurrentProcessInfo) const
     {
-        std::stringstream ss;
-        ss << "Condition " << typeid(*this).name() << ": "
-           << __FUNCTION__ << " is not implemented";
-
-        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
+                     << __FUNCTION__ << " is not implemented";
     }
 
     /**
@@ -463,11 +433,8 @@ public:
                                       VectorType& rRightHandSideVector,
                                       const ProcessInfo& rCurrentProcessInfo)
     {
-        std::stringstream ss;
-        ss << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
-           << __FUNCTION__ << " is not implemented";
-
-        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
+                     << __FUNCTION__ << " is not implemented";
     }
 
     /**
@@ -485,11 +452,8 @@ public:
                                       const std::vector< Variable< VectorType > >& rRHSVariables,
                                       const ProcessInfo& rCurrentProcessInfo)
     {
-        std::stringstream ss;
-        ss << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
-           << __FUNCTION__ << " is not implemented";
-
-        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
+                     << __FUNCTION__ << " is not implemented";
     }
 
     /**
@@ -501,11 +465,8 @@ public:
     virtual void CalculateLeftHandSide(MatrixType& rLeftHandSideMatrix,
                                        const ProcessInfo& rCurrentProcessInfo)
     {
-        std::stringstream ss;
-        ss << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
-           << __FUNCTION__ << " is not implemented";
-
-        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
+                     << __FUNCTION__ << " is not implemented";
     }
 
     /**
@@ -519,11 +480,8 @@ public:
                     const std::vector< Variable< MatrixType > >& rLHSVariables,
                     const ProcessInfo& rCurrentProcessInfo)
     {
-        std::stringstream ss;
-        ss << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
-           << __FUNCTION__ << " is not implemented";
-
-        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
+                     << __FUNCTION__ << " is not implemented";
     }
 
     /**
@@ -535,11 +493,8 @@ public:
     virtual void CalculateRightHandSide(VectorType& rRightHandSideVector,
                                         const ProcessInfo& rCurrentProcessInfo)
     {
-        std::stringstream ss;
-        ss << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
-           << __FUNCTION__ << " is not implemented";
-
-        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
+                     << __FUNCTION__ << " is not implemented";
     }
 
     /**
@@ -553,14 +508,9 @@ public:
                     const std::vector< Variable< VectorType > >& rRHSVariables,
                     const ProcessInfo& rCurrentProcessInfo)
     {
-        std::stringstream ss;
-        ss << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
-           << __FUNCTION__ << " is not implemented";
-
-        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
+                     << __FUNCTION__ << " is not implemented";
     }
-
-
 
     /**
      * CONDITIONS inherited from this class must implement this methods
@@ -575,19 +525,16 @@ public:
     /**
      * this is called during the assembling process in order
      * to calculate the first derivatives contributions for the LHS and RHS
-     * @param rLeftHandSideMatrix: the condition left hand side matrix
-     * @param rRightHandSideVector: the condition right hand side
-     * @param rCurrentProcessInfo: the current process info instance
+     * @param rLeftHandSideMatrix the condition left hand side matrix
+     * @param rRightHandSideVector the condition right hand side
+     * @param rCurrentProcessInfo the current process info instance
      */
     virtual void CalculateFirstDerivativesContributions(MatrixType& rLeftHandSideMatrix,
                                                         VectorType& rRightHandSideVector,
                                                         const ProcessInfo& rCurrentProcessInfo)
     {
-        std::stringstream ss;
-        ss << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
-           << __FUNCTION__ << " is not implemented";
-
-        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
+                     << __FUNCTION__ << " is not implemented";
     }
 
     /**
@@ -599,11 +546,8 @@ public:
     virtual void CalculateFirstDerivativesLHS(MatrixType& rLeftHandSideMatrix,
                                               const ProcessInfo& rCurrentProcessInfo)
     {
-        std::stringstream ss;
-        ss << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
-           << __FUNCTION__ << " is not implemented";
-
-        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
+                     << __FUNCTION__ << " is not implemented";
     }
 
 
@@ -616,11 +560,8 @@ public:
     virtual void CalculateFirstDerivativesRHS(VectorType& rRightHandSideVector,
                                               const ProcessInfo& rCurrentProcessInfo)
     {
-        std::stringstream ss;
-        ss << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
-           << __FUNCTION__ << " is not implemented";
-
-        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
+                     << __FUNCTION__ << " is not implemented";
     }
 
     /**
@@ -644,11 +585,8 @@ public:
                                                          VectorType& rRightHandSideVector,
                                                          const ProcessInfo& rCurrentProcessInfo)
     {
-        std::stringstream ss;
-        ss << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
-           << __FUNCTION__ << " is not implemented";
-
-        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
+                     << __FUNCTION__ << " is not implemented";
     }
 
     /**
@@ -660,11 +598,8 @@ public:
     virtual void CalculateSecondDerivativesLHS(MatrixType& rLeftHandSideMatrix,
                                                const ProcessInfo& rCurrentProcessInfo)
     {
-        std::stringstream ss;
-        ss << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
-           << __FUNCTION__ << " is not implemented";
-
-        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
+                     << __FUNCTION__ << " is not implemented";
     }
 
     /**
@@ -676,11 +611,8 @@ public:
     virtual void CalculateSecondDerivativesRHS(VectorType& rRightHandSideVector,
                                                const ProcessInfo& rCurrentProcessInfo)
     {
-        std::stringstream ss;
-        ss << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
-           << __FUNCTION__ << " is not implemented";
-
-        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
+                     << __FUNCTION__ << " is not implemented";
     }
 
     /**
@@ -697,11 +629,8 @@ public:
      */
     virtual void CalculateMassMatrix(MatrixType& rMassMatrix, const ProcessInfo& rCurrentProcessInfo)
     {
-        std::stringstream ss;
-        ss << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
-           << __FUNCTION__ << " is not implemented";
-
-        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
+                     << __FUNCTION__ << " is not implemented";
     }
     /**
      * this is called during the assembling process in order
@@ -711,11 +640,8 @@ public:
      */
     virtual void CalculateDampingMatrix(MatrixType& rDampingMatrix, const ProcessInfo& rCurrentProcessInfo)
     {
-        std::stringstream ss;
-        ss << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
-           << __FUNCTION__ << " is not implemented";
-
-        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
+                     << __FUNCTION__ << " is not implemented";
     }
 
     /**
@@ -753,7 +679,7 @@ public:
         const ProcessInfo& rCurrentProcessInfo
         )
     {
-        KRATOS_THROW_ERROR(std::logic_error, "base condition classes is not able to assemble rRHS to the desired variable. destination variable is ",rDestinationVariable)
+        KRATOS_ERROR << "base condition classes is not able to assemble rRHS to the desired variable. destination variable is " << rDestinationVariable;
     }
 
     /**
@@ -771,7 +697,7 @@ public:
         const ProcessInfo& rCurrentProcessInfo
         )
     {
-         KRATOS_THROW_ERROR(std::logic_error, "base condition classes is not able to assemble rRHS to the desired variable. destination variable is ",rDestinationVariable)
+         KRATOS_ERROR << "base condition classes is not able to assemble rRHS to the desired variable. destination variable is " << rDestinationVariable;
     }
 
     /**
@@ -789,7 +715,7 @@ public:
         const ProcessInfo& rCurrentProcessInfo
         )
     {
-         KRATOS_THROW_ERROR(std::logic_error, "base element class is not able to assemble rLHS to the desired variable. destination variable is ",rDestinationVariable)
+         KRATOS_ERROR << "base element class is not able to assemble rLHS to the desired variable. destination variable is " << rDestinationVariable;
     }
 
     /**
@@ -829,54 +755,61 @@ public:
      * Note, that these functions expect a std::vector of values for the specified variable type that
      * contains a value for each integration point!
      * CalculateValueOnIntegrationPoints: calculates the values of given Variable.
-     * these methods are: OPTIONAL
      */
 
-    virtual void CalculateOnIntegrationPoints(const Variable<bool>& rVariable,
-                          std::vector<bool>& rOutput,
-                          const ProcessInfo& rCurrentProcessInfo)
+    virtual void CalculateOnIntegrationPoints(
+        const Variable<bool>& rVariable,
+        std::vector<bool>& rOutput,
+        const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
-    virtual void CalculateOnIntegrationPoints(const Variable<int>& rVariable,
-                          std::vector<int>& rValues,
-                          const ProcessInfo& rCurrentProcessInfo)
+    virtual void CalculateOnIntegrationPoints(
+        const Variable<int>& rVariable,
+        std::vector<int>& rOutput,
+        const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
-    virtual void CalculateOnIntegrationPoints(const Variable<DataType>& rVariable,
-                          std::vector<DataType>& rValues,
-                          const ProcessInfo& rCurrentProcessInfo)
+    virtual void CalculateOnIntegrationPoints(
+        const Variable<DataType>& rVariable,
+        std::vector<DataType>& rOutput,
+        const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
-    virtual void CalculateOnIntegrationPoints(const Variable<array_1d<DataType, 3> >& rVariable,
-                          std::vector<array_1d<DataType, 3> >& rValues,
-                          const ProcessInfo& rCurrentProcessInfo)
+    virtual void CalculateOnIntegrationPoints(
+        const Variable<array_1d<DataType, 3>>& rVariable,
+        std::vector< array_1d<DataType, 3>>& rOutput,
+        const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
-    virtual void CalculateOnIntegrationPoints(const Variable<array_1d<DataType, 6> >& rVariable,
-                          std::vector<array_1d<DataType, 6> >& rValues,
-                          const ProcessInfo& rCurrentProcessInfo)
+    virtual void CalculateOnIntegrationPoints(
+        const Variable<array_1d<DataType, 6>>& rVariable,
+        std::vector<array_1d<DataType, 6>>& rOutput,
+        const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
-    virtual void CalculateOnIntegrationPoints(const Variable<Vector>& rVariable,
-                          std::vector<Vector>& rValues,
-                          const ProcessInfo& rCurrentProcessInfo)
+    virtual void CalculateOnIntegrationPoints(
+        const Variable<Vector>& rVariable,
+        std::vector<Vector>& rOutput,
+        const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
-    virtual void CalculateOnIntegrationPoints(const Variable<Matrix>& rVariable,
-                          std::vector<Matrix>& rValues,
-                          const ProcessInfo& rCurrentProcessInfo)
+    virtual void CalculateOnIntegrationPoints(
+        const Variable<Matrix>& rVariable,
+        std::vector<Matrix>& rOutput,
+        const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
-    virtual void CalculateOnIntegrationPoints(const Variable<std::string>& rVariable,
-                         std::vector<std::string>& rValues,
-                         const ProcessInfo& rCurrentProcessInfo)
+    virtual void CalculateOnIntegrationPoints(
+        const Variable<std::string>& rVariable,
+        std::vector<std::string>& rOutput,
+        const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
@@ -893,51 +826,59 @@ public:
 
     //SET ON INTEGRATION POINTS - METHODS
 
-    virtual void SetValuesOnIntegrationPoints(const Variable<bool>& rVariable,
-                         const std::vector<bool>& rValues,
-                         const ProcessInfo& rCurrentProcessInfo)
+    virtual void SetValuesOnIntegrationPoints(
+        const Variable<bool>& rVariable,
+        const std::vector<bool>& rValues,
+        const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
-    virtual void SetValuesOnIntegrationPoints(const Variable<int>& rVariable,
-                         const std::vector<int>& rValues,
-                         const ProcessInfo& rCurrentProcessInfo)
+    virtual void SetValuesOnIntegrationPoints(
+        const Variable<int>& rVariable,
+        const std::vector<int>& rValues,
+        const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
-    virtual void SetValuesOnIntegrationPoints(const Variable<DataType>& rVariable,
-                         const std::vector<DataType>& rValues,
-                         const ProcessInfo& rCurrentProcessInfo)
+    virtual void SetValuesOnIntegrationPoints(
+        const Variable<DataType>& rVariable,
+        const std::vector<DataType>& rValues,
+        const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
-    virtual void SetValuesOnIntegrationPoints(const Variable<array_1d<DataType, 3> >& rVariable,
-                         const std::vector<array_1d<DataType, 3> >& rValues,
-                         const ProcessInfo& rCurrentProcessInfo)
+    virtual void SetValuesOnIntegrationPoints(
+        const Variable<array_1d<DataType, 3>>& rVariable,
+        const std::vector<array_1d<DataType, 3>>& rValues,
+        const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
-    virtual void SetValuesOnIntegrationPoints(const Variable<array_1d<DataType, 6> >& rVariable,
-                         const std::vector<array_1d<DataType, 6> >& rValues,
-                         const ProcessInfo& rCurrentProcessInfo)
+    virtual void SetValuesOnIntegrationPoints(
+        const Variable<array_1d<DataType, 6>>& rVariable,
+        const std::vector<array_1d<DataType, 6>>& rValues,
+        const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
-    virtual void SetValuesOnIntegrationPoints(const Variable<Vector>& rVariable,
-                         const std::vector<Vector>& rValues,
-                         const ProcessInfo& rCurrentProcessInfo)
+    virtual void SetValuesOnIntegrationPoints(
+        const Variable<Vector>& rVariable,
+        const std::vector<Vector>& rValues,
+        const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
-    virtual void SetValuesOnIntegrationPoints(const Variable<Matrix>& rVariable,
-                         const std::vector<Matrix>& rValues,
-                         const ProcessInfo& rCurrentProcessInfo)
+    virtual void SetValuesOnIntegrationPoints(
+        const Variable<Matrix>& rVariable,
+        const std::vector<Matrix>& rValues,
+        const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
-    virtual void SetValuesOnIntegrationPoints(const Variable<std::string>& rVariable,
-                         const std::vector<std::string>& rValues,
-                         const ProcessInfo& rCurrentProcessInfo)
+    virtual void SetValuesOnIntegrationPoints(
+        const Variable<std::string>& rVariable,
+        const std::vector<std::string>& rValues,
+        const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
@@ -1025,18 +966,6 @@ public:
         KRATOS_CATCH("");
     }
 
-    //METHODS TO BE CLEANED: DEPRECATED start
-
-
-    //NOTE: They will be deleted in December, 2015
-
-
-    /**
-     * CONDITIONS inherited from this class must implement this methods
-     * if they need to add dynamic condition contributions
-     * MassMatrix, AddMassMatrix, DampingMatrix, AddInertiaForces methods are: OPTIONAL and OBSOLETE
-     */
-
     /**
      * this is called during the assembling process in order
      * to calculate the condition mass matrix
@@ -1045,11 +974,8 @@ public:
      */
     virtual void MassMatrix(MatrixType& rMassMatrix, const ProcessInfo& rCurrentProcessInfo)
     {
-        std::stringstream ss;
-        ss << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
-           << __FUNCTION__ << " is not implemented";
-
-        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
+                     << __FUNCTION__ << " is not implemented";
     }
 
     /**
@@ -1071,11 +997,8 @@ public:
      */
     virtual void DampMatrix(MatrixType& rDampMatrix, const ProcessInfo& rCurrentProcessInfo)
     {
-        std::stringstream ss;
-        ss << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
-           << __FUNCTION__ << " is not implemented";
-
-        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
+                     << __FUNCTION__ << " is not implemented";
     }
 
     /**
@@ -1118,7 +1041,23 @@ public:
     {
     }
 
-    //METHODS TO BE CLEANED: DEPRECATED end
+    /**
+     * Calculate the transposed gradient of the condition's residual w.r.t. design variable.
+     */
+    virtual void CalculateSensitivityMatrix(const Variable<double>& rDesignVariable,
+                                            Matrix& rOutput,
+                                            const ProcessInfo& rCurrentProcessInfo)
+    {
+    }
+
+    /**
+     * Calculate the transposed gradient of the condition's residual w.r.t. design variable.
+     */
+    virtual void CalculateSensitivityMatrix(const Variable<array_1d<double,3> >& rDesignVariable,
+                                            Matrix& rOutput,
+                                            const ProcessInfo& rCurrentProcessInfo)
+    {
+    }
 
     ///@}
     ///@name Access
@@ -1206,25 +1145,7 @@ public:
         return mData.GetValue(rThisVariable);
     }
     ///@}
-    ///@name Flags
-    ///@{
 
-    Flags& GetFlags()
-    {
-        return *this;
-    }
-
-    Flags const& GetFlags() const
-    {
-        return *this;
-    }
-
-    void SetFlags(Flags const& rThisFlags)
-    {
-        Flags::operator=(rThisFlags);
-    }
-
-    ///@}
     ///@name Inquiry
     ///@{
     ///@}
@@ -1314,7 +1235,6 @@ private:
     void save(Serializer& rSerializer) const override
     {
         KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, GeometricalObject );
-        KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, Flags );
         rSerializer.save("Data", mData);
         rSerializer.save("Properties", mpProperties);
     }
@@ -1322,7 +1242,6 @@ private:
     void load(Serializer& rSerializer) override
     {
         KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, GeometricalObject );
-        KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, Flags );
         rSerializer.load("Data", mData);
         rSerializer.load("Properties", mpProperties);
     }
