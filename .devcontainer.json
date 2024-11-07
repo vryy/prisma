@@ -1,0 +1,42 @@
+{
+  "name": "dev container for Kratos",
+  "image": "vryy/kratos_bcn2-cutiga-dev:latest", // sometimes the devcontainer does not pick up the latest image. In this case, change to image Id
+
+  "customizations": {
+    "vscode": {
+      "extensions": ["ms-vscode.cpptools", "ms-vscode.cmake-tools", "ms-vscode.cpptools-extension-pack", "ms-python.python"]
+    }
+  },
+
+  "workspaceMount": "source=${localWorkspaceFolder},target=/home/kuser/kratos_bcn2,type=bind,consistency=cached",
+  "workspaceFolder": "/home/kuser/kratos_bcn2",
+
+  "mounts": [
+    {
+      "source": "kratos_builds",
+      "target": "/home/kuser/kratos_builds",
+      "type": "volume"
+      // ----- fixed mount - Kratos build volume
+    },
+    {
+      "source": "kratos_libs",
+      "target": "/home/kuser/kratos_libs",
+      "type": "volume"
+      // ----- fixed mount - Kratos library volume
+    },
+    {
+      "source": "/home/buih/workspace/docker/docker-cutiga-dev/kratos_workspace",
+      "target": "/home/kuser/kratos_workspace",
+      "type": "bind"
+      // Adapt the path to the workspace in your system. Note that on Windows, the
+      // slash must be \\
+    },
+    {
+      "source": "/etc/localtime",
+      "target": "/usr/share/zoneinfo/hostlocaltime",
+      "type": "bind,readonly"
+      // Ref: https://github.com/microsoft/vscode-dev-containers/issues/307#issuecomment-1638434058
+      // This mount is for linux only. Disable this if you are on Windows.
+    },
+  ],
+}
