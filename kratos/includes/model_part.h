@@ -4,19 +4,15 @@
 //   _|\_\_|  \__,_|\__|\___/ ____/
 //                   Multi-Physics
 //
-//  License:         BSD License
-//                   Kratos default license: kratos/license.txt
+//  License:		 BSD License
+//					 Kratos default license: kratos/license.txt
 //
 //  Main authors:    Pooyan Dadvand
 //
 //
 
-
-
 #if !defined(KRATOS_MODEL_PART_H_INCLUDED )
 #define  KRATOS_MODEL_PART_H_INCLUDED
-
-
 
 // System includes
 #include <string>
@@ -24,9 +20,7 @@
 #include <sstream>
 #include <cstddef>
 
-
 // External includes
-
 
 // Project includes
 #include "includes/define.h"
@@ -69,11 +63,15 @@ namespace Kratos
 //forward declaring Model to be avoid cross references
 class Model;
 
-/// ModelPart class.
-
-/** Detail class definition.
- */
-class KRATOS_API(KRATOS_CORE) ModelPart : public DataValueContainer, public Flags
+/**
+* @class ModelPart
+* @ingroup KratosCore
+* @brief This class aims to manage meshes for multi-physics simulations
+* @author Pooyan Dadvand
+* @author Riccardo Rossi
+*/
+class KRATOS_API(KRATOS_CORE) ModelPart
+    : public DataValueContainer, public Flags
 {
     class GetModelPartName : public std::unary_function<const ModelPart* const, std::string>
     {
@@ -276,8 +274,7 @@ public:
 
 
     /// Destructor.
-    virtual ~ModelPart();
-
+    ~ModelPart() override;
 
     ///@}
     ///@name Operators
@@ -289,7 +286,6 @@ public:
     ///@}
     ///@name Solution Steps
     ///@{
-
 
     IndexType CreateSolutionStep();
 
@@ -345,14 +341,31 @@ public:
 
     void AssignNode(NodeType::Pointer pThisNode, IndexType ThisIndex = 0);
 
+    /** Returns if the Node corresponding to it's identifier exists */
+    bool HasNode(IndexType NodeId, IndexType ThisIndex = 0) const
+    {
+        return GetMesh(ThisIndex).HasNode(NodeId);
+    }
+
     /** Returns the Node::Pointer  corresponding to it's identifier */
     NodeType::Pointer pGetNode(IndexType NodeId, IndexType ThisIndex = 0)
     {
         return GetMesh(ThisIndex).pGetNode(NodeId);
     }
 
+    /** Returns the Node::Pointer corresponding to it's identifier */
+    const NodeType::Pointer pGetNode(const IndexType NodeId, const IndexType ThisIndex = 0) const
+    {
+        return GetMesh(ThisIndex).pGetNode(NodeId);
+    }
+
     /** Returns a reference node corresponding to it's identifier */
     NodeType& GetNode(IndexType NodeId, IndexType ThisIndex = 0)
+    {
+        return GetMesh(ThisIndex).GetNode(NodeId);
+    }
+
+    const NodeType& GetNode(IndexType NodeId, IndexType ThisIndex = 0) const
     {
         return GetMesh(ThisIndex).GetNode(NodeId);
     }
@@ -381,8 +394,11 @@ public:
     */
     void RemoveNodeFromAllLevels(NodeType::Pointer pThisNode, IndexType ThisIndex = 0);
 
-    /** this function gives back the "root" model part, that is the model_part that has no father */
+    /** this function gives back the "root" model part, that is the model_part that has no father (non-const version)*/
     ModelPart& GetRootModelPart();
+
+    /** this function gives back the "root" model part, that is the model_part that has no father (const version)*/
+    const ModelPart& GetRootModelPart() const;
 
     NodeIterator NodesBegin(IndexType ThisIndex = 0)
     {
@@ -435,12 +451,32 @@ public:
         mpVariablesList->Add(ThisVariable);
     }
 
+    bool HasNodalSolutionStepVariable(VariableData const& ThisVariable) const
+    {
+        return mpVariablesList->Has(ThisVariable);
+    }
+
     VariablesList& GetNodalSolutionStepVariablesList()
     {
         return *mpVariablesList;
     }
 
+    VariablesList const& GetNodalSolutionStepVariablesList() const
+    {
+        return *mpVariablesList;
+    }
+
+    const VariablesList* pGetNodalSolutionStepVariablesList() const
+    {
+        return mpVariablesList;
+    }
+
     void SetNodalSolutionStepVariablesList();
+
+    void SetNodalSolutionStepVariablesList(VariablesList* pNewVariablesList)
+    {
+        mpVariablesList = pNewVariablesList;
+    }
 
     SizeType GetNodalSolutionStepDataSize()
     {
@@ -451,7 +487,6 @@ public:
     {
         return mpVariablesList->DataSize() * mBufferSize;
     }
-
 
     ///@}
     ///@name Tables
@@ -516,8 +551,6 @@ public:
     {
         return mTables.GetContainer();
     }
-
-
 
     ///@}
     ///@name MasterSlaveConstraints
@@ -591,10 +624,8 @@ public:
             }
             else //if it does exist verify it is the same node
             {
-                if(&(*it_found) != &(*it)) //check if the pointee coincides
-                                {
-                                        KRATOS_THROW_ERROR(std::logic_error, "attempting to add a new master-slave constraint with Id :xxx , unfortunately a (different) master-slave constraint with the same Id already exists ", it_found->Id());
-                                }
+                if(&(*it_found) != &(*it))//check if the pointee coincides
+                    KRATOS_ERROR << "attempting to add a new master-slave constraint with Id :" << it_found->Id() << ", unfortunately a (different) master-slave constraint with the same Id already exists" << std::endl;
                 else
                     aux.push_back( *(it.base()) );
             }
@@ -675,6 +706,19 @@ public:
      */
     void RemoveMasterSlaveConstraintsFromAllLevels(Flags IdentifierFlag = TO_ERASE);
 
+    /**
+     * @brief Returns if the MasterSlaveConstraint corresponding to it's identifier exists
+     * @param MasterSlaveConstraintId The ID of master-slave constraint
+     * @param ThisIndex The mesh index
+     */
+    bool HasMasterSlaveConstraint(
+        const IndexType MasterSlaveConstraintId,
+        IndexType ThisIndex = 0
+        ) const
+    {
+        return GetMesh(ThisIndex).HasMasterSlaveConstraint(MasterSlaveConstraintId);
+    }
+
     /** Returns the MasterSlaveConstraint::Pointer  corresponding to it's identifier */
     MasterSlaveConstraintType::Pointer pGetMasterSlaveConstraint(IndexType ConstraintId, IndexType ThisIndex = 0);
 
@@ -687,12 +731,20 @@ public:
     ///@name Properties
     ///@{
 
+    /**
+     * @brief Returns the number of properties of the mesh
+     * @param ThisIndex The index identifying the mesh
+     * @return The number of properties of the mesh
+     */
     SizeType NumberOfProperties(IndexType ThisIndex = 0) const
     {
         return GetMesh(ThisIndex).NumberOfProperties();
     }
 
-    /** Inserts a properties in the current mesh.
+    /**
+     * @brief Inserts a properties in the current mesh.
+     * @param pNewProperties The new property pointer to be added
+     * @param ThisIndex The index identifying the mesh
      */
     void AddProperties(PropertiesType::Pointer pNewProperties, IndexType ThisIndex = 0);
 
@@ -1081,7 +1133,6 @@ public:
         return mSubModelParts;
     }
 
-
     ModelPart* GetParentModelPart() const
     {
         return mpParentModelPart;
@@ -1212,7 +1263,11 @@ public:
 
     void SetBufferSize(IndexType NewBufferSize);
 
-    IndexType GetBufferSize()
+    /**
+     * @brief This method gets the suffer size of the model part database
+     * @return mBufferSize The buffer size
+     */
+    IndexType GetBufferSize() const
     {
         return mBufferSize;
     }
@@ -1239,13 +1294,13 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const;
+    std::string Info() const override;
 
     /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const;
+    void PrintInfo(std::ostream& rOStream) const override;
 
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const;
+    void PrintData(std::ostream& rOStream) const override;
 
     /// Print information about this object.
     virtual void PrintInfo(std::ostream& rOStream, std::string const& PrefixString) const;
@@ -1276,25 +1331,25 @@ private:
     ///@name Member Variables
     ///@{
 
-    std::string mName;
+    std::string mName; /// The name of the model part
 
-    IndexType mBufferSize;
+    IndexType mBufferSize; /// The buffers size of the database
 
-    ProcessInfo::Pointer mpProcessInfo;
+    ProcessInfo::Pointer mpProcessInfo; /// The process info instance
 
-    TablesContainerType mTables;
+    TablesContainerType mTables; /// The tables contained on the model part
 
     std::vector<IndexType> mIndices;
 
-    MeshesContainerType mMeshes;
+    MeshesContainerType mMeshes; /// The container of all meshes
 
     VariablesList* mpVariablesList;
 
-    Communicator::Pointer mpCommunicator;
+    Communicator::Pointer mpCommunicator; /// The communicator
 
-    ModelPart* mpParentModelPart;
+    ModelPart* mpParentModelPart = NULL; /// The parent model part of the current model part
 
-    SubModelPartsContainerType mSubModelParts;
+    SubModelPartsContainerType mSubModelParts; /// The container of the submodelparts
 
     Model* mpModel; /// The model which contains this model part
 
@@ -1327,9 +1382,9 @@ private:
 
     friend class Serializer;
 
-    virtual void save(Serializer& rSerializer) const;
+    void save(Serializer& rSerializer) const override;
 
-    virtual void load(Serializer& rSerializer);
+    void load(Serializer& rSerializer) override;
 
     ///@}
     ///@name Private  Access
@@ -1378,13 +1433,13 @@ struct ModelPartEntitiesContainerSelector<Condition>
 
 /// input stream function
 KRATOS_API(KRATOS_CORE) inline std::istream & operator >>(std::istream& rIStream,
-                                  ModelPart& rThis)
+        ModelPart& rThis)
 {
     return rIStream;
 }
 /// output stream function
 KRATOS_API(KRATOS_CORE) inline std::ostream & operator <<(std::ostream& rOStream,
-                                  const ModelPart& rThis)
+        const ModelPart& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;
@@ -1393,9 +1448,7 @@ KRATOS_API(KRATOS_CORE) inline std::ostream & operator <<(std::ostream& rOStream
     return rOStream;
 }
 
-
 ///@}
-
 
 } // namespace Kratos.
 

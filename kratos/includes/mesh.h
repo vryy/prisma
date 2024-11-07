@@ -4,32 +4,15 @@
 //   _|\_\_|  \__,_|\__|\___/ ____/
 //                   Multi-Physics
 //
-//  License:		 BSD License
-//					 Kratos default license: kratos/license.txt
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Pooyan Dadvand
 //
 //
-// 	-	Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-// 	-	Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
-// 		in the documentation and/or other materials provided with the distribution.
-// 	-	All advertising materials mentioning features or use of this software must display the following acknowledgement:
-// 			This product includes Kratos Multi-Physics technology.
-// 	-	Neither the name of the CIMNE nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
-// THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// HOLDERS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED ANDON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
-// THE USE OF THISSOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-
 
 #if !defined(KRATOS_MESH_H_INCLUDED )
 #define  KRATOS_MESH_H_INCLUDED
-
-
 
 // System includes
 #include <string>
@@ -37,9 +20,7 @@
 #include <sstream>
 #include <cstddef>
 
-
 // External includes
-
 
 // Project includes
 #include "includes/define.h"
@@ -50,7 +31,6 @@
 #include "containers/flags.h"
 #include "containers/data_value_container.h"
 #include "includes/master_slave_constraint.h"
-
 
 namespace Kratos
 {
@@ -74,8 +54,16 @@ namespace Kratos
 ///@name Kratos Classes
 ///@{
 
-/// Short class definition.
-/** Detail class definition.
+/**
+ * @class Mesh
+ * @ingroup KratosCore
+ * @brief Mesh is the second level of abstraction in the data structure which hold Nodes, Elements and Conditions and their Properties.
+ * @details Mesh is the second level of abstraction in the data structure which hold Nodes, Elements and Conditions and their Properties.
+ * In other words, Mesh is a complete pack of all type of entities without any additional data associated with them.
+ * So a set of Elements and Conditions with their Nodes and Properties can be grouped together as a Mesh and send to
+ * procedures like mesh refinement, material optimization, mesh movement or any other procedure which works on entities
+ * without needing additional data for their processes.
+ * @author Pooyan Dadvand
 */
 template<class TNodeType, class TPropertiesType, class TElementType, class TConditionType>
 class Mesh : public DataValueContainer, public Flags
@@ -188,7 +176,6 @@ public:
     typedef typename MasterSlaveConstraintContainerType::const_iterator MasterSlaveConstraintConstantIteratorType;
 
 
-
     ///@}
     ///@name Life Cycle
     ///@{
@@ -219,13 +206,11 @@ public:
 
 
     /// Destructor.
-    virtual ~Mesh() {}
-
+    ~Mesh() override {}
 
     ///@}
     ///@name Operators
     ///@{
-
 
     ///@}
     ///@name Operations
@@ -242,29 +227,41 @@ public:
         return Mesh(p_nodes, p_properties, p_elements, p_conditions, p_master_slave_constraints);
     }
 
+    void Clear()
+    {
+        Flags::Clear();
+        DataValueContainer::Clear();
+        mpNodes->clear();
+        mpProperties->clear();
+        mpElements->clear();
+        mpConditions->clear();
+        mpMasterSlaveConstraints->clear();
+    }
+
     ///@}
-    ///@name Informations
+    ///@name Information
     ///@{
 
     /** Dimensional space of the mesh geometries
-	@return SizeType, working space dimension of this geometry.
+    @return SizeType, working space dimension of this geometry.
     */
 
     SizeType WorkingSpaceDimension() const
     {
-      SizeType dimension = 3;
+        SizeType dimension = 3;
 
-      // NOTE: possible segmentacion fault if a Element or Condition
-      // is created using the base class of geometry, then the mpGeometryData
-      // of the geometry is a null pointer and has not any mWorkingSpaceDimension
-      if(NumberOfElements()!=0)
-	dimension = (mpElements->begin())->WorkingSpaceDimension();
-      else if(NumberOfConditions()!=0)
-	dimension = (mpConditions->begin())->WorkingSpaceDimension();
-      else if(NumberOfNodes()!=0)
-	dimension = (mpNodes->begin())->Dimension();
+        // NOTE: possible segmentation fault if a Element or Condition
+        // is created using the base class of geometry, then the mpGeometryData
+        // of the geometry is a null pointer and has not any mWorkingSpaceDimension
+        if (NumberOfElements()!=0) {
+            dimension = (mpElements->begin())->GetGeometry().WorkingSpaceDimension();
+        } else if(NumberOfConditions()!=0) {
+            dimension = (mpConditions->begin())->GetGeometry().WorkingSpaceDimension();
+        } else if(NumberOfNodes()!=0) {
+            dimension = (mpNodes->begin())->Dimension();
+        }
 
-      return dimension;
+        return dimension;
     }
 
     ///@}
@@ -275,7 +272,6 @@ public:
     {
         return mpNodes->size();
     }
-
 
     /** Inserts a node in the mesh.
     */
@@ -290,8 +286,20 @@ public:
         return (*mpNodes)(NodeId);
     }
 
+    /** Returns the Node::Pointer  corresponding to it's identifier */
+    const typename NodeType::Pointer pGetNode(IndexType NodeId) const
+    {
+        return (*mpNodes)(NodeId);
+    }
+
     /** Returns a reference node corresponding to it's identifier */
     NodeType& GetNode(IndexType NodeId)
+    {
+        return (*mpNodes)[NodeId];
+    }
+
+    /** Returns a reference node corresponding to it's identifier */
+    const NodeType& GetNode(IndexType NodeId) const
     {
         return (*mpNodes)[NodeId];
     }
@@ -362,10 +370,10 @@ public:
         return mpNodes->GetContainer();
     }
 
-	bool HasNode(IndexType NodeId) const
-	{
-		return (mpNodes->find(NodeId) != mpNodes->end());
-	}
+    bool HasNode(IndexType NodeId) const
+    {
+        return (mpNodes->find(NodeId) != mpNodes->end());
+    }
 
     ///@}
     ///@name Properties
@@ -375,7 +383,6 @@ public:
     {
         return mpProperties->size();
     }
-
 
     /** Inserts a properties in the mesh.
     */
@@ -442,6 +449,11 @@ public:
         return *mpProperties;
     }
 
+    const PropertiesContainerType& Properties() const
+    {
+        return *mpProperties;
+    }
+
     typename PropertiesContainerType::Pointer pProperties()
     {
         return mpProperties;
@@ -462,10 +474,10 @@ public:
         return mpProperties->GetContainer();
     }
 
-	bool HasProperties(IndexType NodeId) const
-	{
-		return (mpProperties->find(NodeId) != mpProperties->end());
-	}
+    bool HasProperties(IndexType NodeId) const
+    {
+        return (mpProperties->find(NodeId) != mpProperties->end());
+    }
 
     ///@}
     ///@name Elements
@@ -572,10 +584,10 @@ public:
         return mpElements->GetContainer();
     }
 
-	bool HasElement(IndexType NodeId) const
-	{
-		return (mpElements->find(NodeId) != mpElements->end());
-	}
+    bool HasElement(IndexType NodeId) const
+    {
+        return (mpElements->find(NodeId) != mpElements->end());
+    }
 
     ///@}
     ///@name Conditions
@@ -682,11 +694,10 @@ public:
         return mpConditions->GetContainer();
     }
 
-	bool HasCondition(IndexType NodeId) const
-	{
-		return (mpConditions->find(NodeId) != mpConditions->end());
-	}
-
+    bool HasCondition(IndexType NodeId) const
+    {
+        return (mpConditions->find(NodeId) != mpConditions->end());
+    }
 
     ///@}
     ///@name MasterSlaveConstraints
@@ -796,35 +807,32 @@ public:
         return (mpMasterSlaveConstraints->find(MasterSlaveConstraintId) != mpMasterSlaveConstraints->end());
     }
 
-
     ///@}
     ///@name Access
     ///@{
 
-
     ///@}
     ///@name Inquiry
     ///@{
-
 
     ///@}
     ///@name Input and output
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const override
     {
         return "Mesh";
     }
 
     /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << Info();
     }
 
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
         rOStream << "    Number of Nodes       : " << mpNodes->size() << std::endl;
         rOStream << "    Number of Properties  : " << mpProperties->size() << std::endl;
@@ -849,55 +857,43 @@ public:
         rOStream << PrefixString << "    Number of Constraints : " << mpMasterSlaveConstraints->size() << std::endl;
     }
 
-
     ///@}
     ///@name Friends
     ///@{
 
-
     ///@}
-
 protected:
     ///@name Protected static Member Variables
     ///@{
-
 
     ///@}
     ///@name Protected member Variables
     ///@{
 
-
     ///@}
     ///@name Protected Operators
     ///@{
-
 
     ///@}
     ///@name Protected Operations
     ///@{
 
-
     ///@}
     ///@name Protected  Access
     ///@{
-
 
     ///@}
     ///@name Protected Inquiry
     ///@{
 
-
     ///@}
     ///@name Protected LifeCycle
     ///@{
 
-
     ///@}
-
 private:
     ///@name Static Member Variables
     ///@{
-
 
     ///@}
     ///@name Member Variables
@@ -918,7 +914,6 @@ private:
     ///@name Private Operators
     ///@{
 
-
     ///@}
     ///@name Private Operations
     ///@{
@@ -927,11 +922,9 @@ private:
     ///@name Serialization
     ///@{
 
-
     friend class Serializer;
 
-
-    virtual void save(Serializer& rSerializer) const
+    void save(Serializer& rSerializer) const override
     {
         KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, DataValueContainer );
         KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, Flags );
@@ -942,7 +935,7 @@ private:
         rSerializer.save("Constraints",mpMasterSlaveConstraints);
     }
 
-    virtual void load(Serializer& rSerializer)
+    void load(Serializer& rSerializer) override
     {
         KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, DataValueContainer );
         KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, Flags );
@@ -958,11 +951,9 @@ private:
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
-
 
     ///@}
     ///@name Un accessible methods
@@ -985,15 +976,12 @@ private:
 }; // Class Mesh
 
 ///@}
-
 ///@name Type Definitions
 ///@{
-
 
 ///@}
 ///@name Input and output
 ///@{
-
 
 /// input stream function
 template<class TNodeType, class TPropertiesType, class TElementType, class TConditionType>

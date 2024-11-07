@@ -496,6 +496,14 @@ namespace Kratos
             return *this;
     }
 
+    const ModelPart& ModelPart::GetRootModelPart() const
+    {
+        if (IsSubModelPart())
+            return mpParentModelPart->GetRootModelPart();
+        else
+            return *this;
+    }
+
     void ModelPart::SetNodalSolutionStepVariablesList()
     {
         if (IsSubModelPart())
