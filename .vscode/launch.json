@@ -1,0 +1,26 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "(gdb) Launch",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "/home/buih/kratos_bundle/kratos_bcn2/runkratos",  // Path to the compiled binary
+        "args": ["quad4.py", "test"],  // Arguments passed to the program, if any
+        "stopAtEntry": false,
+        "cwd": "/home/buih/kratos_bundle/Benchmark_kratos/structural_application/patch_test/quad4.gid",  // Working directory for the program
+        "environment": [],
+        "externalConsole": false,
+        "MIMode": "gdb",
+        "miDebuggerPath": "/usr/bin/gdb",  // Ensure this path is correct on your system
+        "setupCommands": [
+          {
+            "description": "Enable pretty-printing for gdb",
+            "text": "-enable-pretty-printing",
+            "ignoreFailures": true
+          }
+        ],
+        "preLaunchTask": "build"  // Runs the build task before starting debugging
+      }
+    ]
+}
