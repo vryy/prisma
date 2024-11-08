@@ -1,5 +1,10 @@
-#include <Python.h>
 #include <iostream>
+
+#if __cplusplus >= 201703L
+    #define register  // Define register as empty in C++17 or later
+#endif
+
+#include <Python.h>
 
 #if PY_MAJOR_VERSION >= 3
     #include <stdlib.h>
