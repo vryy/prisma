@@ -1,0 +1,17 @@
+CompileFlags:
+    CompilationDatabase: /home/kuser/kratos_builds/cmake_build_debug
+    Compiler: /usr/bin/mpic++
+    Add: [
+        -I/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi,
+        -I/usr/lib/x86_64-linux-gnu/openmpi/include,
+        -pthread,
+        -L/usr/lib/x86_64-linux-gnu/openmpi/lib,
+        -lmpi_cxx,
+        -lmpi,
+        ] # take this from mpic++ --showme
+Index:
+    Background: Build
+Diagnostics:
+    UnusedIncludes: Strict
+Hover:
+    ShowAKA: Yes

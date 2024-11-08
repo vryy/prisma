@@ -4,7 +4,16 @@
 
   "customizations": {
     "vscode": {
-      "extensions": ["ms-vscode.cpptools", "ms-vscode.cmake-tools", "ms-vscode.cpptools-extension-pack", "ms-python.python"]
+      "extensions": [
+        "ms-vscode.cpptools",
+        "ms-vscode.cmake-tools",
+        "ms-vscode.cpptools-extension-pack",
+        "ms-python.python",
+        "xaver.clang-format",
+        "llvm-vs-code-extensions.vscode-clangd",
+        "mhutchie.git-graph",
+        "redhat.vscode-yaml"
+      ]
     }
   },
 
@@ -34,9 +43,9 @@
     {
       "source": "/etc/localtime",
       "target": "/usr/share/zoneinfo/hostlocaltime",
-      "type": "bind,readonly"
+      "type": "bind"
       // Ref: https://github.com/microsoft/vscode-dev-containers/issues/307#issuecomment-1638434058
       // This mount is for linux only. Disable this if you are on Windows.
-    },
-  ],
+    }
+  ]
 }
