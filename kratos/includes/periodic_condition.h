@@ -43,9 +43,6 @@
 #include "includes/condition.h"
 #include "includes/serializer.h"
 
-// Application includes
-#include "includes/variables.h"
-#include "containers/periodic_variables_container.h"
 
 namespace Kratos
 {

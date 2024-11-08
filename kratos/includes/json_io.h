@@ -39,7 +39,6 @@
 // Project includes
 #include "includes/define.h"
 #include "includes/io.h"
-#include "utilities/timer.h"
 #include "containers/flags.h"
 #include "includes/mesh.h"
 

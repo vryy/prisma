@@ -42,13 +42,12 @@
 #include "includes/model_part.h"
 #include "mpi.h"
 
-#include "utilities/openmp_utils.h"
 
 #define CUSTOMTIMER 1
 
 /* Timer defines */
-#include "utilities/timer.h"
 #ifdef CUSTOMTIMER
+#include "utilities/timer.h"
 #define KRATOS_TIMER_START(t) Timer::Start(t);
 #define KRATOS_TIMER_STOP(t) Timer::Stop(t);
 #else

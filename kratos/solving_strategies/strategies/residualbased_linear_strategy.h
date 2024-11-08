@@ -19,7 +19,6 @@
 
 
 /* External includes */
-#include "boost/smart_ptr.hpp"
 #include "boost/timer.hpp"
 
 /* Project includes */
@@ -27,7 +26,6 @@
 #include "solving_strategies/strategies/solving_strategy.h"
 
 //default builder and solver
-#include "solving_strategies/builder_and_solvers/builder_and_solver.h"
 #include "solving_strategies/builder_and_solvers/residualbased_block_builder_and_solver.h"
 
 namespace Kratos

@@ -27,7 +27,6 @@
 // Project includes
 #include "includes/dof.h"
 #include "includes/process_info.h"
-#include "includes/kratos_components.h"
 
 
 namespace Kratos

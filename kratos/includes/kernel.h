@@ -34,7 +34,6 @@
 
 // Project includes
 #include "includes/define.h"
-#include "includes/variables.h"
 #include "includes/kratos_application.h"
 
 
@@ -202,5 +201,3 @@ inline std::ostream& operator << (std::ostream& rOStream,
 }  // namespace Kratos.
 
 #endif // KRATOS_KERNEL_H_INCLUDED  defined
-
-

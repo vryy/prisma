@@ -24,18 +24,19 @@
 
 #if !defined(KRATOS_GID_MESH_CONTAINER_H_INCLUDED)
 #define  KRATOS_GID_MESH_CONTAINER_H_INCLUDED
+
 // System includes
-#include <string>
 #include <iostream>
-#include <fstream>
 #include <sstream>
-#include <cstddef>
+
 // External includes
 #include "gidpost/source/gidpost.h"
+
 // Project includes
 #include "includes/define.h"
-#include "geometries/geometry_data.h"
 #include "includes/deprecated_variables.h"
+#include "includes/model_part.h"
+#include "geometries/geometry_data.h"
 
 
 namespace Kratos

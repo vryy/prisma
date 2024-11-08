@@ -51,7 +51,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 // System includes
-#include <functional>
 #include <string>
 #include <iostream>
 #include <sstream>

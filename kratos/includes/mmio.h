@@ -6,6 +6,8 @@
 *
 */
 
+#include <stdio.h>
+
 #include "includes/kratos_export_api.h"
 
 #ifndef MM_IO_H

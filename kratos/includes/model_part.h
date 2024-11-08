@@ -17,7 +17,6 @@
 // System includes
 #include <string>
 #include <iostream>
-#include <sstream>
 #include <cstddef>
 
 // External includes
@@ -34,8 +33,7 @@
 #include "includes/table.h"
 #include "containers/pointer_vector_map.h"
 #include "containers/pointer_hash_map_set.h"
-#include "utilities/logger.h"
-#include "includes/model_part.h"
+// #include "utilities/logger.h"
 #include "includes/master_slave_constraint.h"
 
 namespace Kratos

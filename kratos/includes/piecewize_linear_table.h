@@ -223,7 +223,7 @@ public:
         double scale = 0.00;
 
         if (dx > epsilon)
-            scale = (X - X1) / dx_norm;
+            scale = (X - X1) / fabs(dx);
 
         Result = Y1 + dy * scale;
 

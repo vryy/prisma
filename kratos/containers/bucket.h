@@ -15,7 +15,6 @@
 // System includes
 #include <string>
 #include <iostream>
-#include <vector>
 
 
 
@@ -74,8 +73,6 @@ public:
     typedef TIteratorType IteratorType;
 
     typedef TDistanceIteratorType DistanceIteratorType;
-
-    //typedef std::vector<IndexType> IndicesType;
 
 
     ///@}

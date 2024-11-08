@@ -17,8 +17,6 @@
 #include <iostream>
 #include <sstream>
 #include <cstddef>
-
-#include <numeric>
 #include <vector>
 
 // External includes
@@ -375,6 +373,17 @@ inline std::ostream& operator << (std::ostream& rOStream,
 
     return rOStream;
 }
+
+template<class TStream, std::size_t TDimension, class TDataType, class TWeightType>
+inline TStream& operator << (TStream& rOStream,
+                             std::vector<IntegrationPoint<TDimension, TDataType, TWeightType> > const& rThis)
+{
+    typename std::vector<IntegrationPoint<TDimension> >::size_type i;
+    for(i = 0 ; i < rThis.size(); ++i)
+        rOStream << rThis[i] << " , " << std::endl;
+    return rOStream;
+}
+
 ///@}
 
 

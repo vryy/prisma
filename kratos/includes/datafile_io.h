@@ -45,8 +45,6 @@
 // Project includes
 #include "includes/define.h"
 #include "includes/io.h"
-#include "includes/kratos_components.h"
-#include "includes/mesh.h"
 #include "includes/model_part.h"
 
 namespace Kratos

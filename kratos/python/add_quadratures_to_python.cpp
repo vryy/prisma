@@ -34,17 +34,6 @@
 namespace Kratos
 {
 
-// template<class TStream, std::size_t TDimension>
-// TStream& operator << (TStream& rOStream,
-//                       std::vector<IntegrationPoint<TDimension> > const & rThis)
-// {
-//     typename std::vector<IntegrationPoint<TDimension> >::size_type i;
-//     for(i = 0 ; i < rThis.size() - 1 ; i++)
-//         rOStream << rThis[i] << " , " << std::endl;
-//     // rOStream << rThis[i];
-//     return rOStream;
-// }
-
 namespace Python
 {
 
@@ -60,15 +49,11 @@ void AddIntegrationPointsArray(std::string const& rArrayName, TArrayType const &
     .def(vector_indexing_suite<TArrayType>())
     .def(self_ns::str(self))
     ;
-
 }
 
 void  AddQuadraturesToPython()
 {
     AddIntegrationPointsArray("IntegrationPointsArray", Kratos::Quadrature<Kratos::LineGaussLegendreIntegrationPoints1,1,Kratos::IntegrationPoint<3> >::IntegrationPointsArrayType());
-    //AddIntegrationPointsArray("IntegrationPoint2DsArray", Kratos::Quadrature<Kratos::LineGaussLegendreIntegrationPoints<1>,2,Kratos::IntegrationPoint<3> >::IntegrationPointsArrayType());
-    //AddIntegrationPointsArray("IntegrationPoint3DsArray", Kratos::Quadrature<Kratos::LineGaussLegendreIntegrationPoints<1>,3,Kratos::IntegrationPoint<3> >::IntegrationPointsArrayType());
-    //AddIntegrationPointsArray("IntegrationPoint4DsArray", Kratos::Quadrature<Kratos::LineGaussLegendreIntegrationPoints<1>,4,Kratos::IntegrationPoint<3> >::IntegrationPointsArrayType());
 
     scope().attr("GaussLegendreQuadrature1D1") = Kratos::Quadrature<Kratos::LineGaussLegendreIntegrationPoints1,1,Kratos::IntegrationPoint<3> >::IntegrationPoints();
     scope().attr("GaussLegendreQuadrature1D2") = Kratos::Quadrature<Kratos::LineGaussLegendreIntegrationPoints2,1,Kratos::IntegrationPoint<3> >::IntegrationPoints();

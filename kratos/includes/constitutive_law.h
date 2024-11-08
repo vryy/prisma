@@ -20,20 +20,16 @@
 /* System includes */
 
 /* External includes */
-#include "boost/smart_ptr.hpp"
 
 /* Project includes */
 #include "includes/define.h"
 #include "includes/serializer.h"
-#include "includes/variables.h"
 #include "includes/node.h"
 #include "includes/properties.h"
 #include "geometries/geometry.h"
-#include "utilities/math_utils.h"
 #include "includes/process_info.h"
 #include "includes/ublas_interface.h"
 #include "includes/kratos_parameters.h"
-#include "containers/data_value_container.h"
 #include "containers/flags.h"
 
 

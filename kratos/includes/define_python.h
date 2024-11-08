@@ -10,7 +10,8 @@
 //  Main authors:    Pooyan Dadvand
 //
 
-#pragma once
+#if !defined(KRATOS_DEFINE_PYTHON_H_INCLUDED)
+#define  KRATOS_DEFINE_PYTHON_H_INCLUDED
 
 // System includes
 
@@ -31,3 +32,5 @@ std::string PrintObject(const T& rObject)
     ss << rObject;
     return ss.str();
 }
+
+#endif // KRATOS_DEFINE_PYTHON_H_INCLUDED

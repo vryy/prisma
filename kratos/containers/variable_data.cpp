@@ -22,7 +22,6 @@
 #include "includes/define.h"
 #include "includes/fnv_1a_hash.h"
 #include "containers/variable_data.h"
-#include "utilities/logger.h"
 
 
 namespace Kratos

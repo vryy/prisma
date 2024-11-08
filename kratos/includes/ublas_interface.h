@@ -16,8 +16,6 @@
 
 
 // System includes
-#include <string>
-#include <iostream>
 
 
 // External includes
@@ -43,7 +41,6 @@
 #include <boost/numeric/ublas/operation_sparse.hpp>
 
 // Project includes
-#include "includes/define.h"
 
 
 namespace Kratos

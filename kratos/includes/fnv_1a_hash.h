@@ -16,6 +16,8 @@
 #if !defined(KRATOS_FNV_1A_HASH_H_INCLUDED)
 #define KRATOS_FNV_1A_HASH_H_INCLUDED
 
+#include <cstdint>
+
 namespace Kratos {
 ///@addtogroup Kratos Core
 ///@{

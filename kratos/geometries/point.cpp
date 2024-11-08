@@ -16,6 +16,7 @@
 // External includes
 
 // Project includes
+#include "includes/kratos_components.h"
 #include "geometries/point.h"
 
 namespace Kratos

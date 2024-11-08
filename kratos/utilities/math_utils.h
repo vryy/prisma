@@ -14,7 +14,8 @@
 //                   Pablo Becker
 //
 
-#pragma once
+#if !defined(KRATOS_MATH_UTILS_H_INCLUDED )
+#define  KRATOS_MATH_UTILS_H_INCLUDED
 
 // System includes
 #include <cmath>
@@ -23,6 +24,7 @@
 // External includes
 
 // Project includes
+#include "includes/define.h"
 #include "includes/ublas_interface.h"
 #include "includes/kratos_exception.h"
 
@@ -825,7 +827,7 @@ public:
 
         KRATOS_DEBUG_ERROR_IF(a.size() != 3 || b.size() != 3 || c.size() != 3)
             << "The size of the vectors is different of 3: "
-            << a << ", " << b << " and " << c << std::endl;
+            << a.size() << ", " << b.size() << " and " << c.size() << std::endl;
         KRATOS_DEBUG_ERROR_IF(CheckIsAlias(c, a))
             << "Aliasing between the output parameter and the first "
             << "input parameter" << std::endl;
@@ -1869,3 +1871,5 @@ private:
 ///@{
 
 }  /* namespace Kratos.*/
+
+#endif // KRATOS_MATH_UTILS_H_INCLUDED

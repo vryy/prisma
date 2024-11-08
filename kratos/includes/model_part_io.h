@@ -30,7 +30,6 @@
 // System includes
 #include <string>
 #include <fstream>
-#include <set>
 
 
 // External includes
@@ -39,7 +38,6 @@
 // Project includes
 #include "includes/define.h"
 #include "includes/io.h"
-#include "utilities/timer.h"
 #include "containers/flags.h"
 
 

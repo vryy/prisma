@@ -28,10 +28,10 @@
 
 
 // Project includes
-#include "includes/define.h"
 #include "includes/serializer.h"
-#include "python/add_serializer_to_python.h"
 #include "includes/model_part.h"
+#include "containers/buffer.h"
+#include "python/add_serializer_to_python.h"
 
 namespace Kratos
 {

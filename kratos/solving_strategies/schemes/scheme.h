@@ -22,7 +22,6 @@
 
 // Project includes
 #include "includes/define.h"
-#include "includes/kratos_flags.h"
 #include "includes/model_part.h"
 #include "utilities/openmp_utils.h"
 

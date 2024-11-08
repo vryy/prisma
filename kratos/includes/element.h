@@ -21,6 +21,7 @@
 #include "includes/properties.h"
 #include "includes/process_info.h"
 #include "includes/geometrical_object.h"
+#include "containers/vector_map.h"
 #include "containers/weak_pointer_vector.h"
 #include "constitutive_law.h"
 

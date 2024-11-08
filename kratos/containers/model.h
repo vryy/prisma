@@ -17,7 +17,7 @@
 // System includes
 #include <string>
 #include <iostream>
-#include <unordered_map>
+#include <map>
 
 // External includes
 
@@ -53,7 +53,7 @@ namespace Kratos
 * @class Model
 * @ingroup KratosCore
 * @brief This class aims to manage different model parts across multi-physics simulations
-* @details The class behaves as a manager of the different model parts. It uses unordered_maps of the variables and the model parts for that purpose
+* @details The class behaves as a manager of the different model parts. It uses map of the variables and the model parts for that purpose
 * @author Riccardo Rossi
 */
 class KRATOS_API(KRATOS_CORE) Model final

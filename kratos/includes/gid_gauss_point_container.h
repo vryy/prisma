@@ -27,10 +27,6 @@
 #define  KRATOS_GID_GAUSS_POINT_CONTAINER_H_INCLUDED
 
 // System includes
-#include <string>
-#include <iostream>
-#include <fstream>
-#include <sstream>
 #include <cstddef>
 
 // External includes
@@ -38,6 +34,7 @@
 
 // Project includes
 #include "includes/define.h"
+#include "includes/model_part.h"
 #include "geometries/geometry_data.h"
 
 #define tet10_a 0.108103018168070
