@@ -28,7 +28,6 @@
 
 
 // Project includes
-#include "includes/define.h"
 #include "includes/ublas_interface.h"
 #include "python/vector_python_interface.h"
 #include "python/vector_scalar_operator_python.h"

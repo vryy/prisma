@@ -13,15 +13,6 @@
 //
 
 
-
-
-
-
-
-
-
-
-
 // CHANGE LOG:
 //   18 Sep 2013: hbui change the way to read value from node in WriteNodalResults to GetSolutionStepValue for Variable<Matrix> and fix some call for Timer in WriteNodalResults for Variable<bool> and Variable<double>
 
@@ -33,7 +24,6 @@
 // System includes
 #include <string>
 #include <iostream>
-#include <fstream>
 #include <sstream>
 #include <cstddef>
 #include <iomanip>

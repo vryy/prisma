@@ -54,8 +54,6 @@
 #include "add_serializer_to_python.h"
 #include "add_table_to_python.h"
 //#include "add_sparse_vector_to_python.h"
-#include "pointer_vector_set_python_interface.h"
-#include "solution_step_variable_indexing_python.h"
 
 #include "add_linear_solvers_to_python.h"
 #include "add_strategies_to_python.h"

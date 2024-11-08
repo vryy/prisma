@@ -14,10 +14,7 @@
 #if !defined(KRATOS_ADD_MODEL_TO_PYTHON_H_INCLUDED )
 #define  KRATOS_ADD_MODEL_TO_PYTHON_H_INCLUDED
 
-
-
 // System includes
-#include "includes/define.h"
 
 // External includes
 

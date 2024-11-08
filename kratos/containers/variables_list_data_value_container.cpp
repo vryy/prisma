@@ -52,7 +52,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 // Project includes
-#include "includes/define.h"
 #include "containers/variables_list_data_value_container.h"
 
 namespace Kratos

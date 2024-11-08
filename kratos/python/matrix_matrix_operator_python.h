@@ -24,11 +24,7 @@
 #if !defined(KRATOS_MATRIX_MATRIX_OPERATOR_PYTHON_H_INCLUDED )
 #define  KRATOS_MATRIX_MATRIX_OPERATOR_PYTHON_H_INCLUDED
 
-
-
 // System includes
-#include <string>
-#include <iostream>
 
 
 // External includes

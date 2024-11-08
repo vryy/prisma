@@ -22,10 +22,8 @@
 #include <string>
 #include <iostream>
 #include <sstream>
-#include <cstddef>
 
 // External includes
-#include "boost/smart_ptr.hpp"
 #include <boost/iterator/indirect_iterator.hpp>
 
 // Project includes
