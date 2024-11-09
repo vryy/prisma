@@ -539,47 +539,44 @@ protected:
     ///@}
 
 private:
-    class CompareKey : public std::binary_function<value_type, value_type, bool>
+    class CompareKey
     {
     public:
-        bool operator()(value_type a, value_type b) const
-        {
-            return TCompareType()(a.first, b.first);
-        }
-        bool operator()(value_type a, key_type b) const
+        bool operator()(value_type const& a, key_type b) const
         {
             return TCompareType()(a.first, b);
         }
-        bool operator()(key_type a, value_type b) const
+        bool operator()(key_type a, value_type const& b) const
         {
             return TCompareType()(a, b.first);
         }
-    };
-    class CompareValue : public std::binary_function<value_type, value_type, bool>
-    {
-    public:
-        bool operator()(value_type a, value_type b) const
+        bool operator()(value_type const& a, value_type const& b) const
         {
             return TCompareType()(a.first, b.first);
         }
     };
-    class EqualKeyTo : public std::binary_function<value_type, value_type, bool>
+    class CompareValue
+    {
+    public:
+        bool operator()(const value_type& a, const value_type& b) const
+        {
+            return TCompareType()(a.first, b.first);
+        }
+    };
+    class EqualKeyTo
     {
         key_type mKey;
     public:
         EqualKeyTo(key_type k) : mKey(k) {}
-        bool operator()(value_type a, value_type b) const
+        bool operator()(value_type const& a, value_type const& b) const
         {
             return a.first == b.first;
         }
-        bool operator()(value_type a) const
+        bool operator()(value_type const& a) const
         {
             return a.first == mKey;
         }
     };
-
-//        static typename TCompareType::result_type TCompareType(TDataType const & a, TDataType const & b)
-//        {return TCompareType()(KeyOf(a), KeyOf(b));}
 
     ///@name Static Member Variables
     ///@{

@@ -71,14 +71,19 @@ class Model;
 class KRATOS_API(KRATOS_CORE) ModelPart
     : public DataValueContainer, public Flags
 {
-    class GetModelPartName : public std::unary_function<const ModelPart* const, std::string>
+    class GetModelPartName
     {
     public:
+
+        using argument_type = const ModelPart* const;
+        using result_type = std::string;
+
         std::string const& operator()(const ModelPart& rModelPart) const
         {
             return rModelPart.Name();
         }
     };
+
 public:
     ///@name  Enum's
     ///@{

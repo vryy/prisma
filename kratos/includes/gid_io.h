@@ -471,7 +471,7 @@ public:
      * @param SolutionTag the current solution step (i.e. time)
      * @param conditions_flag states whether results should also be written on conditions
      */
-    virtual void InitializeResults( double name, MeshType rThisMesh )
+    virtual void InitializeResults( double name, MeshType& rThisMesh )
     {
         if ( mMode == GiD_PostAscii && ! mResultFileOpen )
         {
@@ -481,6 +481,7 @@ public:
             mResultFileOpen = true;
 
         }
+
         //initializing gauss points containers
         if ( mWriteConditions != WriteConditionsOnly )
         {
@@ -1071,7 +1072,7 @@ public:
     }//WriteSphereMesh
 
 
-void WriteCircleMesh( MeshType& rThisMesh )
+    void WriteCircleMesh( MeshType& rThisMesh )
     {
         KRATOS_TRY
 
@@ -1148,7 +1149,6 @@ void WriteCircleMesh( MeshType& rThisMesh )
                     if ( it->AddCondition( conditions_iterator ) )
                         break;
         }
-//         mNodeList.clear();
 
         for ( typename std::vector<TMeshContainer>::iterator it = mGidMeshContainers.begin();
                 it != mGidMeshContainers.end(); it++ )
@@ -1161,17 +1161,8 @@ void WriteCircleMesh( MeshType& rThisMesh )
             else
                 KRATOS_THROW_ERROR( std::logic_error, "undefined WriteDeformedMeshFlag" , "" );
 
-            ModelPart::NodesContainerType tempNodes = it->GetMeshNodes();
-            for( ModelPart::NodesContainerType::iterator iter = tempNodes.begin(); iter != tempNodes.end(); iter++ )
-            {
-//                 mNodeList.push_back(*iter);
-
-            }
-
             it->Reset();
         }
-
-//         mNodeList.Unique();
 
         Timer::Stop("Writing Mesh");
 

@@ -4,8 +4,8 @@
 //   _|\_\_|  \__,_|\__|\___/ ____/
 //                   Multi-Physics
 //
-//  License:		 BSD License
-//					 Kratos default license: kratos/license.txt
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Riccardo Rossi
 //
@@ -28,7 +28,6 @@
 
 
 // External includes
-
 
 // Project includes
 #include "includes/define.h"
@@ -63,7 +62,7 @@ public:
 };
 
 template <class Type>
-class MultAndAddValue : public std::binary_function<Type, Type, Type>
+class MultAndAddValue
 {
 private:
     Type Factor; // The value to multiply by
@@ -102,9 +101,16 @@ public:
 ///@name Kratos Classes
 ///@{
 
-/// Short class definition.
-
-/** Detail class definition.
+/**
+ * @class UblasSpace
+ * @ingroup KratosCore
+ * @brief A class template for handling data types, matrices, and vectors in a Ublas space.
+ * @details This class template is designed to work with different data types, matrix types, and vector types
+ * within a Ublas space. It provides typedefs and utilities for managing these types effectively.
+ * @tparam TDataType The data type used in the Ublas space.
+ * @tparam TMatrixType The matrix type used in the Ublas space.
+ * @tparam TVectorType The vector type used in the Ublas space.
+ * @author Riccardo Rossi
  */
 template<class TDataType, class TMatrixType, class TVectorType>
 class UblasSpace
@@ -134,22 +140,18 @@ public:
     ///@{
 
     /// Default constructor.
-
     UblasSpace()
     {
     }
 
     /// Destructor.
-
     virtual ~UblasSpace()
     {
     }
 
-
     ///@}
     ///@name Operators
     ///@{
-
 
     ///@}
     ///@name Operations
@@ -892,21 +894,17 @@ private:
     }
 #endif
 
-
     ///@}
     ///@name Private Operations
     ///@{
-
 
     ///@}
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
-
 
     ///@}
     ///@name Un accessible methods
@@ -918,23 +916,16 @@ private:
     /// Copy constructor.
     UblasSpace(UblasSpace const& rOther);
 
-
     ///@}
-
 }; // Class UblasSpace
 
-
-
 ///@}
-
 ///@name Type Definitions
 ///@{
-
 
 ///@}
 ///@name Input and output
 ///@{
-
 
 /// input stream function
 //   inline std::istream& operator >> (std::istream& rIStream,
@@ -956,5 +947,4 @@ private:
 } // namespace Kratos.
 
 #endif // KRATOS_UBLAS_SPACE_H_INCLUDED  defined
-
 

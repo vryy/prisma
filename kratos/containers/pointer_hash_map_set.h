@@ -2,28 +2,22 @@
 //    ' /   __| _` | __|  _ \   __|
 //    . \  |   (   | |   (   |\__ `
 //   _|\_\_|  \__,_|\__|\___/ ____/
-//                   Multi-Physics 
+//                   Multi-Physics
 //
-//  License:		 BSD License 
-//					 Kratos default license: kratos/license.txt
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Pooyan Dadvand
-//                    
 //
-
-
+//
 
 #if !defined(KRATOS_POINTER_HASH_MAP_SET_H_INCLUDED )
 #define  KRATOS_POINTER_HASH_MAP_SET_H_INCLUDED
 
-
-
 // System includes
 #include <unordered_map>
 
-
 // External includes
-
 
 // Project includes
 #include "includes/define.h"
@@ -52,10 +46,10 @@ namespace Kratos
 ///@{
 
 /// PointerHashMapSet is a hash implemenetation of the PointerVectorSet.
-/** This container is like a set but is built over a hash map in order 
-	to allow the key to be a part of the value. It is important to mention
-	that the value is not constant and if the key inside the value changed
-	outside results in inconsistence condition.
+/** This container is like a set but is built over a hash map in order
+    to allow the key to be a part of the value. It is important to mention
+    that the value is not constant and if the key inside the value changed
+    outside results in inconsistence condition.
 
     This Container does not free the memory by
     itself and relies on using of counted pointers or manual
@@ -84,61 +78,73 @@ public:
     typedef TPointerType pointer;
     typedef TDataType& reference;
     typedef const TDataType& const_reference;
-	typedef std::unordered_map<key_type, TPointerType, hasher> ContainerType;
+    typedef std::unordered_map<key_type, TPointerType, hasher> ContainerType;
 
     typedef typename ContainerType::size_type size_type;
     typedef typename ContainerType::iterator ptr_iterator;
     typedef typename ContainerType::const_iterator ptr_const_iterator;
     typedef typename ContainerType::difference_type difference_type;
 
-	///@}
+    ///@}
 
 private:
-	///@name Nested clases
-	///@{
-	class iterator_adaptor : public std::iterator<std::forward_iterator_tag, data_type>
-	{
-		ptr_iterator map_iterator;
-	public:
-		iterator_adaptor(ptr_iterator it) :map_iterator(it) {}
-		iterator_adaptor(const iterator_adaptor& it) : map_iterator(it.map_iterator) {}
-		iterator_adaptor& operator++() { map_iterator++; return *this; }
-		iterator_adaptor operator++(int) { iterator_adaptor tmp(*this); operator++(); return tmp; }
-		bool operator==(const iterator_adaptor& rhs) const { return map_iterator == rhs.map_iterator; }
-		bool operator!=(const iterator_adaptor& rhs) const { return map_iterator != rhs.map_iterator; }
-		data_type& operator*() const { return *(map_iterator->second); }
-		data_type* operator->() const { return map_iterator->second; }
-		ptr_iterator& base() { return map_iterator; }
-		ptr_iterator const& base() const { return map_iterator; }
-	};
+    ///@name Nested clases
+    ///@{
+    class iterator_adaptor
+    {
+        ptr_iterator map_iterator;
+    public:
+        using iterator_category = std::forward_iterator_tag;
+        using difference_type   = std::ptrdiff_t;
+        using value_type        = data_type;
+        using pointer           = data_type*;
+        using reference         = data_type&;
 
-	class const_iterator_adaptor : public std::iterator<std::forward_iterator_tag, data_type>
-	{
-		ptr_const_iterator map_iterator;
-	public:
-		const_iterator_adaptor(ptr_const_iterator it) :map_iterator(it) {}
-		const_iterator_adaptor(const const_iterator_adaptor& it) : map_iterator(it.map_iterator) {}
-		const_iterator_adaptor& operator++() { map_iterator++; return *this; }
-		const_iterator_adaptor operator++(int) { const_iterator_adaptor tmp(*this); operator++(); return tmp; }
-		bool operator==(const const_iterator_adaptor& rhs) const { return map_iterator == rhs.map_iterator; }
-		bool operator!=(const const_iterator_adaptor& rhs) const { return map_iterator != rhs.map_iterator; }
-		data_type const& operator*() const { return *(map_iterator->second); }
-		data_type* operator->() const { return map_iterator->second; }
-		ptr_const_iterator& base() { return map_iterator; }
-		ptr_const_iterator const& base() const { return map_iterator; }
-	};
+        iterator_adaptor(ptr_iterator it) :map_iterator(it) {}
+        iterator_adaptor(const iterator_adaptor& it) : map_iterator(it.map_iterator) {}
+        iterator_adaptor& operator++() { map_iterator++; return *this; }
+        iterator_adaptor operator++(int) { iterator_adaptor tmp(*this); operator++(); return tmp; }
+        bool operator==(const iterator_adaptor& rhs) const { return map_iterator == rhs.map_iterator; }
+        bool operator!=(const iterator_adaptor& rhs) const { return map_iterator != rhs.map_iterator; }
+        data_type& operator*() const { return *(map_iterator->second); }
+        data_type* operator->() const { return map_iterator->second; }
+        ptr_iterator& base() { return map_iterator; }
+        ptr_iterator const& base() const { return map_iterator; }
+    };
 
-	///@}
+    class const_iterator_adaptor
+    {
+        ptr_const_iterator map_iterator;
+    public:
+        using iterator_category = std::forward_iterator_tag;
+        using difference_type   = std::ptrdiff_t;
+        using value_type        = data_type;
+        using pointer           = data_type*;
+        using reference         = data_type&;
+
+        const_iterator_adaptor(ptr_const_iterator it) :map_iterator(it) {}
+        const_iterator_adaptor(const const_iterator_adaptor& it) : map_iterator(it.map_iterator) {}
+        const_iterator_adaptor& operator++() { map_iterator++; return *this; }
+        const_iterator_adaptor operator++(int) { const_iterator_adaptor tmp(*this); operator++(); return tmp; }
+        bool operator==(const const_iterator_adaptor& rhs) const { return map_iterator == rhs.map_iterator; }
+        bool operator!=(const const_iterator_adaptor& rhs) const { return map_iterator != rhs.map_iterator; }
+        data_type const& operator*() const { return *(map_iterator->second); }
+        data_type* operator->() const { return map_iterator->second; }
+        ptr_const_iterator& base() { return map_iterator; }
+        ptr_const_iterator const& base() const { return map_iterator; }
+    };
+
+    ///@}
 
 public:
-	///@name Type Definitions
-	///@{
+    ///@name Type Definitions
+    ///@{
 
 
-	typedef iterator_adaptor iterator;
-	typedef const_iterator_adaptor const_iterator;
+    typedef iterator_adaptor iterator;
+    typedef const_iterator_adaptor const_iterator;
 
-	///@}
+    ///@}
     ///@name Life Cycle
     ///@{
 
@@ -172,28 +178,30 @@ public:
     {
         mData = rOther.mData;
 
-		return *this;
+        return *this;
     }
 
     TDataType& operator[](const key_type& Key)
     {
-		return *(mData[Key].second);
+        KRATOS_DEBUG_ERROR_IF(mData.find(Key) == mData.end()) << "The key: " << Key << " is not available in the map" << std::endl;
+        return *(mData.find(Key)->second);
     }
 
     pointer& operator()(const key_type& Key)
     {
-		return mData[Key].second;
-	}
+        KRATOS_DEBUG_ERROR_IF(mData.find(Key) == mData.end()) << "The key: " << Key << " is not available in the map" << std::endl;
+        return mData.find(Key)->second;
+    }
 
     bool operator==( const PointerHashMapSet& r ) const // nothrow
     {
        return (mData == r.mData);
     }
 
-	bool operator!=(const PointerHashMapSet& r) const // nothrow
-	{
-		return (mData != r.mData);
-	}
+    bool operator!=(const PointerHashMapSet& r) const // nothrow
+    {
+        return (mData != r.mData);
+    }
 
 
     ///@}
@@ -259,16 +267,6 @@ public:
         return mData.size();
     }
 
-    //size_type max_size() const
-    //{
-    //    return mData.max_size();
-    //}
-
-    //key_compare key_comp() const
-    //{
-    //    return TCompareType();
-    //}
-
     void swap(PointerHashMapSet& rOther)
     {
         mData.swap(rOther.mData);
@@ -277,20 +275,20 @@ public:
     template<class TOtherDataType>
     iterator insert(const TOtherDataType& rData)
     {
-		TDataType* p_new_data = new TDataType(rData);
-		return mData.insert(ContainerType::value_type(TGetKeyOf(rData), p_new_data));
+        TDataType* p_new_data = new TDataType(rData);
+        return mData.insert(ContainerType::value_type(TGetKeyOf(rData), p_new_data));
     }
 
     iterator insert(TPointerType pData)
     {
-		std::string key=KeyOf(*pData);
-		typename ContainerType::value_type item(key, pData);
-		std::pair<typename ContainerType::iterator, bool> result = mData.insert(item);
-	// TODO: I should enable this after adding the KRATOS_ERROR to define.h. Pooyan.
-	//if(result.second != true)
-	//	KRATOS_ERROR << "Error in adding the new item" << std::endl
-		return result.first;
-	}
+        key_type key=KeyOf(*pData);
+        typename ContainerType::value_type item(key, pData);
+        std::pair<typename ContainerType::iterator, bool> result = mData.insert(item);
+        // TODO: I should enable this after adding the KRATOS_ERROR to define.h. Pooyan.
+        //if(result.second != true)
+        //    KRATOS_ERROR << "Error in adding the new item" << std::endl
+        return result.first;
+    }
 
     template <class InputIterator>
     void insert(InputIterator First, InputIterator Last)
@@ -300,17 +298,17 @@ public:
     }
 
 
-	iterator erase(iterator pos)
-	{
-		return mData.erase(pos.base());
-	}
+    iterator erase(iterator pos)
+    {
+        return mData.erase(pos.base());
+    }
 
-	size_type erase(key_type const& Key)
-	{
-		return mData.erase(Key);
-	}
+    size_type erase(key_type const& Key)
+    {
+        return mData.erase(Key);
+    }
 
-	iterator erase( iterator first, iterator last )
+    iterator erase( iterator first, iterator last )
     {
         return mData.erase( first.base(), last.base() );
     }
@@ -327,8 +325,8 @@ public:
 
     const_iterator find(const key_type& Key) const
     {
-		return mData.find(Key);
-	}
+        return mData.find(Key);
+    }
 
     size_type count(const key_type& Key)
     {
@@ -344,7 +342,7 @@ public:
         return mData.capacity();
     }
 
- 
+
     ///@}
     ///@name Access
     ///@{
@@ -361,8 +359,6 @@ public:
         return mData;
     }
 
-
- 
     ///@}
     ///@name Inquiry
     ///@{
@@ -401,66 +397,12 @@ public:
 
 
     ///@}
-    ///@name Friends
-    ///@{
-
-
-    ///@}
-
-protected:
-    ///@name Protected static Member Variables
-    ///@{
-
-
-    ///@}
-    ///@name Protected member Variables
-    ///@{
-
-
-    ///@}
-    ///@name Protected Operators
-    ///@{
-
-
-    ///@}
-    ///@name Protected Operations
-    ///@{
-
-
-    ///@}
-    ///@name Protected  Access
-    ///@{
-
-
-    ///@}
-    ///@name Protected Inquiry
-    ///@{
-
-
-    ///@}
-    ///@name Protected LifeCycle
-    ///@{
-
-
-    ///@}
 
 private:
-
-
-    ///@name Static Member Variables
-    ///@{
-
-
-    ///@}
     ///@name Member Variables
     ///@{
 
     ContainerType mData;
-
-    ///@}
-    ///@name Private Operators
-    ///@{
-
 
     ///@}
     ///@name Private Operations
@@ -495,7 +437,7 @@ private:
 
         rSerializer.save("size", size);
 
-		for (ptr_const_iterator i = ptr_begin(); i != ptr_end(); i++)
+        for (ptr_const_iterator i = ptr_begin(); i != ptr_end(); i++)
             rSerializer.save("E", i->second);
     }
 
@@ -505,32 +447,16 @@ private:
 
         rSerializer.load("size", size);
 
-		for (size_type i = 0; i < size; i++)
-		{
-			pointer p;
-			rSerializer.load("E", p);
-			insert(p);
-		}
+        for (size_type i = 0; i < size; i++)
+        {
+            pointer p;
+            rSerializer.load("E", p);
+            insert(p);
+        }
     }
 
 
     ///@}
-    ///@name Private  Access
-    ///@{
-
-
-    ///@}
-    ///@name Private Inquiry
-    ///@{
-
-
-    ///@}
-    ///@name Un accessible methods
-    ///@{
-
-
-    ///@}
-
 }; // Class PointerHashMapSet
 
 ///@}
@@ -543,16 +469,6 @@ private:
 ///@name Input and output
 ///@{
 
-
-/// input stream function
-//template<class TDataType,
-//         class TGetKeyType,
-//         class TCompareType,
-//         class TEqualType,
-//         class TPointerType,
-//         class ContainerType>
-//inline std::istream& operator >> (std::istream& rIStream,
-//                                  PointerHashMapSet<TDataType, TGetKeyType, TCompareType, TEqualType, TPointerType, ContainerType>& rThis);
 
 /// output stream function
 template<class TDataType,

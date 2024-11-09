@@ -799,44 +799,21 @@ private:
                 typename RegisteredObjectsNameContainerType::iterator i_name = msRegisteredObjectsName.find(typeid (*pValue).name());
 
                 if (i_name == msRegisteredObjectsName.end())
+                {
                     KRATOS_THROW_ERROR(std::runtime_error, "There is no object registered in Kratos with type id : ", typeid (*pValue).name())
-                    else
-                        write(i_name->second);
-
-
+                }
+                else
+                {
+                    write(i_name->second);
+                }
             }
 
             save(rTag, *pValue);
-            //        pValue->save(*this);
             mSavedPointers.insert(pValue);
         }
     }
 
     VariableData* GetVariableData(std::string const & VariableName);
-
-//        void read(bool& rData)
-//        {
-//            int temp;
-//            read(temp);
-//            rData = temp << 1;
-//
-//         }
-//
-//        void write(bool& rData)
-//        {
-//            int temp(rData);
-//            write(temp);
-//        }
-//
-//        void read(std::string& rValue)
-//        {
-//            *mpBuffer >> rValue;
-//        }
-//
-//        void write(std::string& rValue)
-//        {
-//            *mpBuffer << rValue;
-//        }
 
     void read(PointerType& rValue)
     {
