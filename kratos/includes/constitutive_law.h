@@ -81,8 +81,8 @@ public:
         RETURN_ON_RIGHT_EDGE    = 5,
         RETURN_ON_CORNER        = 6,
         RETURN_ON_APEX          = 7,
-        RETURN_FAILED           = -1,
-        RETURN_INVALID          = -2,
+        RETURN_FAILED           = 99, // 100-1 // do that because char is unsigned char with target=aarch64-none-linux-android24
+        RETURN_INVALID          = 98, // 100-2,
     };
 
     /**
