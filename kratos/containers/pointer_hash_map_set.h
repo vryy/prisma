@@ -16,6 +16,7 @@
 
 // System includes
 #include <unordered_map>
+#include <functional>
 
 // External includes
 
@@ -56,7 +57,7 @@ namespace Kratos
     deleting.
  */
 template<class TDataType,
-         class THashType = boost::hash<TDataType>,
+         class THashType = std::hash<TDataType>,
          class TGetKeyType = SetIdentityFunction<TDataType>,
          class TPointerType = boost::shared_ptr<TDataType> >
 class PointerHashMapSet
@@ -74,11 +75,10 @@ public:
     /// data type stores in this container.
     typedef TDataType data_type;
     typedef TDataType value_type;
-    typedef THashType hasher;
     typedef TPointerType pointer;
     typedef TDataType& reference;
     typedef const TDataType& const_reference;
-    typedef std::unordered_map<key_type, TPointerType, hasher> ContainerType;
+    typedef std::unordered_map<key_type, TPointerType, THashType> ContainerType;
 
     typedef typename ContainerType::size_type size_type;
     typedef typename ContainerType::iterator ptr_iterator;
@@ -477,8 +477,8 @@ template<class TDataType,
          class TEqualType,
          class TPointerType,
          class ContainerType>
-inline std::ostream& operator << (std::ostream& rOStream,
-                                  const PointerHashMapSet<TDataType, TGetKeyType, TCompareType, TPointerType>& rThis)
+std::ostream& operator << (std::ostream& rOStream,
+                           const PointerHashMapSet<TDataType, TGetKeyType, TCompareType, TPointerType>& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;
