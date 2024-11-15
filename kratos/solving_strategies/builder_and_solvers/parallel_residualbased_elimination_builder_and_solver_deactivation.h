@@ -4,8 +4,8 @@
 //   _|\_\_|  \__,_|\__|\___/ ____/
 //                   Multi-Physics
 //
-//  License:		 BSD License
-//					 Kratos default license: kratos/license.txt
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Riccardo Rossi
 //
@@ -142,7 +142,7 @@ public:
         : BuilderAndSolver< TSparseSpace,TDenseSpace,TLinearSolver >(pNewLinearSystemSolver)
     {
 
-        /* 			std::cout << "using the standard builder and solver " << std::endl; */
+        /*          std::cout << "using the standard builder and solver " << std::endl; */
 
     }
 
@@ -265,27 +265,27 @@ public:
         KRATOS_WATCH("finished parallel building");
 
 
-        /*			LHS_Contribution.resize(0,0,false);
-        			RHS_Contribution.resize(0,false);
+        /*          LHS_Contribution.resize(0,0,false);
+                    RHS_Contribution.resize(0,false);
 
-        			// assemble all conditions
-        			for (typename ConditionsArrayType::iterator it=ConditionsArray.begin(); it!=ConditionsArray.end(); ++it)
-        			{
-        				//calculate elemental contribution
-        				pScheme->CalculateSystemContributions(*it,LHS_Contribution,RHS_Contribution,EquationId,CurrentProcessInfo);
+                    // assemble all conditions
+                    for (typename ConditionsArrayType::iterator it=ConditionsArray.begin(); it!=ConditionsArray.end(); ++it)
+                    {
+                        //calculate elemental contribution
+                        pScheme->CalculateSystemContributions(*it,LHS_Contribution,RHS_Contribution,EquationId,CurrentProcessInfo);
 
-        				//assemble the elemental contribution
-        				AssembleLHS(A,LHS_Contribution,EquationId);
-        				AssembleRHS(b,RHS_Contribution,EquationId);
-        			}
+                        //assemble the elemental contribution
+                        AssembleLHS(A,LHS_Contribution,EquationId);
+                        AssembleRHS(b,RHS_Contribution,EquationId);
+                    }
         */
         //for( int i=0; i<A.size1(); i++ )
         //{
-        //	for( int j=0; j<A.size2(); j++ )
-        //	{
-        //		std::cout << A(i,j);
-        //	}
-        //	std::cout << std::endl;
+        //  for( int j=0; j<A.size2(); j++ )
+        //  {
+        //      std::cout << A(i,j);
+        //  }
+        //  std::cout << std::endl;
         //}
         KRATOS_CATCH("")
 
@@ -472,7 +472,7 @@ public:
             std::cout << "Building Time : " << building_time.elapsed() << std::endl;
         }
 
-//			ApplyPointLoads(pScheme,r_model_part,b);
+//          ApplyPointLoads(pScheme,r_model_part,b);
 
         //does nothing...dirichlet conditions are naturally dealt with in defining the residual
         ApplyDirichletConditions(pScheme,r_model_part,A,Dx,b);
@@ -862,7 +862,7 @@ public:
         {
             TSparseSpace::Clear( (this->mpReactionsVector) );
         }
-// 			this->mReactionsVector = TSystemVectorType();
+//          this->mReactionsVector = TSystemVectorType();
 
         if (this->GetEchoLevel()>0)
         {
@@ -919,7 +919,7 @@ protected:
 
         std::size_t equation_size = A.size1();
         std::vector<std::vector<std::size_t> > indices(equation_size);
-        //				std::vector<std::vector<std::size_t> > dirichlet_indices(TSystemSpaceType::Size1(mDirichletMatrix));
+        //              std::vector<std::vector<std::size_t> > dirichlet_indices(TSystemSpaceType::Size1(mDirichletMatrix));
 
         Element::EquationIdVectorType ids(3,0);
         for(typename ElementsContainerType::iterator i_element = rElements.begin() ; i_element != rElements.end() ; i_element++)
@@ -951,7 +951,7 @@ protected:
                         if(ids[j] < equation_size)
                         {
                             AddUnique(row_indices,ids[j]);
-                            //	indices[ids[i]].push_back(ids[j]);
+                            //  indices[ids[i]].push_back(ids[j]);
                         }
                 }
         }
@@ -973,7 +973,7 @@ protected:
             for(std::vector<std::size_t>::iterator it= row_indices.begin(); it != row_indices.end() ; it++)
             {
                 A.push_back(i,*it,0.00);
-//					A()(i,*it) = 0.00;
+//                  A()(i,*it) = 0.00;
             }
             //row_indices = std::vector<std::size_t>();
             row_indices.clear();

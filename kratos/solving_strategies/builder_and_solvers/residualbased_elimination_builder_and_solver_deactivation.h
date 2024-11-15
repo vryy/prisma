@@ -663,7 +663,7 @@ public:
                 if( !it->GetValue( IS_INACTIVE ) || it->Is( ACTIVE ) )
                 {
 //                    std::cout << "Condition " << it->Id() << " is considerred, type: " << typeid((*it)).name() << std::endl;
-                    //calculate elemental contribution
+                    //calculate conditional contribution
                     pScheme->CalculateSystemContributions(*it,LHS_Contribution,RHS_Contribution,EquationId,CurrentProcessInfo);
 
                     #ifdef DETECT_NAN_AT_BUILD

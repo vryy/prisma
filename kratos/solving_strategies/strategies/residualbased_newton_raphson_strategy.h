@@ -344,7 +344,7 @@ public:
     // 1 -> printing time and basic informations
     // 2 -> printing linear solver data
     // 3 -> Print of debug informations:
-    //		Echo of stiffness matrix, Dx, b...
+    //      Echo of stiffness matrix, Dx, b...
 
     void SetEchoLevel(int Level)
     {
@@ -408,7 +408,7 @@ public:
         KRATOS_CATCH("")
     }
 
-	/**
+    /**
     Initialization of member variables and prior operations
      */
     void Initialize()
@@ -416,49 +416,49 @@ public:
         KRATOS_TRY
 
         if (mInitializeWasPerformed == false)
-		{
-			//pointers needed in the solution
-			typename TSchemeType::Pointer pScheme = GetScheme();
-			typename TConvergenceCriteriaType::Pointer pConvergenceCriteria = mpConvergenceCriteria;
+        {
+            //pointers needed in the solution
+            typename TSchemeType::Pointer pScheme = GetScheme();
+            typename TConvergenceCriteriaType::Pointer pConvergenceCriteria = mpConvergenceCriteria;
 
-			//Initialize The Scheme - OPERATIONS TO BE DONE ONCE
-			if (pScheme->SchemeIsInitialized() == false)
-			    pScheme->Initialize(BaseType::GetModelPart());
+            //Initialize The Scheme - OPERATIONS TO BE DONE ONCE
+            if (pScheme->SchemeIsInitialized() == false)
+                pScheme->Initialize(BaseType::GetModelPart());
 
-			//Initialize The Elements - OPERATIONS TO BE DONE ONCE
-			if (pScheme->ElementsAreInitialized() == false)
-			    pScheme->InitializeElements(BaseType::GetModelPart());
+            //Initialize The Elements - OPERATIONS TO BE DONE ONCE
+            if (pScheme->ElementsAreInitialized() == false)
+                pScheme->InitializeElements(BaseType::GetModelPart());
 
-			//Initialize The Conditions - OPERATIONS TO BE DONE ONCE
-			if (pScheme->ConditionsAreInitialized() == false)
-			    pScheme->InitializeConditions(BaseType::GetModelPart());
+            //Initialize The Conditions - OPERATIONS TO BE DONE ONCE
+            if (pScheme->ConditionsAreInitialized() == false)
+                pScheme->InitializeConditions(BaseType::GetModelPart());
 
-			//initialisation of the convergence criteria
-			if (mpConvergenceCriteria->mConvergenceCriteriaIsInitialized == false)
-			    mpConvergenceCriteria->Initialize(BaseType::GetModelPart());
+            //initialisation of the convergence criteria
+            if (mpConvergenceCriteria->mConvergenceCriteriaIsInitialized == false)
+                mpConvergenceCriteria->Initialize(BaseType::GetModelPart());
 
-			mInitializeWasPerformed = true;
-		}
+            mInitializeWasPerformed = true;
+        }
 
         KRATOS_CATCH("")
     }
 
-	/**
+    /**
     the problem of interest is solved.
-	This function calls sequentially: Initialize(), InitializeSolutionStep(), Predict(), SolveSolutionStep() and FinalizeSolutionStep().
-	All those functions can otherwise be called separately.
+    This function calls sequentially: Initialize(), InitializeSolutionStep(), Predict(), SolveSolutionStep() and FinalizeSolutionStep().
+    All those functions can otherwise be called separately.
      */
     double Solve()
     {
-		Initialize();
-		InitializeSolutionStep();
-		Predict();
-		SolveSolutionStep();
-		FinalizeSolutionStep();
+        Initialize();
+        InitializeSolutionStep();
+        Predict();
+        SolveSolutionStep();
+        FinalizeSolutionStep();
         return 0.00;
     }
 
-	/**
+    /**
     clears the internal storage
      */
     void Clear()
@@ -489,7 +489,7 @@ public:
         KRATOS_CATCH("");
     }
 
-	/**
+    /**
     this should be considered as a "post solution" convergence check which is useful for coupled analysis
     - the convergence criteria used is the one used inside the "solve" step
      */
@@ -513,7 +513,7 @@ public:
         KRATOS_CATCH("")
     }
 
-	/**
+    /**
     this operations should be called before printing the results when non trivial results (e.g. stresses)
     need to be calculated given the solution of the step
 
@@ -529,15 +529,15 @@ public:
         GetScheme()->CalculateOutputData(BaseType::GetModelPart(), rDofSet, mA, mDx, mb);
     }
 
-	/**
+    /**
     Performs all the required operations that should be done (for each step) before solving the solution step.
-	A member variable should be used as a flag to make sure this function is called only once per step.
+    A member variable should be used as a flag to make sure this function is called only once per step.
     */
-	void InitializeSolutionStep()
+    void InitializeSolutionStep()
     {
         KRATOS_TRY
 
-		//pointers needed in the solution
+        //pointers needed in the solution
         typename TSchemeType::Pointer pScheme = GetScheme();
         typename TBuilderAndSolverType::Pointer pBuilderAndSolver = GetBuilderAndSolver();
         int rank = BaseType::GetModelPart().GetCommunicator().MyPID();
@@ -567,50 +567,50 @@ public:
             std::cout << "CurrentTime = " << BaseType::GetModelPart().GetProcessInfo()[TIME] << std::endl;
         }
 
-		if (mSolutionStepIsInitialized == false)
-		{
-			/*typename TBuilderAndSolverType::Pointer pBuilderAndSolver = GetBuilderAndSolver();
-			typename TSchemeType::Pointer pScheme = GetScheme();
-			int rank = BaseType::GetModelPart().GetCommunicator().MyPID();*/
+        if (mSolutionStepIsInitialized == false)
+        {
+            /*typename TBuilderAndSolverType::Pointer pBuilderAndSolver = GetBuilderAndSolver();
+            typename TSchemeType::Pointer pScheme = GetScheme();
+            int rank = BaseType::GetModelPart().GetCommunicator().MyPID();*/
 
-			//setting up the Vectors involved to the correct size
+            //setting up the Vectors involved to the correct size
             Kratos::timer system_matrix_resize_time;
-			pBuilderAndSolver->ResizeAndInitializeVectors(mpA, mpDx, mpb, BaseType::GetModelPart());
-			if (this->GetEchoLevel() > 0 && rank == 0)
-				std::cout << rank << ": system_matrix_resize_time : " << system_matrix_resize_time.elapsed() << std::endl;
+            pBuilderAndSolver->ResizeAndInitializeVectors(mpA, mpDx, mpb, BaseType::GetModelPart());
+            if (this->GetEchoLevel() > 0 && rank == 0)
+                std::cout << rank << ": system_matrix_resize_time : " << system_matrix_resize_time.elapsed() << std::endl;
 
-			TSystemMatrixType& mA = *mpA;
-			TSystemVectorType& mDx = *mpDx;
-			TSystemVectorType& mb = *mpb;
+            TSystemMatrixType& mA = *mpA;
+            TSystemVectorType& mDx = *mpDx;
+            TSystemVectorType& mb = *mpb;
 
-			//initial operations ... things that are constant over the Solution Step
-			pBuilderAndSolver->InitializeSolutionStep(BaseType::GetModelPart(), mA, mDx, mb);
+            //initial operations ... things that are constant over the Solution Step
+            pBuilderAndSolver->InitializeSolutionStep(BaseType::GetModelPart(), mA, mDx, mb);
 
-			//initial operations ... things that are constant over the Solution Step
-			pScheme->InitializeSolutionStep(BaseType::GetModelPart(), mA, mDx, mb);
+            //initial operations ... things that are constant over the Solution Step
+            pScheme->InitializeSolutionStep(BaseType::GetModelPart(), mA, mDx, mb);
 
-			mSolutionStepIsInitialized = true;
-		}
+            mSolutionStepIsInitialized = true;
+        }
 
         KRATOS_CATCH("")
     }
 
-	/**
+    /**
     Performs all the required operations that should be done (for each step) after solving the solution step.
-	A member variable should be used as a flag to make sure this function is called only once per step.
+    A member variable should be used as a flag to make sure this function is called only once per step.
     */
-	void FinalizeSolutionStep()
-	{
-		KRATOS_TRY
+    void FinalizeSolutionStep()
+    {
+        KRATOS_TRY
 
-		typename TSchemeType::Pointer pScheme = GetScheme();
+        typename TSchemeType::Pointer pScheme = GetScheme();
         typename TBuilderAndSolverType::Pointer pBuilderAndSolver = GetBuilderAndSolver();
 
         TSystemMatrixType& mA = *mpA;
         TSystemVectorType& mDx = *mpDx;
         TSystemVectorType& mb = *mpb;
 
-		//Finalisation of the solution step,
+        //Finalisation of the solution step,
         //operations to be done after achieving convergence, for example the
         //Final Residual Vector (mb) has to be saved in there
         //to avoid error accumulation
@@ -632,19 +632,19 @@ public:
             this->Clear();
         }
 
-		KRATOS_CATCH("")
-	}
+        KRATOS_CATCH("")
+    }
 
-	/**
+    /**
     Solves the current step. This function returns true if a solution has been found, false otherwise.
     */
-	bool SolveSolutionStep()
-	{
-		//pointers needed in the solution
+    bool SolveSolutionStep()
+    {
+        //pointers needed in the solution
         typename TSchemeType::Pointer pScheme = GetScheme();
         typename TBuilderAndSolverType::Pointer pBuilderAndSolver = GetBuilderAndSolver();
 
-		DofsArrayType& rDofSet = pBuilderAndSolver->GetDofSet();
+        DofsArrayType& rDofSet = pBuilderAndSolver->GetDofSet();
 
         TSystemMatrixType& mA = *mpA;
         TSystemVectorType& mDx = *mpDx;
@@ -653,7 +653,7 @@ public:
         //initializing the parameters of the Newton-Raphson cicle
         unsigned int iteration_number = 1;
         BaseType::GetModelPart().GetProcessInfo()[NL_ITERATION_NUMBER] = iteration_number;
-        //			BaseType::GetModelPart().GetProcessInfo().SetNonLinearIterationNumber(iteration_number);
+        //          BaseType::GetModelPart().GetProcessInfo().SetNonLinearIterationNumber(iteration_number);
         bool is_converged = false;
         bool ResidualIsUpdated = false;
         pScheme->InitializeNonLinIteration(BaseType::GetModelPart(), mA, mDx, mb);
@@ -678,7 +678,7 @@ public:
 
         if (this->GetEchoLevel() == 3) //if it is needed to print the debug info
         {
-            // 				std::cout << "After first system solution" << std::endl;
+            //              std::cout << "After first system solution" << std::endl;
             std::cout << "SystemMatrix = " << mA << std::endl;
             std::cout << "solution obtained = " << mDx << std::endl;
             std::cout << "RHS  = " << mb << std::endl;
@@ -804,14 +804,14 @@ public:
         //(note that some convergence criteria need it to be recalculated)
         if (ResidualIsUpdated == false)
         {
-	    // NOTE:
-		// The following part will be commented because it is time consuming
-		// and there is no obvious reason to be here. If someone need this
-		// part please notify the community via mailing list before uncommenting it.
-		// Pooyan.
+        // NOTE:
+        // The following part will be commented because it is time consuming
+        // and there is no obvious reason to be here. If someone need this
+        // part please notify the community via mailing list before uncommenting it.
+        // Pooyan.
 
-  	//    TSparseSpace::SetToZero(mb);
-	//    pBuilderAndSolver->BuildRHS(pScheme, BaseType::GetModelPart(), mb);
+    //    TSparseSpace::SetToZero(mb);
+    //    pBuilderAndSolver->BuildRHS(pScheme, BaseType::GetModelPart(), mb);
         }
 
         //calculate reactions if required
@@ -820,8 +820,8 @@ public:
             pBuilderAndSolver->CalculateReactions(pScheme, BaseType::GetModelPart(), mA, mDx, mb);
         }
 
-		return is_converged;
-	}
+        return is_converged;
+    }
 
     /*@} */
     /**@name Operators
@@ -924,7 +924,7 @@ protected:
 
     typename TConvergenceCriteriaType::Pointer mpConvergenceCriteria;
 
-    /*		TSystemVectorType mDx;
+    /*      TSystemVectorType mDx;
                     TSystemVectorType mb;
                     TSystemMatrixType mA;*/
     TSystemVectorPointerType mpDx;
