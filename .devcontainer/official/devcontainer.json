@@ -1,6 +1,6 @@
 {
   "name": "dev container for Kratos",
-  "image": "vryy/kratos_bcn2-cutiga-dev:latest", // sometimes the devcontainer does not pick up the latest image. In this case, change to image Id
+  "image": "vryy/kratos_bcn2-cutiga-dev:1.2",
 
   "customizations": {
     "vscode": {
@@ -21,18 +21,19 @@
   "workspaceFolder": "/home/kuser/kratos_bcn2",
 
   "mounts": [
+    // ----- fixed mount - Kratos build volume
     {
       "source": "kratos_builds",
       "target": "/home/kuser/kratos_builds",
       "type": "volume"
-      // ----- fixed mount - Kratos build volume
     },
+    // ----- fixed mount - Kratos library volume
     {
-      "source": "kratos_libs",
+      "source": "kratos_libs_all",
       "target": "/home/kuser/kratos_libs",
       "type": "volume"
-      // ----- fixed mount - Kratos library volume
     },
+    // ----- optional mount folder for workspace; decomment as needed
     {
       "source": "/home/buih/workspace/docker/docker-cutiga-dev/kratos_workspace",
       "target": "/home/kuser/kratos_workspace",
