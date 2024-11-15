@@ -45,11 +45,6 @@
 #include "python/vector_scalar_operator_python.h"
 #include "python/vector_vector_operator_python.h"
 #include "python/bounded_vector_python_interface.h"
-#include "python/add_deprecated_variables_to_python.h"
-#include "python/add_c2c_variables_to_python.h" //TODO: to be removed eventually
-#include "python/add_cfd_variables_to_python.h" //TODO: to be removed eventually
-#include "python/add_dem_variables_to_python.h" //TODO: to be removed eventually
-#include "python/add_legacy_structural_app_vars_to_python.h" //TODO: to be removed eventually
 
 #include "includes/convection_diffusion_settings.h"
 #include "includes/radiation_settings.h"
@@ -202,21 +197,6 @@ void  AddContainersToPython()
     .def( self_ns::str( self ) )
     ;
 
-
-    //class_<AllVariablesDataValueContainer, AllVariablesDataValueContainer::Pointer>( "DataValueContainer" )
-    //.def( "__len__", &AllVariablesDataValueContainer::Size )
-    //.def( VariableIndexingPython<AllVariablesDataValueContainer, Variable<std::string> >() )
-    //.def( VariableIndexingPython<AllVariablesDataValueContainer, Variable<int> >() )
-    //.def( VariableIndexingPython<AllVariablesDataValueContainer, Variable<DataType> >() )
-    //.def( VariableIndexingPython<AllVariablesDataValueContainer, Variable<array_1d<DataType, 3> > >() )
-    //.def( VariableIndexingPython<AllVariablesDataValueContainer, Variable<vector<DataType> > >() )
-    //.def( VariableIndexingPython<AllVariablesDataValueContainer, Variable<matrix<DataType> > >() )
-    //.def( VariableIndexingPython<AllVariablesDataValueContainer, Variable<ConvectionDiffusionSettings::Pointer > >() )
-    //.def( VariableIndexingPython<AllVariablesDataValueContainer, Variable<RadiationSettings::Pointer > >() )
-    //.def( VariableIndexingPython<AllVariablesDataValueContainer, VariableComponent<VectorComponentAdaptor<array_1d<DataType, 3> > > >() )
-    //.def( self_ns::str( self ) )
-    //;
-
     class_<DataValueContainer, DataValueContainer::Pointer>( "DataValueContainer" )
     .def( "__len__", &DataValueContainer::Size )
     .def( VariableIndexingPython<DataValueContainer, Variable<std::string> >() )
@@ -294,13 +274,6 @@ void  AddContainersToPython()
     KRATOS_REGISTER_IN_PYTHON_FLAG(BLOCKED);
     KRATOS_REGISTER_IN_PYTHON_FLAG(MARKER);
     KRATOS_REGISTER_IN_PYTHON_FLAG(HANGING);
-
-
-    AddDeprecatedVariablesToPython();
-    AddC2CVariablesToPython();
-    AddDEMVariablesToPython(); //TODO: move this to the DEM application
-    AddCFDVariablesToPython(); ///@TODO: move variables to CFD application
-    AddLegacyStructuralAppVarsToPython();
 
     KRATOS_REGISTER_IN_PYTHON_VARIABLE( DOMAIN_SIZE );
 

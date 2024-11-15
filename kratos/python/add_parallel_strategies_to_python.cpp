@@ -21,15 +21,13 @@
 
 
 // System includes
+#include <cstring>
 
 //nothing will be compiled if an openmp compiler is not found
 
 // External includes
 #include <boost/python.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
-#include "python/add_strategies_to_python.h"
-#include "python/add_parallel_strategies_to_python.h"
-#include <cstring>
 
 #ifdef _OPENMP
 
@@ -38,6 +36,8 @@
 #include "includes/model_part.h"
 #include "spaces/parallel_ublas_space.h"
 #include "spaces/ublas_space.h"
+#include "python/add_strategies_to_python.h"
+#include "python/add_parallel_strategies_to_python.h"
 
 //strategies
 #include "solving_strategies/strategies/solving_strategy.h"
