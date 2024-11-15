@@ -63,12 +63,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 // External includes
 #include <boost/array.hpp>
-#include <boost/timer.hpp> // to be removed after replacing the boost timers with Kratos timer.
-
 
 // Project includes
 #include "includes/define.h"
-
 
 namespace Kratos
 {
@@ -92,11 +89,23 @@ namespace Kratos
 ///@name Kratos Classes
 ///@{
 
-/// Short class definition.
-/** Detail class definition.
-*/
+/**
+ * @class Timer
+ * @ingroup KratosCore
+ * @brief This utility can be used to compute the time employed on computations
+ * @author Pooyan Dadvand
+ * @author Riccardo Rossi
+ * @author Vicente Mataix Ferrandiz
+ */
 class KRATOS_API(KRATOS_CORE) Timer
 {
+    /**
+    * @class TimerData
+    * @ingroup KratosCore
+    * @brief This is an internal class used to manage the timer data
+    * @author Pooyan Dadvand
+    * @author Riccardo Rossi
+    */
     class TimerData
     {
         int mRepeatNumber;
@@ -113,6 +122,14 @@ class KRATOS_API(KRATOS_CORE) Timer
         void SetStartTime(double StartTime)
         {
             mStartTime = StartTime;
+        }
+        double GetTotalElapsedTime()
+        {
+            return mTotalElapsedTime;
+        }
+        void SetTotalElapsedTime(double TotalElapsedTime)
+        {
+            mTotalElapsedTime = TotalElapsedTime;
         }
         void Update(double StopTime)
         {
@@ -150,9 +167,10 @@ public:
     /// Pointer definition of Timer
     KRATOS_CLASS_POINTER_DEFINITION(Timer);
 
+    /// The type of float used to store the time
     typedef double TimeType;
 
-
+    /// The timer data container type (map)
     typedef std::map<std::string, TimerData> ContainerType;
 
     ///@}
@@ -168,11 +186,9 @@ public:
 
     }
 
-
     ///@}
     ///@name Operators
     ///@{
-
 
     ///@}
     ///@name Operations
@@ -221,7 +237,7 @@ public:
     ///@name Access
     ///@{
 
-    static int SetOuputFile(std::string const& OutputFileName)
+    static int SetOutputFile(std::string const& OutputFileName)
     {
         if(msOutputFile.is_open())
             msOutputFile.close();

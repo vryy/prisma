@@ -56,6 +56,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 /* Project includes */
 #include "includes/define.h"
 #include "includes/model_part.h"
+#include "utilities/timing.h"
 #include "solving_strategies/strategies/solving_strategy.h"
 #include "solving_strategies/convergencecriterias/convergence_criteria.h"
 
@@ -547,13 +548,13 @@ public:
                 mReformDofSetAtEachStep == true)
         {
             //setting up the list of the DOFs to be solved
-            boost::timer setup_dofs_time;
+            Kratos::timer setup_dofs_time;
             pBuilderAndSolver->SetUpDofSet(pScheme, BaseType::GetModelPart());
             if (this->GetEchoLevel() > 0 && rank == 0)
                 std::cout << "setup_dofs_time : " << setup_dofs_time.elapsed() << std::endl;
 
             //shaping correctly the system
-            boost::timer setup_system_time;
+            Kratos::timer setup_system_time;
             pBuilderAndSolver->SetUpSystem(BaseType::GetModelPart());
             if (this->GetEchoLevel() > 0 && rank == 0)
                 std::cout << rank << ": setup_system_time : " << setup_system_time.elapsed() << std::endl;
@@ -573,7 +574,7 @@ public:
 			int rank = BaseType::GetModelPart().GetCommunicator().MyPID();*/
 
 			//setting up the Vectors involved to the correct size
-			boost::timer system_matrix_resize_time;
+            Kratos::timer system_matrix_resize_time;
 			pBuilderAndSolver->ResizeAndInitializeVectors(mpA, mpDx, mpb, BaseType::GetModelPart());
 			if (this->GetEchoLevel() > 0 && rank == 0)
 				std::cout << rank << ": system_matrix_resize_time : " << system_matrix_resize_time.elapsed() << std::endl;

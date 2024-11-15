@@ -63,9 +63,7 @@ namespace Kratos
                 KRATOS_THROW_ERROR(std::invalid_argument, "Error opening input file : ", mFilename.c_str());
         }
 
-
-        Timer::SetOuputFile(Filename + ".time");
-
+        Timer::SetOutputFile(Filename + ".time");
     }
 
 

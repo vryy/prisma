@@ -24,6 +24,7 @@
 
 /* Project includes */
 #include "includes/define.h"
+#include "utilities/timing.h"
 #include "solving_strategies/builder_and_solvers/builder_and_solver.h"
 
 
@@ -450,7 +451,7 @@ public:
     {
         KRATOS_TRY
 
-        boost::timer building_time;
+        Kratos::timer building_time;
 
         Build(pScheme, r_model_part, A, b);
 
@@ -473,7 +474,7 @@ public:
             std::cout << "RHS vector = " << b << std::endl;
         }
 
-        boost::timer solve_time;
+        Kratos::timer solve_time;
 
         SystemSolve(A, Dx, b);
 

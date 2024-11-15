@@ -19,10 +19,11 @@
 
 
 /* External includes */
-#include "boost/timer.hpp"
+
 
 /* Project includes */
 #include "includes/define.h"
+#include "utilities/timing.h"
 #include "solving_strategies/strategies/solving_strategy.h"
 
 //default builder and solver
@@ -689,24 +690,24 @@ private:
 
 
         //loop to reform the dofset
-        boost::timer system_construction_time;
+        Kratos::timer system_construction_time;
         if (pBuilderAndSolver->GetDofSetIsInitializedFlag() == false ||
                 mReformDofSetAtEachStep == true)
         {
-            boost::timer setup_dofs_time;
+            Kratos::timer setup_dofs_time;
             //setting up the list of the DOFs to be solved
             pBuilderAndSolver->SetUpDofSet(pScheme, BaseType::GetModelPart());
             if (BaseType::GetEchoLevel() > 0 && rank == 0)
                 std::cout << "setup_dofs_time : " << setup_dofs_time.elapsed() << std::endl;
 
             //shaping correctly the system
-            boost::timer setup_system_time;
+            Kratos::timer setup_system_time;
             pBuilderAndSolver->SetUpSystem(BaseType::GetModelPart());
             if (BaseType::GetEchoLevel() > 0 && rank == 0)
                 std::cout << "setup_system_time : " << setup_system_time.elapsed() << std::endl;
 
             //setting up the Vectors involved to the correct size
-            boost::timer system_matrix_resize_time;
+            Kratos::timer system_matrix_resize_time;
             pBuilderAndSolver->ResizeAndInitializeVectors(mpA, mpDx, mpb, BaseType::GetModelPart());
             if (BaseType::GetEchoLevel() > 0 && rank == 0)
                 std::cout << "system_matrix_resize_time : " << system_matrix_resize_time.elapsed() << std::endl;

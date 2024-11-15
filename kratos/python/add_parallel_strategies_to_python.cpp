@@ -27,7 +27,6 @@
 // External includes
 #include <boost/python.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
-#include <boost/timer.hpp>
 #include "python/add_strategies_to_python.h"
 #include "python/add_parallel_strategies_to_python.h"
 #include <cstring>
