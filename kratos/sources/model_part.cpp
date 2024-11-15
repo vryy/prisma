@@ -22,8 +22,8 @@
 #include "includes/model_part.h"
 #include "includes/process_info_with_dofs.h"
 #include "containers/model.h"
+#include "utilities/progress.h"
 #include "boost/make_shared.hpp"
-#include "boost/progress.hpp"
 
 namespace Kratos
 {
@@ -1317,7 +1317,7 @@ const ModelPart::MasterSlaveConstraintType& ModelPart::GetMasterSlaveConstraint(
         KRATOS_TRY
         int err = 0;
 
-        boost::progress_display show_progress_elements( NumberOfElements() );
+        Kratos::progress_display show_progress_elements( NumberOfElements() );
         std::cout << "Checking elements:" << std::endl;
         for (ElementConstantIterator elem_iterator = ElementsBegin(); elem_iterator != ElementsEnd(); ++elem_iterator)
         {
@@ -1325,7 +1325,7 @@ const ModelPart::MasterSlaveConstraintType& ModelPart::GetMasterSlaveConstraint(
             ++show_progress_elements;
         }
 
-        boost::progress_display show_progress_conditions( NumberOfConditions() );
+        Kratos::progress_display show_progress_conditions( NumberOfConditions() );
         std::cout << "Checking conditions:" << std::endl;
         for (ConditionConstantIterator condition_iterator = ConditionsBegin(); condition_iterator != ConditionsEnd(); ++condition_iterator)
         {
@@ -1333,7 +1333,7 @@ const ModelPart::MasterSlaveConstraintType& ModelPart::GetMasterSlaveConstraint(
             ++show_progress_conditions;
         }
 
-        boost::progress_display show_progress_constraints( NumberOfMasterSlaveConstraints() );
+        Kratos::progress_display show_progress_constraints( NumberOfMasterSlaveConstraints() );
         std::cout << "Checking constraints:" << std::endl;
         for (MasterSlaveConstraintConstantIteratorType constraint_iterator = MasterSlaveConstraintsBegin();
                 constraint_iterator != MasterSlaveConstraintsEnd(); ++constraint_iterator)

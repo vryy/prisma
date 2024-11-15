@@ -20,7 +20,6 @@
 #include <unordered_map>
 
 /* External includes */
-#include "boost/progress.hpp"
 
 /* Project includes */
 #include "includes/define.h"
