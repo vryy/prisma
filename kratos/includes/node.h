@@ -336,7 +336,7 @@ public:
 #endif
     }
 
-    void SetId(IndexType NewId)
+    void SetId(IndexType NewId) override
     {
         IndexedObject::SetId(NewId);
         typename Node<TDimension>::DofsContainerType& my_dofs = (this)->GetDofs();
