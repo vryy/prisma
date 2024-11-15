@@ -1,0 +1,61 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+            "label": "CMake: configure release docker",
+            "type": "shell",
+            "command": "sh",
+            "args": [
+				"configure.sh"
+            ],
+			"options": {
+                "cwd": "/home/kuser/kratos_builds/cmake_build_all"
+            },
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "Configures the project with CMake"
+        },
+		{
+			"label": "CMake: build release docker",
+			"type": "shell",
+			"command": "make",
+			"args": [
+				"install", "-j8"
+			],
+			"options": {
+                "cwd": "/home/kuser/kratos_builds/cmake_build_all"
+            },
+			"group": "build",
+			"problemMatcher": [],
+			"detail": "CMake release build task"
+		},
+		{
+            "label": "CMake: configure release host",
+            "type": "shell",
+            "command": "sh",
+            "args": [
+				"configure.sh"
+            ],
+			"options": {
+                "cwd": "/home/buih/kratos_builds/cmake_build_clang15_trilinos_13_boost_1_86_0_stdc17"
+            },
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "Configures the project with CMake"
+        },
+		{
+			"label": "CMake: build release host",
+			"type": "shell",
+			"command": "make",
+			"args": [
+				"install", "-j8"
+			],
+			"options": {
+                "cwd": "/home/buih/kratos_builds/cmake_build_clang15_trilinos_13_boost_1_86_0_stdc17"
+            },
+			"group": "build",
+			"problemMatcher": [],
+			"detail": "CMake release build task"
+		}
+	]
+}
