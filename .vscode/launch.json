@@ -5,11 +5,24 @@
         "name": "(gdb) Launch",
         "type": "cppdbg",
         "request": "launch",
-        "program": "/home/buih/kratos_bundle/kratos_bcn2/runkratos",  // Path to the compiled binary
+        "program": "/home/buih/kratos_libs/Debug/runkratos",  // Path to the compiled binary
         "args": ["quad4.py", "test"],  // Arguments passed to the program, if any
-        "stopAtEntry": false,
         "cwd": "/home/buih/kratos_bundle/Benchmark_kratos/structural_application/patch_test/quad4.gid",  // Working directory for the program
-        "environment": [],
+        "environment": [
+          {
+            "name": "LD_LIBRARY_PATH",
+            "value": "/home/buih/kratos_libs/Debug/libs:/opt/nodejs-18.16.1/lib:/opt/qhull-2012.1/lib:/opt/cln-1.3.6/lib:/opt/SuiteSparse-7.0.1/lib:/opt/dolfinx-0.3.0/lib:/opt/basix-0.3.0/lib:/home/buih/sw/mosek/9.3/tools/platform/linux64x86/bin:/opt/coin-4.0.0/lib:/opt/xerces-c-3.2.3/lib:/opt/partio-1.14.0/lib:/opt/mmg-5.5.2/lib:/opt/precice-2.5.0/lib:/home/buih/OpenFOAM/buih-v2306/platforms/linux64GccDPInt32Opt/lib:/home/buih/sw2/OpenFOAM-v2306/site/2306/platforms/linux64GccDPInt32Opt/lib:/home/buih/sw2/OpenFOAM-v2306/platforms/linux64GccDPInt32Opt/lib/sys-openmpi:/home/buih/sw2/OpenFOAM-v2306/platforms/linux64GccDPInt32Opt/lib:/home/buih/sw2/OpenFOAM-v2306/ThirdParty/platforms/linux64Gcc/fftw-3.3.10/lib64:/home/buih/sw2/OpenFOAM-v2306/ThirdParty/platforms/linux64Gcc/CGAL-4.14.3/lib64:/home/buih/sw2/OpenFOAM-v2306/ThirdParty/platforms/linux64Gcc/boost_1_74_0/lib64:/opt/openmpi-3.0.1/lib:/home/buih/sw2/OpenFOAM-v2306/platforms/linux64GccDPInt32Opt/lib/dummy:/opt/getfem-2024/lib:/opt/OpenSceneGraph-3.6.5/lib:/opt/opencascade-7.3.0/lib:/opt/OpenMesh-8.0/lib:/opt/mfem-4.5.2/lib:/opt/adol-c-2.7.2/lib64:/home/buih/workspace3/openhs/cmake_build:/home/buih/sw/hpddm/lib:/opt/hdf5-1.8.21/lib:/opt/wxWidgets-3.1.5/lib:/opt/vtk-9.1.0/lib:/home/buih/opt/gismo/lib:/opt/cddlib-094j/lib:/opt/mpc-1.1.0/lib:/opt/cgal-4.10.2_boost_1_77_0/lib:/opt/mpfr-3.1.2/lib:/opt/gmp-6.1.2/lib:/opt/p4est-vryy_ompi-3.0.1-24/lib:/lib:/opt/petsc-3.19.3_ompi-3.0.1/lib:/opt/boost_1_77_0//lib:/opt/openmpi-3.0.1//lib:/opt/intel/oneapi/tbb/2021.11/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/mpi/2021.3.0//libfabric/lib:/opt/intel/oneapi/mpi/2021.3.0//lib/release:/opt/intel/oneapi/mpi/2021.3.0//lib:/opt/intel/oneapi/mkl/2024.0/lib:/opt/intel/oneapi/debugger/2023.2.0/gdb/intel64/lib:/opt/intel/oneapi/debugger/2023.2.0/libipt/intel64/lib:/opt/intel/oneapi/debugger/2023.2.0/dep/lib:/opt/intel/oneapi/compiler/2024.0/opt/compiler/lib:/opt/intel/oneapi/compiler/2024.0/lib:/opt/glclib/lib:/opt/T-SPLINE/lib/x86/release"
+          },
+          {
+            "name": "PYTHONPATH",
+            "value": "/home/buih/kratos_libs/Debug:/home/buih/kratos_libs/Debug/libs"
+          },
+          {
+            "name": "OMP_NUM_THREADS",
+            "value": "1"
+          }
+        ],
+        "stopAtEntry": false,
         "externalConsole": false,
         "MIMode": "gdb",
         "miDebuggerPath": "/usr/bin/gdb",  // Ensure this path is correct on your system
