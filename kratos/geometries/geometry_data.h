@@ -49,7 +49,6 @@ namespace Kratos
     @see Geometry
     @see Element
 */
-
 class GeometryData
 {
 public:
@@ -99,7 +98,6 @@ public:
 
     enum class KratosGeometryType
     {
-        Kratos_generic_type,
         Kratos_Hexahedra3D20,
         Kratos_Hexahedra3D27,
         Kratos_Hexahedra3D8,
@@ -130,7 +128,7 @@ public:
         Kratos_Bezier2D,
         Kratos_Bezier2D3,
         Kratos_Bezier3D,
-        Kratos_Tritagon, //3 // it's a fake name but need to avoid duplication with Kratos_Triangle
+        Kratos_Tritagon, //3 // it's not a real name but need to avoid clashing with Kratos_Triangle
         Kratos_Tetragon, // 4
         Kratos_Pentagon, // 5
         Kratos_Hexagon, // 6
@@ -149,7 +147,8 @@ public:
         Kratos_Enneadecagon, // 19
         Kratos_Octahedron,
         Kratos_Dodecahedron,
-        Kratos_Icosahedron
+        Kratos_Icosahedron,
+        Kratos_generic_type
     };
 
 
@@ -957,11 +956,112 @@ inline std::ostream& operator << ( std::ostream& rOStream,
     return rOStream;
 }
 
-///@}
+/// output stream function for IntegrationMethod
+inline std::ostream& operator << ( std::ostream& rOStream,
+                                   const GeometryData::IntegrationMethod Value )
+{
+    switch(Value)
+    {
+        case GeometryData::IntegrationMethod::GI_GAUSS_1:           rOStream << "GI_GAUSS_1"; break;
+        case GeometryData::IntegrationMethod::GI_GAUSS_2:           rOStream << "GI_GAUSS_2"; break;
+        case GeometryData::IntegrationMethod::GI_GAUSS_3:           rOStream << "GI_GAUSS_3"; break;
+        case GeometryData::IntegrationMethod::GI_GAUSS_4:           rOStream << "GI_GAUSS_4"; break;
+        case GeometryData::IntegrationMethod::GI_GAUSS_5:           rOStream << "GI_GAUSS_5"; break;
+        case GeometryData::IntegrationMethod::GI_EXTENDED_GAUSS_1:  rOStream << "GI_EXTENDED_GAUSS_1"; break;
+        case GeometryData::IntegrationMethod::GI_EXTENDED_GAUSS_2:  rOStream << "GI_EXTENDED_GAUSS_2"; break;
+        case GeometryData::IntegrationMethod::GI_EXTENDED_GAUSS_3:  rOStream << "GI_EXTENDED_GAUSS_3"; break;
+        case GeometryData::IntegrationMethod::GI_EXTENDED_GAUSS_4:  rOStream << "GI_EXTENDED_GAUSS_4"; break;
+        case GeometryData::IntegrationMethod::GI_EXTENDED_GAUSS_5:  rOStream << "GI_EXTENDED_GAUSS_5"; break;
+        default:                                                    rOStream << "GI_Unknown"; break;
+    }
+    return rOStream;
+}
 
+/// output stream function for KratosGeometryFamily
+inline std::ostream& operator << ( std::ostream& rOStream,
+                                   const GeometryData::KratosGeometryFamily Value )
+{
+    switch(Value)
+    {
+        case GeometryData::KratosGeometryFamily::Kratos_NoElement:      rOStream << "NoElement";    break;
+        case GeometryData::KratosGeometryFamily::Kratos_Point:          rOStream << "Point";        break;
+        case GeometryData::KratosGeometryFamily::Kratos_Linear:         rOStream << "Linear";       break;
+        case GeometryData::KratosGeometryFamily::Kratos_Triangle:       rOStream << "Triangle";     break;
+        case GeometryData::KratosGeometryFamily::Kratos_Quadrilateral:  rOStream << "Quadrilateral";    break;
+        case GeometryData::KratosGeometryFamily::Kratos_Tetrahedra:     rOStream << "Tetrahedra";       break;
+        case GeometryData::KratosGeometryFamily::Kratos_Hexahedra:      rOStream << "Hexahedra";        break;
+        case GeometryData::KratosGeometryFamily::Kratos_Prism:          rOStream << "Prism";            break;
+        case GeometryData::KratosGeometryFamily::Kratos_NURBS:          rOStream << "NURBS";            break;
+        case GeometryData::KratosGeometryFamily::Kratos_Polygon:        rOStream << "Polygon";          break;
+        case GeometryData::KratosGeometryFamily::Kratos_Polyhedron:     rOStream << "Polyhedron";       break;
+        default:                                                        rOStream << "generic";  break;
+    }
+    return rOStream;
+}
+
+/// output stream function for KratosGeometryType
+inline std::ostream& operator << ( std::ostream& rOStream,
+                                   const GeometryData::KratosGeometryType Value)
+{
+    switch (Value)
+    {
+        case GeometryData::KratosGeometryType::Kratos_Hexahedra3D20:      rOStream << "Hexahedra3D20";    break;
+        case GeometryData::KratosGeometryType::Kratos_Hexahedra3D27:      rOStream << "Hexahedra3D27";    break;
+        case GeometryData::KratosGeometryType::Kratos_Hexahedra3D8:       rOStream << "Hexahedra3D8";     break;
+        case GeometryData::KratosGeometryType::Kratos_Prism3D15:          rOStream << "Prism3D15";        break;
+        case GeometryData::KratosGeometryType::Kratos_Prism3D6:           rOStream << "Prism3D6";         break;
+        case GeometryData::KratosGeometryType::Kratos_Quadrilateral2D4:   rOStream << "Quadrilateral2D4"; break;
+        case GeometryData::KratosGeometryType::Kratos_Quadrilateral2D8:   rOStream << "Quadrilateral2D8"; break;
+        case GeometryData::KratosGeometryType::Kratos_Quadrilateral2D9:   rOStream << "Quadrilateral2D9"; break;
+        case GeometryData::KratosGeometryType::Kratos_Quadrilateral3D4:   rOStream << "Quadrilateral3D4"; break;
+        case GeometryData::KratosGeometryType::Kratos_Quadrilateral3D8:   rOStream << "Quadrilateral3D8"; break;
+        case GeometryData::KratosGeometryType::Kratos_Quadrilateral3D9:   rOStream << "Quadrilateral3D9"; break;
+        case GeometryData::KratosGeometryType::Kratos_Tetrahedra3D10:     rOStream << "Tetrahedra3D10";   break;
+        case GeometryData::KratosGeometryType::Kratos_Tetrahedra3D4:      rOStream << "Tetrahedra3D4";    break;
+        case GeometryData::KratosGeometryType::Kratos_Triangle2D3:        rOStream << "Triangle2D3";      break;
+        case GeometryData::KratosGeometryType::Kratos_Triangle2D6:        rOStream << "Triangle2D6";      break;
+        case GeometryData::KratosGeometryType::Kratos_Triangle3D3:        rOStream << "Triangle3D3";      break;
+        case GeometryData::KratosGeometryType::Kratos_Triangle3D6:        rOStream << "Triangle3D6";      break;
+        case GeometryData::KratosGeometryType::Kratos_Line2D2:            rOStream << "Line2D2";          break;
+        case GeometryData::KratosGeometryType::Kratos_Line2D3:            rOStream << "Line2D3";          break;
+        case GeometryData::KratosGeometryType::Kratos_Line3D2:            rOStream << "Line3D2";          break;
+        case GeometryData::KratosGeometryType::Kratos_Line3D3:            rOStream << "Line3D3";          break;
+        case GeometryData::KratosGeometryType::Kratos_Point2D:            rOStream << "Point2D";          break;
+        case GeometryData::KratosGeometryType::Kratos_Point3D:            rOStream << "Point3D";          break;
+        case GeometryData::KratosGeometryType::Kratos_Sphere3D1:          rOStream << "Sphere3D1";        break;
+        case GeometryData::KratosGeometryType::Kratos_Bezier1D:           rOStream << "Bezier1D";         break;
+        case GeometryData::KratosGeometryType::Kratos_Bezier1D2:          rOStream << "Bezier1D2";        break;
+        case GeometryData::KratosGeometryType::Kratos_Bezier1D3:          rOStream << "Bezier1D3";        break;
+        case GeometryData::KratosGeometryType::Kratos_Bezier2D:           rOStream << "Bezier2D";         break;
+        case GeometryData::KratosGeometryType::Kratos_Bezier2D3:          rOStream << "Bezier2D3";        break;
+        case GeometryData::KratosGeometryType::Kratos_Bezier3D:           rOStream << "Bezier3D";         break;
+        case GeometryData::KratosGeometryType::Kratos_Tritagon:           rOStream << "Tritagon";         break;
+        case GeometryData::KratosGeometryType::Kratos_Tetragon:           rOStream << "Tetragon";         break;
+        case GeometryData::KratosGeometryType::Kratos_Pentagon:           rOStream << "Pentagon";         break;
+        case GeometryData::KratosGeometryType::Kratos_Hexagon:            rOStream << "Hexagon";          break;
+        case GeometryData::KratosGeometryType::Kratos_Heptagon:           rOStream << "Heptagon";         break;
+        case GeometryData::KratosGeometryType::Kratos_Octagon:            rOStream << "Octagon";          break;
+        case GeometryData::KratosGeometryType::Kratos_Nonagon:            rOStream << "Nonagon";          break;
+        case GeometryData::KratosGeometryType::Kratos_Decagon:            rOStream << "Decagon";          break;
+        case GeometryData::KratosGeometryType::Kratos_Hendecagon:         rOStream << "Hendecagon";       break;
+        case GeometryData::KratosGeometryType::Kratos_Dodecagon:          rOStream << "Dodecagon";        break;
+        case GeometryData::KratosGeometryType::Kratos_Triskaidecagon:     rOStream << "Triskaidecagon";   break;
+        case GeometryData::KratosGeometryType::Kratos_Tetrakaidecagon:    rOStream << "Tetrakaidecagon";  break;
+        case GeometryData::KratosGeometryType::Kratos_Pentadecagon:       rOStream << "Pentadecagon";     break;
+        case GeometryData::KratosGeometryType::Kratos_Hexakaidecagon:     rOStream << "Hexakaidecagon";   break;
+        case GeometryData::KratosGeometryType::Kratos_Heptadecagon:       rOStream << "Heptadecagon";     break;
+        case GeometryData::KratosGeometryType::Kratos_Octakaidecagon:     rOStream << "Octakaidecagon";   break;
+        case GeometryData::KratosGeometryType::Kratos_Enneadecagon:       rOStream << "Enneadecagon";     break;
+        case GeometryData::KratosGeometryType::Kratos_Octahedron:         rOStream << "Octahedron";       break;
+        case GeometryData::KratosGeometryType::Kratos_Dodecahedron:       rOStream << "Dodecahedron";     break;
+        case GeometryData::KratosGeometryType::Kratos_Icosahedron:        rOStream << "Icosahedron";      break;
+        default:                                                          rOStream << "generic";          break;
+    }
+    return rOStream;
+}
+
+///@}
 
 }  // namespace Kratos.
 
-#endif // KRATOS_GEOMETRY_DATA_H_INCLUDED  defined 
-
-
+#endif // KRATOS_GEOMETRY_DATA_H_INCLUDED  defined
