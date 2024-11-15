@@ -197,6 +197,9 @@ set(Boost_USE_STATIC_LIBS   OFF)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_REALPATH ON)
 find_package(Boost COMPONENTS python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR} log REQUIRED)
+if (Boost_VERSION_MACRO GREATER 108100)
+    find_package(Boost COMPONENTS python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR} log timer REQUIRED)
+endif()
 # on sdcluster link with system and thread
 include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
@@ -360,7 +363,11 @@ install(FILES "${CMAKE_SOURCE_DIR}/kratos/python_interface/kratos_globals.py" DE
 install(FILES "${CMAKE_SOURCE_DIR}/kratos/python_interface/application_importer.py" DESTINATION KratosMultiphysics )
 install(FILES "${CMAKE_SOURCE_DIR}/kratos/python_interface/kratos_unittest.py" DESTINATION KratosMultiphysics RENAME KratosUnittest.py )
 
-message("---- boost python lib used = " ${Boost_PYTHON${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}_LIBRARY_RELEASE})
+if (CMAKE_BUILD_TYPE MATCHES Release)
+    message("---- boost python lib used = " ${Boost_PYTHON_LIBRARY_RELEASE})
+elseif((CMAKE_BUILD_TYPE MATCHES Debug))
+    message("---- boost python lib used = " ${Boost_PYTHON_LIBRARY_DEBUG})
+endif()
 install(FILES ${Boost_PYTHON_LIBRARY_RELEASE} DESTINATION libs)
 install(FILES ${EXTRA_INSTALL_LIBS} DESTINATION libs)
 
