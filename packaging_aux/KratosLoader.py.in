@@ -1,0 +1,9 @@
+import sys
+kratos_libs="@CMAKE_INSTALL_PREFIX@/libs"
+kratos_applications="@KRATOS_SCRIPTS_INSTALL_PREFIX@/applications"
+kratos_scripts="@KRATOS_SCRIPTS_INSTALL_PREFIX@/kratos/python_scripts"
+kratos_tests="@KRATOS_SCRIPTS_INSTALL_PREFIX@/kratos/tests"
+sys.path.append(kratos_libs)
+sys.path.append(kratos_applications)
+sys.path.append(kratos_scripts)
+sys.path.append(kratos_tests)
