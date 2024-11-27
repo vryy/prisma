@@ -5,12 +5,12 @@
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 //
-// 	-	Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-// 	-	Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
-// 		in the documentation and/or other materials provided with the distribution.
-// 	-	All advertising materials mentioning features or use of this software must display the following acknowledgement:
-// 			This product includes Kratos Multi-Physics technology.
-// 	-	Neither the name of the CIMNE nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+//  -   Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+//  -   Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
+//      in the documentation and/or other materials provided with the distribution.
+//  -   All advertising materials mentioning features or use of this software must display the following acknowledgement:
+//          This product includes Kratos Multi-Physics technology.
+//  -   Neither the name of the CIMNE nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
 // THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
@@ -46,9 +46,7 @@ namespace Kratos
 /// This class defines the interface with kernel for all applications in Kratos.
 /** The application class defines the interface necessary for providing the information
     needed by Kernel in order to configure the whole sistem correctly.
-
 */
-
 class KRATOS_API(KRATOS_CORE) KratosApplication
 {
 public:
@@ -95,11 +93,8 @@ public:
     ///@{
 
     virtual void Register()
-
     {
-
         RegisterVariables();
-
     }
 
 
@@ -120,11 +115,6 @@ public:
 
 
 
-//	template<class TComponentType>
-//		typename KratosComponents<TComponentType>::ComponentsContainerType& GetComponents(TComponentType const& rComponentType)
-//	{
-//		return KratosComponents<TComponentType>::GetComponents();
-//	}
 
 
 
@@ -211,17 +201,13 @@ public:
 
 
 
-            //			KRATOS_WATCH(i_variable->second.get());
 
-            //			KRATOS_WATCH(i->second.get().Key());
 
-            //			KRATOS_WATCH(variable_key);
 
             i->second->SetKey(variable_key);
 
         }
 
-        //			KRATOS_WATCH("!!!!!!!!!!!!!!!!!!!!! END SETTING COMPONENETS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
     }
 
@@ -285,11 +271,8 @@ public:
     /// Turn back information as a string.
 
     virtual std::string Info() const
-
     {
-
         return "KratosApplication";
-
     }
 
 
@@ -297,11 +280,8 @@ public:
     /// Print information about this object.
 
     virtual void PrintInfo(std::ostream& rOStream) const
-
     {
-
         rOStream << Info();
-
     }
 
 
@@ -309,9 +289,7 @@ public:
     /// Print object's data.
 
     virtual void PrintData(std::ostream& rOStream) const
-
     {
-
         rOStream << "Variables:" << std::endl;
 
         KratosComponents<VariableData>().PrintData(rOStream);
@@ -410,10 +388,6 @@ protected:
     Serializer::RegisteredObjectsContainerType* mpRegisteredObjects;
 
     Serializer::RegisteredObjectsNameContainerType* mpRegisteredObjectsName;
-
-
-
-
 
     ///@}
 
@@ -569,51 +543,27 @@ private:
 
 ///@{
 
-
-
-
-
 /// input stream function
-
 inline std::istream& operator >> (std::istream& rIStream,
-
-                                  KratosApplication& rThis);
+                                  KratosApplication& rThis)
+{
+    return rIStream;
+}
 
 
 
 /// output stream function
-
 inline std::ostream& operator << (std::ostream& rOStream,
-
                                   const KratosApplication& rThis)
-
 {
-
     rThis.PrintInfo(rOStream);
-
     rOStream << std::endl;
-
     rThis.PrintData(rOStream);
-
-
-
     return rOStream;
-
 }
 
 ///@}
 
-
-
-
-
 }  // namespace Kratos.
 
-
-
 #endif // KRATOS_KRATOS_APPLICATION_H_INCLUDED  defined
-
-
-
-
-

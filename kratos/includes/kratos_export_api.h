@@ -19,7 +19,7 @@
     #if defined(__MINGW32__) || defined(__MINGW64__)
         #define KRATOS_API_EXPORT __attribute__((visibility("default")))
         #define KRATOS_API_IMPORT __attribute__((visibility("default")))
-    #else 
+    #else
         #define KRATOS_API_EXPORT __declspec(dllexport)
         #define KRATOS_API_IMPORT __declspec(dllimport)
     #endif
@@ -35,7 +35,7 @@
 // number of the arguments in API() call.
 #define KRATOS_API_CALL(x,T1,T2,T3,...) T3
 
-// If KRATOS_API_NO_DLL is defined ingore the DLL api
+// If KRATOS_API_NO_DLL is defined ignore the DLL api
 #ifndef KRATOS_API_NO_DLL
     #define KRATOS_API(...) \
         KRATOS_EXPAND(KRATOS_API_CALL(,##__VA_ARGS__,KRATOS_API_EXPORT,KRATOS_API_IMPORT))
@@ -50,7 +50,7 @@
 #ifdef _WIN32
     #if defined(__MINGW32__) || defined(__MINGW64__)
         #define KRATOS_API_EXTERN extern
-    #else 
+    #else
         #define KRATOS_API_EXTERN
     #endif
 #else
