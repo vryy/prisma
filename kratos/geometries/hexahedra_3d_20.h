@@ -4,8 +4,8 @@
 //   _|\_\_|  \__,_|\__|\___/ ____/
 //                   Multi-Physics
 //
-//  License:		 BSD License
-//					 Kratos default license: kratos/license.txt
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Riccardo Rossi
 //                   Janosch Stascheit
@@ -27,10 +27,10 @@
 
 namespace Kratos
 {
+
 /**
  * A twenty node hexahedra geometry with serendipity shape functions
  */
-
 template<class TPointType> class Hexahedra3D20 : public Geometry<TPointType>
 {
 public:
@@ -1447,31 +1447,7 @@ private:
      * Un accessible methods
      */
 
-};// Class Hexahedra3D20
-
-
-/**
- * Input and output
- */
-
-/**
- * input stream function
- */
-template<class TPointType> inline std::istream& operator >> (
-    std::istream& rIStream, Hexahedra3D20<TPointType>& rThis );
-
-/**
-         * output stream function
- */
-template<class TPointType> inline std::ostream& operator << (
-    std::ostream& rOStream, const Hexahedra3D20<TPointType>& rThis )
-{
-    rThis.PrintInfo( rOStream );
-    rOStream << std::endl;
-    rThis.PrintData( rOStream );
-
-    return rOStream;
-}
+}; // Class Hexahedra3D20
 
 template<class TPointType> const
 GeometryData Hexahedra3D20<TPointType>::msGeometryData(

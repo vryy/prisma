@@ -4,8 +4,8 @@
 //   _|\_\_|  \__,_|\__|\___/ ____/
 //                   Multi-Physics
 //
-//  License:		 BSD License
-//					 Kratos default license: kratos/license.txt
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Riccardo Rossi
 //                   Janosch Stascheit
@@ -27,8 +27,6 @@
 // Project includes
 #include "geometries/line_2d_2.h"
 #include "integration/triangle_gauss_legendre_integration_points.h"
-
-//#include  "utilities/triangle_triangle_intersection.h"
 
 
 namespace Kratos
@@ -57,9 +55,7 @@ namespace Kratos
  * 2D it is possible to define an arbitrary orientation in space. Thus it can be used for
  * defining surfaces on 3D elements.
  */
-
-template<class TPointType> class Triangle2D3
-    : public Geometry<TPointType>
+template<class TPointType> class Triangle2D3 : public Geometry<TPointType>
 {
 public:
     ///@}
@@ -647,9 +643,9 @@ public:
         DataType y20 = this->Points()[2].Y() - this->Points()[0].Y();
 
         //Jacobian is calculated:
-        //  |dx/dxi  dx/deta|	|x1-x0   x2-x0|
-        //J=|				|=	|			  |
-        //  |dy/dxi  dy/deta|	|y1-y0   y2-y0|
+        //  |dx/dxi  dx/deta|   |x1-x0   x2-x0|
+        //J=|               |=  |             |
+        //  |dy/dxi  dy/deta|   |y1-y0   y2-y0|
 
 
         DataType detJ = x10 * y20-y10 * x20;
@@ -687,9 +683,9 @@ public:
         DataType y20 = this->Points()[2].Y() - this->Points()[0].Y();
 
         //Jacobian is calculated:
-        //  |dx/dxi  dx/deta|	|x1-x0   x2-x0|
-        //J=|				|=	|			  |
-        //  |dy/dxi  dy/deta|	|y1-y0   y2-y0|
+        //  |dx/dxi  dx/deta|   |x1-x0   x2-x0|
+        //J=|               |=  |             |
+        //  |dy/dxi  dy/deta|   |y1-y0   y2-y0|
 
 
         DataType detJ = x10 * y20-y10 * x20;
@@ -1564,19 +1560,19 @@ private:
         array_1d<DataType,3 > axis;
         array_1d<DataType,3 > normal, e0, e1 ,e2;
 //
-// 		  /* This is the fastest branch on Sun */
-// 		  /* move everything so that the boxcenter is in (0,0,0) */
+//        /* This is the fastest branch on Sun */
+//        /* move everything so that the boxcenter is in (0,0,0) */
         noalias(v0) = triverts[0]- boxcenter;
         noalias(v1) = triverts[1]- boxcenter;
         noalias(v2) = triverts[2]- boxcenter;
 //
-// 		  /* compute triangle edges */
+//        /* compute triangle edges */
         noalias(e0) = v1 - v0;      /* tri edge 0 */
         noalias(e1) = v2 - v1;      /* tri edge 1 */
         noalias(e2) = v0 - v2;      /* tri edge 2 */
 //
-// 		  /* Bullet 3:  */
-// 		  /*  test the 9 tests first (this was faster) */
+//        /* Bullet 3:  */
+//        /*  test the 9 tests first (this was faster) */
         fex = fabs(e0[0]);
         fey = fabs(e0[1]);
         fez = fabs(e0[2]);
@@ -1827,24 +1823,7 @@ private:
 ///@}
 ///@name Input and output
 ///@{
-/**
- * input stream functions
- */
-template<class TPointType> inline std::istream& operator >> (
-    std::istream& rIStream,
-    Triangle2D3<TPointType>& rThis );
-/**
- * output stream functions
- */
-template<class TPointType> inline std::ostream& operator << (
-    std::ostream& rOStream,
-    const Triangle2D3<TPointType>& rThis )
-{
-    rThis.PrintInfo( rOStream );
-    rOStream << std::endl;
-    rThis.PrintData( rOStream );
-    return rOStream;
-}
+
 
 ///@}
 
@@ -1856,6 +1835,7 @@ GeometryData Triangle2D3<TPointType>::msGeometryData(
     Triangle2D3<TPointType>::AllShapeFunctionsValues(),
     AllShapeFunctionsLocalGradients()
 );
+
 }// namespace Kratos.
 
 #endif // KRATOS_TRIANGLE_2D_3_H_INCLUDED  defined

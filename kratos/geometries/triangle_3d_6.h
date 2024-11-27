@@ -43,9 +43,7 @@ namespace Kratos
  * 2D it is possible to define an arbitrary orientation in space. Thus it can be used for
  * defining surfaces on 3D elements.
  */
-
-template<class TPointType> class Triangle3D6
-    : public Geometry<TPointType>
+template<class TPointType> class Triangle3D6 : public Geometry<TPointType>
 {
 public:
     ///@}
@@ -1691,24 +1689,7 @@ private:
 ///@}
 ///@name Input and output
 ///@{
-/**
- * input stream functions
- */
-template<class TPointType> inline std::istream& operator >> (
-    std::istream& rIStream,
-    Triangle3D6<TPointType>& rThis );
-/**
- * output stream functions
- */
-template<class TPointType> inline std::ostream& operator << (
-    std::ostream& rOStream,
-    const Triangle3D6<TPointType>& rThis )
-{
-    rThis.PrintInfo( rOStream );
-    rOStream << std::endl;
-    rThis.PrintData( rOStream );
-    return rOStream;
-}
+
 
 ///@}
 
@@ -1723,4 +1704,3 @@ GeometryData Triangle3D6<TPointType>::msGeometryData(
 }// namespace Kratos.
 
 #endif // KRATOS_TRIANGLE_3D_6_H_INCLUDED defined
-

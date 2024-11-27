@@ -704,24 +704,7 @@ private:
 ///@{
 
 
-/// input stream function
-template<class TPointType>
-inline std::istream& operator >> (std::istream& rIStream,
-                                  Point3D<TPointType>& rThis);
-
-/// output stream function
-template<class TPointType>
-inline std::ostream& operator << (std::ostream& rOStream,
-                                  const Point3D<TPointType>& rThis)
-{
-    rThis.PrintInfo(rOStream);
-    rOStream << std::endl;
-    rThis.PrintData(rOStream);
-
-    return rOStream;
-}
 ///@}
-
 
 template<class TPointType>
 const GeometryData Point3D<TPointType>::msGeometryData( 3,

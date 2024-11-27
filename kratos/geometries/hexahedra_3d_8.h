@@ -4,8 +4,8 @@
 //   _|\_\_|  \__,_|\__|\___/ ____/
 //                   Multi-Physics
 //
-//  License:		 BSD License
-//					 Kratos default license: kratos/license.txt
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Riccardo Rossi
 //                   Janosch Stascheit
@@ -28,10 +28,10 @@
 
 namespace Kratos
 {
+
 /**
  * An eight node hexahedra geometry with linear shape functions
  */
-
 template<class TPointType> class Hexahedra3D8 : public Geometry<TPointType>
 {
 public:
@@ -1126,32 +1126,7 @@ private:
      * Un accessible methods
      */
 
-};// Class Hexahedra3D8
-
-
-/**
- * Input and output
- */
-
-/**
- * input stream function
- */
-template<class TPointType> inline std::istream& operator >> (
-    std::istream& rIStream, Hexahedra3D8<TPointType>& rThis );
-
-/**
- * output stream function
- */
-template<class TPointType> inline std::ostream& operator << (
-    std::ostream& rOStream, const Hexahedra3D8<TPointType>& rThis )
-{
-    rThis.PrintInfo( rOStream );
-    rOStream << std::endl;
-    rThis.PrintData( rOStream );
-
-    return rOStream;
-}
-
+}; // Class Hexahedra3D8
 
 template<class TPointType> const
 GeometryData Hexahedra3D8<TPointType>::msGeometryData(

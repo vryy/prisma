@@ -4,8 +4,8 @@
 //   _|\_\_|  \__,_|\__|\___/ ____/
 //                   Multi-Physics
 //
-//  License:		 BSD License
-//					 Kratos default license: kratos/license.txt
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Riccardo Rossi
 //                   Janosch Stascheit
@@ -29,12 +29,12 @@
 
 namespace Kratos
 {
+
 /**
  * A nine node quadrilateral geometry. While the shape functions are only defined in
  * 2D it is possible to define an arbitrary orientation in space. Thus it can be used for
  * defining surfaces on 3D elements.
  */
-
 template<class TPointType> class Quadrilateral2D9 : public Geometry<TPointType>
 {
 public:
@@ -1218,30 +1218,6 @@ private:
 
 }; // Class Quadrilateral2D9
 
-/**
- * Input and output
- */
-
-/**
- * input stream function
- */
-template< class TPointType > inline std::istream& operator >> (
-    std::istream& rIStream,
-    Quadrilateral2D9<TPointType>& rThis );
-
-/**
- * output stream function
- */
-template< class TPointType > inline std::ostream& operator << (
-    std::ostream& rOStream,
-    const Quadrilateral2D9<TPointType>& rThis )
-{
-    rThis.PrintInfo( rOStream );
-    rOStream << std::endl;
-    rThis.PrintData( rOStream );
-    return rOStream;
-}
-
 template<class TPointType>
 const GeometryData Quadrilateral2D9<TPointType>::msGeometryData(
     2, 2, 2,
@@ -1253,4 +1229,4 @@ const GeometryData Quadrilateral2D9<TPointType>::msGeometryData(
 
 }  // namespace Kratos.
 
-#endif // KRATOS_QUADRILATERAL_2D_9_H_INCLUDED  defined 
+#endif // KRATOS_QUADRILATERAL_2D_9_H_INCLUDED  defined

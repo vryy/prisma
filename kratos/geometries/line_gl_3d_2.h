@@ -43,7 +43,6 @@ namespace Kratos
 /**
 */
 template<class TPointType>
-
 class LineGL3D2 : public Geometry<TPointType>
 {
 
@@ -890,25 +889,7 @@ private:
 ///@{
 
 
-/// input stream function
-template<class TPointType>
-inline std::istream& operator >> ( std::istream& rIStream,
-                                   LineGL3D2<TPointType>& rThis );
-
-/// output stream function
-template<class TPointType>
-inline std::ostream& operator << ( std::ostream& rOStream,
-                                   const LineGL3D2<TPointType>& rThis )
-{
-    rThis.PrintInfo( rOStream );
-    rOStream << std::endl;
-    rThis.PrintData( rOStream );
-
-    return rOStream;
-}
-
 ///@}
-
 
 template<class TPointType>
 const GeometryData LineGL3D2<TPointType>::msGeometryData( 3,
@@ -922,4 +903,3 @@ const GeometryData LineGL3D2<TPointType>::msGeometryData( 3,
 }  // namespace Kratos.
 
 #endif // KRATOS_LINE_GL_3D_2_H_INCLUDED  defined
-

@@ -4,8 +4,8 @@
 //   _|\_\_|  \__,_|\__|\___/ ____/
 //                   Multi-Physics
 //
-//  License:		 BSD License
-//					 Kratos default license: kratos/license.txt
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Riccardo Rossi
 //                   Janosch Stascheit
@@ -31,6 +31,7 @@
 
 namespace Kratos
 {
+
 /**
  * An eight node hexahedra geometry with linear shape functions
  */
@@ -593,7 +594,7 @@ public:
         }
         return 0;
     }
-    
+
     /**
      * Calculates the gradients in terms of local coordinateds
      * of all shape functions in a given point.
@@ -606,9 +607,9 @@ public:
     {
         if(rResult.size1() != this->PointsNumber() || rResult.size2() != this->LocalSpaceDimension())
             rResult.resize(this->PointsNumber(),this->LocalSpaceDimension(),false);
-        
+
         CalculateShapeFunctionsLocalGradients(rResult, rPoint);
-        
+
         return rResult;
     }
 
@@ -671,7 +672,7 @@ public:
 
         for(unsigned int i=0; i<integration_points_number; i++)
                 rResult[i] = DN_DX;
-        
+
 
         return rResult;
     }
@@ -729,7 +730,7 @@ public:
         }
         for(unsigned int i=0; i<integration_points_number; i++)
                 rResult[i] = DN_DX;
-        
+
 
         return rResult;
     }
@@ -1229,33 +1230,7 @@ private:
      * Un accessible methods
      */
 
-
 };// Class Tetrahedra3D4
-
-
-/**
- * Input and output
- */
-
-/**
- * input stream function
- */
-template<class TPointType> inline std::istream& operator >> (
-    std::istream& rIStream, Tetrahedra3D4<TPointType>& rThis);
-
-/**
- * output stream function
- */
-template<class TPointType> inline std::ostream& operator << (
-    std::ostream& rOStream, const Tetrahedra3D4<TPointType>& rThis)
-{
-    rThis.PrintInfo(rOStream);
-    rOStream << std::endl;
-    rThis.PrintData(rOStream);
-
-    return rOStream;
-}
-
 
 template<class TPointType> const
 GeometryData Tetrahedra3D4<TPointType>::msGeometryData(
@@ -1267,4 +1242,4 @@ GeometryData Tetrahedra3D4<TPointType>::msGeometryData(
 
 }// namespace Kratos.
 
-#endif // KRATOS_TETRAHEDRA_3D_4_H_INCLUDED  defined 
+#endif // KRATOS_TETRAHEDRA_3D_4_H_INCLUDED  defined

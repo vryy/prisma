@@ -20,10 +20,10 @@
 
 namespace Kratos
 {
+
 /**
  * An eight node hexahedra geometry with linear shape functions
  */
-
 template<class TPointType> class Prism3D15 : public Geometry<TPointType>
 {
 public:
@@ -1572,31 +1572,6 @@ private:
      */
 
 };// Class Prism3D15
-
-
-/**
- * Input and output
- */
-
-/**
- * input stream function
- */
-template<class TPointType> inline std::istream& operator >> (
-    std::istream& rIStream, Prism3D15<TPointType>& rThis );
-
-/**
- * output stream function
- */
-template<class TPointType> inline std::ostream& operator << (
-    std::ostream& rOStream, const Prism3D15<TPointType>& rThis )
-{
-    rThis.PrintInfo( rOStream );
-    rOStream << std::endl;
-    rThis.PrintData( rOStream );
-
-    return rOStream;
-}
-
 
 template<class TPointType> const
 GeometryData Prism3D15<TPointType>::msGeometryData(

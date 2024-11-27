@@ -2328,7 +2328,10 @@ private:
 /// input stream function
 template<class TPointType>
 inline std::istream& operator >> ( std::istream& rIStream,
-                                   Geometry<TPointType>& rThis );
+                                   Geometry<TPointType>& rThis )
+{
+    return rIStream;
+}
 
 /// output stream function
 template<class TPointType>
@@ -2351,6 +2354,4 @@ inline std::ostream& operator << ( std::ostream& rOStream,
 
 }  // namespace Kratos.
 
-#endif // KRATOS_GEOMETRY_H_INCLUDED  defined 
-
-
+#endif // KRATOS_GEOMETRY_H_INCLUDED  defined
