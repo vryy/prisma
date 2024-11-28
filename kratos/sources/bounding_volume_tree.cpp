@@ -56,5 +56,16 @@ const double (*_14DOP::DirectionNormalized() const)[3] {return msDirectionNormal
 const double (*_18DOP::DirectionNormalized() const)[3] {return msDirectionNormalized;}
 const double (*_20DOP::DirectionNormalized() const)[3] {return msDirectionNormalized;}
 const double (*_26DOP::DirectionNormalized() const)[3] {return msDirectionNormalized;}
+
+template class SimpleBoundingVolumePartitioner<0, ModelPart::ConditionsContainerType>;
+template class SimpleBoundingVolumePartitioner<1, ModelPart::ConditionsContainerType>;
+template class SimpleBoundingVolumePartitioner<0, ModelPart::ElementsContainerType>;
+template class SimpleBoundingVolumePartitioner<1, ModelPart::ElementsContainerType>;
+
+template class BoundingVolumeTree<0, ModelPart::ConditionsContainerType>;
+template class BoundingVolumeTree<1, ModelPart::ConditionsContainerType>;
+template class BoundingVolumeTree<0, ModelPart::ElementsContainerType>;
+template class BoundingVolumeTree<1, ModelPart::ElementsContainerType>;
+
 }  // namespace Kratos.
 

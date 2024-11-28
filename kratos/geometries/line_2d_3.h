@@ -44,7 +44,6 @@ namespace Kratos
 /**
 */
 template<class TPointType>
-
 class Line2D3 : public Geometry<TPointType>
 {
 public:
@@ -1120,49 +1119,7 @@ private:
 ///@{
 
 
-/// input stream function
-template<class TPointType>
-inline std::istream& operator >> ( std::istream& rIStream,
-                                   Line2D3<TPointType>& rThis );
-
-/// output stream function
-template<class TPointType>
-inline std::ostream& operator << ( std::ostream& rOStream,
-                                   const Line2D3<TPointType>& rThis )
-{
-    rThis.PrintInfo( rOStream );
-    rOStream << std::endl;
-    rThis.PrintData( rOStream );
-
-    return rOStream;
-}
-
 ///@}
-
-//   template<class TPointType>
-//   const typename Line2D3<TPointType>::IntegrationPointsContainerType Line2D3<TPointType>::msIntegrationPoints = {
-//    Quadrature<LineGaussLegendreIntegrationPoints<1>, 2, IntegrationPoint<3> >::GenerateIntegrationPoints(),
-//    Quadrature<LineGaussLegendreIntegrationPoints<2>, 2, IntegrationPoint<3> >::GenerateIntegrationPoints(),
-//    Quadrature<LineGaussLegendreIntegrationPoints<3>, 2, IntegrationPoint<3> >::GenerateIntegrationPoints()
-//   };
-
-
-//   template<class TPointType>
-//   const typename Line2D3<TPointType>::ShapeFunctionsValuesContainerType
-//   Line2D3<TPointType>::msShapeFunctionsValues = {
-//    Line2D3<TPointType>::CalculateShapeFunctionsIntegrationPointsValues(GeometryData::IntegrationMethod::GI_GAUSS_1),
-//    Line2D3<TPointType>::CalculateShapeFunctionsIntegrationPointsValues(GeometryData::IntegrationMethod::GI_GAUSS_2),
-//    Line2D3<TPointType>::CalculateShapeFunctionsIntegrationPointsValues(GeometryData::IntegrationMethod::GI_GAUSS_3)
-//   };
-
-
-//template<class TPointType>
-//const typename GeometryData::ShapeFunctionsLocalGradientsContainerType
-//Line2D3<TPointType>::msShapeFunctionsLocalGradients = {
-// Line2D3<TPointType>::CalculateShapeFunctionsIntegrationPointsLocalGradients(GeometryData::IntegrationMethod::GI_GAUSS_1),
-// Line2D3<TPointType>::CalculateShapeFunctionsIntegrationPointsLocalGradients(GeometryData::IntegrationMethod::GI_GAUSS_2),
-// Line2D3<TPointType>::CalculateShapeFunctionsIntegrationPointsLocalGradients(GeometryData::IntegrationMethod::GI_GAUSS_3)
-//};
 
 template<class TPointType>
 const GeometryData Line2D3<TPointType>::msGeometryData( 2,
@@ -1176,4 +1133,3 @@ const GeometryData Line2D3<TPointType>::msGeometryData( 2,
 }  // namespace Kratos.
 
 #endif // KRATOS_LINE_2D_3_H_INCLUDED  defined
-

@@ -8,19 +8,22 @@
 //                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Pooyan Dadvand
+//                   Riccardo Rossi
+//
+//  Collaborators:   Vicente Mataix Ferrandiz
+//                   Pablo Becker
 //
 
+// System includes
+
+// External includes
 
 // Project includes
-#include "includes/io.h"
+#include "utilities/math_utils.h"
 
 namespace Kratos
 {
 
-    /// Local Flags
-    KRATOS_CREATE_LOCAL_FLAG(IO, READ,   1);
-    KRATOS_CREATE_LOCAL_FLAG(IO, WRITE,  2);
-    KRATOS_CREATE_LOCAL_FLAG(IO, APPEND, 3);
-    KRATOS_CREATE_LOCAL_FLAG(IO, IGNORE_VARIABLES_ERROR, 4); // before adding a new flag be aware that some derived classes have some defined.
+template class MathUtils<KRATOS_DOUBLE_TYPE>;
 
-}  // namespace Kratos.
+} // namespace Kratos

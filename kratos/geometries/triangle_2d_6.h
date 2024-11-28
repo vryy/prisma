@@ -4,8 +4,8 @@
 //   _|\_\_|  \__,_|\__|\___/ ____/
 //                   Multi-Physics
 //
-//  License:		 BSD License
-//					 Kratos default license: kratos/license.txt
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Riccardo Rossi
 //                   Janosch Stascheit
@@ -52,9 +52,7 @@ namespace Kratos
  * 2D it is possible to define an arbitrary orientation in space. Thus it can be used for
  * defining surfaces on 3D elements.
  */
-
-template<class TPointType> class Triangle2D6
-    : public Geometry<TPointType>
+template<class TPointType> class Triangle2D6 : public Geometry<TPointType>
 {
 public:
     ///@}
@@ -1048,24 +1046,7 @@ private:
 ///@}
 ///@name Input and output
 ///@{
-/**
- * input stream functions
- */
-template<class TPointType> inline std::istream& operator >> (
-    std::istream& rIStream,
-    Triangle2D6<TPointType>& rThis );
-/**
- * output stream functions
- */
-template<class TPointType> inline std::ostream& operator << (
-    std::ostream& rOStream,
-    const Triangle2D6<TPointType>& rThis )
-{
-    rThis.PrintInfo( rOStream );
-    rOStream << std::endl;
-    rThis.PrintData( rOStream );
-    return rOStream;
-}
+
 
 ///@}
 
@@ -1079,5 +1060,4 @@ GeometryData Triangle2D6<TPointType>::msGeometryData(
 );
 }// namespace Kratos.
 
-#endif // KRATOS_QUADRILATERAL_2D_4_H_INCLUDED  defined 
-
+#endif // KRATOS_QUADRILATERAL_2D_4_H_INCLUDED  defined

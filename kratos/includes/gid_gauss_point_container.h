@@ -86,9 +86,11 @@ public:
 
             if (element_is_active)
             {
-                mMeshElements.push_back( *(pElemIt.base() ) );
+                mMeshElements.push_back(*(pElemIt.base()));
                 return true;
             }
+            else
+                return false;
         }
         else return false;
         KRATOS_CATCH("")
@@ -106,9 +108,11 @@ public:
 
             if (condition_is_active)
             {
-                mMeshConditions.push_back( *(pCondIt.base() ) );
+                mMeshConditions.push_back(*(pCondIt.base()));
                 return true;
             }
+            else
+                return false;
         }
         else return false;
         KRATOS_CATCH("")

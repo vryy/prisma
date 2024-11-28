@@ -72,7 +72,7 @@ ConstitutiveLaw::ConstitutiveLaw() : Flags()
  */
 ConstitutiveLaw::Pointer ConstitutiveLaw::Clone() const
 {
-    KRATOS_THROW_ERROR(std::logic_error, "Called the virtual function for Clone", "");
+    KRATOS_ERROR << "Called the virtual function for Clone";
 }
 
 /**
@@ -82,7 +82,7 @@ ConstitutiveLaw::Pointer ConstitutiveLaw::Clone() const
  */
 ConstitutiveLaw::Pointer ConstitutiveLaw::Create(Kratos::Parameters NewParameters) const
 {
-    KRATOS_THROW_ERROR(std::logic_error, "Called the virtual function for Clone", "");
+    KRATOS_ERROR << "Called the virtual function for Clone";
 }
 
 /**
@@ -105,7 +105,7 @@ ConstitutiveLaw::Pointer ConstitutiveLaw::Create(
  */
 ConstitutiveLaw::SizeType ConstitutiveLaw::WorkingSpaceDimension()
 {
-    KRATOS_THROW_ERROR(std::logic_error, "Called the virtual function for WorkingSpaceDimension", "");
+    KRATOS_ERROR << "Called the virtual function for WorkingSpaceDimension";
 }
 
 /**
@@ -114,7 +114,7 @@ ConstitutiveLaw::SizeType ConstitutiveLaw::WorkingSpaceDimension()
  */
 ConstitutiveLaw::SizeType ConstitutiveLaw::GetStrainSize() const
 {
-    KRATOS_THROW_ERROR(std::logic_error, "Called the virtual function for GetStrainSize", "");
+    KRATOS_ERROR << "Called the virtual function for GetStrainSize";
 }
 
 /**
@@ -558,7 +558,7 @@ void ConstitutiveLaw::InitializeNonLinearIteration(const Properties& rMaterialPr
         const Vector& rShapeFunctionsValues,
         const ProcessInfo& rCurrentProcessInfo)
 {
-    KRATOS_THROW_ERROR(std::logic_error, "Calling virtual function for InitializeNonLinearIteration", "");
+    KRATOS_ERROR << "Calling virtual function for InitializeNonLinearIteration";
 }
 
 /**
@@ -574,7 +574,7 @@ void ConstitutiveLaw::FinalizeNonLinearIteration(const Properties& rMaterialProp
         const Vector& rShapeFunctionsValues,
         const ProcessInfo& rCurrentProcessInfo)
 {
-    KRATOS_THROW_ERROR(std::logic_error, "Calling virtual function for FinalizeNonLinearIteration", "");
+    KRATOS_ERROR << "Calling virtual function for FinalizeNonLinearIteration";
 }
 
 /**
@@ -604,7 +604,7 @@ void ConstitutiveLaw::CalculateMaterialResponse(Parameters& rValues,const Stress
         break;
 
     default:
-        KRATOS_THROW_ERROR(std::logic_error, " Stress Measure not Defined ", "");
+        KRATOS_ERROR << " Stress Measure not Defined ";
         break;
     }
 }
@@ -616,7 +616,7 @@ void ConstitutiveLaw::CalculateMaterialResponse(Parameters& rValues,const Stress
 
 void ConstitutiveLaw::CalculateMaterialResponsePK1 (Parameters& rValues)
 {
-  KRATOS_THROW_ERROR(std::logic_error, "Calling virtual function for CalculateMaterialResponsePK1", "");
+  KRATOS_ERROR << "Calling virtual function for CalculateMaterialResponsePK1";
 }
 
 /**
@@ -626,7 +626,7 @@ void ConstitutiveLaw::CalculateMaterialResponsePK1 (Parameters& rValues)
 
 void ConstitutiveLaw::CalculateMaterialResponsePK2 (Parameters& rValues)
 {
-  KRATOS_THROW_ERROR(std::logic_error, "Calling virtual function for CalculateMaterialResponsePK2", "");
+  KRATOS_ERROR << "Calling virtual function for CalculateMaterialResponsePK2";
 }
 
 /**
@@ -636,7 +636,7 @@ void ConstitutiveLaw::CalculateMaterialResponsePK2 (Parameters& rValues)
 
 void ConstitutiveLaw::CalculateMaterialResponseKirchhoff (Parameters& rValues)
 {
-    KRATOS_THROW_ERROR(std::logic_error, "Calling virtual function for CalculateMaterialResponseKirchhoff", "");
+    KRATOS_ERROR << "Calling virtual function for CalculateMaterialResponseKirchhoff";
 }
 
 /**
@@ -646,7 +646,7 @@ void ConstitutiveLaw::CalculateMaterialResponseKirchhoff (Parameters& rValues)
 
 void ConstitutiveLaw::CalculateMaterialResponseCauchy (Parameters& rValues)
 {
-    KRATOS_THROW_ERROR(std::logic_error, "Calling virtual function for CalculateMaterialResponseCauchy", "");
+    KRATOS_ERROR << "Calling virtual function for CalculateMaterialResponseCauchy";
 }
 
 /**
@@ -656,7 +656,7 @@ void ConstitutiveLaw::CalculateMaterialResponseCauchy (Parameters& rValues)
 
 void ConstitutiveLaw::CalculateStressResponse (Parameters& rValues, Vector& rInternalVariables)
 {
-    KRATOS_THROW_ERROR(std::logic_error, "Calling virtual function for CalculateMaterialResponseCauchy", "");
+    KRATOS_ERROR << "Calling virtual function for CalculateMaterialResponseCauchy";
 }
 
 
@@ -682,7 +682,7 @@ void ConstitutiveLaw::InitializeMaterialResponse(Parameters& rValues,const Stres
         break;
 
         default:
-        KRATOS_THROW_ERROR(std::logic_error, " Stress Measure not Defined ", "");
+        KRATOS_ERROR << " Stress Measure not Defined ";
         break;
     }
 }
@@ -694,8 +694,8 @@ void ConstitutiveLaw::InitializeMaterialResponse(Parameters& rValues,const Stres
 void ConstitutiveLaw::InitializeMaterialResponsePK1 (Parameters& rValues)
 {
     if (this->RequiresInitializeMaterialResponse())
-        KRATOS_THROW_ERROR(std::logic_error, "Calling virtual function for InitializeMaterialResponsePK1. "
-            "Please implement InitializeMaterialResponsePK1 or RequiresInitializeMaterialResponse in case this CL does not require it", "");
+        KRATOS_ERROR << "Calling virtual function for InitializeMaterialResponsePK1. "
+            "Please implement InitializeMaterialResponsePK1 or RequiresInitializeMaterialResponse in case this CL does not require it";
 }
 
 /**
@@ -705,8 +705,8 @@ void ConstitutiveLaw::InitializeMaterialResponsePK1 (Parameters& rValues)
 void ConstitutiveLaw::InitializeMaterialResponsePK2 (Parameters& rValues)
 {
     if (this->RequiresInitializeMaterialResponse())
-        KRATOS_THROW_ERROR(std::logic_error, "Calling virtual function for InitializeMaterialResponsePK2. "
-            "Please implement InitializeMaterialResponsePK2 or RequiresInitializeMaterialResponse in case this CL does not require it", "");
+        KRATOS_ERROR << "Calling virtual function for InitializeMaterialResponsePK2. "
+            "Please implement InitializeMaterialResponsePK2 or RequiresInitializeMaterialResponse in case this CL does not require it";
 }
 
 /**
@@ -716,8 +716,8 @@ void ConstitutiveLaw::InitializeMaterialResponsePK2 (Parameters& rValues)
 void ConstitutiveLaw::InitializeMaterialResponseKirchhoff (Parameters& rValues)
 {
     if (this->RequiresInitializeMaterialResponse())
-        KRATOS_THROW_ERROR(std::logic_error, "Calling virtual function for InitializeMaterialResponseKirchhoff. "
-            "Please implement InitializeMaterialResponseKirchhoff or RequiresInitializeMaterialResponse in case this CL does not require it", "");
+        KRATOS_ERROR << "Calling virtual function for InitializeMaterialResponseKirchhoff. "
+            "Please implement InitializeMaterialResponseKirchhoff or RequiresInitializeMaterialResponse in case this CL does not require it";
 }
 
 /**
@@ -727,8 +727,8 @@ void ConstitutiveLaw::InitializeMaterialResponseKirchhoff (Parameters& rValues)
 void ConstitutiveLaw::InitializeMaterialResponseCauchy (Parameters& rValues)
 {
     if (this->RequiresInitializeMaterialResponse())
-        KRATOS_THROW_ERROR(std::logic_error, "Calling virtual function for InitializeMaterialResponseCauchy. "
-            "Please implement InitializeMaterialResponseCauchy or RequiresInitializeMaterialResponse in case this CL does not require it", "");
+        KRATOS_ERROR << "Calling virtual function for InitializeMaterialResponseCauchy. "
+            "Please implement InitializeMaterialResponseCauchy or RequiresInitializeMaterialResponse in case this CL does not require it";
 }
 
 /**
@@ -758,7 +758,7 @@ void ConstitutiveLaw::FinalizeMaterialResponse(Parameters& rValues,const StressM
         break;
 
     default:
-        KRATOS_THROW_ERROR(std::logic_error, " Stress Measure not Defined ", "");
+        KRATOS_ERROR << " Stress Measure not Defined ";
         break;
     }
 }
@@ -770,7 +770,7 @@ void ConstitutiveLaw::FinalizeMaterialResponse(Parameters& rValues,const StressM
  */
  void ConstitutiveLaw::FinalizeMaterialResponsePK1 (Parameters& rValues)
 {
-  KRATOS_THROW_ERROR(std::logic_error, "Calling virtual function for FinalizeMaterialResponsePK1", "");
+  KRATOS_ERROR << "Calling virtual function for FinalizeMaterialResponsePK1";
 }
 
 /**
@@ -779,7 +779,7 @@ void ConstitutiveLaw::FinalizeMaterialResponse(Parameters& rValues,const StressM
  */
 void ConstitutiveLaw::FinalizeMaterialResponsePK2 (Parameters& rValues)
 {
-  KRATOS_THROW_ERROR(std::logic_error, "Calling virtual function for FinalizeMaterialResponsePK2", "");
+  KRATOS_ERROR << "Calling virtual function for FinalizeMaterialResponsePK2";
 }
 
 /**
@@ -788,7 +788,7 @@ void ConstitutiveLaw::FinalizeMaterialResponsePK2 (Parameters& rValues)
  */
 void ConstitutiveLaw::FinalizeMaterialResponseKirchhoff (Parameters& rValues)
 {
-  KRATOS_THROW_ERROR(std::logic_error, "Calling virtual function for FinalizeMaterialResponseKirchhoff", "");
+  KRATOS_ERROR << "Calling virtual function for FinalizeMaterialResponseKirchhoff";
 }
 
 /**
@@ -797,7 +797,7 @@ void ConstitutiveLaw::FinalizeMaterialResponseKirchhoff (Parameters& rValues)
  */
 void ConstitutiveLaw::FinalizeMaterialResponseCauchy (Parameters& rValues)
 {
-  KRATOS_THROW_ERROR(std::logic_error, "Calling virtual function for FinalizeMaterialResponseCauchy", "");
+  KRATOS_ERROR << "Calling virtual function for FinalizeMaterialResponseCauchy";
 }
 
 /**
@@ -812,7 +812,7 @@ void ConstitutiveLaw::ResetMaterial(const Properties& rMaterialProperties,
                                     const GeometryType& rElementGeometry,
                                     const Vector& rShapeFunctionsValues)
 {
-    KRATOS_THROW_ERROR(std::logic_error, "Calling virtual function for ResetMaterial", "");
+    KRATOS_ERROR << "Calling virtual function for ResetMaterial";
 }
 
 
@@ -830,7 +830,7 @@ void ConstitutiveLaw::ResetMaterial(const Properties& rMaterialProperties,
                            const GeometryType& rElementGeometry,
                            const Vector& rShapeFunctionsValues)
 {
-    KRATOS_THROW_ERROR(std::logic_error, "Calling virtual function for RewindMaterial", "");
+    KRATOS_ERROR << "Calling virtual function for RewindMaterial";
 }
 
 
@@ -869,15 +869,15 @@ Vector& ConstitutiveLaw::TransformStrains (Vector& rStrainVector,
         break;
 
         case StrainMeasure_Hencky_Material:
-            KRATOS_THROW_ERROR(std::logic_error,"Hencky strain has no transformation coded", "");
+            KRATOS_ERROR <<"Hencky strain has no transformation coded";
             break;
 
         case StrainMeasure_Hencky_Spatial:
-            KRATOS_THROW_ERROR(std::logic_error,"Hencky strain has no transformation coded", "");
+            KRATOS_ERROR <<"Hencky strain has no transformation coded";
             break;
 
         default:
-            KRATOS_THROW_ERROR(std::logic_error,"FINAL STRAIN NOT DEFINED in StrainTransformation", "");
+            KRATOS_ERROR <<"FINAL STRAIN NOT DEFINED in StrainTransformation";
             break;
         }
 
@@ -901,30 +901,30 @@ Vector& ConstitutiveLaw::TransformStrains (Vector& rStrainVector,
             break;
 
         case StrainMeasure_Hencky_Material:
-            KRATOS_THROW_ERROR(std::logic_error,"Hencky strain has no transformation coded", "");
+            KRATOS_ERROR <<"Hencky strain has no transformation coded";
             break;
 
         case StrainMeasure_Hencky_Spatial:
-            KRATOS_THROW_ERROR(std::logic_error,"Hencky strain has no transformation coded", "");
+            KRATOS_ERROR <<"Hencky strain has no transformation coded";
             break;
 
         default:
-            KRATOS_THROW_ERROR(std::logic_error,"FINAL STRAIN NOT DEFINED in StrainTransformation", "");
+            KRATOS_ERROR <<"FINAL STRAIN NOT DEFINED in StrainTransformation";
             break;
         }
 
         break;
 
     case StrainMeasure_Hencky_Material:
-        KRATOS_THROW_ERROR(std::logic_error,"Hencky strain has no transformation coded", "");
+        KRATOS_ERROR <<"Hencky strain has no transformation coded";
         break;
 
     case StrainMeasure_Hencky_Spatial:
-        KRATOS_THROW_ERROR(std::logic_error,"Hencky strain has no transformation coded", "");
+        KRATOS_ERROR <<"Hencky strain has no transformation coded";
         break;
 
     default:
-        KRATOS_THROW_ERROR(std::logic_error,"Measure of strain NOT DEFINED in Strains Transformation", "");
+        KRATOS_ERROR <<"Measure of strain NOT DEFINED in Strains Transformation";
         break;
     }
 
@@ -1000,7 +1000,7 @@ Vector& ConstitutiveLaw::TransformStresses (Vector& rStressVector,
         break;
 
     default:
-        KRATOS_THROW_ERROR(std::logic_error,"INITIAL STRESS NOT DEFINED in StressTransformation", "");
+        KRATOS_ERROR <<"INITIAL STRESS NOT DEFINED in StressTransformation";
         break;
     }
 
@@ -1073,7 +1073,7 @@ Vector& ConstitutiveLaw::TransformPK1Stresses (Vector& rStressVector,
     break;
 
     default:
-        KRATOS_THROW_ERROR(std::logic_error,"FINAL STRESS NOT DEFINED in StressTransformation", "");
+        KRATOS_ERROR <<"FINAL STRESS NOT DEFINED in StressTransformation";
         break;
     }
 
@@ -1134,7 +1134,7 @@ Vector& ConstitutiveLaw::TransformPK2Stresses (Vector& rStressVector,
     break;
 
     default:
-        KRATOS_THROW_ERROR(std::logic_error,"FINAL STRESS NOT DEFINED in StressTransformation", "");
+        KRATOS_ERROR <<"FINAL STRESS NOT DEFINED in StressTransformation";
         break;
     }
 
@@ -1189,7 +1189,7 @@ Vector& ConstitutiveLaw::TransformKirchhoffStresses (Vector& rStressVector,
     break;
 
     default:
-        KRATOS_THROW_ERROR(std::logic_error,"FINAL STRESS NOT DEFINED in StressTransformation", "");
+        KRATOS_ERROR <<"FINAL STRESS NOT DEFINED in StressTransformation";
         break;
     }
 
@@ -1247,7 +1247,7 @@ Vector& ConstitutiveLaw::TransformCauchyStresses (Vector& rStressVector,
         break;
 
     default:
-        KRATOS_THROW_ERROR(std::logic_error,"FINAL STRESS NOT DEFINED in StressTransformation", "");
+        KRATOS_ERROR <<"FINAL STRESS NOT DEFINED in StressTransformation";
         break;
     }
 
@@ -1299,7 +1299,7 @@ void ConstitutiveLaw::PushForwardConstitutiveMatrix ( Matrix& rConstitutiveMatri
  */
 void ConstitutiveLaw::GetLawFeatures(Features& rFeatures)
 {
-    KRATOS_THROW_ERROR(std::logic_error, "Calling virtual function for GetConstitutiveLawFeatures", "");
+    KRATOS_ERROR << "Calling virtual function for GetConstitutiveLawFeatures";
 }
 
 /**
@@ -1680,7 +1680,7 @@ DataType& ConstitutiveLaw::GetConstitutiveComponent(DataType & rCabcd,
                                        int CalculateTangent,
                                        bool SaveInternalVariables)
 {
-    KRATOS_THROW_ERROR(std::logic_error, "Calling virtual function for CalculateMaterialResponse", "");
+    KRATOS_ERROR << "Calling virtual function for CalculateMaterialResponse";
 }
 
 /**
@@ -1710,7 +1710,7 @@ DataType& ConstitutiveLaw::GetConstitutiveComponent(DataType & rCabcd,
                      int CalculateTangent,
                      bool SaveInternalVariables)
 {
-    KRATOS_THROW_ERROR(std::logic_error, "Calling virtual function for CalculateVolumetricResponse", "");
+    KRATOS_ERROR << "Calling virtual function for CalculateVolumetricResponse";
 }
 
 /**
@@ -1735,7 +1735,7 @@ DataType& ConstitutiveLaw::GetConstitutiveComponent(DataType & rCabcd,
                      int CalculateTangent,
                      bool SaveInternalVariables)
 {
-    KRATOS_THROW_ERROR(std::logic_error, "Calling virtual function for CalculateDeviatoricResponse", "");
+    KRATOS_ERROR << "Calling virtual function for CalculateDeviatoricResponse";
 }
 
 
@@ -1747,47 +1747,6 @@ void ConstitutiveLaw::CalculateCauchyStresses(Vector& Cauchy_StressVector,
 {
 }
 
-std::ostream& operator<<(std::ostream& os, const ConstitutiveLaw::PlasticCode& p)
-{
-    switch (p)
-    {
-        case ConstitutiveLaw::PlasticCode::ELASTIC:
-            os << "elastic";
-            break;
-        case ConstitutiveLaw::PlasticCode::PLASTIC:
-            os << "plastic";
-            break;
-        case ConstitutiveLaw::PlasticCode::FAILURE:
-            os << "failure";
-            break;
-        case ConstitutiveLaw::PlasticCode::RETURN_ON_SMOOTH_PLANE:
-            os << "smooth";
-            break;
-        case ConstitutiveLaw::PlasticCode::RETURN_ON_EDGE:
-            os << "edge";
-            break;
-        case ConstitutiveLaw::PlasticCode::RETURN_ON_LEFT_EDGE:
-            os << "left";
-            break;
-        case ConstitutiveLaw::PlasticCode::RETURN_ON_RIGHT_EDGE:
-            os << "right";
-            break;
-        case ConstitutiveLaw::PlasticCode::RETURN_ON_CORNER:
-            os << "corner";
-            break;
-        case ConstitutiveLaw::PlasticCode::RETURN_ON_APEX:
-            os << "apex";
-            break;
-        default:
-            os << "failed";
-            break;
-    }
-    return os;
-}
-
-template class KRATOS_API(KRATOS_CORE) KratosComponents<ConstitutiveLaw >;
-// template class KRATOS_API(KRATOS_CORE) KratosComponents< Variable<ConstitutiveLaw::Pointer> >;
-
+template class KRATOS_API(KRATOS_CORE) KratosComponents<ConstitutiveLaw>;
 
 } /* namespace Kratos.*/
-

@@ -1255,7 +1255,7 @@ public:
             std::cout << "number_of_threads for BuildRHSreactions: " << number_of_threads << std::endl;
 
             #pragma omp parallel for
-            for(unsigned int k = 0; k < number_of_threads; ++k)
+            for(int k = 0; k < number_of_threads; ++k)
             {
                 //contributions to the system
                 LocalSystemMatrixType LHS_Contribution = LocalSystemMatrixType(0, 0);

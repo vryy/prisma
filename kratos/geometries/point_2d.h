@@ -713,22 +713,6 @@ private:
 ///@{
 
 
-/// input stream function
-template<class TPointType>
-inline std::istream& operator >> (std::istream& rIStream,
-                                  Point2D<TPointType>& rThis);
-
-/// output stream function
-template<class TPointType>
-inline std::ostream& operator << (std::ostream& rOStream,
-                                  const Point2D<TPointType>& rThis)
-{
-    rThis.PrintInfo(rOStream);
-    rOStream << std::endl;
-    rThis.PrintData(rOStream);
-
-    return rOStream;
-}
 ///@}
 
 
@@ -743,6 +727,4 @@ const GeometryData Point2D<TPointType>::msGeometryData( 2,
 
 }  // namespace Kratos.
 
-#endif // KRATOS_LINE_2D_H_INCLUDED  defined 
-
-
+#endif // KRATOS_LINE_2D_H_INCLUDED  defined

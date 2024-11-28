@@ -183,67 +183,86 @@ endif(${KRATOS_EXCLUDE_OPENMP} MATCHES ON)
 
 ##*****************************
 #finding and including PYTHON
-find_package(PythonLibs REQUIRED)
+if(CMAKE_VERSION VERSION_LESS "3.27")
+    find_package(PythonLibs REQUIRED)
+    string(REPLACE "." ";" PYTHON_VERSION_STRING_ARRAY ${PYTHONLIBS_VERSION_STRING})
+    list(GET PYTHON_VERSION_STRING_ARRAY 0 PYTHON_VERSION_MAJOR)
+    list(GET PYTHON_VERSION_STRING_ARRAY 1 PYTHON_VERSION_MINOR)
+    list(GET PYTHON_VERSION_STRING_ARRAY 2 PYTHON_VERSION_PATCH)
+else()
+    find_package (Python COMPONENTS Development)
+    set(PYTHON_INCLUDE_DIRS ${Python_INCLUDE_DIRS})
+    set(PYTHON_LIBRARIES ${Python_LIBRARIES})
+    set(PYTHON_VERSION_MAJOR ${Python_VERSION_MAJOR})
+    set(PYTHON_VERSION_MINOR ${Python_VERSION_MINOR})
+    set(PYTHON_VERSION_PATCH ${Python_VERSION_PATCH})
+endif()
 include_directories(${PYTHON_INCLUDE_DIRS})
 link_directories(${PYTHON_LIBRARIES})
-string(REPLACE "." ";" PYTHON_VERSION_STRING_ARRAY ${PYTHONLIBS_VERSION_STRING})
-list(GET PYTHON_VERSION_STRING_ARRAY 0 PYTHON_VERSION_MAJOR)
-list(GET PYTHON_VERSION_STRING_ARRAY 1 PYTHON_VERSION_MINOR)
-list(GET PYTHON_VERSION_STRING_ARRAY 2 PYTHON_VERSION_PATCH)
 
 ##*****************************
 #finding and including BOOST library
-set(Boost_USE_STATIC_LIBS   OFF)
+option(Boost_USE_STATIC_LIBS "Use Boost static libraries"  OFF)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_REALPATH ON)
-find_package(Boost COMPONENTS python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR} log REQUIRED)
-if (Boost_VERSION_MACRO GREATER 108100)
-    find_package(Boost COMPONENTS python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR} log timer REQUIRED)
+if(CMAKE_VERSION VERSION_LESS "3.30")
+    find_package(Boost COMPONENTS python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR} log REQUIRED)
+else()
+    # starting from cmake 3.30 we have to use BoostConfig.cmake to find Boost. Set Boost_DIR to the location of BoostConfig.cmake
+    find_package(Boost CONFIG REQUIRED COMPONENTS python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR} log)
 endif()
-# on sdcluster link with system and thread
-include_directories(${Boost_INCLUDE_DIRS})
-link_directories(${Boost_LIBRARY_DIRS})
-ADD_DEFINITIONS(-DBOOST_LOG_DYN_LINK)
+if (Boost_VERSION_MACRO GREATER 108100)
+    if(CMAKE_VERSION VERSION_LESS "3.30")
+        find_package(Boost COMPONENTS python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR} log timer REQUIRED)
+    else()
+        find_package(Boost CONFIG COMPONENTS python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR} log timer REQUIRED)
+    endif()
+endif()
+
+# # on sdcluster link with system and thread
+# include_directories(${Boost_INCLUDE_DIRS})
+# link_directories(${Boost_LIBRARY_DIRS})
+# ADD_DEFINITIONS(-DBOOST_LOG_DYN_LINK)
 
 #follow the symbolic links for the python lib only if needed
-if(${INSTALL_EMBEDDED_PYTHON} MATCHES ON )
+if(${INSTALL_EMBEDDED_PYTHON} MATCHES ON)
     foreach( l ${PYTHON_LIBRARIES})
-    GET_FILENAME_COMPONENT(aaa ${l} REALPATH)
+    get_filename_component(aaa ${l} REALPATH)
         set(PYTHON_LIBRARIES_REALPATH ${PYTHON_LIBRARIES_REALPATH} ${aaa})
     endforeach(l)
     set(PYTHON_LIBRARIES ${PYTHON_LIBRARIES_REALPATH} CACHE STRING "exact file of the PYTHON library" FORCE)
-endif(${INSTALL_EMBEDDED_PYTHON} MATCHES ON )
+endif()
 
 ##*****************************
 #finding blas and lapack if needed
-if(${EXTERNAL_SOLVERS_APPLICATION} MATCHES ON )
+option(BLAS_INCLUDE_NEEDED "Specify the need for Blas and Lapack libraries" OFF)
+if(${EXTERNAL_SOLVERS_APPLICATION} MATCHES ON)
     set(BLAS_INCLUDE_NEEDED ON)
-
     ##if prescribed set the fortran mangling
     if(DEFINED ${KRATOS_SUPERLU_FORTRAN_MANGLING})
       add_definitions(${KRATOS_SUPERLU_FORTRAN_MANGLING})
     else(DEFINED ${KRATOS_SUPERLU_FORTRAN_MANGLING})
       add_definitions(-DADD_)
     endif(DEFINED ${KRATOS_SUPERLU_FORTRAN_MANGLING})
-endif(${EXTERNAL_SOLVERS_APPLICATION} MATCHES ON )
-if(${TRILINOS_APPLICATION} MATCHES ON )
+endif()
+if(${TRILINOS_APPLICATION} MATCHES ON)
     set(BLAS_INCLUDE_NEEDED ON)
-endif(${TRILINOS_APPLICATION} MATCHES ON )
+endif()
 
 if(${BLAS_INCLUDE_NEEDED} MATCHES ON )
-     if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-    enable_language( Fortran )
+    if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+        enable_language( Fortran )
         include(FortranCInterface)
-    FortranCInterface_HEADER(FC.h MACRO_NAMESPACE "FC_")
-     endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+        FortranCInterface_HEADER(FC.h MACRO_NAMESPACE "FC_")
+    endif()
 
     #linking to the absolute value of the blas
     find_package(BLAS REQUIRED)
     include_directories(${BLAS_INCLUDE_DIRS})
-    foreach( l ${BLAS_LIBRARIES})
-        GET_FILENAME_COMPONENT(aaa ${l} REALPATH)
+    foreach( lib ${BLAS_LIBRARIES})
+        get_filename_component(aaa ${lib} REALPATH)
         set(BLAS_LIBRARIES_REALPATH ${BLAS_LIBRARIES_REALPATH} ${aaa})
-    endforeach(l)
+    endforeach()
     set(BLAS_LIBRARIES ${BLAS_LIBRARIES_REALPATH} CACHE STRING "exact file of the blas library" FORCE)
     link_directories(${BLAS_LIBRARIES})
 
@@ -252,18 +271,17 @@ if(${BLAS_INCLUDE_NEEDED} MATCHES ON )
     message("---- BLA_VENDOR = " ${BLA_VENDOR})
 
     #linking to the absolute value of the lapack
-     find_package(LAPACK REQUIRED)
-     message("---- LAPACK = " ${LAPACK_LIBRARIES})
-     foreach( l ${LAPACK_LIBRARIES})
-         GET_FILENAME_COMPONENT(aux ${l} REALPATH)
-         set(LAPACK_LIBRARIES_REALPATH ${LAPACK_LIBRARIES_REALPATH} ${aux})
-     endforeach(l)
-     set(LAPACK_LIBRARIES ${LAPACK_LIBRARIES_REALPATH} CACHE STRING "exact file of the lapack library" FORCE)
-     message("---- LAPACK modified = " ${LAPACK_LIBRARIES})
-     include_directories(${LAPACK_INCLUDE_DIRS})
-     link_directories(${LAPACK_LIBRARIES})
-
-endif(${BLAS_INCLUDE_NEEDED} MATCHES ON )
+    find_package(LAPACK REQUIRED)
+    message("---- LAPACK = " ${LAPACK_LIBRARIES})
+    foreach( lib ${LAPACK_LIBRARIES})
+        get_filename_component(aux ${lib} REALPATH)
+        set(LAPACK_LIBRARIES_REALPATH ${LAPACK_LIBRARIES_REALPATH} ${aux})
+    endforeach()
+    set(LAPACK_LIBRARIES ${LAPACK_LIBRARIES_REALPATH} CACHE STRING "exact file of the lapack library" FORCE)
+    message("---- LAPACK modified = " ${LAPACK_LIBRARIES})
+    include_directories(${LAPACK_INCLUDE_DIRS})
+    link_directories(${LAPACK_LIBRARIES})
+endif()
 
 ##*****************************
 #finding Mpi
@@ -290,7 +308,6 @@ if(${MPI_NEEDED} MATCHES ON)
 
     #note that this will be included in the compilation of the kratos core, so that it is not needed to include it somewhere else
     include_directories(${MPI_INCLUDE_PATH})
-#    find_package(Boost COMPONENTS mpi_python REQUIRED)
     message("Kratos is compiled with MPI support")
 endif()
 
@@ -309,7 +326,6 @@ include_directories( ${CMAKE_SOURCE_DIR}/external_libraries/omptl )
 include_directories( ${CMAKE_SOURCE_DIR}/external_libraries/zlib )
 # we have to add this for zconf
 include_directories( ${CMAKE_BINARY_DIR}/external_libraries/zlib )
-# include_directories( ${CMAKE_SOURCE_DIR}/external_libraries/gidpost )
 
 #defines needed
 add_definitions( -DKRATOS_PYTHON )
@@ -331,24 +347,24 @@ add_subdirectory(kratos)
 add_subdirectory(applications)
 
 #embedded python - compiles "krun and packages the python lib needed"
-if(${INSTALL_EMBEDDED_PYTHON} MATCHES ON )
-  add_subdirectory(embedded_python)
-endif(${INSTALL_EMBEDDED_PYTHON} MATCHES ON )
+if(${INSTALL_EMBEDDED_PYTHON} MATCHES ON)
+    add_subdirectory(embedded_python)
+endif()
 
 if(${MPI_NEEDED} MATCHES ON)
-   add_subdirectory(external_libraries/mpi_python)
+    add_subdirectory(external_libraries/mpi_python)
 else()
     install(FILES "${CMAKE_SOURCE_DIR}/external_libraries/mpi_python/nompi.py" DESTINATION KratosMultiphysics RENAME mpi.py)
 endif()
 
 #set installation directory
 if(DEFINED KRATOS_INSTALL_PREFIX)
-   set(CMAKE_INSTALL_PREFIX ${KRATOS_INSTALL_PREFIX} )
-   message("-------------------------------- user defined install dir ${CMAKE_INSTALL_PREFIX}")
+    file(TO_CMAKE_PATH "${KRATOS_INSTALL_PREFIX}" CMAKE_INSTALL_PREFIX)
+    message("---- user defined install dir = ${CMAKE_INSTALL_PREFIX}")
 else(DEFINED KRATOS_INSTALL_PREFIX)
-   set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR} )
-   message("--------------------------------  standard install dir ${CMAKE_INSTALL_PREFIX}")
-endif(DEFINED KRATOS_INSTALL_PREFIX)
+    set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR} )
+    message("---- standard install dir = ${CMAKE_INSTALL_PREFIX}")
+endif()
 
 ################################################################################
 # install core files for the KratosMultiphysics python module
@@ -359,21 +375,54 @@ install(FILES "${CMAKE_SOURCE_DIR}/kratos/python_interface/kratos_globals.py" DE
 install(FILES "${CMAKE_SOURCE_DIR}/kratos/python_interface/application_importer.py" DESTINATION KratosMultiphysics )
 install(FILES "${CMAKE_SOURCE_DIR}/kratos/python_interface/kratos_unittest.py" DESTINATION KratosMultiphysics RENAME KratosUnittest.py )
 
-if (CMAKE_BUILD_TYPE MATCHES Release)
-    message("---- boost python lib used = " ${Boost_PYTHON_LIBRARY_RELEASE})
-elseif((CMAKE_BUILD_TYPE MATCHES Debug))
-    message("---- boost python lib used = " ${Boost_PYTHON_LIBRARY_DEBUG})
+if(CMAKE_VERSION VERSION_LESS "3.30")
+    if (CMAKE_BUILD_TYPE MATCHES Release)
+        message("---- boost python lib used = " ${Boost_PYTHON_LIBRARY_RELEASE})
+        install(FILES ${Boost_PYTHON_LIBRARY_RELEASE} DESTINATION libs)
+    elseif((CMAKE_BUILD_TYPE MATCHES Debug))
+        message("---- boost python lib used = " ${Boost_PYTHON_LIBRARY_DEBUG})
+        install(FILES ${Boost_PYTHON_LIBRARY_DEBUG} DESTINATION libs)
+    endif()
+    # install(FILES ${EXTRA_INSTALL_LIBS} DESTINATION libs) // TODO what's this
+else()
+    message("---- boost python lib used = " ${Boost_LIBRARIES})
+    install(IMPORTED_RUNTIME_ARTIFACTS ${Boost_LIBRARIES} DESTINATION libs)
 endif()
-install(FILES ${Boost_PYTHON_LIBRARY_RELEASE} DESTINATION libs)
-install(FILES ${EXTRA_INSTALL_LIBS} DESTINATION libs)
 
-#install blas and lapack
-if(${BLAS_INCLUDE_NEEDED} MATCHES ON )
-    message("---- installed blas = " ${BLAS_LIBRARIES})
-    install(FILES ${BLAS_LIBRARIES} DESTINATION libs)
-    message("---- installed lapack = " ${LAPACK_LIBRARIES})
-    install(FILES ${LAPACK_LIBRARIES} DESTINATION libs)
-endif(${BLAS_INCLUDE_NEEDED} MATCHES ON )
+#install blas and lapack runtime librariess
+if(${BLAS_INCLUDE_NEEDED} MATCHES ON)
+    if(MSVC)
+        # blas
+        set(BLAS_RUNTIME_LIBRARIES "")
+        foreach(lib ${BLAS_LIBRARIES})
+            get_filename_component(_lib_dir ${lib} DIRECTORY)
+            get_filename_component(_lib_name_we ${lib} NAME_WE)
+            find_file(_runtime_lib_blas
+                NAMES "lib${_lib_name_we}.dll" "${_lib_name_we}.dll"
+                PATHS ${_lib_dir}
+            )
+            list(APPEND BLAS_RUNTIME_LIBRARIES ${_runtime_lib_blas})
+        endforeach()
+        # lapack
+        set(LAPACK_RUNTIME_LIBRARIES "")
+        foreach(lib ${LAPACK_LIBRARIES})
+            get_filename_component(_lib_dir ${lib} DIRECTORY)
+            get_filename_component(_lib_name_we ${lib} NAME_WE)
+            find_file(_runtime_lib_lapack
+                NAMES "lib${_lib_name_we}.dll" "${_lib_name_we}.dll"
+                PATHS ${_lib_dir}
+            )
+            list(APPEND LAPACK_RUNTIME_LIBRARIES ${_runtime_lib_lapack})
+        endforeach()
+    else()
+        set(BLAS_RUNTIME_LIBRARIES ${BLAS_LIBRARIES})
+        set(LAPACK_RUNTIME_LIBRARIES ${LAPACK_LIBRARIES})
+    endif()
+    message("---- installed blas = " ${BLAS_RUNTIME_LIBRARIES})
+    install(FILES ${BLAS_RUNTIME_LIBRARIES} DESTINATION libs)
+    message("---- installed lapack = " ${LAPACK_RUNTIME_LIBRARIES})
+    install(FILES ${LAPACK_RUNTIME_LIBRARIES} DESTINATION libs)
+endif()
 
 ################################################################################
 option(INSTALL_PYTHON_FILES "Install the Python scripts" OFF)

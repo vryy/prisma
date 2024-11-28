@@ -43,9 +43,7 @@ namespace Kratos
  * 2D it is possible to define an arbitrary orientation in space. Thus it can be used for
  * defining surfaces on 3D elements.
  */
-
-template<class TPointType> class Quadrilateral3D4
-    : public Geometry<TPointType>
+template<class TPointType> class Quadrilateral3D4 : public Geometry<TPointType>
 {
 public:
     ///@}
@@ -1697,24 +1695,7 @@ private:
 ///@}
 ///@name Input and output
 ///@{
-/**
- * input stream functions
- */
-template<class TPointType> inline std::istream& operator >> (
-    std::istream& rIStream,
-    Quadrilateral3D4<TPointType>& rThis );
-/**
- * output stream functions
- */
-template<class TPointType> inline std::ostream& operator << (
-    std::ostream& rOStream,
-    const Quadrilateral3D4<TPointType>& rThis )
-{
-    rThis.PrintInfo( rOStream );
-    rOStream << std::endl;
-    rThis.PrintData( rOStream );
-    return rOStream;
-}
+
 
 ///@}
 
@@ -1726,7 +1707,7 @@ GeometryData Quadrilateral3D4<TPointType>::msGeometryData(
     Quadrilateral3D4<TPointType>::AllShapeFunctionsValues(),
     AllShapeFunctionsLocalGradients()
 );
+
 }// namespace Kratos.
 
 #endif // KRATOS_QUADRILATERAL_3D_4_H_INCLUDED  defined
-

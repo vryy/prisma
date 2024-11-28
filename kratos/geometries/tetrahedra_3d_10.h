@@ -30,10 +30,10 @@
 
 namespace Kratos
 {
+
 /**
  * An eight node hexahedra geometry with linear shape functions
  */
-
 template<class TPointType> class Tetrahedra3D10 : public Geometry<TPointType>
 {
 public:
@@ -956,31 +956,6 @@ private:
 
 };// Class Tetrahedra3D10
 
-
-/**
- * Input and output
- */
-
-/**
- * input stream function
- */
-template<class TPointType> inline std::istream& operator >> (
-    std::istream& rIStream, Tetrahedra3D10<TPointType>& rThis );
-
-/**
- * output stream function
- */
-template<class TPointType> inline std::ostream& operator << (
-    std::ostream& rOStream, const Tetrahedra3D10<TPointType>& rThis )
-{
-    rThis.PrintInfo( rOStream );
-    rOStream << std::endl;
-    rThis.PrintData( rOStream );
-
-    return rOStream;
-}
-
-
 template<class TPointType> const
 GeometryData Tetrahedra3D10<TPointType>::msGeometryData(
     3, 3, 3, GeometryData::IntegrationMethod::GI_GAUSS_2,
@@ -991,4 +966,4 @@ GeometryData Tetrahedra3D10<TPointType>::msGeometryData(
 
 }// namespace Kratos.
 
-#endif // KRATOS_TETRAHEDRA_3D_4_H_INCLUDED  defined 
+#endif // KRATOS_TETRAHEDRA_3D_4_H_INCLUDED  defined

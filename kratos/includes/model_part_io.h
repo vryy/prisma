@@ -66,7 +66,7 @@ namespace Kratos
 /// An IO class for reading and writing a modelpart
 /** This class reads and writes all modelpart data including the meshes.
 */
-class ModelPartIO : public IO
+class KRATOS_API(KRATOS_CORE) ModelPartIO : public IO
 {
 public:
     ///@name Type Definitions
@@ -587,21 +587,7 @@ protected:
 ///@{
 
 
-//   /// input stream function
-//   inline std::istream& operator >> (std::istream& rIStream,
-//                  ModelPartIO& rThis);
-
-//   /// output stream function
-//   inline std::ostream& operator << (std::ostream& rOStream,
-//                  const ModelPartIO& rThis)
-//     {
-//       rThis.PrintInfo(rOStream);
-//       rOStream << std::endl;
-//       rThis.PrintData(rOStream);
-
-//       return rOStream;
-//     }
-//   ///@}
+///@}
 
 
 }  // namespace Kratos.

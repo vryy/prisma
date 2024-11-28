@@ -6,10 +6,10 @@
 # CGAL_FOUND, If false, do not try to use CGAL.
 if(CGAL_INCLUDE_DIR AND CGAL_LIBRARIES AND BOOST_THREAD_LIBRARIES AND GMP_LIBRARIES AND MPFR_LIBRARIES)
     set(CGAL_FOUND TRUE)
-else(CGAL_INCLUDE_DIR AND CGAL_LIBRARIES AND BOOST_THREAD_LIBRARIES AND GMP_LIBRARIES AND MPFR_LIBRARIES)
+else()
     if(NOT(CGAL_ROOT AND GMP_ROOT AND MPFR_ROOT))
         message(ERROR "CGAL_ROOT|GMP_ROOT|MPFR_ROOT is not set")
-    endif(NOT(CGAL_ROOT AND GMP_ROOT AND MPFR_ROOT))
+    endif()
 
     find_path(CGAL_INCLUDE_DIR CGAL/basic.h ${CGAL_ROOT}/include ${CGAL_ROOT}/include/CGAL)
     find_library(CGAL_LIBRARY NAMES CGAL PATHS ${CGAL_ROOT}/lib)
@@ -17,21 +17,21 @@ else(CGAL_INCLUDE_DIR AND CGAL_LIBRARIES AND BOOST_THREAD_LIBRARIES AND GMP_LIBR
 
     set(CGAL_LIBRARIES ${CGAL_LIBRARY} ${CGAL_CORE_LIBRARY})
 
-    # set(Boost_DEBUG ON)
-    set(Boost_USE_STATIC_LIBS   OFF)
-    set(Boost_USE_MULTITHREADED ON)
-    set(Boost_REALPATH ON)
-    find_package(Boost COMPONENTS thread REQUIRED)
-    if(Boost_FOUND)
-        set(BOOST_THREAD_LIBRARIES ${Boost_LIBRARIES})
-    endif(Boost_FOUND)
-    # check boost version we may need other components
-    if("${Boost_VERSION}" VERSION_GREATER "104900")
-        find_package(Boost COMPONENTS thread system REQUIRED)
-        if(Boost_FOUND)
+    if(CMAKE_VERSION VERSION_LESS "3.30")
+        find_package(Boost COMPONENTS thread REQUIRED)
+        # check boost version we may need other components
+        if("${Boost_VERSION}" VERSION_GREATER "104900")
+            find_package(Boost COMPONENTS thread system REQUIRED)
             set(BOOST_THREAD_LIBRARIES ${Boost_LIBRARIES})
-        endif(Boost_FOUND)
-    endif("${Boost_VERSION}" VERSION_GREATER "104900")
+        endif()
+    else()
+        # starting from cmake 3.30 we have to use BoostConfig.cmake to find Boost. Set Boost_DIR to the location of BoostConfig.cmake
+        find_package(Boost CONFIG REQUIRED COMPONENTS thread)
+        if("${Boost_VERSION}" VERSION_GREATER "104900")
+            find_package(Boost CONFIG REQUIRED COMPONENTS thread system)
+            set(BOOST_THREAD_LIBRARIES ${Boost_LIBRARIES})
+        endif()
+    endif()
 
     find_library(GMP_LIBRARY NAMES gmp PATHS ${GMP_ROOT}/lib NO_DEFAULT_PATH)
     find_library(GMPXX_LIBRARY NAMES gmpxx PATHS ${GMP_ROOT}/lib NO_DEFAULT_PATH)
@@ -52,10 +52,9 @@ else(CGAL_INCLUDE_DIR AND CGAL_LIBRARIES AND BOOST_THREAD_LIBRARIES AND GMP_LIBR
 #        INCLUDE_DIRECTORIES(${GMP_INCLUDE_DIR})
 #        INCLUDE_DIRECTORIES(${MPFR_INCLUDE_DIR})
         INCLUDE_DIRECTORIES(${CGAL_INCLUDE_DIR})
-    else(CGAL_INCLUDE_DIR AND CGAL_LIBRARIES AND BOOST_THREAD_LIBRARIES AND GMP_LIBRARIES AND MPFR_LIBRARIES)
+    else()
         set(CGAL_FOUND FALSE)
         message(STATUS "CGAL not found.")
-    endif(CGAL_INCLUDE_DIR AND CGAL_LIBRARIES AND BOOST_THREAD_LIBRARIES AND GMP_LIBRARIES AND MPFR_LIBRARIES)
+    endif()
     mark_as_advanced(CGAL_INCLUDE_DIR CGAL_LIBRARIES BOOST_THREAD_LIBRARIES GMP_LIBRARIES MPFR_LIBRARIES)
-endif(CGAL_INCLUDE_DIR AND CGAL_LIBRARIES AND BOOST_THREAD_LIBRARIES AND GMP_LIBRARIES AND MPFR_LIBRARIES)
-
+endif()

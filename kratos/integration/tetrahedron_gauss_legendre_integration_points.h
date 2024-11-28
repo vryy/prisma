@@ -22,7 +22,7 @@
 namespace Kratos
 {
 
-class KRATOS_API(KRATOS_CORE) TetrahedronGaussLegendreIntegrationPoints1
+class TetrahedronGaussLegendreIntegrationPoints1
 {
 public:
     typedef std::size_t SizeType;
@@ -56,7 +56,7 @@ public:
     }
 }; // Class TetrahedronGaussLegendreIntegrationPoints1
 
-class KRATOS_API(KRATOS_CORE) TetrahedronGaussLegendreIntegrationPoints2
+class TetrahedronGaussLegendreIntegrationPoints2
 {
 public:
     typedef std::size_t SizeType;
@@ -93,7 +93,7 @@ public:
     }
 }; // Class TetrahedronGaussLegendreIntegrationPoints2
 
-class KRATOS_API(KRATOS_CORE) TetrahedronGaussLegendreIntegrationPoints3
+class TetrahedronGaussLegendreIntegrationPoints3
 {
 public:
     typedef std::size_t SizeType;
@@ -134,7 +134,7 @@ public:
     }
 }; // Class TetrahedronGaussLegendreIntegrationPoints3
 
-class KRATOS_API(KRATOS_CORE) TetrahedronGaussLegendreIntegrationPoints4
+class TetrahedronGaussLegendreIntegrationPoints4
 {
 public:
     typedef std::size_t SizeType;
@@ -181,7 +181,7 @@ public:
     }
 }; // Class TetrahedronGaussLegendreIntegrationPoints4
 
-class KRATOS_API(KRATOS_CORE) TetrahedronGaussLegendreIntegrationPoints5
+class TetrahedronGaussLegendreIntegrationPoints5
 {
 public:
     typedef std::size_t SizeType;

@@ -54,7 +54,6 @@ public:
     }
 }; // Class LineGaussLegendreIntegrationPoints1
 
-
 class KRATOS_API(KRATOS_CORE) LineGaussLegendreIntegrationPoints2
 {
 public:
@@ -89,7 +88,6 @@ public:
         return buffer.str();
     }
 }; // Class LineGaussLegendreIntegrationPoints2
-
 
 class KRATOS_API(KRATOS_CORE) LineGaussLegendreIntegrationPoints3
 {
@@ -126,8 +124,6 @@ public:
         return buffer.str();
     }
 }; // Class LineGaussLegendreIntegrationPoints3
-
-
 
 class KRATOS_API(KRATOS_CORE) LineGaussLegendreIntegrationPoints4
 {
@@ -166,8 +162,6 @@ public:
     }
 }; // Class LineGaussLegendreIntegrationPoints4
 
-
-
 class KRATOS_API(KRATOS_CORE) LineGaussLegendreIntegrationPoints5
 {
 public:
@@ -205,8 +199,6 @@ public:
         return buffer.str();
     }
 }; // Class LineGaussLegendreIntegrationPoints4
-
-
 
 class KRATOS_API(KRATOS_CORE) LineGaussLegendreIntegrationPoints6
 {
@@ -247,8 +239,6 @@ public:
     }
 }; // Class LineGaussLegendreIntegrationPoints6
 
-
-
 class KRATOS_API(KRATOS_CORE) LineGaussLegendreIntegrationPoints7
 {
 public:
@@ -288,8 +278,6 @@ public:
         return buffer.str();
     }
 }; // Class LineGaussLegendreIntegrationPoints7
-
-
 
 class KRATOS_API(KRATOS_CORE) LineGaussLegendreIntegrationPoints8
 {
@@ -332,8 +320,6 @@ public:
     }
 }; // Class LineGaussLegendreIntegrationPoints8
 
-
-
 class KRATOS_API(KRATOS_CORE) LineGaussLegendreIntegrationPoints9
 {
 public:
@@ -375,8 +361,6 @@ public:
         return buffer.str();
     }
 }; // Class LineGaussLegendreIntegrationPoints9
-
-
 
 class KRATOS_API(KRATOS_CORE) LineGaussLegendreIntegrationPoints10
 {

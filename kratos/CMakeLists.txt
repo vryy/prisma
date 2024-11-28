@@ -12,7 +12,6 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 ## generate variables with the sources
 set( KRATOS_CORE_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/utilities/logger.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/mmio.c
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/code_location.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/kratos_exception.cpp
@@ -38,10 +37,15 @@ set( KRATOS_CORE_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/kratos_application.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/kernel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/reorder_consecutive_model_part_io.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/utilities/constraint_utilities.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/bounding_volume_tree.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/kratos_filesystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/kratos_parameters.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/math_utils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/utilities/logger.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/utilities/constraint_utilities.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/io.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/model_part_io.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/reorder_consecutive_model_part_io.cpp
     # # ${CMAKE_CURRENT_SOURCE_DIR}/processes/calculate_signed_distance_to_3d_skin_process.cpp
     # #${CMAKE_CURRENT_SOURCE_DIR}/processes/mesh_smoothing_process.cpp
     # #${CMAKE_CURRENT_SOURCE_DIR}/processes/measure_mesh_quality_process.cpp
@@ -96,13 +100,6 @@ if( ${KRATOS_PYTHON} MATCHES TRUE)
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_kratos_parameters_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_constraint_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/kratos_python.cpp
-        # ${CMAKE_CURRENT_SOURCE_DIR}/sources/mpi_connectivity_preserve_modeler.cpp
-        # ${CMAKE_CURRENT_SOURCE_DIR}/processes/mdpa_reorder_consecutive_process.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/sources/model_part_io.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/sources/reorder_consecutive_model_part_io.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/sources/io.cpp
-        #${CMAKE_CURRENT_SOURCE_DIR}/utilities/logger.cpp
-        # ${CMAKE_CURRENT_SOURCE_DIR}/sources/kratos_exception.cpp
     )
 endif()
 
@@ -110,7 +107,6 @@ endif()
 ## define library KratosCore to be included in all of the others
 add_library(KratosCore SHARED ${KRATOS_CORE_SOURCES})
 if(${KRATOS_PYTHON} MATCHES TRUE)
-    #target_link_libraries(KratosCore ${Boost_PYTHON_LIBRARIES} ${PYTHON_LIBRARIES} gidpost )
     target_link_libraries(KratosCore ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${PYTHON_LIBRARIES} gidpost )
 else()
     target_link_libraries(KratosCore ${Boost_LIBRARIES} gidpost )
@@ -156,6 +152,3 @@ if(${KRATOS_PYTHON} MATCHES TRUE)
 
     install(TARGETS Kratos DESTINATION libs )
 endif()
-
-# get_property(inc_dirs DIRECTORY PROPERTY INCLUDE_DIRECTORIES)
-# message("subdir inc_dirs = ${inc_dirs}")

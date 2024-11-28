@@ -1490,13 +1490,28 @@ inline std::ostream & operator <<(std::ostream& rOStream,
     return rOStream;
 }
 
-std::ostream& operator<<(std::ostream& os, const ConstitutiveLaw::PlasticCode& p);
+inline std::ostream& operator<<(std::ostream& os, const ConstitutiveLaw::PlasticCode& p)
+{
+    switch (p)
+    {
+        case ConstitutiveLaw::PlasticCode::ELASTIC:                 os << "elastic";  break;
+        case ConstitutiveLaw::PlasticCode::PLASTIC:                 os << "plastic";  break;
+        case ConstitutiveLaw::PlasticCode::FAILURE:                 os << "failure";  break;
+        case ConstitutiveLaw::PlasticCode::RETURN_ON_SMOOTH_PLANE:  os << "smooth";   break;
+        case ConstitutiveLaw::PlasticCode::RETURN_ON_EDGE:          os << "edge";     break;
+        case ConstitutiveLaw::PlasticCode::RETURN_ON_LEFT_EDGE:     os << "left";     break;
+        case ConstitutiveLaw::PlasticCode::RETURN_ON_RIGHT_EDGE:    os << "right";    break;
+        case ConstitutiveLaw::PlasticCode::RETURN_ON_CORNER:        os << "corner";   break;
+        case ConstitutiveLaw::PlasticCode::RETURN_ON_APEX:          os << "apex";     break;
+        default:    os << "failed"; break;
+    }
+    return os;
+}
 
 ///@}
 ///@} addtogroup block
 
 void KRATOS_API(KRATOS_CORE) AddKratosComponent(std::string const& Name, ConstitutiveLaw const& ThisComponent);
-// void KRATOS_API(KRATOS_CORE) AddKratosComponent(std::string const& Name, Variable<ConstitutiveLaw::Pointer> const& ThisComponent);
 
 /**
  * Definition of ConstitutiveLaw variable
@@ -1510,6 +1525,6 @@ KRATOS_DEFINE_VARIABLE(ConstitutiveLaw::Pointer, CONSTITUTIVE_LAW)
 #undef  KRATOS_EXPORT_MACRO
 #define KRATOS_EXPORT_MACRO KRATOS_NO_EXPORT
 
-
 } /* namespace Kratos.*/
+
 #endif /* KRATOS_CONSTITUTIVE_LAW  defined */

@@ -45,9 +45,7 @@ namespace Kratos
  * prism_3d_6 element, but the jacobian is computed as in the triangle_3d_3 element to
  * to avoid having detJ = 0. Default integration method is Lobatto.
  */
-
-template<class TPointType> class PrismInterface3D6
-    : public Geometry<TPointType>
+template<class TPointType> class PrismInterface3D6 : public Geometry<TPointType>
 {
 public:
     ///@}
@@ -1507,24 +1505,7 @@ private:
 ///@}
 ///@name Input and output
 ///@{
-/**
- * input stream functions
- */
-template<class TPointType> inline std::istream& operator >> (
-    std::istream& rIStream,
-    PrismInterface3D6<TPointType>& rThis );
-/**
- * output stream functions
- */
-template<class TPointType> inline std::ostream& operator << (
-    std::ostream& rOStream,
-    const PrismInterface3D6<TPointType>& rThis )
-{
-    rThis.PrintInfo( rOStream );
-    rOStream << std::endl;
-    rThis.PrintData( rOStream );
-    return rOStream;
-}
+
 
 ///@}
 

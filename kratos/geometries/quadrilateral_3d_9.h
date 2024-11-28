@@ -20,12 +20,12 @@
 
 namespace Kratos
 {
+
 /**
   * A nine node quadrilateral geometry. While the shape functions are only defined in
   * 2D it is possible to define an arbitrary orientation in space. Thus it can be used for
   * defining surfaces on 3D elements.
  */
-
 template<class TPointType> class Quadrilateral3D9 : public Geometry<TPointType>
 {
 public:
@@ -2013,30 +2013,6 @@ private:
      * Un accessible methods
      */
 }; // Class Quadrilateral3D9
-
-/**
- * Input and output
- */
-
-/**
- * input stream function
- */
-template< class TPointType > inline std::istream& operator >> (
-    std::istream& rIStream,
-    Quadrilateral3D9<TPointType>& rThis );
-
-/**
-         * output stream function
- */
-template< class TPointType > inline std::ostream& operator << (
-    std::ostream& rOStream,
-    const Quadrilateral3D9<TPointType>& rThis )
-{
-    rThis.PrintInfo( rOStream );
-    rOStream << std::endl;
-    rThis.PrintData( rOStream );
-    return rOStream;
-}
 
 template<class TPointType>
 const GeometryData Quadrilateral3D9<TPointType>::msGeometryData(
