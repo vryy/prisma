@@ -22,7 +22,7 @@
 namespace Kratos
 {
 
-class KRATOS_API(KRATOS_CORE) TriangleGaussRadauIntegrationPoints1
+class TriangleGaussRadauIntegrationPoints1
 {
 public:
     typedef std::size_t SizeType;
@@ -59,7 +59,7 @@ public:
 }; // Class TriangleGaussRadauIntegrationPoints1
 
 
-class KRATOS_API(KRATOS_CORE) TriangleGaussRadauIntegrationPoints2
+class TriangleGaussRadauIntegrationPoints2
 {
 public:
     typedef std::size_t SizeType;
@@ -97,7 +97,7 @@ public:
 }; // Class TriangleGaussRadauIntegrationPoints2
 
 
-class KRATOS_API(KRATOS_CORE) TriangleGaussRadauIntegrationPoints3
+class TriangleGaussRadauIntegrationPoints3
 {
 public:
     typedef std::size_t SizeType;
@@ -137,7 +137,7 @@ public:
 }; // Class TriangleGaussRadauIntegrationPoints2
 
 
-class KRATOS_API(KRATOS_CORE) TriangleGaussRadauIntegrationPoints4
+class TriangleGaussRadauIntegrationPoints4
 {
 public:
     typedef std::size_t SizeType;
@@ -178,7 +178,7 @@ public:
 }; // Class TriangleGaussRadauIntegrationPoints4
 
 
-class KRATOS_API(KRATOS_CORE) TriangleGaussRadauIntegrationPoints5
+class TriangleGaussRadauIntegrationPoints5
 {
 public:
     typedef std::size_t SizeType;
@@ -224,7 +224,7 @@ public:
 }; // Class TriangleGaussRadauIntegrationPoints5
 
 
-class KRATOS_API(KRATOS_CORE) TriangleGaussRadauIntegrationPoints6
+class TriangleGaussRadauIntegrationPoints6
 {
 public:
     typedef std::size_t SizeType;

@@ -17,12 +17,10 @@
 // Project includes
 #include "integration/quadrature.h"
 
-//TO BE COMPLETED: Only the needed ones have been implemented
-
 namespace Kratos
 {
 
-class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLobattoIntegrationPoints1
+class QuadrilateralGaussLobattoIntegrationPoints1
 {
 public:
     typedef std::size_t SizeType;
@@ -56,7 +54,7 @@ public:
     }
 }; // Class QuadrilateralGaussLobattoIntegrationPoints1
 
-class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLobattoIntegrationPoints2
+class QuadrilateralGaussLobattoIntegrationPoints2
 {
 public:
     typedef std::size_t SizeType;
@@ -93,7 +91,7 @@ public:
     }
 }; // Class QuadrilateralGaussLobattoIntegrationPoints2
 
-class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLobattoIntegrationPoints3
+class QuadrilateralGaussLobattoIntegrationPoints3
 {
 public:
     typedef std::size_t SizeType;
@@ -135,7 +133,7 @@ public:
     }
 }; // Class QuadrilateralGaussLobattoIntegrationPoints3
 
-class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLobattoIntegrationPoints4
+class QuadrilateralGaussLobattoIntegrationPoints4
 {
 public:
     typedef std::size_t SizeType;
@@ -184,7 +182,7 @@ public:
     }
 }; // Class QuadrilateralGaussLobattoIntegrationPoints4
 
-class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLobattoIntegrationPoints5
+class QuadrilateralGaussLobattoIntegrationPoints5
 {
 public:
     typedef std::size_t SizeType;
@@ -250,26 +248,26 @@ public:
 ///@{
 
 template<int TDegree>
-class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLobattoIntegrationPoints;
+class QuadrilateralGaussLobattoIntegrationPoints;
 
 template<>
-class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLobattoIntegrationPoints<1> : public QuadrilateralGaussLobattoIntegrationPoints1
+class QuadrilateralGaussLobattoIntegrationPoints<1> : public QuadrilateralGaussLobattoIntegrationPoints1
 {};
 
 template<>
-class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLobattoIntegrationPoints<2> : public QuadrilateralGaussLobattoIntegrationPoints2
+class QuadrilateralGaussLobattoIntegrationPoints<2> : public QuadrilateralGaussLobattoIntegrationPoints2
 {};
 
 template<>
-class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLobattoIntegrationPoints<3> : public QuadrilateralGaussLobattoIntegrationPoints3
+class QuadrilateralGaussLobattoIntegrationPoints<3> : public QuadrilateralGaussLobattoIntegrationPoints3
 {};
 
 template<>
-class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLobattoIntegrationPoints<4> : public QuadrilateralGaussLobattoIntegrationPoints4
+class QuadrilateralGaussLobattoIntegrationPoints<4> : public QuadrilateralGaussLobattoIntegrationPoints4
 {};
 
 template<>
-class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLobattoIntegrationPoints<5> : public QuadrilateralGaussLobattoIntegrationPoints5
+class QuadrilateralGaussLobattoIntegrationPoints<5> : public QuadrilateralGaussLobattoIntegrationPoints5
 {};
 
 }

@@ -21,7 +21,7 @@
 namespace Kratos
 {
 
-class KRATOS_API(KRATOS_CORE) PrismGaussLobattoIntegrationPoints1
+class PrismGaussLobattoIntegrationPoints1
 {
 public:
     typedef std::size_t SizeType;
@@ -57,7 +57,7 @@ public:
     }
 }; // Class PrismGaussLobattoIntegrationPoints1
 
-class KRATOS_API(KRATOS_CORE) PrismGaussLobattoIntegrationPoints2
+class PrismGaussLobattoIntegrationPoints2
 {
 public:
     typedef std::size_t SizeType;

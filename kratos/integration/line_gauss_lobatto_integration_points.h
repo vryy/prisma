@@ -21,6 +21,7 @@
 
 namespace Kratos
 {
+
 class KRATOS_API(KRATOS_CORE) LineGaussLobattoIntegrationPoints1
 {
 public:

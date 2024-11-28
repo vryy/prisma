@@ -35,27 +35,25 @@ FIND_LIBRARY(AUX3 mkl_core
 #  ${MY_LIB_SEARCH_DIR}
 #)
 
-FIND_LIBRARY(AUX6 mkl_mc3 # kernel library for SSE4.2
-  ${MY_LIB_SEARCH_DIR}
-)
+if(NOT(${CMAKE_SYSTEM_NAME} MATCHES "Windows"))
+  FIND_LIBRARY(AUX6 mkl_mc3 # kernel library for SSE4.2
+    ${MY_LIB_SEARCH_DIR}
+  )
+endif()
 
 #FIND_LIBRARY(AUX7 mkl_lapack95_ilp64
 #  ${MY_LIB_SEARCH_DIR}
 #)
 
-FIND_LIBRARY(AUX8 pthread
-  ${MY_LIB_SEARCH_DIR}
-)
+if(NOT(${CMAKE_SYSTEM_NAME} MATCHES "Windows"))
+  FIND_LIBRARY(AUX8 pthread
+    ${MY_LIB_SEARCH_DIR}
+  )
+endif()
 
 #FIND_LIBRARY(AUX9 mkl_p4n
 #  ${MY_LIB_SEARCH_DIR}
 #)
-
-
-
-
-
-
 
 ##ATTENTION! the order of libraries is FUNDAMENTAL!! take care!!!
 IF(MKLSOLVER_INCLUDE_DIR)

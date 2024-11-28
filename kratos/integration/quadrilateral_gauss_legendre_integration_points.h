@@ -21,7 +21,7 @@
 namespace Kratos
 {
 
-class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLegendreIntegrationPoints1
+class QuadrilateralGaussLegendreIntegrationPoints1
 {
 public:
     typedef std::size_t SizeType;
@@ -55,7 +55,7 @@ public:
     }
 }; // Class QuadrilateralGaussLegendreIntegrationPoints1
 
-class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLegendreIntegrationPoints2
+class QuadrilateralGaussLegendreIntegrationPoints2
 {
 public:
     typedef std::size_t SizeType;
@@ -92,7 +92,7 @@ public:
     }
 }; // Class QuadrilateralGaussLegendreIntegrationPoints2
 
-class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLegendreIntegrationPoints3
+class QuadrilateralGaussLegendreIntegrationPoints3
 {
 public:
     typedef std::size_t SizeType;
@@ -134,7 +134,7 @@ public:
     }
 }; // Class QuadrilateralGaussLegendreIntegrationPoints3
 
-class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLegendreIntegrationPoints4
+class QuadrilateralGaussLegendreIntegrationPoints4
 {
 public:
     typedef std::size_t SizeType;
@@ -183,7 +183,7 @@ public:
     }
 }; // Class QuadrilateralGaussLegendreIntegrationPoints4
 
-class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLegendreIntegrationPoints5 {
+class QuadrilateralGaussLegendreIntegrationPoints5 {
 public:
     typedef std::size_t SizeType;
 
@@ -241,7 +241,7 @@ public:
     }
 }; // Class QuadrilateralGaussLegendreIntegrationPoints5
 
-class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLegendreIntegrationPoints6 {
+class QuadrilateralGaussLegendreIntegrationPoints6 {
 public:
     typedef std::size_t SizeType;
 
@@ -311,7 +311,7 @@ public:
     }
 }; // Class QuadrilateralGaussLegendreIntegrationPoints6
 
-class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLegendreIntegrationPoints7 {
+class QuadrilateralGaussLegendreIntegrationPoints7 {
 public:
     typedef std::size_t SizeType;
 
@@ -395,7 +395,7 @@ public:
     }
 }; // Class QuadrilateralGaussLegendreIntegrationPoints7
 
-class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLegendreIntegrationPoints8 {
+class QuadrilateralGaussLegendreIntegrationPoints8 {
 public:
     typedef std::size_t SizeType;
 
@@ -495,7 +495,7 @@ public:
     }
 }; // Class QuadrilateralGaussLegendreIntegrationPoints8
 
-class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLegendreIntegrationPoints9 {
+class QuadrilateralGaussLegendreIntegrationPoints9 {
 public:
     typedef std::size_t SizeType;
 
@@ -613,7 +613,7 @@ public:
     }
 }; // Class QuadrilateralGaussLegendreIntegrationPoints9
 
-class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLegendreIntegrationPoints10 {
+class QuadrilateralGaussLegendreIntegrationPoints10 {
 public:
     typedef std::size_t SizeType;
 
@@ -755,46 +755,46 @@ public:
 ///@{
 
 template<int TDegree>
-class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLegendreIntegrationPoints;
+class QuadrilateralGaussLegendreIntegrationPoints;
 
 template<>
-class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLegendreIntegrationPoints<1> : public QuadrilateralGaussLegendreIntegrationPoints1
+class QuadrilateralGaussLegendreIntegrationPoints<1> : public QuadrilateralGaussLegendreIntegrationPoints1
 {};
 
 template<>
-class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLegendreIntegrationPoints<2> : public QuadrilateralGaussLegendreIntegrationPoints2
+class QuadrilateralGaussLegendreIntegrationPoints<2> : public QuadrilateralGaussLegendreIntegrationPoints2
 {};
 
 template<>
-class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLegendreIntegrationPoints<3> : public QuadrilateralGaussLegendreIntegrationPoints3
+class QuadrilateralGaussLegendreIntegrationPoints<3> : public QuadrilateralGaussLegendreIntegrationPoints3
 {};
 
 template<>
-class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLegendreIntegrationPoints<4> : public QuadrilateralGaussLegendreIntegrationPoints4
+class QuadrilateralGaussLegendreIntegrationPoints<4> : public QuadrilateralGaussLegendreIntegrationPoints4
 {};
 
 template<>
-class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLegendreIntegrationPoints<5> : public QuadrilateralGaussLegendreIntegrationPoints5
+class QuadrilateralGaussLegendreIntegrationPoints<5> : public QuadrilateralGaussLegendreIntegrationPoints5
 {};
 
 template<>
-class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLegendreIntegrationPoints<6> : public QuadrilateralGaussLegendreIntegrationPoints6
+class QuadrilateralGaussLegendreIntegrationPoints<6> : public QuadrilateralGaussLegendreIntegrationPoints6
 {};
 
 template<>
-class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLegendreIntegrationPoints<7> : public QuadrilateralGaussLegendreIntegrationPoints7
+class QuadrilateralGaussLegendreIntegrationPoints<7> : public QuadrilateralGaussLegendreIntegrationPoints7
 {};
 
 template<>
-class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLegendreIntegrationPoints<8> : public QuadrilateralGaussLegendreIntegrationPoints8
+class QuadrilateralGaussLegendreIntegrationPoints<8> : public QuadrilateralGaussLegendreIntegrationPoints8
 {};
 
 template<>
-class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLegendreIntegrationPoints<9> : public QuadrilateralGaussLegendreIntegrationPoints9
+class QuadrilateralGaussLegendreIntegrationPoints<9> : public QuadrilateralGaussLegendreIntegrationPoints9
 {};
 
 template<>
-class KRATOS_API(KRATOS_CORE) QuadrilateralGaussLegendreIntegrationPoints<10> : public QuadrilateralGaussLegendreIntegrationPoints10
+class QuadrilateralGaussLegendreIntegrationPoints<10> : public QuadrilateralGaussLegendreIntegrationPoints10
 {};
 
 ///@}

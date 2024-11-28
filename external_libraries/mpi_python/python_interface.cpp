@@ -1,5 +1,4 @@
 #include <boost/python.hpp>
-//#include <boost/python/init.hpp>
 
 #include "mpi_python.h"
 

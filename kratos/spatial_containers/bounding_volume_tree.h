@@ -38,7 +38,7 @@ namespace Kratos
 /// Class Description:
 /// +   This abstract class represents a k-discrete oriented polytope (k-DOP) in 3D
 /// +   k-DOP is a bounding volume concept, that allows to wrap a geometry in a convex volume
-class kDOP
+class KRATOS_API(KRATOS_CORE) kDOP
 {
 public:
     KRATOS_CLASS_POINTER_DEFINITION(kDOP);
@@ -382,7 +382,7 @@ private:
 /// +   Abstract class for the spliting of nodes used for constructing the bounding volume tree in top-down approach
 /// +   The derivative of this class must implement the sub-routine Partition, where the set of elemental Ids is splitted in 2 parts.
 template<int TFrame = 1, class ContainerType = ModelPart::ConditionsContainerType>
-class BoundingVolumePartitioner
+class KRATOS_API(KRATOS_CORE) BoundingVolumePartitioner
 {
 public:
     KRATOS_CLASS_POINTER_DEFINITION(BoundingVolumePartitioner);
@@ -435,7 +435,7 @@ public:
 
 
 template<int TFrame = 1, class ContainerType = ModelPart::ConditionsContainerType>
-class SimpleBoundingVolumePartitioner : public BoundingVolumePartitioner<TFrame, ContainerType>
+class KRATOS_API(KRATOS_CORE) SimpleBoundingVolumePartitioner : public BoundingVolumePartitioner<TFrame, ContainerType>
 {
 public:
     KRATOS_CLASS_POINTER_DEFINITION(SimpleBoundingVolumePartitioner);
@@ -532,7 +532,7 @@ public:
 
 
 template<int TFrame = 1, class ContainerType = ModelPart::ConditionsContainerType>
-class LineRegressionVolumePartitioner : public BoundingVolumePartitioner<TFrame, ContainerType>
+class KRATOS_API(KRATOS_CORE) LineRegressionVolumePartitioner : public BoundingVolumePartitioner<TFrame, ContainerType>
 {
 public:
     KRATOS_CLASS_POINTER_DEFINITION(LineRegressionVolumePartitioner);
@@ -572,7 +572,7 @@ public:
 /// +   Yang & Laursen, A contact searching algorithm including bounding volume trees applied to finite sliding mortar formulations
 /// +   Klosowski et al, Efficient collision detection using bounding volume hierarchies of k-DOPs
 template<int TFrame = 1, class ContainerType = ModelPart::ConditionsContainerType>
-class BoundingVolumeTree
+class KRATOS_API(KRATOS_CORE) BoundingVolumeTree
 {
 public:
     KRATOS_CLASS_POINTER_DEFINITION(BoundingVolumeTree);
@@ -632,10 +632,6 @@ public:
         }
     }
 
-    void UpdateTree(ModelPart& r_model_part)
-    {
-        this->UpdateTree(r_model_part.Conditions());
-    }
 
     void UpdateTree(const ContainerType& rAllConditions)
     {

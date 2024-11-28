@@ -1747,47 +1747,6 @@ void ConstitutiveLaw::CalculateCauchyStresses(Vector& Cauchy_StressVector,
 {
 }
 
-std::ostream& operator<<(std::ostream& os, const ConstitutiveLaw::PlasticCode& p)
-{
-    switch (p)
-    {
-        case ConstitutiveLaw::PlasticCode::ELASTIC:
-            os << "elastic";
-            break;
-        case ConstitutiveLaw::PlasticCode::PLASTIC:
-            os << "plastic";
-            break;
-        case ConstitutiveLaw::PlasticCode::FAILURE:
-            os << "failure";
-            break;
-        case ConstitutiveLaw::PlasticCode::RETURN_ON_SMOOTH_PLANE:
-            os << "smooth";
-            break;
-        case ConstitutiveLaw::PlasticCode::RETURN_ON_EDGE:
-            os << "edge";
-            break;
-        case ConstitutiveLaw::PlasticCode::RETURN_ON_LEFT_EDGE:
-            os << "left";
-            break;
-        case ConstitutiveLaw::PlasticCode::RETURN_ON_RIGHT_EDGE:
-            os << "right";
-            break;
-        case ConstitutiveLaw::PlasticCode::RETURN_ON_CORNER:
-            os << "corner";
-            break;
-        case ConstitutiveLaw::PlasticCode::RETURN_ON_APEX:
-            os << "apex";
-            break;
-        default:
-            os << "failed";
-            break;
-    }
-    return os;
-}
-
-template class KRATOS_API(KRATOS_CORE) KratosComponents<ConstitutiveLaw >;
-// template class KRATOS_API(KRATOS_CORE) KratosComponents< Variable<ConstitutiveLaw::Pointer> >;
-
+template class KRATOS_API(KRATOS_CORE) KratosComponents<ConstitutiveLaw>;
 
 } /* namespace Kratos.*/
-

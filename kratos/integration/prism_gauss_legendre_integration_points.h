@@ -20,7 +20,7 @@
 namespace Kratos
 {
 
-class KRATOS_API(KRATOS_CORE) PrismGaussLegendreIntegrationPoints1
+class PrismGaussLegendreIntegrationPoints1
 {
 public:
     typedef std::size_t SizeType;
@@ -56,7 +56,7 @@ public:
     }
 }; // Class PrismGaussLegendreIntegrationPoints1
 
-class KRATOS_API(KRATOS_CORE) PrismGaussLegendreIntegrationPoints2
+class PrismGaussLegendreIntegrationPoints2
 {
 public:
     typedef std::size_t SizeType;
@@ -95,7 +95,7 @@ public:
     }
 }; // Class PrismGaussLegendreIntegrationPoints2
 
-class KRATOS_API(KRATOS_CORE) PrismGaussLegendreIntegrationPoints3
+class PrismGaussLegendreIntegrationPoints3
 {
 public:
     typedef std::size_t SizeType;
@@ -137,7 +137,7 @@ public:
     }
 }; // Class PrismGaussLegendreIntegrationPoints3
 
-class KRATOS_API(KRATOS_CORE) PrismGaussLegendreIntegrationPoints4
+class PrismGaussLegendreIntegrationPoints4
 {
 public:
     typedef std::size_t SizeType;
@@ -182,7 +182,7 @@ public:
     }
 }; // Class PrismGaussLegendreIntegrationPoints4
 
-class KRATOS_API(KRATOS_CORE) PrismGaussLegendreIntegrationPoints5
+class PrismGaussLegendreIntegrationPoints5
 {
 public:
     typedef std::size_t SizeType;

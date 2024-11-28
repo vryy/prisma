@@ -294,19 +294,20 @@ private:
 ///@name Type Definitions
 ///@{
 
-extern std::unique_ptr<Model> pKratosDefaultModel; // a temporary model to use to contain a model_part if it is created standalone
+extern KRATOS_API(KRATOS_CORE) std::unique_ptr<Model> pKratosDefaultModel; // a temporary model to use to contain a model_part if it is created standalone
 
 ///@}
 ///@name Input and output
 ///@{
 
 /// input stream function
-inline std::istream& operator >> (std::istream& rIStream,
-                Model& rThis);
+inline std::istream& operator >> (std::istream& rIStream, Model& rThis)
+{
+    return rIStream;
+}
 
 /// output stream function
-inline std::ostream& operator << (std::ostream& rOStream,
-                const Model& rThis)
+inline std::ostream& operator << (std::ostream& rOStream, const Model& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;

@@ -56,7 +56,7 @@ namespace Kratos
  * @details Flags operate using bitwise logic, providing a crucial base class for numerous essential Kratos components.
  * @author Pooyan Dadvand
  */
-class Flags
+class KRATOS_API(KRATOS_CORE) Flags
 {
 public:
     ///@name Type Definitions
