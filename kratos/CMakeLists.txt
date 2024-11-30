@@ -106,6 +106,9 @@ endif()
 ###############################################################
 ## define library KratosCore to be included in all of the others
 add_library(KratosCore SHARED ${KRATOS_CORE_SOURCES})
+if(MSVC AND (${CMAKE_BUILD_TYPE} MATCHES Debug))
+    target_compile_options(KratosCore PRIVATE /bigobj)
+endif()
 if(${KRATOS_PYTHON} MATCHES TRUE)
     target_link_libraries(KratosCore ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${PYTHON_LIBRARIES} gidpost )
 else()
@@ -137,6 +140,9 @@ endif(${INSTALL_PYTHON_FILES} MATCHES ON)
 if(${KRATOS_PYTHON} MATCHES TRUE)
     ## define library Kratos which defines the basic python interface
     add_library(Kratos SHARED ${KRATOS_PYTHON_SOURCES})
+    if(MSVC AND (${CMAKE_BUILD_TYPE} MATCHES Debug))
+        target_compile_options(Kratos PRIVATE /bigobj)
+    endif()
     target_link_libraries(Kratos KratosCore)
     set_target_properties(Kratos PROPERTIES PREFIX "")
 
