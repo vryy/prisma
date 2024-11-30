@@ -278,13 +278,13 @@ inline std::ostream& operator <<(std::ostream& rOStream, const kDOP& rThis)
     return rOStream;
 }
 
-class _6DOP : public kDOP // AABB
+class KRATOS_API(KRATOS_CORE) _6DOP : public kDOP // AABB
 {
 public:
     KRATOS_CLASS_POINTER_DEFINITION(_6DOP);
     _6DOP() : kDOP() {this->Initialize();}
-    virtual ~_6DOP() {}
-    virtual std::size_t NumberOfDirections() const {return 3;}
+    ~_6DOP() override {}
+    std::size_t NumberOfDirections() const override {return 3;}
 
 private:
     static const double msDirection[][3];
@@ -293,13 +293,13 @@ private:
     virtual const double (*DirectionNormalized() const)[3];
 };
 
-class _8DOP : public kDOP
+class KRATOS_API(KRATOS_CORE) _8DOP : public kDOP
 {
 public:
     KRATOS_CLASS_POINTER_DEFINITION(_8DOP);
     _8DOP() : kDOP() {this->Initialize();}
-    virtual ~_8DOP() {}
-    virtual std::size_t NumberOfDirections() const {return 4;}
+    ~_8DOP() override {}
+    std::size_t NumberOfDirections() const override {return 4;}
 private:
     static const double msDirection[][3];
     static const double msDirectionNormalized[][3];
@@ -307,13 +307,13 @@ private:
     virtual const double (*DirectionNormalized() const)[3];
 };
 
-class _12DOP : public kDOP
+class KRATOS_API(KRATOS_CORE) _12DOP : public kDOP
 {
 public:
     KRATOS_CLASS_POINTER_DEFINITION(_12DOP);
     _12DOP() : kDOP() {this->Initialize();}
-    virtual ~_12DOP() {}
-    virtual std::size_t NumberOfDirections() const {return 6;}
+    ~_12DOP() override {}
+    std::size_t NumberOfDirections() const override {return 6;}
 private:
     static const double msDirection[][3];
     static const double msDirectionNormalized[][3];
@@ -321,13 +321,13 @@ private:
     virtual const double (*DirectionNormalized() const)[3];
 };
 
-class _14DOP : public kDOP
+class KRATOS_API(KRATOS_CORE) _14DOP : public kDOP
 {
 public:
     KRATOS_CLASS_POINTER_DEFINITION(_14DOP);
     _14DOP() : kDOP() {this->Initialize();}
-    virtual ~_14DOP() {}
-    virtual std::size_t NumberOfDirections() const {return 7;}
+    ~_14DOP() override {}
+    std::size_t NumberOfDirections() const override {return 7;}
 private:
     static const double msDirection[][3];
     static const double msDirectionNormalized[][3];
@@ -335,13 +335,13 @@ private:
     virtual const double (*DirectionNormalized() const)[3];
 };
 
-class _18DOP : public kDOP
+class KRATOS_API(KRATOS_CORE) _18DOP : public kDOP
 {
 public:
     KRATOS_CLASS_POINTER_DEFINITION(_18DOP);
     _18DOP() : kDOP() {this->Initialize();}
-    virtual ~_18DOP() {}
-    virtual std::size_t NumberOfDirections() const {return 9;}
+    ~_18DOP() override {}
+    std::size_t NumberOfDirections() const override {return 9;}
 private:
     static const double msDirection[][3];
     static const double msDirectionNormalized[][3];
@@ -349,13 +349,13 @@ private:
     virtual const double (*DirectionNormalized() const)[3];
 };
 
-class _20DOP : public kDOP
+class KRATOS_API(KRATOS_CORE) _20DOP : public kDOP
 {
 public:
     KRATOS_CLASS_POINTER_DEFINITION(_20DOP);
     _20DOP() : kDOP() {this->Initialize();}
-    virtual ~_20DOP() {}
-    virtual std::size_t NumberOfDirections() const {return 10;}
+    ~_20DOP() override {}
+    std::size_t NumberOfDirections() const override {return 10;}
 private:
     static const double msDirection[][3];
     static const double msDirectionNormalized[][3];
@@ -363,13 +363,13 @@ private:
     virtual const double (*DirectionNormalized() const)[3];
 };
 
-class _26DOP : public kDOP
+class KRATOS_API(KRATOS_CORE) _26DOP : public kDOP
 {
 public:
     KRATOS_CLASS_POINTER_DEFINITION(_26DOP);
     _26DOP() : kDOP() {this->Initialize();}
-    virtual ~_26DOP() {}
-    virtual std::size_t NumberOfDirections() const {return 13;}
+    ~_26DOP() override {}
+    std::size_t NumberOfDirections() const override {return 13;}
 private:
     static const double msDirection[][3];
     static const double msDirectionNormalized[][3];
@@ -387,7 +387,7 @@ class KRATOS_API(KRATOS_CORE) BoundingVolumePartitioner
 public:
     KRATOS_CLASS_POINTER_DEFINITION(BoundingVolumePartitioner);
     BoundingVolumePartitioner() {}
-    ~BoundingVolumePartitioner() {}
+    virtual ~BoundingVolumePartitioner() {}
 
     typedef Node<3> NodeType;
     typedef Geometry<NodeType> GeometryType;
@@ -440,7 +440,7 @@ class KRATOS_API(KRATOS_CORE) SimpleBoundingVolumePartitioner : public BoundingV
 public:
     KRATOS_CLASS_POINTER_DEFINITION(SimpleBoundingVolumePartitioner);
     SimpleBoundingVolumePartitioner() {}
-    ~SimpleBoundingVolumePartitioner() {}
+    ~SimpleBoundingVolumePartitioner() override {}
 
     /// REF: https://github.com/brandonpelfrey/Fast-BVH
     void Partition(const ContainerType& rAllConditions,
@@ -537,7 +537,7 @@ class KRATOS_API(KRATOS_CORE) LineRegressionVolumePartitioner : public BoundingV
 public:
     KRATOS_CLASS_POINTER_DEFINITION(LineRegressionVolumePartitioner);
     LineRegressionVolumePartitioner() {}
-    ~LineRegressionVolumePartitioner() {}
+    ~LineRegressionVolumePartitioner() override {}
 
     void Partition(const ContainerType& rAllConditions,
                    const kDOP& rBoundingVolume,
@@ -759,4 +759,3 @@ private:
 }  // namespace Kratos.
 
 #endif // KRATOS_BOUNDING_VOLUME_TREE_H_INCLUDED  defined
-
