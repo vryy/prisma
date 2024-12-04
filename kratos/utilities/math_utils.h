@@ -320,17 +320,6 @@ public:
         }
     }
 
-    /**
-     * @brief This function is designed to be called when a dense linear system is needed to be solved
-     * @param A System matrix
-     * @param rX Solution vector. it's also the initial guess for iterative linear solvers.
-     * @param rB Right hand side vector.
-     */
-    static void Solve(
-        MatrixType A,
-        VectorType& rX,
-        const VectorType& rB
-        );
 
     /**
      * @brief It inverts matrices of order 2, 3 and 4

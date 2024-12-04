@@ -2,16 +2,17 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 ## generate variables with the sources
 set( TETGEN_SOURCES
-	${CMAKE_CURRENT_SOURCE_DIR}/tetgen.cxx
+    ${CMAKE_CURRENT_SOURCE_DIR}/tetgen.cxx
 )
 
 set( UNOPTIMIZED_PREDICATES ${CMAKE_CURRENT_SOURCE_DIR}/predicates.cxx )
 
 ##removing optimizations
-SET_SOURCE_FILES_PROPERTIES(${UNOPTIMIZED_PREDICATES} PROPERTIES COMPILE_FLAGS -O0)
-if(${CMAKE_BUILD_TYPE} MATCHES Release)
-    SET_SOURCE_FILES_PROPERTIES(${TETGEN_SOURCES} PROPERTIES COMPILE_FLAGS -O2)
-endif()
+set_source_files_properties(${UNOPTIMIZED_PREDICATES} PROPERTIES COMPILE_FLAGS -O0)
+set_source_files_properties(
+    ${TETGEN_SOURCES}
+    PROPERTIES COMPILE_FLAGS "$<$<CONFIG:Release>:-O2>"
+)
 
 ###############################################################
 add_definitions( -DTETLIBRARY )

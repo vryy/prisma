@@ -4,6 +4,21 @@
     #define register  // Define register as empty in C++17 or later
 #endif
 
+#ifdef _DEBUG
+   #ifdef KRATOS_USE_RELEASE_PYTHON_LIBRARY
+   // this is to circumvent an annoying bug in Python.h
+   // which links with debug library even if
+   // the release library is used
+       #undef _DEBUG
+       #include <Python.h>
+       #define _DEBUG
+   #else
+       #include <Python.h>
+   #endif
+#else
+   #include <Python.h>
+#endif
+
 #include <Python.h>
 
 #if PY_MAJOR_VERSION >= 3
@@ -49,19 +64,24 @@
         wchar_t **wchar_argv = (wchar_t **) calloc(argc, sizeof(wchar_t *));
         for(int i = 0; i<argc; i++)
         {
-                wchar_argv[i] = nstrws_convert(argv[i]);
+            wchar_argv[i] = nstrws_convert(argv[i]);
         }
 
         Py_NoSiteFlag = 1;
         Py_SetProgramName(wchar_argv[0]);
-     
+
         Py_Initialize();
 
         PySys_SetArgv(argc-1, &wchar_argv[1] );
 
-        int error_code = Py_Main(argc,wchar_argv);
+        int error_code = Py_Main(argc, wchar_argv);
 
         Py_Finalize();
+
+        //free memory
+        for(int i = 0; i<argc; i++)
+            free(wchar_argv[i]);
+        free(wchar_argv);
 
         if(error_code != 0)
         {
@@ -73,12 +93,6 @@
             std::cout << "KRATOS TERMINATED CORRECTLY" << std::endl;
             return 0;
         }
-        
-        //free memory
-        //Py_DECREF(sysPath);
-        for(int i = 0; i<argc; i++)
-            free(wchar_argv[i]);
-        free(wchar_argv);
     }
 #else
     int main(int argc, char *argv[])
