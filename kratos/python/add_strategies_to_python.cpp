@@ -196,6 +196,16 @@ namespace Kratos
             return dummy.CreateEmptyVectorPointer();
         }
 
+        void PrintMatrixInfo(SparseSpaceType& dummy, const typename SparseSpaceType::MatrixType& rA, const int level)
+        {
+            dummy.PrintMatrixInfo(std::cout, rA, level);
+        }
+
+        void PrintVectorInfo(SparseSpaceType& dummy, const typename SparseSpaceType::VectorType& rX, const int level)
+        {
+            dummy.PrintVectorInfo(std::cout, rX, level);
+        }
+
         //  boost::shared_ptr< CompressedMatrix > CreateEmptyMatrixPointer()
         //  {
         //      boost::shared_ptr<CompressedMatrix> pNewMat = boost::shared_ptr<CompressedMatrix>(new CompressedMatrix() );
@@ -244,24 +254,14 @@ namespace Kratos
 
         void AddStrategiesToPython()
         {
-      //typedef UblasSpace<DataType, CompressedMatrix, Vector> SparseSpaceType; //already done up in this file
-      //typedef UblasSpace<DataType, Matrix, Vector> LocalSpaceType; //already done up in this file
-
-            //          def("CreateEmptyMatrixPointer",CreateEmptyMatrixPointer);
-            //          def("CreateEmptyVectorPointer",CreateEmptyVectorPointer);
-
             class_< boost::shared_ptr<CompressedMatrix> >("CompressedMatrixPointer", init<boost::shared_ptr<CompressedMatrix> >())
                     .def("GetReference", GetMatRef, return_value_policy<reference_existing_object > ())
                     //                  .def("GetReference", GetRef, return_internal_reference<1>() )
                     ;
 
-            // // //            class_< CompressedMatrix , boost::noncopyable >("CompressedMatrix", init< >() );
-
-
             class_< boost::shared_ptr<Vector> >("VectorPointer", init< boost::shared_ptr<Vector> >())
                     .def("GetReference", GetVecRef, return_value_policy<reference_existing_object > ())
                     ;
-            // // //            class_< Vector , boost::noncopyable >("Vector", init< >() );
 
             typedef LinearSolver<SparseSpaceType, LocalSpaceType > LinearSolverType;
             typedef SolvingStrategy< SparseSpaceType, LocalSpaceType, LinearSolverType > BaseSolvingStrategyType;
@@ -515,6 +515,9 @@ namespace Kratos
                     .def("WriteMatrixMarketVector", WriteMatrixMarketVector<Vector>)
                     .def("ReadMatrixMarketMatrix", ReadMatrixMarketMatrix_<CompressedMatrix>)
                     .def("ReadMatrixMarketVector", ReadMatrixMarketVector_<Vector>)
+                    .def("PrintMatrixInfo", PrintMatrixInfo)
+                    .def("PrintVectorInfo", PrintVectorInfo)
+                    .def(self_ns::str(self))
                     ;
         }
 

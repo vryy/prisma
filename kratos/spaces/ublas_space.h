@@ -19,13 +19,14 @@
 // System includes
 #include <string>
 #include <iostream>
+#include <iomanip>
 #include <cstddef>
 #include <numeric>
+#include <type_traits>
 
 #ifdef _OPENMP
 #include "omp.h"
 #endif
-
 
 // External includes
 
@@ -168,28 +169,24 @@ public:
     }
 
     /// return size of vector rV
-
     static IndexType Size(VectorType const& rV)
     {
         return rV.size();
     }
 
     /// return number of rows of rM
-
     static IndexType Size1(MatrixType const& rM)
     {
         return rM.size1();
     }
 
     /// return number of columns of rM
-
     static IndexType Size2(MatrixType const& rM)
     {
         return rM.size2();
     }
 
     /// rXi = rMij
-
     static void GetColumn(unsigned int j, const MatrixType& rM, VectorType& rX)
     {
         noalias(rX) = column(rM, j);
@@ -198,21 +195,18 @@ public:
 
     ///////////////////////////////// TODO: Take a close look to this method!!!!!!!!!!!!!!!!!!!!!!!!!
     /// rMij = rXi
-
     static void SetColumn(unsigned int j, MatrixType& rM, const VectorType& rX)
     {
         noalias(column(rM, j)) = rX;
     }
 
     /// rY = rX
-
     static void Copy(MatrixType const& rX, MatrixType& rY)
     {
         rY.assign(rX);
     }
 
     /// rY = rX^T
-
     static void TransposeCopy(MatrixType const& rX, MatrixType& rY)
     {
         rY.assign(trans(rX));
@@ -220,7 +214,6 @@ public:
 
 
     /// rY = rX
-
     static void Copy(VectorType const& rX, VectorType& rY)
     {
 #ifndef _OPENMP
@@ -238,7 +231,6 @@ public:
     }
 
     /// rX * rY
-
     static TDataType Dot(VectorType const& rX, VectorType const& rY)
     {
 #ifndef _OPENMP
@@ -268,35 +260,39 @@ public:
 
 
     /// ||rX||2
-
     static TDataType TwoNorm(VectorType const& rX)
     {
         return sqrt(Dot(rX, rX));
     }
 
-    static TDataType TwoNorm(const Matrix& rA) // Frobenious norm
+    // Frobenious norm
+    static TDataType TwoNorm(const MatrixType& rA)
     {
-        TDataType aux_sum = TDataType();
-        #pragma omp parallel for reduction(+:aux_sum)
-        for (int i=0; i<static_cast<int>(rA.size1()); ++i) {
-            for (int j=0; j<static_cast<int>(rA.size2()); ++j) {
-                aux_sum += std::pow(rA(i,j),2);
+        if constexpr (std::is_same<MatrixType, Matrix>::value)
+        {
+            TDataType aux_sum = TDataType();
+            #pragma omp parallel for reduction(+:aux_sum)
+            for (int i=0; i<static_cast<int>(rA.size1()); ++i) {
+                for (int j=0; j<static_cast<int>(rA.size2()); ++j) {
+                    aux_sum += std::pow(rA(i,j),2);
+                }
             }
+            return std::sqrt(aux_sum);
         }
-        return std::sqrt(aux_sum);
-    }
+        else if constexpr (std::is_same<MatrixType, compressed_matrix<TDataType> >::value)
+        {
+            TDataType aux_sum = TDataType();
 
-    static TDataType TwoNorm(const compressed_matrix<TDataType> & rA) // Frobenious norm
-    {
-        TDataType aux_sum = TDataType();
+            const auto& r_values = rA.value_data();
 
-        const auto& r_values = rA.value_data();
-
-        #pragma omp parallel for reduction(+:aux_sum)
-        for (int i=0; i<static_cast<int>(r_values.size()); ++i) {
-            aux_sum += std::pow(r_values[i] , 2);
+            #pragma omp parallel for reduction(+:aux_sum)
+            for (int i=0; i<static_cast<int>(r_values.size()); ++i) {
+                aux_sum += std::pow(r_values[i] , 2);
+            }
+            return std::sqrt(aux_sum);
         }
-        return std::sqrt(aux_sum);
+        else
+            KRATOS_ERROR << __FUNCTION__ << " is not implemented";
     }
 
     /**
@@ -304,35 +300,40 @@ public:
      * @param rA The matrix to compute the Jacobi norm
      * @return aux_sum: The Jacobi norm
      */
-    static TDataType JacobiNorm(const Matrix& rA)
+    static TDataType JacobiNorm(const MatrixType& rA)
     {
-        TDataType aux_sum = TDataType();
-        #pragma omp parallel for reduction(+:aux_sum)
-        for (int i=0; i<static_cast<int>(rA.size1()); ++i) {
-            for (int j=0; j<static_cast<int>(rA.size2()); ++j) {
-                if (i != j) {
-                    aux_sum += std::abs(rA(i,j));
+        if constexpr (std::is_same<MatrixType, Matrix>::value)
+        {
+            TDataType aux_sum = TDataType();
+            #pragma omp parallel for reduction(+:aux_sum)
+            for (int i=0; i<static_cast<int>(rA.size1()); ++i) {
+                for (int j=0; j<static_cast<int>(rA.size2()); ++j) {
+                    if (i != j) {
+                        aux_sum += std::abs(rA(i,j));
+                    }
                 }
             }
+            return aux_sum;
         }
-        return aux_sum;
-    }
+        else if constexpr (std::is_same<MatrixType, compressed_matrix<TDataType> >::value)
+        {
+            TDataType aux_sum = TDataType();
 
-    static TDataType JacobiNorm(const compressed_matrix<TDataType>& rA)
-    {
-        TDataType aux_sum = TDataType();
+            typedef typename MatrixType::const_iterator1 t_it_1;
+            typedef typename MatrixType::const_iterator2 t_it_2;
 
-        typedef typename compressed_matrix<TDataType>::const_iterator1 t_it_1;
-        typedef typename compressed_matrix<TDataType>::const_iterator2 t_it_2;
-
-        for (t_it_1 it_1 = rA.begin1(); it_1 != rA.end1(); ++it_1) {
-            for (t_it_2 it_2 = it_1.begin(); it_2 != it_1.end(); ++it_2) {
-                if (it_2.index1() != it_2.index2()) {
-                    aux_sum += std::abs(*it_2);
+            for (t_it_1 it_1 = rA.begin1(); it_1 != rA.end1(); ++it_1) {
+                for (t_it_2 it_2 = it_1.begin(); it_2 != it_1.end(); ++it_2) {
+                    if (it_2.index1() != it_2.index2()) {
+                        aux_sum += std::abs(*it_2);
+                    }
                 }
             }
+
+            return aux_sum;
         }
-        return aux_sum;
+        else
+            KRATOS_ERROR << __FUNCTION__ << " is not implemented";
     }
 
     static void Mult(Matrix& rA, VectorType& rX, VectorType& rY)
@@ -389,7 +390,6 @@ public:
 
     //********************************************************************
     //checks if a multiplication is needed and tries to do otherwise
-
     static void InplaceMult(VectorType& rX, const TDataType A)
     {
 
@@ -408,7 +408,7 @@ public:
 
             }
 #else
-             const int size = rX.size();
+            const int size = rX.size();
 
             #pragma omp parallel for
             for (int i = 0; i < size; i++)
@@ -434,7 +434,6 @@ public:
     //checks if a multiplication is needed and tries to do otherwise
     //ATTENTION it is assumed no aliasing between rX and rY
     // X = A*y;
-
     static void Assign(VectorType& rX, const TDataType A, const VectorType& rY)
     {
 #ifndef _OPENMP
@@ -474,7 +473,6 @@ public:
     //checks if a multiplication is needed and tries to do otherwise
     //ATTENTION it is assumed no aliasing between rX and rY
     // X += A*y;
-
     static void UnaliasedAdd(VectorType& rX, const TDataType A, const VectorType& rY)
     {
 #ifndef _OPENMP
@@ -507,10 +505,7 @@ public:
             for (int i = 0; i < size; i++)
                 rX[i] += A * rY[i];
         }
-
-
 #endif
-
     }
 
     //********************************************************************
@@ -529,7 +524,6 @@ public:
 
 
     /// rA[i] * rX
-
     static TDataType RowDot(unsigned int i, MatrixType& rA, VectorType& rX)
     {
         return inner_prod(row(rA, i), rX);
@@ -541,7 +535,6 @@ public:
     }
 
     /// rX = A
-
     static void Set(VectorType& rX, TDataType A)
     {
         std::fill(rX.begin(), rX.end(), A);
@@ -578,8 +571,6 @@ public:
     inline static void ClearData(compressed_matrix<TDataType>& rA)
     {
         rA.clear();
-        //    	rA.value_data() = unbounded_array<TDataType>();
-        //if(rA.non_zeros() != 0) rA.value_data() = unbounded_array<TDataType>();
     }
 
     inline static void ClearData(VectorType& rX)
@@ -591,7 +582,6 @@ public:
     inline static void ResizeData(TOtherMatrixType& rA, SizeType m)
     {
         rA.resize(m, false);
-        //            std::fill(rA.begin(), rA.end(), TDataType());
 #ifndef _OPENMP
         std::fill(rA.begin(), rA.end(), TDataType());
 #else
@@ -673,24 +663,146 @@ public:
         }
     }
 
-
-    //        static void GatherLocalValues(Vector& global_indices, )
-    //		{
-    //		axpy_prod(rA, rX, rY, true);
-    //		}
-
-
-
-
     ///@}
     ///@name Access
     ///@{
 
+    //***********************************************************************
+
+    inline static TDataType GetValue(const VectorType& x, std::size_t I)
+    {
+        return x[I];
+    }
+
+    //***********************************************************************
+
+    static void GatherValues(const VectorType& x, const std::vector<std::size_t>& IndexArray, TDataType* pValues)
+    {
+        KRATOS_TRY
+
+        for (std::size_t i = 0; i < IndexArray.size(); i++)
+            pValues[i] = x[IndexArray[i]];
+
+        KRATOS_CATCH("")
+    }
 
     ///@}
     ///@name Inquiry
     ///@{
 
+    inline static constexpr bool IsDistributed()
+    {
+        return false;
+    }
+
+    /// Print the information about the matrix. Depending on the level, different information will be printed
+    static void PrintMatrixInfo(std::ostream& rOStream, const MatrixType& rA, const int level)
+    {
+        typedef typename MatrixType::const_iterator1 t_it_1;
+        typedef typename MatrixType::const_iterator2 t_it_2;
+
+        if (level > 0)
+        {
+            rOStream << "Number of rows: " << Size1(rA)
+                     << ", columns: " << Size2(rA);
+        }
+
+        if (level > 1)
+        {
+            std::size_t num_entries = 0;
+
+            if constexpr (std::is_same<MatrixType, Matrix>::value)
+            {
+                for (IndexType i = 0; i < Size1(rA); ++i)
+                    for (IndexType j = 0; j < Size2(rA); ++j)
+                        if (rA(i, j) != 0) ++num_entries;
+            }
+            else if constexpr (std::is_same<MatrixType, compressed_matrix<TDataType> >::value)
+            {
+                for (t_it_1 it_1 = rA.begin1(); it_1 != rA.end1(); ++it_1)
+                    for (t_it_2 it_2 = it_1.begin(); it_2 != it_1.end(); ++it_2)
+                        if (*it_2 != 0.0) ++num_entries;
+            }
+
+            rOStream << ", entries: " << num_entries;
+        }
+
+        if (level > 2)
+        {
+            DataType max_diag = -1e99, sum_diag = 0.0;
+
+            if constexpr (std::is_same<MatrixType, Matrix>::value)
+            {
+                for (IndexType i = 0; i < Size1(rA); ++i)
+                    for (IndexType j = 0; j < Size2(rA); ++j)
+                        if (i == j)
+                        {
+                            const DataType v = std::abs(rA(i, j));
+                            sum_diag += v;
+                            if (v > max_diag)
+                                max_diag = v;
+                        }
+            }
+            else if constexpr (std::is_same<MatrixType, compressed_matrix<TDataType> >::value)
+            {
+                for (t_it_1 it_1 = rA.begin1(); it_1 != rA.end1(); ++it_1)
+                    for (t_it_2 it_2 = it_1.begin(); it_2 != it_1.end(); ++it_2)
+                        if (it_2.index1() == it_2.index2())
+                        {
+                            const DataType v = std::abs(*it_2);
+                            sum_diag += v;
+                            if (v > max_diag)
+                                max_diag = v;
+                        }
+            }
+
+            rOStream << std::scientific << std::setprecision(6)
+                     << ", max of abs of diag: " << max_diag
+                     << ", sum of abs of diag: " << sum_diag;
+        }
+
+        rOStream << std::endl;
+    }
+
+    /// Print the information about the vector. Depending on the level, different information will be printed
+    static void PrintVectorInfo(std::ostream& rOStream, const VectorType& rX, const int level)
+    {
+        typedef typename VectorType::const_iterator t_it;
+
+        if (level > 0)
+        {
+            rOStream << "Size: " << Size(rX);
+        }
+
+        if (level > 1)
+        {
+            std::size_t num_entries = 0;
+            for (t_it it = rX.begin(); it != rX.end(); ++it)
+            {
+                std::size_t num_entries = 0;
+                if (*it != 0.0)
+                    ++num_entries;
+            }
+            rOStream << ", entries: " << num_entries;
+        }
+
+        if (level > 2)
+        {
+            DataType max_entry = -1e99, sum_entry = 0.0;
+            for (t_it it = rX.begin(); it != rX.end(); ++it)
+            {
+                const DataType v = std::abs(*it);
+                sum_entry += v;
+                if (v > max_entry)
+                    max_entry = v;
+            }
+            rOStream << std::scientific << std::setprecision(6)
+                     << ", max of abs of entry: " << max_entry
+                     << ", sum of abs of entry: " << sum_entry;
+        }
+
+        rOStream << std::endl;
+    }
 
     ///@}
     ///@name Input and output
@@ -717,29 +829,6 @@ public:
     }
 
     //***********************************************************************
-
-    inline static constexpr bool IsDistributed()
-    {
-        return false;
-    }
-
-    //***********************************************************************
-
-    inline static TDataType GetValue(const VectorType& x, std::size_t I)
-    {
-        return x[I];
-    }
-    //***********************************************************************
-
-    static void GatherValues(const VectorType& x, const std::vector<std::size_t>& IndexArray, TDataType* pValues)
-    {
-        KRATOS_TRY
-
-        for (std::size_t i = 0; i < IndexArray.size(); i++)
-            pValues[i] = x[IndexArray[i]];
-
-        KRATOS_CATCH("")
-    }
 
     template< class TOtherMatrixType >
     static bool WriteMatrixMarketMatrix(const char *FileName, TOtherMatrixType &M, bool Symmetric)
@@ -815,7 +904,6 @@ private:
 
 #ifdef _OPENMP
     //y += A*x in parallel
-
     static void ParallelProductNoAdd(const MatrixType& A, const VectorType& in, VectorType& out)
     {
         //create partition
@@ -843,22 +931,6 @@ private:
                                    out
                                   );
         }
-    }
-
-    template <class TIterartorType>
-    static void ParallelFill(TIterartorType Begin, TIterartorType End, TDataType const& Value)
-    {
-#ifndef _OPENMP
-        std::fill(Begin, End, Value);
-#else
-        int size = End-Begin;
-        //#pragma omp parallel for
-        for (int i = 0; i < size; i++)
-        {
-            *(Begin+i) = Value;
-        }
-#endif
-
     }
 
     /**
@@ -894,6 +966,21 @@ private:
     }
 #endif
 
+    template <class TIterartorType>
+    static void ParallelFill(TIterartorType Begin, TIterartorType End, TDataType const& Value)
+    {
+#ifndef _OPENMP
+        std::fill(Begin, End, Value);
+#else
+        int size = End-Begin;
+        //#pragma omp parallel for
+        for (int i = 0; i < size; i++)
+        {
+            *(Begin+i) = Value;
+        }
+#endif
+    }
+
     ///@}
     ///@name Private Operations
     ///@{
@@ -927,24 +1014,19 @@ private:
 ///@name Input and output
 ///@{
 
-/// input stream function
-//   inline std::istream& operator >> (std::istream& rIStream,
-// 				    UblasSpace& rThis);
+/// output stream function
+template<class TDataType, class TMatrixType, class TVectorType>
+inline std::ostream& operator << (std::ostream& rOStream,
+             const UblasSpace<TDataType, TMatrixType, TVectorType>& rThis)
+{
+    rThis.PrintInfo(rOStream);
+    rOStream << std::endl;
+    rThis.PrintData(rOStream);
 
-//   /// output stream function
-//   inline std::ostream& operator << (std::ostream& rOStream,
-// 				    const UblasSpace& rThis)
-//     {
-//       rThis.PrintInfo(rOStream);
-//       rOStream << std::endl;
-//       rThis.PrintData(rOStream);
-
-//       return rOStream;
-//     }
+    return rOStream;
+}
 ///@}
-
 
 } // namespace Kratos.
 
 #endif // KRATOS_UBLAS_SPACE_H_INCLUDED  defined
-
