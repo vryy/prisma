@@ -10,18 +10,18 @@ namespace Python
 
 PythonMPI& GetMPIInterface()
 {
-	static PythonMPI ThePythonMPI;
-	return ThePythonMPI;
+    static PythonMPI ThePythonMPI;
+    return ThePythonMPI;
 }
 
 using namespace boost::python;
 
 boost::python::list (PythonMPI::*gather_list)(PythonMPIComm&,
-	        boost::python::list, int) = &PythonMPI::gather;
+            boost::python::list, int) = &PythonMPI::gather;
 boost::python::list (PythonMPI::*allgather_list_int)(PythonMPIComm&,
-	        boost::python::list) = &PythonMPI::allgather2<int>;
+            boost::python::list) = &PythonMPI::allgather2<int>;
 boost::python::list (PythonMPI::*allgather_list_double)(PythonMPIComm&,
-	        boost::python::list) = &PythonMPI::allgather2<double>;
+            boost::python::list) = &PythonMPI::allgather2<double>;
 
 BOOST_PYTHON_MODULE(mpipython)
 {
@@ -35,7 +35,7 @@ BOOST_PYTHON_MODULE(mpipython)
     RankFuncType FRank = &PythonMPI::rank;
     SizeFuncType FSize = &PythonMPI::size;
 
-    class_<PythonMPI,boost::noncopyable>("PythonMPI",no_init) //  init<boost::python::list>())
+    class_<PythonMPI, boost::noncopyable>("PythonMPI", no_init) //  init<boost::python::list>())
     .add_property("rank",FRank)
     .add_property("size",FSize)
     .def("gather",&PythonMPI::gather<double>)
