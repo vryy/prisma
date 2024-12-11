@@ -192,7 +192,6 @@ public:
         noalias(rX) = column(rM, j);
     }
 
-
     ///////////////////////////////// TODO: Take a close look to this method!!!!!!!!!!!!!!!!!!!!!!!!!
     /// rMij = rXi
     static void SetColumn(unsigned int j, MatrixType& rM, const VectorType& rX)
@@ -211,7 +210,6 @@ public:
     {
         rY.assign(trans(rX));
     }
-
 
     /// rY = rX
     static void Copy(VectorType const& rX, VectorType& rY)
@@ -257,7 +255,6 @@ public:
         return total;
 #endif
     }
-
 
     /// ||rX||2
     static TDataType TwoNorm(VectorType const& rX)
@@ -386,7 +383,6 @@ public:
             neighbors.push_back(row_iterator.index2());
         }
     }
-
 
     //********************************************************************
     //checks if a multiplication is needed and tries to do otherwise
@@ -779,7 +775,6 @@ public:
             std::size_t num_entries = 0;
             for (t_it it = rX.begin(); it != rX.end(); ++it)
             {
-                std::size_t num_entries = 0;
                 if (*it != 0.0)
                     ++num_entries;
             }
@@ -809,21 +804,18 @@ public:
     ///@{
 
     /// Turn back information as a string.
-
     virtual std::string Info() const
     {
         return "UBlasSpace";
     }
 
     /// Print information about this object.
-
     virtual void PrintInfo(std::ostream& rOStream) const
     {
         rOStream << "UBlasSpace";
     }
 
     /// Print object's data.
-
     virtual void PrintData(std::ostream& rOStream) const
     {
     }
