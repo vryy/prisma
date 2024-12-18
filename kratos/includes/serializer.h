@@ -36,10 +36,6 @@
 
 
 
-// External includes
-#ifdef KRATOS_PYTHON
-#include <boost/python/object.hpp>
-#endif
 
 
 // Project includes
@@ -361,12 +357,6 @@ public:
 //    read(rObject);
     }
 
-    #ifdef KRATOS_PYTHON
-    void load(std::string const & rTag, boost::python::object& rObject)
-    {
-        // hbui: TODO
-    }
-    #endif
 
     KRATOS_SERIALIZATION_DIRECT_LOAD(bool)
     KRATOS_SERIALIZATION_DIRECT_LOAD(char)
@@ -465,12 +455,6 @@ public:
         }
     }
 
-    #ifdef KRATOS_PYTHON
-    void save(std::string const & rTag, boost::python::object const& rObject)
-    {
-        // hbui: TODO
-    }
-    #endif
 
     template<class TDataType>
     bool IsDerived(TDataType * pValue)
