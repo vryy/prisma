@@ -20,6 +20,10 @@
   "workspaceMount": "source=${localWorkspaceFolder},target=/home/kuser/kratos_bcn2,type=bind,consistency=cached",
   "workspaceFolder": "/home/kuser/kratos_bcn2",
 
+  "containerEnv": {
+    "OMP_NUM_THREADS": "8"
+  },
+
   "mounts": [
     // ----- fixed mount - Kratos build volume
     {
