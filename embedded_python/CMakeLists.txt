@@ -4,7 +4,14 @@ include_directories(${PYTHON_INCLUDE_DIRS})
 link_directories(${PYTHON_LIBRARIES})
 
 ############ module to include sys libs #############
-include(InstallRequiredSystemLibraries)
+set(_install_required_system_libraries TRUE)
+if (MSVC AND (CMAKE_CXX_COMPILER_ID STREQUAL "Intel") OR (CMAKE_CXX_COMPILER_ID STREQUAL "IntelLLVM"))
+   set(_install_required_system_libraries FALSE) # to avoid weird warning of Intel compiler on MSVC
+endif()
+
+if(_install_required_system_libraries)
+   include(InstallRequiredSystemLibraries)
+endif()
 
 ## generate variables with the sources
 set( EMBEDDED_PYTHON_SOURCES
