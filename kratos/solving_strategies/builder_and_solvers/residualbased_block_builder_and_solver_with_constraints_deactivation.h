@@ -176,7 +176,7 @@ public:
 
         if(!pScheme)
         {
-            KRATOS_THROW_ERROR(std::logic_error, "No scheme provided!", "");
+            KRATOS_ERROR << "No scheme provided!";
         }
         // Getting the elements from the model
         const int nelements = static_cast<int>(rModelPart.Elements().size());
@@ -771,7 +771,7 @@ public:
         //Throws an exception if there are no Degrees Of Freedom involved in the analysis
         if(BaseType::mDofSet.size() == 0)
         {
-            KRATOS_THROW_ERROR(std::logic_error, "No degrees of freedom!", "");
+            KRATOS_ERROR << "No degrees of freedom!";
         }
 
         if ( this->GetEchoLevel() > 2)
@@ -799,7 +799,7 @@ public:
             for (auto dof_iterator = BaseType::mDofSet.begin(); dof_iterator != BaseType::mDofSet.end(); ++dof_iterator) {
                 if(!(dof_iterator->HasReaction()))
                 {
-                    KRATOS_THROW_ERROR(std::logic_error, "Reaction variable not set for the following Node :xxx Not possible to calculate reactions.", dof_iterator->Id());
+                    KRATOS_ERROR << "Reaction variable not set for the following Node: " << dof_iterator->Id() << ". Not possible to calculate reactions.";
                 }
             }
         }
@@ -888,7 +888,7 @@ public:
         {
             if (A.size1() != BaseType::mEquationSystemSize || A.size2() != BaseType::mEquationSystemSize)
             {
-                KRATOS_THROW_ERROR(std::logic_error, "The equation system size has changed during the simulation. This is not permited.", "");
+                KRATOS_ERROR << "The equation system size has changed during the simulation. This is not permited.";
                 A.resize(BaseType::mEquationSystemSize, BaseType::mEquationSystemSize, true);
                 ConstructMatrixStructure(A, rModelPart);
             }

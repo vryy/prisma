@@ -17,15 +17,15 @@ FIND_LIBRARY(AUX1 mkl_intel_ilp64
   ${MY_LIB_SEARCH_DIR}
 )
 
-if(CMAKE_COMPILER_IS_GNUCXX )
+if(CMAKE_COMPILER_IS_GNUCXX)
     FIND_LIBRARY(AUX2 mkl_gnu_thread
       ${MY_LIB_SEARCH_DIR}
     )
-else(CMAKE_COMPILER_IS_GNUCXX )
+else()
     FIND_LIBRARY(AUX2 mkl_intel_thread
       ${MY_LIB_SEARCH_DIR}
     )
-endif(CMAKE_COMPILER_IS_GNUCXX )
+endif( )
 
 FIND_LIBRARY(AUX3 mkl_core
   ${MY_LIB_SEARCH_DIR}

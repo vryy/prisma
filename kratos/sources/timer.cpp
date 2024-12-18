@@ -30,4 +30,3 @@ double Timer::msGlobalStart = omp_get_wtime();
 #endif
 
 }
-
