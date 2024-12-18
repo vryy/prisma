@@ -28,17 +28,11 @@
     #define KRATOS_API_IMPORT __attribute__((visibility("default")))
 #endif
 
-// Fixes MSVC not expanding __VA_ARGS__ as defined in the C99 standard
-#define KRATOS_EXPAND(A) A
-
-// Expands the API call to either import or export based on the
-// number of the arguments in API() call.
-#define KRATOS_API_CALL(x,T1,T2,T3,...) T3
+#define KRATOS_APPEND_MACRO(base, suffix) base##suffix
 
 // If KRATOS_API_NO_DLL is defined ignore the DLL api
 #ifndef KRATOS_API_NO_DLL
-    #define KRATOS_API(...) \
-        KRATOS_EXPAND(KRATOS_API_CALL(,##__VA_ARGS__,KRATOS_API_EXPORT,KRATOS_API_IMPORT))
+    #define KRATOS_API(MACRO) KRATOS_APPEND_MACRO(KRATOS_API_, MACRO)
     #define KRATOS_NO_EXPORT(...)
 #else
     #define KRATOS_API(...)

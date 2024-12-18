@@ -123,7 +123,7 @@ endif()
 if(${CMAKE_SYSTEM_NAME} MATCHES "Android")
     set_target_properties(KratosCore PROPERTIES COMPILE_DEFINITIONS "KRATOS_CORE=")
 else()
-    set_target_properties(KratosCore PROPERTIES COMPILE_DEFINITIONS "KRATOS_CORE=IMPORT,API")
+    set_target_properties(KratosCore PROPERTIES COMPILE_DEFINITIONS "KRATOS_CORE=EXPORT")
     install(TARGETS KratosCore DESTINATION libs )
 endif()
 
@@ -144,6 +144,7 @@ if(${KRATOS_PYTHON} MATCHES TRUE)
         target_compile_options(Kratos PRIVATE $<$<CONFIG:Debug>:/bigobj>)
     endif()
     target_link_libraries(Kratos KratosCore)
+    set_target_properties(Kratos PROPERTIES COMPILE_DEFINITIONS "KRATOS_CORE=IMPORT")
     set_target_properties(Kratos PROPERTIES PREFIX "")
 
     # changing the .dll suffix to .pyd
