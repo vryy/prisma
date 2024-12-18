@@ -9,7 +9,7 @@
 				"configure.sh"
             ],
 			"options": {
-                "cwd": "/home/kuser/kratos_builds/cmake_build_all"
+                "cwd": "/home/kuser/kratos_builds/cmake_build"
             },
             "group": "build",
             "problemMatcher": [],
@@ -23,7 +23,7 @@
 				"install", "-j8"
 			],
 			"options": {
-                "cwd": "/home/kuser/kratos_builds/cmake_build_all"
+                "cwd": "/home/kuser/kratos_builds/cmake_build"
             },
 			"group": "build",
 			"problemMatcher": [],
