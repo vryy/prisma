@@ -4,8 +4,10 @@
 # CGAL_INCLUDE_DIR, where to find CGAL.h
 # CGAL_LIBRARIES, the libraries needed to use CGAL.
 # CGAL_FOUND, If false, do not try to use CGAL.
-if(CGAL_INCLUDE_DIR AND CGAL_LIBRARIES AND BOOST_THREAD_LIBRARIES AND GMP_LIBRARIES AND MPFR_LIBRARIES)
+option(CGAL_USE_BOOST_THREAD "Specify if CGAL is compiled with Boost-Thread. Default is ON." ON)
+if(CGAL_INCLUDE_DIR AND CGAL_LIBRARIES AND GMP_LIBRARIES AND MPFR_LIBRARIES)
     set(CGAL_FOUND TRUE)
+    include_directories(${CGAL_INCLUDE_DIR})
 else()
     if(NOT(CGAL_ROOT AND GMP_ROOT AND MPFR_ROOT))
         message(ERROR "CGAL_ROOT|GMP_ROOT|MPFR_ROOT is not set")
@@ -17,6 +19,32 @@ else()
 
     set(CGAL_LIBRARIES ${CGAL_LIBRARY} ${CGAL_CORE_LIBRARY})
 
+    find_library(GMP_LIBRARY NAMES gmp PATHS ${GMP_ROOT}/lib NO_DEFAULT_PATH)
+    find_library(GMPXX_LIBRARY NAMES gmpxx PATHS ${GMP_ROOT}/lib NO_DEFAULT_PATH)
+    set(GMP_LIBRARIES ${GMP_LIBRARY} ${GMPXX_LIBRARY})
+    set(GMP_INCLUDE_DIR ${GMP_ROOT}/include)
+    find_library(MPFR_LIBRARIES NAMES mpfr PATHS ${MPFR_ROOT}/lib NO_DEFAULT_PATH)
+    set(MPFR_INCLUDE_DIR ${MPFR_ROOT}/include)
+
+    message(STATUS "CGAL_INCLUDE_DIR=${CGAL_INCLUDE_DIR}")
+    message(STATUS "CGAL_LIBRARIES=${CGAL_LIBRARIES}")
+    message(STATUS "GMP_LIBRARIES=${GMP_LIBRARIES}")
+    message(STATUS "MPFR_LIBRARIES=${MPFR_LIBRARIES}")
+
+    if(CGAL_INCLUDE_DIR AND CGAL_LIBRARIES AND GMP_LIBRARIES AND MPFR_LIBRARIES)
+        set(CGAL_FOUND TRUE)
+        message(STATUS "Found CGAL: ${CGAL_INCLUDE_DIR}, ${CGAL_LIBRARIES}, ${GMP_LIBRARIES}, ${MPFR_LIBRARIES}")
+#        include_directories(${GMP_INCLUDE_DIR})
+#        include_directories(${MPFR_INCLUDE_DIR})
+        include_directories(${CGAL_INCLUDE_DIR})
+    else()
+        set(CGAL_FOUND FALSE)
+        message(STATUS "CGAL not found.")
+    endif()
+endif()
+
+# link with Boost thread as needed
+if(${CGAL_USE_BOOST_THREAD} MATCHES ON)
     if(CMAKE_VERSION VERSION_LESS "3.30")
         find_package(Boost COMPONENTS thread REQUIRED)
         # check boost version we may need other components
@@ -33,28 +61,5 @@ else()
         set(BOOST_THREAD_LIBRARIES ${Boost_LIBRARIES})
     endif()
 
-    find_library(GMP_LIBRARY NAMES gmp PATHS ${GMP_ROOT}/lib NO_DEFAULT_PATH)
-    find_library(GMPXX_LIBRARY NAMES gmpxx PATHS ${GMP_ROOT}/lib NO_DEFAULT_PATH)
-    set(GMP_LIBRARIES ${GMP_LIBRARY} ${GMPXX_LIBRARY})
-    set(GMP_INCLUDE_DIR ${GMP_ROOT}/include)
-    find_library(MPFR_LIBRARIES NAMES mpfr PATHS ${MPFR_ROOT}/lib NO_DEFAULT_PATH)
-    set(MPFR_INCLUDE_DIR ${MPFR_ROOT}/include)
-
-    message(STATUS "CGAL_INCLUDE_DIR=${CGAL_INCLUDE_DIR}")
-    message(STATUS "CGAL_LIBRARIES=${CGAL_LIBRARIES}")
     message(STATUS "BOOST_THREAD_LIBRARIES=${BOOST_THREAD_LIBRARIES}")
-    message(STATUS "GMP_LIBRARIES=${GMP_LIBRARIES}")
-    message(STATUS "MPFR_LIBRARIES=${MPFR_LIBRARIES}")
-
-    if(CGAL_INCLUDE_DIR AND CGAL_LIBRARIES AND BOOST_THREAD_LIBRARIES AND GMP_LIBRARIES AND MPFR_LIBRARIES)
-        set(CGAL_FOUND TRUE)
-        message(STATUS "Found CGAL: ${CGAL_INCLUDE_DIR}, ${CGAL_LIBRARIES}, ${BOOST_THREAD_LIBRARIES}, ${GMP_LIBRARIES}, ${MPFR_LIBRARIES}")
-#        INCLUDE_DIRECTORIES(${GMP_INCLUDE_DIR})
-#        INCLUDE_DIRECTORIES(${MPFR_INCLUDE_DIR})
-        INCLUDE_DIRECTORIES(${CGAL_INCLUDE_DIR})
-    else()
-        set(CGAL_FOUND FALSE)
-        message(STATUS "CGAL not found.")
-    endif()
-    mark_as_advanced(CGAL_INCLUDE_DIR CGAL_LIBRARIES BOOST_THREAD_LIBRARIES GMP_LIBRARIES MPFR_LIBRARIES)
 endif()
