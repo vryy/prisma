@@ -23,8 +23,16 @@ int mm_read_unsymmetric_sparse(const char *fname, int *M_, int *N_, int *nz_,
     int i;
     double *val;
     int *I, *J;
+
+#ifdef _WIN32
+    if (fopen_s(&f, fname, "r") != 0)
+        return -1;
+#else
     if ((f = fopen(fname, "r")) == NULL)
         return -1;
+#endif
+
+
     if (mm_read_banner(f, &matcode) != 0)
     {
         printf("mm_read_unsymetric: Could not process Matrix Market banner ");
