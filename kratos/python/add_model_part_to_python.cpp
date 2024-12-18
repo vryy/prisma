@@ -753,9 +753,8 @@ void AddModelPartToPython()
 
     PointerVectorSetPythonInterface<ModelPart::MasterSlaveConstraintContainerType>::CreateInterface("MasterSlaveConstraintsArray");
 
-    class_<ModelPart, bases<DataValueContainer, Flags> >("ModelPart")
+    class_<ModelPart, bases<DataValueContainer, Flags> >("ModelPart", init<>())
     .def(init<std::string const&>())
-    .def(init<>())
     .add_property("Name", GetModelPartName, SetModelPartName)
     //  .add_property("ProcessInfo", GetProcessInfo, SetProcessInfo)
     .add_property("ProcessInfo", pointer_to_get_process_info, pointer_to_set_process_info)

@@ -23,8 +23,10 @@ namespace Kratos
         std::cout << "_|\\_\\_|  \\__,_|\\__|\\___/ ____/" << std::endl;
         #if PY_MAJOR_VERSION==3
         std::cout << "         Multi-Physics (with interface to Python 3)" << std::endl;
-        #else
+        #elif PY_MAJOR_VERSION==2
         std::cout << "         Multi-Physics (with interface to Python 2)" << std::endl;
+        #else
+        #error "PY_MAJOR_VERSION is undefined"
         #endif
         std::cout << "   maintained by Hoang-Giang Bui" << std::endl;
         std::cout << "     Ruhr University Bochum     2013-2021" << std::endl;
