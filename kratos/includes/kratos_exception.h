@@ -42,8 +42,7 @@ namespace Kratos
     In order to have such information it is recommended to use it via KRATOS_ERROR macro.
  * @author Pooyan Dadvand
 */
-class KRATOS_API(KRATOS_CORE) KratosException
-    : public std::exception
+class KRATOS_API(KRATOS_CORE) KratosException : public std::exception
 {
 public:
     ///@name Type Definitions
@@ -91,6 +90,7 @@ public:
 
     /// Manipulator stream function
     KratosException& operator << (std::ostream& (*pf)(std::ostream&));
+
     /// char stream function
     KratosException& operator << (const char * rString);
 
@@ -169,14 +169,14 @@ private:
 #define KRATOS_DEBUG_ERROR_IF(conditional) if(false) KRATOS_ERROR_IF(conditional)
 #define KRATOS_DEBUG_ERROR_IF_NOT(conditional) if(false) KRATOS_ERROR_IF_NOT(conditional)
 #endif
+
 ///@}
 ///@name Input and output
 ///@{
 
 
 /// input stream function
-std::istream& operator >> (std::istream& rIStream,
-                KratosException& rThis);
+std::istream& operator >> (std::istream& rIStream, KratosException& rThis);
 
 /// output stream function
 KRATOS_API(KRATOS_CORE) std::ostream& operator << (std::ostream& rOStream, const KratosException& rThis);
