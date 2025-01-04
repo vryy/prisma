@@ -8,15 +8,21 @@
 //                   Kratos default license: kratos/license.txt
 //
 //  Main authors:   Pooyan Dadvand
+//                  Hoang-Giang Bui (add stacktrace output)
 //
 //
 
 #include <sstream>
+#include <stack>
 
 #ifdef KRATOS_USE_BACKTRACE
 #define BOOST_STACKTRACE_USE_BACKTRACE
 #endif
 #include <boost/stacktrace.hpp>
+
+#ifndef KRATOS_STACKTRACE_LEVEL
+#error KRATOS_STACKTRACE_LEVEL is not defined
+#endif
 
 #include "includes/kratos_exception.h"
 
@@ -47,36 +53,55 @@ namespace Kratos
         mutable std::string what_message_{};
     };
 
+    std::string collapse_arguments(const std::string& input, const char c1, const char c2)
+    {
+        std::string result;
+        std::stack<int> parenStack;
+        for (size_t i = 0; i < input.size(); ++i)
+        {
+            if (input[i] == c1)
+            {
+                // Push the current position of '(' onto the stack
+                parenStack.push(result.size());
+                result += c1;
+            }
+            else if (input[i] == c2)
+            {
+                if (!parenStack.empty())
+                {
+                    // Replace everything inside the parentheses with "..."
+                    result = result.substr(0, parenStack.top() + 1) + "..." + c2;
+                    parenStack.pop();
+                }
+                else
+                {
+                    // Handle unmatched ')'
+                    result += c2;
+                }
+            }
+            else
+            {
+                // Append other characters
+                if (parenStack.empty())
+                {
+                    result += input[i];
+                }
+            }
+        }
+
+        return result;
+    }
+
     std::string simplify_stacktrace_entry(const boost::stacktrace::frame& frame)
     {
         // Extract function name
         std::string function_name = frame.name();
 
-        // Simplify argument names (e.g., strip function arguments)
-        std::size_t pos = function_name.find('(');
-        if (pos != std::string::npos)
-        {
-            function_name = function_name.substr(0, pos) + "(...)";
-        }
+        // replace everything between () by (...)
+        function_name = collapse_arguments(function_name, '(', ')');
 
-        // Simplify template-heavy names (e.g., strip template arguments)
-        pos = function_name.find('<');
-        if (pos != std::string::npos)
-        {
-            // get the last name in the trail (the function name is called in runtime)
-            std::string func_name;
-            std::size_t pos2 = function_name.rfind("::"); // find the last occurrence of "::" in the long function name
-            if (pos2 != std::string::npos)
-            {
-                func_name = function_name.substr(pos2 + 2);  // Skip past the "::"
-            }
-
-            function_name = function_name.substr(0, pos) + "<...>::" + func_name;
-        }
-
-        #ifndef KRATOS_STACKTRACE_LEVEL
-        #error KRATOS_STACKTRACE_LEVEL is not defined
-        #endif
+        // replace everything between <> by <...>
+        function_name = collapse_arguments(function_name, '<', '>');
 
         #if KRATOS_STACKTRACE_LEVEL > 1     // trace all (Kratos + external functions)
         return function_name + " at " + frame.source_file() + ":" + std::to_string(frame.source_line());
@@ -177,7 +202,11 @@ namespace Kratos
         #else
         buffer << "Stacktrace: (please compile in Debug mode with backtrace support for filename and line number)" << std::endl;
         #endif
+        #if KRATOS_STACKTRACE_LEVEL > 2     // show the original stacktrace
+        buffer << to_string(pimpl_->stacktrace);
+        #else
         buffer << simplify_stacktrace(pimpl_->stacktrace);
+        #endif
         mWhat = buffer.str();
     }
 
