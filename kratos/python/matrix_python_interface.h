@@ -133,7 +133,8 @@ public:
             /*         if (!TConversionPolicyType::check_size( */
             /*           boost::type<TTContainerTypeType>(), obj_size)) return 0; */
             bool is_range = PyRange_Check(obj_ptr);
-            for(std::size_t i=0;; i++)
+            std::size_t i;
+            for(i=0;; i++)
             {
                 handle<> py_elem_hdl(allow_null(PyIter_Next(obj_iter.get())));
                 if (PyErr_Occurred())
