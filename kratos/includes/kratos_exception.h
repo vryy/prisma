@@ -19,6 +19,7 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <memory>
 
 // External includes
 
@@ -33,6 +34,8 @@ namespace Kratos
 
 ///@name Kratos Classes
 ///@{
+
+class ExceptionImplementation;
 
 /**
  * @class KratosException
@@ -140,6 +143,12 @@ private:
     std::string mMessage;
     std::string mWhat;
     std::vector<CodeLocation> mCallStack;
+
+    /**
+     * Pointer to implementation. This technique is used to minimize the footprint of the exception
+     * class that is put on the stack.
+     */
+    std::unique_ptr<ExceptionImplementation> pimpl_;
 
     ///@}
     ///@name private operations

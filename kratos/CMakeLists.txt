@@ -121,6 +121,11 @@ if(${KRATOS_PYTHON} MATCHES TRUE)
 else()
     target_link_libraries(KratosCore ${Boost_LIBRARIES} gidpost )
 endif()
+if(Backtrace_FOUND)
+    target_compile_definitions(KratosCore PRIVATE KRATOS_USE_BACKTRACE)
+    target_link_libraries(KratosCore ${Backtrace_LIBRARY})
+endif()
+
 # cotire(KratosCore)
 
 # if(${ADOL_C_FOUND} MATCHES TRUE)

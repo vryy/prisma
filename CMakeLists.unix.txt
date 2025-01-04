@@ -180,6 +180,14 @@ message("---- CMAKE_SHARED_LINKER_FLAGS: " ${CMAKE_SHARED_LINKER_FLAGS})
 message("---- CMAKE_EXE_LINKER_FLAGS: " ${CMAKE_EXE_LINKER_FLAGS})
 
 ##*****************************
+find_package(Backtrace)
+if(Backtrace_FOUND)
+    message("Backtrace_LIBRARY: " ${Backtrace_LIBRARY})
+    message("Backtrace_INCLUDE_DIR: " ${Backtrace_INCLUDE_DIR})
+    message("Backtrace is found")
+endif()
+
+##*****************************
 #finding and including PYTHON
 if(CMAKE_VERSION VERSION_LESS "3.27")
     find_package(PythonLibs REQUIRED)
