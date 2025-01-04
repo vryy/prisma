@@ -74,15 +74,31 @@ namespace Kratos
             function_name = function_name.substr(0, pos) + "<...>::" + func_name;
         }
 
+        #ifndef KRATOS_STACKTRACE_LEVEL
+        #error KRATOS_STACKTRACE_LEVEL is not defined
+        #endif
+
+        #if KRATOS_STACKTRACE_LEVEL > 1     // trace all (Kratos + external functions)
         return function_name + " at " + frame.source_file() + ":" + std::to_string(frame.source_line());
+        #elif KRATOS_STACKTRACE_LEVEL == 1  // only trace Kratos functions
+        if (function_name.find("Kratos::") == 0)
+            return function_name + " at " + frame.source_file() + ":" + std::to_string(frame.source_line());
+        else
+            return "";
+        #elif KRATOS_STACKTRACE_LEVEL == 0  // no stacktrace at all
+        return "";
+        #endif
     }
 
     std::string simplify_stacktrace(const boost::stacktrace::stacktrace& stack)
     {
         std::stringstream ss;
+        std::size_t cnt = 0;
         for (std::size_t i = 0; i < stack.size(); ++i)
         {
-            ss << " " << i << "# " << simplify_stacktrace_entry(stack[i]) << "\n";
+            std::string tmp = simplify_stacktrace_entry(stack[i]);
+            if (tmp != "")
+                ss << " " << cnt++ << "# " << tmp << "\n";
         }
         return ss.str();
     }
