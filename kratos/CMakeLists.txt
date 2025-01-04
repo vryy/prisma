@@ -106,6 +106,13 @@ endif()
 ###############################################################
 ## define library KratosCore to be included in all of the others
 add_library(KratosCore SHARED ${KRATOS_CORE_SOURCES})
+
+if(${CMAKE_SYSTEM_NAME} MATCHES "Android")
+    set_target_properties(KratosCore PROPERTIES COMPILE_DEFINITIONS "KRATOS_CORE=")
+else()
+    set_target_properties(KratosCore PROPERTIES COMPILE_DEFINITIONS "KRATOS_CORE=EXPORT")
+endif()
+
 if(MSVC)
     target_compile_options(KratosCore PRIVATE $<$<CONFIG:Debug>:/bigobj>)
 endif()
@@ -121,15 +128,10 @@ endif()
 # endif()
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Android")
-    set_target_properties(KratosCore PROPERTIES COMPILE_DEFINITIONS "KRATOS_CORE=")
+    # DO NOT INSTALL ON ANDROID
 else()
-    set_target_properties(KratosCore PROPERTIES COMPILE_DEFINITIONS "KRATOS_CORE=EXPORT")
     install(TARGETS KratosCore DESTINATION libs )
 endif()
-
-# if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-#     SET_TARGET_PROPERTIES( KratosCore PROPERTIES COMPILE_FLAGS -fPIC)
-# endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
 if(${INSTALL_PYTHON_FILES} MATCHES ON)
   get_filename_component (CURRENT_DIR_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
