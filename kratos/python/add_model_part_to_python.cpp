@@ -485,8 +485,6 @@ void CreateNewMasterSlaveConstraint1(ModelPart& rModelPart,
     rModelPart.CreateNewMasterSlaveConstraint(ConstraintName, Id, rMasterDofsVector, rSlaveDofsVector, RelationMatrix, ConstantVector);
 }
 
-
-
 void CreateNewMasterSlaveConstraint2(ModelPart& rModelPart,
     std::string ConstraintName,
     ModelPart::IndexType Id,
@@ -688,8 +686,6 @@ void RemoveSubModelPart2(ModelPart& rModelPart, ModelPart& ThisSubModelPart)
     rModelPart.RemoveSubModelPart(ThisSubModelPart);
 }
 
-
-
 template<class TDataType>
 bool CommunicatorAssembleCurrentData(Communicator& rCommunicator, Variable<TDataType> const& ThisVariable)
 {
@@ -701,8 +697,6 @@ bool CommunicatorAssembleNonHistoricalData(Communicator& rCommunicator, Variable
 {
     return rCommunicator.AssembleNonHistoricalData(ThisVariable);
 }
-
-
 
 void AddModelPartToPython()
 {

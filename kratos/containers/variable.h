@@ -80,10 +80,15 @@ public:
     ///@name Life Cycle
     ///@{
 
-    /** Constructor with specific name and zero value */
+    /**
+     * @brief Constructor with specific name and zero value
+     * @param NewName The name to be assigned to the new variable
+     * @param Zero The value to be assigned to the variable as zero. In case of not definition will take the value given by the constructor of the time
+     */
     Variable(const std::string& NewName, const TDataType Zero = TDataType())
         : VariableData(NewName, sizeof(TDataType)), mZero(Zero)
     {
+        // Here we don't register as we asume that the origin is already registered
     }
 
     /// Copy constructor.
@@ -212,15 +217,24 @@ public:
         rSerializer.load("Data",*static_cast<TDataType* >(pData));
     }
 
+    /**
+     * @brief This method returns the variable type
+     * @return The type of the variable
+     */
     static const VariableType& StaticObject()
     {
-        return msStaticObject;
+        const static Variable<TDataType> static_object("NONE");
+        return static_object;
     }
 
     ///@}
     ///@name Access
     ///@{
 
+    /**
+     * @brief This method returns the zero value of the variable type
+     * @return The zero value of the corresponding variable
+     */
     const TDataType& Zero() const
     {
         return mZero;
@@ -376,9 +390,6 @@ private:
 
 ///@}
 
-template<class TDataType>
-const Variable<TDataType> Variable<TDataType>::msStaticObject("NONE");
-
 ///@name Type Definitions
 ///@{
 
@@ -391,7 +402,10 @@ const Variable<TDataType> Variable<TDataType>::msStaticObject("NONE");
 /// input stream function
 template<class TDataType>
 inline std::istream& operator >> (std::istream& rIStream,
-                                  Variable<TDataType>& rThis);
+                                  Variable<TDataType>& rThis)
+{
+    return rIStream;
+}
 
 /// output stream function
 template<class TDataType>
@@ -404,7 +418,6 @@ inline std::ostream& operator << (std::ostream& rOStream,
     return rOStream;
 }
 ///@}
-
 
 }  // namespace Kratos.
 

@@ -170,7 +170,7 @@ namespace Kratos
 
     ModelPart::IndexType ModelPart::CreateSolutionStep()
     {
-        KRATOS_THROW_ERROR(std::logic_error, "This method needs updating and is not working. Pooyan", "")
+        KRATOS_ERROR << "This method needs updating and is not working. Pooyan";
         return 0;
     }
 
@@ -772,7 +772,7 @@ void ModelPart::AddMasterSlaveConstraint(ModelPart::MasterSlaveConstraintType::P
         else //master-slave constraint did exist already
         {
             if(&(*existing_constraint_it) != (pNewMasterSlaveConstraint.get()))
-                KRATOS_THROW_ERROR(std::logic_error, "attempting to add Master-Slave constraint with Id :xxx , unfortunately a (different) condition with the same Id already exists", pNewMasterSlaveConstraint->Id())
+                KRATOS_ERROR << "attempting to add Master-Slave constraint with Id :xxx , unfortunately a (different) condition with the same Id = " << pNewMasterSlaveConstraint->Id() << " already exists";
         }
     }
 }
@@ -795,7 +795,7 @@ void ModelPart::AddMasterSlaveConstraints(std::vector<IndexType> const& MasterSl
             if(it!=root_model_part->MasterSlaveConstraintsEnd())
                 aux.push_back(*(it.base()));
             else
-                KRATOS_THROW_ERROR(std::logic_error, "the master-slave constraint with Id :xxx , does not exist in the root model part", MasterSlaveConstraintIds[i])
+                KRATOS_ERROR << "the master-slave constraint with Id " << MasterSlaveConstraintIds[i] << " does not exist in the root model part";
         }
 
         ModelPart* current_part = this;
@@ -835,7 +835,7 @@ ModelPart::MasterSlaveConstraintType::Pointer ModelPart::CreateNewMasterSlaveCon
     auto existing_constraint_iterator = GetMesh(ThisIndex).MasterSlaveConstraints().find(Id);
 
     if(existing_constraint_iterator != GetMesh(ThisIndex).MasterSlaveConstraintsEnd() )
-        KRATOS_THROW_ERROR(std::logic_error, "trying to construct an master-slave constraint with ID:xxx ,however a constraint with the same Id already exists", Id)
+        KRATOS_ERROR << "trying to construct an master-slave constraint with ID " << Id << ", however a constraint with the same Id already exists";
 
     //create the new element
     ModelPart::MasterSlaveConstraintType const& r_clone_constraint = KratosComponents<MasterSlaveConstraintType>::Get(ConstraintName);
@@ -870,7 +870,7 @@ ModelPart::MasterSlaveConstraintType::Pointer ModelPart::CreateNewMasterSlaveCon
         }
 
         if(GetMesh(ThisIndex).HasMasterSlaveConstraint(Id))
-            KRATOS_THROW_ERROR(std::logic_error, "trying to construct an master-slave constraint with ID :xxx ,however a constraint with the same Id already exists", Id)
+            KRATOS_ERROR << "trying to construct an master-slave constraint with ID " << Id << ", however a constraint with the same Id already exists";
 
             //create the new element
         ModelPart::MasterSlaveConstraintType const& r_clone_constraint = KratosComponents<MasterSlaveConstraintType>::Get(ConstraintName);
@@ -884,7 +884,7 @@ ModelPart::MasterSlaveConstraintType::Pointer ModelPart::CreateNewMasterSlaveCon
     }
     else
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Master or Slave node does not have requested DOF", "")
+        KRATOS_ERROR << "Master or Slave node does not have requested DOF";
     }
 
     KRATOS_CATCH("")
@@ -912,7 +912,7 @@ ModelPart::MasterSlaveConstraintType::Pointer ModelPart::CreateNewMasterSlaveCon
 
         auto existing_constraint_iterator = GetMesh(ThisIndex).MasterSlaveConstraints().find(Id);
         if(existing_constraint_iterator != GetMesh(ThisIndex).MasterSlaveConstraintsEnd() )
-            KRATOS_THROW_ERROR(std::logic_error, "trying to construct an master-slave constraint with ID:xxx ,however a constraint with the same Id already exists",Id)
+            KRATOS_ERROR << "trying to construct an master-slave constraint with ID " << Id << ", however a constraint with the same Id already exists";
 
         //create the new element
         ModelPart::MasterSlaveConstraintType const& r_clone_constraint = KratosComponents<MasterSlaveConstraintType>::Get(ConstraintName);
@@ -926,7 +926,7 @@ ModelPart::MasterSlaveConstraintType::Pointer ModelPart::CreateNewMasterSlaveCon
     }
     else
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Master or Slave node does not have requested DOF ","")
+        KRATOS_ERROR << "Master or Slave node does not have requested DOF";
     }
 
     KRATOS_CATCH("")
@@ -954,7 +954,7 @@ ModelPart::MasterSlaveConstraintType::Pointer ModelPart::CreateNewMasterSlaveCon
     auto existing_constraint_iterator = GetMesh(ThisIndex).MasterSlaveConstraints().find(Id);
 
     if(existing_constraint_iterator != GetMesh(ThisIndex).MasterSlaveConstraintsEnd() )
-        KRATOS_THROW_ERROR(std::logic_error, "trying to construct an master-slave constraint with ID:xxx ,however a constraint with the same Id already exists", Id)
+        KRATOS_ERROR << "trying to construct an master-slave constraint with ID " << Id << ", however a constraint with the same Id already exists";
 
     //create the new element
     ModelPart::MasterSlaveConstraintType const& r_clone_constraint = KratosComponents<MasterSlaveConstraintType>::Get(ConstraintName);
@@ -1198,8 +1198,8 @@ const ModelPart::MasterSlaveConstraintType& ModelPart::GetMasterSlaveConstraint(
             p_model_part->SetParentModelPart(this);
             delete p_model_part->mpVariablesList;
             p_model_part->mpVariablesList = mpVariablesList;
-                        p_model_part->mBufferSize = this->mBufferSize;
-                        p_model_part->mpProcessInfo = this->mpProcessInfo;
+            p_model_part->mBufferSize = this->mBufferSize;
+            p_model_part->mpProcessInfo = this->mpProcessInfo;
             return *(mSubModelParts.insert(p_model_part));
         }
         else
@@ -1211,7 +1211,7 @@ const ModelPart::MasterSlaveConstraintType& ModelPart::GetMasterSlaveConstraint(
     {
         if (mSubModelParts.find(rThisSubModelPart.Name()) != mSubModelParts.end())
             // Here a warning would be enough. To be disscussed. Pooyan.
-            KRATOS_THROW_ERROR(std::logic_error, "There is an already existing sub model part with name ", rThisSubModelPart.Name())
+            KRATOS_ERROR << "There is an already existing sub model part with name " << rThisSubModelPart.Name();
 
         if (IsSubModelPart())
         {
@@ -1221,8 +1221,7 @@ const ModelPart::MasterSlaveConstraintType& ModelPart::GetMasterSlaveConstraint(
 
         rThisSubModelPart.SetParentModelPart(this);
     }
-    /** Remove a sub modelpart with given name.
-    */
+
     void  ModelPart::RemoveSubModelPart(std::string const& ThisSubModelPartName)
     {
         // finding the sub model part
@@ -1238,8 +1237,6 @@ const ModelPart::MasterSlaveConstraintType& ModelPart::GetMasterSlaveConstraint(
         mSubModelParts.erase(ThisSubModelPartName);
     }
 
-    /** Remove given sub model part.
-    */
     void  ModelPart::RemoveSubModelPart(ModelPart& ThisSubModelPart)
     {
         std::string name = ThisSubModelPart.Name();

@@ -90,7 +90,7 @@ public:
     }
 
     /// Destructor.
-    virtual ~ProcessInfoWithDofs()
+    ~ProcessInfoWithDofs() override
     {
         Finalize();
         std::cout << "ProcessInfoWithDofs destructor is called" << std::endl;

@@ -1,49 +1,16 @@
-/*
-==============================================================================
-Kratos
-A General Purpose Software for Multi-Physics Finite Element Analysis
-Version 1.0 (Released on march 05, 2007).
+//    |  /           |
+//    ' /   __| _` | __|  _ \   __|
+//    . \  |   (   | |   (   |\__ `
+//   _|\_\_|  \__,_|\__|\___/ ____/
 
-Copyright 2007
-Pooyan Dadvand, Riccardo Rossi
-pooyan@cimne.upc.edu
-rrossi@cimne.upc.edu
-CIMNE (International Center for Numerical Methods in Engineering),
-Gran Capita' s/n, 08034 Barcelona, Spain
-
-Permission is hereby granted, free  of charge, to any person obtaining
-a  copy  of this  software  and  associated  documentation files  (the
-"Software"), to  deal in  the Software without  restriction, including
-without limitation  the rights to  use, copy, modify,  merge, publish,
-distribute,  sublicense and/or  sell copies  of the  Software,  and to
-permit persons to whom the Software  is furnished to do so, subject to
-the following condition:
-
-Distribution of this code for  any  commercial purpose  is permissible
-ONLY BY DIRECT ARRANGEMENT WITH THE COPYRIGHT OWNER.
-
-The  above  copyright  notice  and  this permission  notice  shall  be
-included in all copies or substantial portions of the Software.
-
-THE  SOFTWARE IS  PROVIDED  "AS  IS", WITHOUT  WARRANTY  OF ANY  KIND,
-EXPRESS OR  IMPLIED, INCLUDING  BUT NOT LIMITED  TO THE  WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT  SHALL THE AUTHORS OR COPYRIGHT HOLDERS  BE LIABLE FOR ANY
-CLAIM, DAMAGES OR  OTHER LIABILITY, WHETHER IN AN  ACTION OF CONTRACT,
-TORT  OR OTHERWISE, ARISING  FROM, OUT  OF OR  IN CONNECTION  WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-==============================================================================
-*/
-
+//                   Multi-Physics
 //
-//   Project Name:        Kratos
-//   Last Modified by:    $Author: pooyan $
-//   Date:                $Date: 2007-06-27 11:04:33 $
-//   Revision:            $Revision: 1.6 $
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
+//
+//  Main authors:    Pooyan Dadvand
 //
 //
-
 
 #if !defined(KRATOS_VARIABLES_LIST_H_INCLUDED )
 #define  KRATOS_VARIABLES_LIST_H_INCLUDED
@@ -69,29 +36,14 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 namespace Kratos
 {
 
-///@name Kratos Globals
-///@{
-
-///@}
-///@name Type Definitions
-///@{
-
-///@}
-///@name  Enum's
-///@{
-
-///@}
-///@name  Functions
-///@{
-
-///@}
 ///@name Kratos Classes
 ///@{
 
-/// Short class definition.
-/** Detail class definition.
-*/
-class VariablesList
+/// Holds a list of variables and their position in VariablesListDataValueContainer
+/** This class works tightly with VariablesListDataValueContainer and provides the
+ * the positions of variables for that containers
+ */
+class KRATOS_API(KRATOS_CORE) VariablesList
 {
 public:
     ///@name Type Definitions
@@ -99,8 +51,6 @@ public:
 
     /// Pointer definition of VariablesList
     KRATOS_CLASS_POINTER_DEFINITION(VariablesList);
-
-
 
     typedef std::size_t SizeType;
 
@@ -124,11 +74,6 @@ public:
     typedef VariablesContainerType::const_iterator ptr_const_iterator;
     typedef VariablesContainerType::const_reverse_iterator ptr_const_reverse_iterator;
     typedef VariablesContainerType::difference_type difference_type;
-    //typedef typename VariablesContainerType::iterator iterator;
-    //typedef typename VariablesContainerType::const_iterator const_iterator;
-    //typedef typename VariablesContainerType::reverse_iterator reverse_iterator;
-    //typedef typename VariablesContainerType::const_reverse_iterator const_reverse_iterator;
-
 
     ///@}
     ///@name Life Cycle
@@ -142,7 +87,7 @@ public:
     template <class TInputIteratorType>
     VariablesList(TInputIteratorType First, TInputIteratorType Last)
     {
-        for(; First != Last ; First++)
+        for (; First != Last; First++)
             push_back(*First);
     }
 
@@ -155,7 +100,6 @@ public:
     virtual ~VariablesList()
     {
     }
-
 
     ///@}
     ///@name Operators
@@ -188,15 +132,14 @@ public:
     }
 
 
-    bool operator==( const VariablesList& r ) const // nothrow
+    bool operator==(const VariablesList& r) const // nothrow
     {
-        if( size() != r.size() )
+        if (size() != r.size())
             return false;
         else
             return std::equal(mPositions.begin(), mPositions.end(), r.mPositions.begin()) &&
-                   std::equal(mVariables.begin(), mVariables.end(), r.mVariables.begin());
+            std::equal(mVariables.begin(), mVariables.end(), r.mVariables.begin());
     }
-
 
     ///@}
     ///@name Operations
@@ -204,19 +147,19 @@ public:
 
     const_iterator             begin() const
     {
-        return const_iterator( mVariables.begin() );
+        return const_iterator(mVariables.begin());
     }
     const_iterator             end() const
     {
-        return const_iterator( mVariables.end() );
+        return const_iterator(mVariables.end());
     }
     const_reverse_iterator     rbegin() const
     {
-        return const_reverse_iterator( mVariables.rbegin() );
+        return const_reverse_iterator(mVariables.rbegin());
     }
     const_reverse_iterator     rend() const
     {
-        return const_reverse_iterator( mVariables.rend() );
+        return const_reverse_iterator(mVariables.rend());
     }
     ptr_const_iterator         ptr_begin() const
     {
@@ -237,12 +180,13 @@ public:
 
     const_reference  front() const /* nothrow */
     {
-        assert( !IsEmpty() );
+        assert(!IsEmpty());
         return *mVariables.front();
     }
+
     const_reference  back() const  /* nothrow */
     {
-        assert( !IsEmpty() );
+        assert(!IsEmpty());
         return *mVariables.back();
     }
 
@@ -272,32 +216,6 @@ public:
         Add(x);
     }
 
-    //template<class TOtherDataType>
-    //  iterator insert(iterator Position, const TOtherDataType& rData)
-    //  {
-    //    return iterator(mVariables.insert(Position, TPointerType(new TOtherDataType(rData))));
-    //  }
-    //
-    //  iterator insert(iterator Position, const TPointerType pData)
-    //  {
-    //    return iterator(mVariables.insert(Position, pData));
-    //  }
-
-    //  template <class InputIterator>
-    //  void insert(InputIterator First, InputIterator Last)
-    //  {
-    //    for(;First != Last; ++First)
-    //      insert(*First);
-    //  }
-
-
-    //iterator erase(iterator pos) {return iterator(mVariables.erase(pos.base()));}
-    //
-    //iterator erase( iterator first, iterator last )
-    //{
-    //  return iterator( mVariables.erase( first.base(), last.base() ) );
-    //}
-
     void clear()
     {
         mDataSize = 0;
@@ -305,37 +223,10 @@ public:
         mPositions.clear();
     }
 
-    //void reserve(int dim){mVariables.reserve(dim);}
-
-    //int capacity()
-    //{
-    //	return mVariables.capacity();
-    //}
-
-//      template<class TDataType>
-// 	void Add(Variable<TDataType> const& ThisVariable)
-// 	{
-// 	  if(ThisVariable.Key()== 0)
-// 		  KRATOS_THROW_ERROR(std::logic_error,
-// 		  "Adding uninitialize variable to this variable list. Check if all variables are registered before kernel initialization","");
-//
-// 	  if(Has(ThisVariable))
-// 		  return;
-//
-// 	  if(mPositions.size() <= ThisVariable.Key())
-// 	    mPositions.resize(ThisVariable.Key()+1/*KratosComponents<VariableData>::Size()*/, static_cast<IndexType>(-1));
-//
-// 	  mPositions[ThisVariable.Key()] = mDataSize;
-// 	  mVariables.push_back(&ThisVariable);
-// 	  const SizeType block_size = sizeof(BlockType);
-// 	  mDataSize += static_cast<SizeType>(((block_size - 1) + sizeof(TDataType)) / block_size);
-// 	}
-
     void Add(VariableData const& ThisVariable)
     {
         if(ThisVariable.Key()== 0)
-            KRATOS_THROW_ERROR(std::logic_error,
-                         "Adding uninitialize variable to this variable list. Check if all variables are registered before kernel initialization","");
+            KRATOS_ERROR << "Adding uninitialize variable to this variable list. Check if all variables are registered before kernel initialization";
 
         if(Has(ThisVariable))
             return;
@@ -346,7 +237,7 @@ public:
         mPositions[ThisVariable.Key()] = mDataSize;
         mVariables.push_back(&ThisVariable);
         const SizeType block_size = sizeof(BlockType);
-        mDataSize += static_cast<SizeType>(((block_size - 1) +  ThisVariable.Size()) / block_size);
+        mDataSize += static_cast<SizeType>(((block_size - 1) + ThisVariable.Size()) / block_size);
     }
 
     IndexType Index(IndexType VariableKey) const
@@ -365,7 +256,6 @@ public:
         return mPositions[pThisVariable->Key()];
     }
 
-
     ///@}
     ///@name Access
     ///@{
@@ -375,7 +265,6 @@ public:
         return mDataSize;
     }
 
-
     VariablesContainerType const& Variables()
     {
         return mVariables;
@@ -384,20 +273,6 @@ public:
     ///@}
     ///@name Inquiry
     ///@{
-
-//       template<class TDataType> bool Has(const Variable<TDataType>& rThisVariable) const
-// 	{
-// 	  if(mPositions.empty())
-// 	    return false;
-//
-// 	  if(rThisVariable.Key()== 0)
-// 	    return false;
-//
-// 	  if(mPositions.size() <= rThisVariable.Key())
-// 		  return false;
-//
-// 	  return (Index(rThisVariable) < mDataSize);
-// 	}
 
     bool Has(const VariableData& rThisVariable) const
     {
@@ -442,7 +317,6 @@ public:
         for(IndexType i = 0 ; i < mVariables.size() ; ++i)
             rOStream << "    " << mVariables[i]->Name() << " \t-> " << mPositions[mVariables[i]->Key()] << std::endl;
     }
-
 
     ///@}
     ///@name Friends
@@ -519,33 +393,27 @@ private:
 
     friend class Serializer;
 
-
     virtual void save(Serializer& rSerializer) const
     {
-// 	  rSerializer.save("Data Size", mDataSize);
-// 	  rSerializer.save("Positions", mPositions);
-        std::size_t size= mVariables.size();
+        std::size_t size = mVariables.size();
         rSerializer.save("Size", size);
-        for(std::size_t i = 0 ; i < size ; i++)
+        for (std::size_t i = 0; i < size; i++)
         {
-            rSerializer.save("Variable Name", mVariables[i]->Name());
+            rSerializer.save("VariableName", mVariables[i]->Name());
         }
     }
 
     virtual void load(Serializer& rSerializer)
     {
-// 	  rSerializer.load("Data Size", mDataSize);
-// 	  rSerializer.load("Positions", mPositions);
         std::size_t size;
         rSerializer.load("Size", size);
         std::string name;
-        for(std::size_t i = 0 ; i < size ; i++)
+        for (std::size_t i = 0; i < size; i++)
         {
-            rSerializer.load("Variable Name", name);
+            rSerializer.load("VariableName", name);
             Add(*KratosComponents<VariableData>::pGet(name));
         }
     }
-
 
     ///@}
     ///@name Private  Access
@@ -558,15 +426,9 @@ private:
 
 
     ///@}
-    ///@name Un accessible methods
-    ///@{
-
-
-    ///@}
 
 }; // Class VariablesList
 
-///@}
 
 ///@name Type Definitions
 ///@{
@@ -576,10 +438,12 @@ private:
 ///@name Input and output
 ///@{
 
-
 /// input stream function
 inline std::istream& operator >> (std::istream& rIStream,
-                                  VariablesList& rThis);
+                                  VariablesList& rThis)
+{
+    return rIStream;
+}
 
 /// output stream function
 inline std::ostream& operator << (std::ostream& rOStream,
@@ -590,11 +454,9 @@ inline std::ostream& operator << (std::ostream& rOStream,
 
     return rOStream;
 }
-///@}
 
+///@}
 
 }  // namespace Kratos.
 
-#endif // KRATOS_VARIABLES_LIST_H_INCLUDED  defined 
-
-
+#endif // KRATOS_VARIABLES_LIST_H_INCLUDED  defined
