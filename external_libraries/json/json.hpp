@@ -19,8 +19,8 @@
 #pragma GCC system_header
 #endif
 
-#ifndef INCLUDE_NLOHMANN_JSON_HPP_
-#define INCLUDE_NLOHMANN_JSON_HPP_
+#ifndef KRATOS_INCLUDE_NLOHMANN_JSON_HPP_
+#define KRATOS_INCLUDE_NLOHMANN_JSON_HPP_
 
 #include <algorithm> // all_of, find, for_each
 #include <cstddef> // nullptr_t, ptrdiff_t, size_t
@@ -3355,8 +3355,8 @@ NLOHMANN_JSON_NAMESPACE_END
 // SPDX-FileCopyrightText: 2013-2022 Niels Lohmann <https://nlohmann.me>
 // SPDX-License-Identifier: MIT
 
-#ifndef INCLUDE_NLOHMANN_JSON_FWD_HPP_
-    #define INCLUDE_NLOHMANN_JSON_FWD_HPP_
+#ifndef KRATOS_INCLUDE_NLOHMANN_JSON_FWD_HPP_
+    #define KRATOS_INCLUDE_NLOHMANN_JSON_FWD_HPP_
 
     #include <cstdint> // int64_t, uint64_t
     #include <map> // map
@@ -3422,7 +3422,7 @@ NLOHMANN_JSON_NAMESPACE_END
 
     NLOHMANN_JSON_NAMESPACE_END
 
-#endif  // INCLUDE_NLOHMANN_JSON_FWD_HPP_
+#endif  // KRATOS_INCLUDE_NLOHMANN_JSON_FWD_HPP_
 
 
 NLOHMANN_JSON_NAMESPACE_BEGIN
@@ -24641,4 +24641,4 @@ inline void swap(nlohmann::NLOHMANN_BASIC_JSON_TPL& j1, nlohmann::NLOHMANN_BASIC
 
 
 
-#endif  // INCLUDE_NLOHMANN_JSON_HPP_
+#endif  // KRATOS_INCLUDE_NLOHMANN_JSON_HPP_
