@@ -15,17 +15,21 @@
 
 #undef KRATOS_API_EXPORT
 #undef KRATOS_API_IMPORT
+#undef KRATOS_API_NONE
 #if _WIN32
     #if defined(__MINGW32__) || defined(__MINGW64__)
         #define KRATOS_API_EXPORT __attribute__((visibility("default")))
         #define KRATOS_API_IMPORT __attribute__((visibility("default")))
+        #define KRATOS_API_NONE
     #else
         #define KRATOS_API_EXPORT __declspec(dllexport)
         #define KRATOS_API_IMPORT __declspec(dllimport)
+        #define KRATOS_API_NONE
     #endif
 #else
     #define KRATOS_API_EXPORT __attribute__((visibility("default")))
     #define KRATOS_API_IMPORT __attribute__((visibility("default")))
+    #define KRATOS_API_NONE
 #endif
 
 #define KRATOS_APPEND_MACRO(base, suffix) base##suffix
