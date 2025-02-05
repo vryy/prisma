@@ -83,10 +83,10 @@
 
 namespace Kratos
 {
-//KRATOS_CREATE_FLAG(STRUCTURE,   63);
 
 namespace Python
 {
+
 using namespace boost::python;
 
 Flags FlagsOr(const Flags& Left, const Flags& Right )
@@ -115,6 +115,12 @@ struct Array1DModifier
     {
     }
 };
+
+template<class TDataType>
+void VariablesList_AddVariable(VariablesList& rDummy, Variable<TDataType> const& rThisVariable)
+{
+    rDummy.Add(rThisVariable);
+}
 
 void  AddContainersToPython()
 {
@@ -225,6 +231,15 @@ void  AddContainersToPython()
     .def( self_ns::str( self ) )
     ;
 
+    class_<VariablesList, VariablesList::Pointer, boost::noncopyable>( "VariablesList", init<>() )
+    .def("Add", VariablesList_AddVariable<bool>)
+    .def("Add", VariablesList_AddVariable<int>)
+    .def("Add", VariablesList_AddVariable<DataType>)
+    .def("Add", VariablesList_AddVariable<array_1d<DataType, 3 > >)
+    .def("Add", VariablesList_AddVariable<Vector>)
+    .def("Add", VariablesList_AddVariable<Matrix>)
+    .def( self_ns::str( self ) )
+    ;
 
     class_<Flags, Flags::Pointer>("Flags",init<>())
     .def(init<Flags>())
@@ -241,7 +256,6 @@ void  AddContainersToPython()
     .def("__and__", FlagsOr) // this is not an error, the and and or are considered both as add. Pooyan.
     .def( self_ns::str( self ) )
     ;
-
 
 
     KRATOS_REGISTER_IN_PYTHON_FLAG(STRUCTURE);
