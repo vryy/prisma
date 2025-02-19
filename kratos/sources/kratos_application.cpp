@@ -143,8 +143,11 @@ namespace Kratos
       KRATOS_REGISTER_VARIABLE( POWER_LAW_K )
       KRATOS_REGISTER_VARIABLE( EQ_STRAIN_RATE )
       KRATOS_REGISTER_VARIABLE( YIELD_STRESS )
+
+      // Variables with general names that can be used across applications
       KRATOS_REGISTER_VARIABLE( MU )
       KRATOS_REGISTER_VARIABLE( TAU )
+      KRATOS_REGISTER_VARIABLE( ALPHA )
 
       //--------------- GENERAL VARIABLES FOR MULTIPLE APPLICATIONS -------------------//
       KRATOS_REGISTER_VARIABLE( DOMAIN_SIZE )

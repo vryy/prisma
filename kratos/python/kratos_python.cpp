@@ -69,6 +69,7 @@
 
 #include "add_constraint_to_python.h"
 
+#include "add_variables_to_python.h"
 #include "add_deprecated_variables_to_python.h"
 #include "add_c2c_variables_to_python.h" //TODO: to be removed eventually
 #include "add_cfd_variables_to_python.h" //TODO: to be removed eventually
@@ -139,6 +140,7 @@ BOOST_PYTHON_MODULE(Kratos)
     AddConstraintToPython();
     AddSearchStrategiesToPython();
 
+    AddVariablesToPython();
     AddDeprecatedVariablesToPython();
     AddC2CVariablesToPython();
     AddDEMVariablesToPython(); //TODO: move this to the DEM application

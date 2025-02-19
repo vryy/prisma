@@ -59,6 +59,7 @@ if( ${KRATOS_PYTHON} MATCHES TRUE)
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_compressed_matrix_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_constant_matrix_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_points_to_python.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/python/add_variables_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_deprecated_variables_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_c2c_variables_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_cfd_variables_to_python.cpp
