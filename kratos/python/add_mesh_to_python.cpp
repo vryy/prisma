@@ -237,7 +237,7 @@ void SetValuesOnIntegrationPointsDouble( TObject& dummy, const Variable<DataType
     IntegrationPointsArrayType integration_points = dummy.GetGeometry().IntegrationPoints(
                 dummy.GetIntegrationMethod() );
     if (boost::python::len(values_list) != integration_points.size())
-        KRATOS_THROW_ERROR(std::logic_error, "Incompatiable number of integration points and given values", "")
+        KRATOS_ERROR << "Incompatiable number of integration points and given values";
     std::vector<DataType> values( integration_points.size() );
     for( unsigned int i=0; i<integration_points.size(); i++ )
     {
@@ -281,11 +281,48 @@ void SetValuesOnIntegrationPointsInt( TObject& dummy, const Variable<int>& rVari
     IntegrationPointsArrayType integration_points = dummy.GetGeometry().IntegrationPoints(
                 dummy.GetIntegrationMethod() );
     if (boost::python::len(values_list) != integration_points.size())
-        KRATOS_THROW_ERROR(std::logic_error, "Incompatiable number of integration points and given values", "")
+        KRATOS_ERROR << "Incompatiable number of integration points and given values";
     std::vector<int> values( integration_points.size() );
     for( unsigned int i=0; i<integration_points.size(); i++ )
     {
         boost::python::extract<int> x( values_list[i] );
+        if( x.check() )
+        {
+            values[i] = x();
+        }
+        else
+            break;
+    }
+    dummy.SetValuesOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
+}
+
+template< class TObject >
+boost::python::list GetValuesOnIntegrationPointsBool( TObject& dummy,
+        const Variable<bool>& rVariable, const ProcessInfo& rCurrentProcessInfo )
+{
+    boost::python::list values_list;
+    std::vector<bool> values;
+    dummy.CalculateOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
+    for( unsigned int i=0; i<values.size(); i++ )
+    {
+        boost::python::list integration_point_value;
+        integration_point_value.append( values[i] );
+        values_list.append( integration_point_value );
+    }
+    return( values_list );
+}
+
+template< class TObject >
+void SetValuesOnIntegrationPointsBool( TObject& dummy, const Variable<bool>& rVariable, boost::python::list values_list,  const ProcessInfo& rCurrentProcessInfo )
+{
+    IntegrationPointsArrayType integration_points = dummy.GetGeometry().IntegrationPoints(
+                dummy.GetIntegrationMethod() );
+    if (boost::python::len(values_list) != integration_points.size())
+        KRATOS_ERROR << "Incompatiable number of integration points and given values";
+    std::vector<bool> values( integration_points.size() );
+    for( unsigned int i=0; i<integration_points.size(); i++ )
+    {
+        boost::python::extract<bool> x( values_list[i] );
         if( x.check() )
         {
             values[i] = x();
@@ -323,7 +360,7 @@ void SetValuesOnIntegrationPointsString( TObject& dummy, const Variable<std::str
     IntegrationPointsArrayType integration_points = dummy.GetGeometry().IntegrationPoints(
                 dummy.GetIntegrationMethod() );
     if (boost::python::len(values_list) != integration_points.size())
-        KRATOS_THROW_ERROR(std::logic_error, "Incompatiable number of integration points and given values", "")
+        KRATOS_ERROR << "Incompatiable number of integration points and given values";
     std::vector<std::string> values( integration_points.size() );
     for( unsigned int i=0; i<integration_points.size(); i++ )
     {
@@ -368,7 +405,7 @@ void SetValuesOnIntegrationPointsArray1d( TObject& dummy, const Variable< array_
     IntegrationPointsArrayType integration_points = dummy.GetGeometry().IntegrationPoints(
                 dummy.GetIntegrationMethod() );
     if (boost::python::len(values_list) != integration_points.size())
-        KRATOS_THROW_ERROR(std::logic_error, "Incompatiable number of integration points and given values", "")
+        KRATOS_ERROR << "Incompatiable number of integration points and given values";
     std::vector< array_1d<DataType, 3> > values( integration_points.size() );
     for( unsigned int i=0; i<integration_points.size(); i++ )
     {
@@ -414,7 +451,7 @@ void SetValuesOnIntegrationPointsVector( TObject& dummy,
     IntegrationPointsArrayType integration_points = dummy.GetGeometry().IntegrationPoints(
                 dummy.GetIntegrationMethod() );
     if (boost::python::len(values_list) != integration_points.size())
-        KRATOS_THROW_ERROR(std::logic_error, "Incompatiable number of integration points and given values", "")
+        KRATOS_ERROR << "Incompatiable number of integration points and given values";
     std::vector<Vector> values( integration_points.size() );
     for( unsigned int i=0; i<integration_points.size(); i++ )
     {
@@ -441,7 +478,7 @@ void SetValuesOnIntegrationPointsVectorVariableLength( TObject& dummy,
     IntegrationPointsArrayType integration_points = dummy.GetGeometry().IntegrationPoints(
                 dummy.GetIntegrationMethod() );
     if (boost::python::len(values_list) != integration_points.size())
-        KRATOS_THROW_ERROR(std::logic_error, "Incompatiable number of integration points and given values", "")
+        KRATOS_ERROR << "Incompatiable number of integration points and given values";
     std::vector<Vector> values( integration_points.size() );
     for( unsigned int i=0; i<integration_points.size(); i++ )
     {
@@ -520,7 +557,7 @@ void SetValuesOnIntegrationPointsConstitutiveLaw( Element& dummy, const Variable
     IntegrationPointsArrayType integration_points = dummy.GetGeometry().IntegrationPoints(
                 dummy.GetIntegrationMethod() );
     if (boost::python::len(values_list) != integration_points.size())
-        KRATOS_THROW_ERROR(std::logic_error, "Incompatiable number of integration points and given values", "")
+        KRATOS_ERROR << "Incompatiable number of integration points and given values";
     std::vector<ConstitutiveLaw::Pointer> values( integration_points.size() );
     for( unsigned int i=0; i<integration_points.size(); i++ )
     {
@@ -627,6 +664,8 @@ void  AddMeshToPython()
     .def("CalculateOnIntegrationPoints", CalculateOnIntegrationPointsDouble<Element>)
     .def("CalculateOnIntegrationPoints", CalculateOnIntegrationPointsInt<Element>)
     .def("CalculateOnIntegrationPoints", CalculateOnIntegrationPointsConstitutiveLaw)
+    .def("GetValuesOnIntegrationPoints", GetValuesOnIntegrationPointsBool<Element>)
+    .def("GetValuesOnIntegrationPoints", GetValuesOnIntegrationPointsInt<Element>)
     .def("GetValuesOnIntegrationPoints", GetValuesOnIntegrationPointsDouble<Element>)
     .def("GetValuesOnIntegrationPoints", GetValuesOnIntegrationPointsArray1d<Element>)
     .def("GetValuesOnIntegrationPoints", GetValuesOnIntegrationPointsVector<Element>)
@@ -638,6 +677,7 @@ void  AddMeshToPython()
     .def("SetValuesOnIntegrationPoints", SetValuesOnIntegrationPointsConstitutiveLaw)
     .def("SetValuesOnIntegrationPoints", SetValuesOnIntegrationPointsDouble<Element>)
     .def("SetValuesOnIntegrationPoints", SetValuesOnIntegrationPointsInt<Element>)
+    .def("SetValuesOnIntegrationPoints", SetValuesOnIntegrationPointsBool<Element>)
     .def("SetValuesOnIntegrationPoints", SetValuesOnIntegrationPointsString<Element>)
     .def("SetValuesOnIntegrationPoints", SetValuesOnIntegrationPointsArray1d<Element>)
     .def("ResetConstitutiveLaw", &Element::ResetConstitutiveLaw)
