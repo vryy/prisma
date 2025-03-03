@@ -880,21 +880,18 @@ public:
     ///@{
 
     /// Turn back information as a string.
-
     virtual std::string Info() const
     {
         return "Communicator";
     }
 
     /// Print information about this object.
-
     virtual void PrintInfo(std::ostream& rOStream) const
     {
         rOStream << Info();
     }
 
     /// Print object's data.
-
     virtual void PrintData(std::ostream& rOStream) const
     {
         for (IndexType i = 0; i < mLocalMeshes.size(); i++)
@@ -1025,15 +1022,14 @@ private:
 ///@name Input and output
 ///@{
 
-
 /// input stream function
-inline std::istream & operator >>(std::istream& rIStream,
-                                  Communicator& rThis);
+inline std::istream & operator >>(std::istream& rIStream, Communicator& rThis)
+{
+    return rIStream;
+}
 
 /// output stream function
-
-inline std::ostream & operator <<(std::ostream& rOStream,
-                                  const Communicator& rThis)
+inline std::ostream & operator <<(std::ostream& rOStream, const Communicator& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;
@@ -1041,11 +1037,9 @@ inline std::ostream & operator <<(std::ostream& rOStream,
 
     return rOStream;
 }
-///@}
 
+///@}
 
 } // namespace Kratos.
 
 #endif // KRATOS_COMMUNICATOR_H_INCLUDED  defined
-
-

@@ -583,18 +583,6 @@ private:
 ///@name Input/Output funcitons
 ///@{
 
-/// input stream function
-inline std::istream& operator>>(std::istream& rIStream, LinearMasterSlaveConstraint& rThis);
-
-/// output stream function
-inline std::ostream& operator<<(std::ostream& rOStream,
-                                const LinearMasterSlaveConstraint& rThis)
-{
-    rThis.PrintInfo(rOStream);
-    rOStream << std::endl;
-
-    return rOStream;
-}
 
 ///@}
 

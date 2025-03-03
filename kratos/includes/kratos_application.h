@@ -113,15 +113,6 @@ public:
     ///@name Access
     ///@{
 
-
-
-
-
-
-
-
-
-
     // I have to see why the above version is not working for multi thread ...
     // Anyway its working with these functions.Pooyan.
     KratosComponents<Variable<int> >::ComponentsContainerType& GetComponents(Variable<int> const& rComponentType)
@@ -162,7 +153,6 @@ public:
     KratosComponents<VariableData>::ComponentsContainerType& GetVariables()
     {
         return *mpVariableData;
-
     }
 
     KratosComponents<Element>::ComponentsContainerType& GetElements()
@@ -175,69 +165,47 @@ public:
         return *mpConditions;
     }
 
-    KratosComponents<MasterSlaveConstraint>::ComponentsContainerType& GetMasterSlaveConstraints() {
+    KratosComponents<MasterSlaveConstraint>::ComponentsContainerType& GetMasterSlaveConstraints()
+    {
         return *mpMasterSlaveConstraints;
     }
+
     void SetComponents(KratosComponents<VariableData>::ComponentsContainerType const& VariableDataComponents)
-
     {
-        for(KratosComponents<VariableData>::ComponentsContainerType::iterator i = mpVariableData->begin() ;
-
-                i != mpVariableData->end() ; i++)
-
+        for(KratosComponents<VariableData>::ComponentsContainerType::iterator i = mpVariableData->begin();
+                i != mpVariableData->end(); i++)
         {
             std::string const& variable_name = i->second->Name();
             KratosComponents<VariableData>::ComponentsContainerType::const_iterator i_variable = VariableDataComponents.find(variable_name);
 
             if(i_variable == VariableDataComponents.end())
-
-                KRATOS_THROW_ERROR(std::logic_error, "This variable is not registered in Kernel : ",   *(i_variable->second));
+                KRATOS_ERROR << "The variable " << *(i_variable->second) << " is not registered in Kernel";
 
             unsigned int variable_key = i_variable->second->Key();
 
             if(variable_key == 0)
-
-                KRATOS_THROW_ERROR(std::logic_error, "This variable is not initialized in Kernel : ",   *(i_variable->second));
-
-
-
-
-
+                KRATOS_ERROR << "The variable " << *(i_variable->second) << " is not initialized in Kernel";
 
             i->second->SetKey(variable_key);
-
         }
-
-
     }
 
-
-
-
     void SetComponents(KratosComponents<Element>::ComponentsContainerType const& ElementComponents)
-
     {
         // It's better to make a loop over new components and add them if they are NOT already exist in application. Or make an ERROR for incompatibility between applications.
-
         mpElements->insert(ElementComponents.begin(), ElementComponents.end());
-
     }
 
     void SetComponents(KratosComponents<MasterSlaveConstraint>::ComponentsContainerType const&
             MasterSlaveConstraintComponents)
-
     {
         mpMasterSlaveConstraints->insert(MasterSlaveConstraintComponents.begin(), MasterSlaveConstraintComponents.end());
     }
 
     void SetComponents(KratosComponents<Condition>::ComponentsContainerType const& ConditionComponents)
-
     {
-
         mpConditions->insert(ConditionComponents.begin(), ConditionComponents.end());
-
     }
-
 
     Serializer::RegisteredObjectsContainerType& GetRegisteredObjects()
     {
@@ -249,15 +217,11 @@ public:
         return *mpRegisteredObjectsName;
     }
 
-
     ///@}
 
     ///@name Inquiry
 
     ///@{
-
-
-
 
 
     ///@}
@@ -266,28 +230,19 @@ public:
 
     ///@{
 
-
-
     /// Turn back information as a string.
-
     virtual std::string Info() const
     {
         return "KratosApplication";
     }
 
-
-
     /// Print information about this object.
-
     virtual void PrintInfo(std::ostream& rOStream) const
     {
         rOStream << Info();
     }
 
-
-
     /// Print object's data.
-
     virtual void PrintData(std::ostream& rOStream) const
     {
         rOStream << "Variables:" << std::endl;
@@ -320,12 +275,7 @@ public:
     ///@{
 
 
-
-
-
     ///@}
-
-
 
 protected:
 
@@ -396,17 +346,11 @@ protected:
     ///@{
 
 
-
-
-
     ///@}
 
     ///@name Protected Operations
 
     ///@{
-
-
-
 
 
     ///@}
@@ -416,17 +360,11 @@ protected:
     ///@{
 
 
-
-
-
     ///@}
 
     ///@name Protected Inquiry
 
     ///@{
-
-
-
 
 
     ///@}
@@ -436,12 +374,7 @@ protected:
     ///@{
 
 
-
-
-
     ///@}
-
-
 
 private:
 
@@ -449,16 +382,13 @@ private:
 
     ///@{
 
-
     std::string mApplicationName;
-
 
     ///@}
 
     ///@name Member Variables
 
     ///@{
-
 
 
     ///@}
@@ -468,17 +398,11 @@ private:
     ///@{
 
 
-
-
-
     ///@}
 
     ///@name Private Operations
 
     ///@{
-
-
-
 
 
     ///@}
@@ -488,17 +412,11 @@ private:
     ///@{
 
 
-
-
-
     ///@}
 
     ///@name Private Inquiry
 
     ///@{
-
-
-
 
 
     ///@}
@@ -507,34 +425,17 @@ private:
 
     ///@{
 
-
-
     /// Assignment operator.
-
     KratosApplication& operator=(KratosApplication const& rOther);
 
-
-
-
-
     ///@}
-
-
-
 }; // Class KratosApplication
 
-
-
 ///@}
-
-
 
 ///@name Type Definitions
 
 ///@{
-
-
-
 
 
 ///@}
@@ -549,8 +450,6 @@ inline std::istream& operator >> (std::istream& rIStream,
 {
     return rIStream;
 }
-
-
 
 /// output stream function
 inline std::ostream& operator << (std::ostream& rOStream,

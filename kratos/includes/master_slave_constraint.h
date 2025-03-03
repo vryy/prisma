@@ -674,12 +674,13 @@ KRATOS_API_EXTERN template class KRATOS_API(KRATOS_CORE) KratosComponents<Master
 ///@{
 
 /// input stream function
-inline std::istream& operator >> (std::istream& rIStream,
-                                MasterSlaveConstraint& rThis);
+inline std::istream& operator >> (std::istream& rIStream, MasterSlaveConstraint& rThis)
+{
+    return rIStream;
+}
 
 /// output stream function
-inline std::ostream& operator << (std::ostream& rOStream,
-                                const MasterSlaveConstraint& rThis)
+inline std::ostream& operator << (std::ostream& rOStream, const MasterSlaveConstraint& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;

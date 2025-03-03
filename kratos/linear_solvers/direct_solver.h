@@ -103,7 +103,7 @@ public:
     DirectSolver(const DirectSolver& Other) {}
 
     /// Print information about this object.
-    void  PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const
     {
         rOStream << "Direct solver";
     }
@@ -118,34 +118,8 @@ private:
     /// Assignment operator.
     DirectSolver& operator=(const DirectSolver& Other);
 
-
-
 }; // Class DirectSolver
-
-
-
-/// input stream function
-template<class TSparseSpaceType, class TDenseSpaceType,class TReordererType>
-inline std::istream& operator >> (std::istream& rIStream,
-                                  DirectSolver<TSparseSpaceType, TDenseSpaceType,TReordererType>& rThis)
-{
-    return rIStream;
-}
-
-/// output stream function
-template<class TSparseSpaceType, class TDenseSpaceType,class TReordererType>
-inline std::ostream& operator << (std::ostream& rOStream,
-                                  const DirectSolver<TSparseSpaceType,TDenseSpaceType,TReordererType>& rThis)
-{
-    rThis.PrintInfo(rOStream);
-    rOStream << std::endl;
-    rThis.PrintData(rOStream);
-
-    return rOStream;
-}
 
 }  // namespace Kratos.
 
-#endif // KRATOS_DIRECT_SOLVER_H_INCLUDED  defined 
-
-
+#endif // KRATOS_DIRECT_SOLVER_H_INCLUDED  defined

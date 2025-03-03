@@ -1,41 +1,3 @@
-/*
-==============================================================================
-Kratos
-A General Purpose Software for Multi-Physics Finite Element Analysis
-Version 1.0 (Released on march 05, 2007).
-
-Copyright 2007
-Pooyan Dadvand, Riccardo Rossi
-pooyan@cimne.upc.edu
-rrossi@cimne.upc.edu
-CIMNE (International Center for Numerical Methods in Engineering),
-Gran Capita' s/n, 08034 Barcelona, Spain
-
-Permission is hereby granted, free  of charge, to any person obtaining
-a  copy  of this  software  and  associated  documentation files  (the
-"Software"), to  deal in  the Software without  restriction, including
-without limitation  the rights to  use, copy, modify,  merge, publish,
-distribute,  sublicense and/or  sell copies  of the  Software,  and to
-permit persons to whom the Software  is furnished to do so, subject to
-the following condition:
-
-Distribution of this code for  any  commercial purpose  is permissible
-ONLY BY DIRECT ARRANGEMENT WITH THE COPYRIGHT OWNER.
-
-The  above  copyright  notice  and  this permission  notice  shall  be
-included in all copies or substantial portions of the Software.
-
-THE  SOFTWARE IS  PROVIDED  "AS  IS", WITHOUT  WARRANTY  OF ANY  KIND,
-EXPRESS OR  IMPLIED, INCLUDING  BUT NOT LIMITED  TO THE  WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT  SHALL THE AUTHORS OR COPYRIGHT HOLDERS  BE LIABLE FOR ANY
-CLAIM, DAMAGES OR  OTHER LIABILITY, WHETHER IN AN  ACTION OF CONTRACT,
-TORT  OR OTHERWISE, ARISING  FROM, OUT  OF OR  IN CONNECTION  WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-==============================================================================
-*/
-
 //
 //   Project Name:        Kratos
 //   Last Modified by:    $Author: rrossi $
@@ -108,7 +70,7 @@ public:
 
       @param rDomainsColoredGraph The result of the process. Each column represents a color and the neighbour domain id for each color
              is stored in this matrix. The rest of the values are set to -1 which shows no neighbour
-    		 for the color.
+             for the color.
 
       @param rMaxColor After executing the process, the maximum number of colors will be stored in this variable
 
@@ -119,26 +81,20 @@ public:
     {}
 
     /// Destructor.
-    virtual ~GraphColoringProcess() {}
+    ~GraphColoringProcess() override {}
 
 
     ///@}
     ///@name Operators
     ///@{
 
-    void operator()()
-    {
-        Execute();
-    }
-
-
     ///@}
     ///@name Operations
     ///@{
 
-    virtual void Execute()
+    void Execute() override
     {
-		//// Applying the Misra and Gries edge coloring algorithm.
+        //// Applying the Misra and Gries edge coloring algorithm.
   //      // Start coloring...
   //      for(SizeType i = 0 ; i < mrDomainsGraph.size1() ; i++) // for each domain
   //          for(SizeType j = i + 1 ; j < mrDomainsGraph.size2() ; j++) // finding neighbor domains
@@ -171,22 +127,21 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const override
     {
         return "GraphColoringProcess";
     }
 
     /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << "GraphColoringProcess";
     }
 
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
     }
-
 
     ///@}
     ///@name Friends
@@ -233,25 +188,8 @@ private:
 ///@{
 
 
-/// input stream function
-inline std::istream& operator >> (std::istream& rIStream,
-                                  GraphColoringProcess& rThis);
-
-/// output stream function
-inline std::ostream& operator << (std::ostream& rOStream,
-                                  const GraphColoringProcess& rThis)
-{
-    rThis.PrintInfo(rOStream);
-    rOStream << std::endl;
-    rThis.PrintData(rOStream);
-
-    return rOStream;
-}
 ///@}
-
 
 }  // namespace Kratos.
 
-#endif // KRATOS_GRAPH_COLORING_PROCESS_H_INCLUDED  defined 
-
-
+#endif // KRATOS_GRAPH_COLORING_PROCESS_H_INCLUDED  defined

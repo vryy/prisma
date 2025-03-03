@@ -2,17 +2,17 @@
 //    ' /   __| _` | __|  _ \   __|
 //    . \  |   (   | |   (   |\__ `
 //   _|\_\_|  \__,_|\__|\___/ ____/
-//                   Multi-Physics 
+//                   Multi-Physics
 //
-//  License:         BSD License 
+//  License:         BSD License
 //                     Kratos default license: kratos/license.txt
 //
 //  Main authors:    Riccardo Rossi
-//                    
+//
 //
 
-#if !defined(KRATOS_NEW_DISPLACEMENT_CRITERIA )
-#define  KRATOS_NEW_DISPLACEMENT_CRITERIA
+#if !defined(KRATOS_DISPLACEMENT_CRITERIA )
+#define  KRATOS_DISPLACEMENT_CRITERIA
 
 
 /* System includes */
@@ -388,5 +388,4 @@ private:
 
 }  /* namespace Kratos.*/
 
-#endif /* KRATOS_NEW_DISPLACEMENT_CRITERIA  defined */
-
+#endif /* KRATOS_DISPLACEMENT_CRITERIA  defined */

@@ -278,19 +278,19 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
     ///@{
 
     /// Turn back information as a string.
-    std::string Info() const // override
+    std::string Info() const override
     {
         return "ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise";
     }
 
     /// Print information about this object.
-    void PrintInfo(std::ostream& rOStream) const // override
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << Info();
     }
 
     /// Print object's data.
-    void PrintData(std::ostream& rOStream) const // override
+    void PrintData(std::ostream& rOStream) const override
     {
         rOStream << Info();
     }

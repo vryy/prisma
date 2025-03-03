@@ -2,16 +2,16 @@
 //    ' /   __| _` | __|  _ \   __|
 //    . \  |   (   | |   (   |\__ `
 //   _|\_\_|  \__,_|\__|\___/ ____/
-//                   Multi-Physics 
+//                   Multi-Physics
 //
-//  License:		 BSD License 
-//					 Kratos default license: kratos/license.txt
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Riccardo Rossi
-//                    
+//
 
-#if !defined(KRATOS_NEW_RESIDUAL_CRITERIA )
-#define  KRATOS_NEW_RESIDUAL_CRITERIA
+#if !defined(KRATOS_RESIDUAL_CRITERIA )
+#define  KRATOS_RESIDUAL_CRITERIA
 
 
 /* System includes */
@@ -118,7 +118,7 @@ public:
     /** Copy constructor.
     */
     ResidualCriteria( ResidualCriteria const& rOther )
-      :BaseType(rOther) 
+      :BaseType(rOther)
       ,mInitialResidualIsSet(rOther.mInitialResidualIsSet)
       ,mRatioTolerance(rOther.mRatioTolerance)
       ,mInitialResidualNorm(rOther.mInitialResidualNorm)
@@ -167,11 +167,11 @@ public:
             else ratio = mCurrentResidualNorm/mInitialResidualNorm;
 
             if (r_model_part.GetCommunicator().MyPID() == 0)
-	      if (this->GetEchoLevel() == 1)
+          if (this->GetEchoLevel() == 1)
                 std::cout << "RESIDUAL CRITERION :: Ratio = " << ratio  << ";  Norm   = " << mCurrentResidualNorm/b_size << std::endl;
 
-	    r_model_part.GetProcessInfo()[CONVERGENCE_RATIO] = ratio;
-	    r_model_part.GetProcessInfo()[RESIDUAL_NORM] = mCurrentResidualNorm/b_size;
+        r_model_part.GetProcessInfo()[CONVERGENCE_RATIO] = ratio;
+        r_model_part.GetProcessInfo()[RESIDUAL_NORM] = mCurrentResidualNorm/b_size;
 
             if (
                 ratio <= mRatioTolerance
@@ -180,7 +180,7 @@ public:
             )
             {
                 if (r_model_part.GetCommunicator().MyPID() == 0)
-		  if (this->GetEchoLevel() == 1)
+          if (this->GetEchoLevel() == 1)
                     std::cout << "Convergence is achieved" << std::endl;
                 return true;
             }
@@ -347,5 +347,4 @@ private:
 
 }  /* namespace Kratos.*/
 
-#endif /* KRATOS_NEW_DISPLACEMENT_CRITERIA  defined */
-
+#endif /* KRATOS_RESIDUAL_CRITERIA  defined */

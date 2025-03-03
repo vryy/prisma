@@ -1433,7 +1433,6 @@ struct ModelPartEntitiesContainerSelector<Condition>
 ///@name Input and output
 ///@{
 
-
 /// input stream function
 KRATOS_API(KRATOS_CORE) inline std::istream & operator >>(std::istream& rIStream,
         ModelPart& rThis)

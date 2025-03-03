@@ -4,15 +4,15 @@
 //   _|\_\_|  \__,_|\__|\___/ ____/
 //                   Multi-Physics
 //
-//  License:		 BSD License
-//					 Kratos default license: kratos/license.txt
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Riccardo Rossi
 //
 //
 
-#if !defined(KRATOS_NEW_CONVERGENCE_CRITERIA )
-#define  KRATOS_NEW_CONVERGENCE_CRITERIA
+#if !defined(KRATOS_CONVERGENCE_CRITERIA )
+#define  KRATOS_CONVERGENCE_CRITERIA
 
 
 /* System includes */
@@ -94,7 +94,7 @@ public:
 
     typedef Dof<KRATOS_DOUBLE_TYPE> TDofType;
     typedef PointerVectorSet<TDofType, SetIdentityFunction<TDofType> > DofsArrayType;
-    /* 		typedef PointerVectorSet<TDofType, IndexedObject> DofsArrayType; */
+    /*      typedef PointerVectorSet<TDofType, IndexedObject> DofsArrayType; */
 
     /** Counted pointer of ConvergenceCriteria */
     KRATOS_CLASS_POINTER_DEFINITION(ConvergenceCriteria);
@@ -109,16 +109,16 @@ public:
     {
         mActualizeRHSIsNeeded = false;
         mConvergenceCriteriaIsInitialized = false;
-	SetEchoLevel(1);
+        SetEchoLevel(1);
     }
 
 
     /** Copy constructor.
      */
     ConvergenceCriteria( ConvergenceCriteria const& rOther)
-      :mActualizeRHSIsNeeded(rOther.mActualizeRHSIsNeeded)
-      ,mConvergenceCriteriaIsInitialized(rOther.mConvergenceCriteriaIsInitialized)
-      ,mEchoLevel(rOther.mEchoLevel)
+      : mActualizeRHSIsNeeded(rOther.mActualizeRHSIsNeeded)
+      , mConvergenceCriteriaIsInitialized(rOther.mConvergenceCriteriaIsInitialized)
+      , mEchoLevel(rOther.mEchoLevel)
     {
     }
 
@@ -395,5 +395,4 @@ private:
 
 } /* namespace Kratos.*/
 
-#endif /* KRATOS_NEW_CONVERGENCE_CRITERIA  defined */
-
+#endif /* KRATOS_CONVERGENCE_CRITERIA  defined */

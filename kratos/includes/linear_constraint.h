@@ -489,21 +489,8 @@ private:
 ///@name Input/Output funcitons
 ///@{
 
-/// input stream function
-inline std::istream& operator>>(std::istream& rIStream, LinearConstraint& rThis);
-
-/// output stream function
-inline std::ostream& operator<<(std::ostream& rOStream,
-                                const LinearConstraint& rThis)
-{
-    rThis.PrintInfo(rOStream);
-    rOStream << std::endl;
-
-    return rOStream;
-}
 
 ///@}
-
 
 } // namespace Kratos
 

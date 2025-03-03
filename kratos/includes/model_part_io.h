@@ -113,7 +113,7 @@ public:
 
 
     /// Destructor.
-    virtual ~ModelPartIO();
+    ~ModelPartIO() override;
 
 
     ///@}
@@ -125,47 +125,45 @@ public:
     ///@name Operations
     ///@{
 
-    virtual bool ReadNode(NodeType& rThisNode);
+    bool ReadNode(NodeType& rThisNode) override;
 
-    virtual bool ReadNodes(NodesContainerType& rThisNodes);
+    bool ReadNodes(NodesContainerType& rThisNodes) override;
 
-    virtual std::size_t ReadNodesNumber();
+    std::size_t ReadNodesNumber() override;
 
-    virtual void WriteNodes(NodesContainerType const& rThisNodes);
+    void WriteNodes(NodesContainerType const& rThisNodes) override;
 
-    virtual void ReadProperties(Properties& rThisProperties);
+    void ReadProperties(Properties& rThisProperties) override;
 
-    virtual void ReadProperties(PropertiesContainerType& rThisProperties);
+    void ReadProperties(PropertiesContainerType& rThisProperties) override;
 
     virtual void WriteProperties(PropertiesContainerType& rThisProperties);
 
-    virtual void ReadElement(NodesContainerType& rThisNodes, PropertiesContainerType& rThisProperties, Element::Pointer& pThisElements);
+    void ReadElement(NodesContainerType& rThisNodes, PropertiesContainerType& rThisProperties, Element::Pointer& pThisElements) override;
 
-    virtual void ReadElements(NodesContainerType& rThisNodes, PropertiesContainerType& rThisProperties, ElementsContainerType& rThisElements);
+    void ReadElements(NodesContainerType& rThisNodes, PropertiesContainerType& rThisProperties, ElementsContainerType& rThisElements) override;
 
-    virtual std::size_t  ReadElementsConnectivities(ConnectivitiesContainerType& rElementsConnectivities);
+    std::size_t  ReadElementsConnectivities(ConnectivitiesContainerType& rElementsConnectivities) override;
 
-    virtual void WriteElements(ElementsContainerType const& rThisElements);
+    void WriteElements(ElementsContainerType const& rThisElements) override;
 
-    virtual void ReadConditions(NodesContainerType& rThisNodes, PropertiesContainerType& rThisProperties, ConditionsContainerType& rThisConditions);
+    void ReadConditions(NodesContainerType& rThisNodes, PropertiesContainerType& rThisProperties, ConditionsContainerType& rThisConditions) override;
 
-    virtual std::size_t  ReadConditionsConnectivities(ConnectivitiesContainerType& rConditionsConnectivities);
+    std::size_t ReadConditionsConnectivities(ConnectivitiesContainerType& rConditionsConnectivities) override;
 
     virtual void WriteConditions(ConditionsContainerType const& rThisConditions);
 
-    virtual void ReadInitialValues(ModelPart& rThisModelPart);
+    void ReadInitialValues(ModelPart& rThisModelPart) override;
 
-    virtual void ReadConditionalScalarVariableData(std::string variable_name, std::vector<SizeType>& rConditionIndices, std::vector<int>& rConditionalDataValues);
+    void ReadConditionalScalarVariableData(std::string variable_name, std::vector<SizeType>& rConditionIndices, std::vector<int>& rConditionalDataValues) override;
 
-    virtual void ReadConditionalScalarVariableData(std::string variable_name, std::vector<SizeType>& rConditionIndices, std::vector<DataType>& rConditionalDataValues);
+    void ReadConditionalScalarVariableData(std::string variable_name, std::vector<SizeType>& rConditionIndices, std::vector<DataType>& rConditionalDataValues) override;
 
-//       void ReadGeometries(NodesContainerType& rThisNodes, GeometriesContainerType& rResults);
+    void ReadMesh(MeshType& rThisMesh) override;
 
-    virtual void ReadMesh(MeshType & rThisMesh);
+    virtual void WriteMesh(MeshType& rThisMesh);
 
-    virtual void WriteMesh(MeshType & rThisMesh);
-
-    virtual void ReadModelPart(ModelPart & rThisModelPart);
+    void ReadModelPart(ModelPart& rThisModelPart) override;
 
     virtual void WriteModelPart(ModelPart & rThisModelPart);
 
@@ -184,15 +182,15 @@ public:
      * to node k (counting from 0).
      * @return Number of nodes.
      */
-    virtual std::size_t ReadNodalGraph(int **NodeIndices, int **NodeConnectivities);
+    std::size_t ReadNodalGraph(int **NodeIndices, int **NodeConnectivities) override;
 
-    virtual void DivideInputToPartitions(SizeType NumberOfPartitions, GraphType const& DomainsColoredGraph,
-                                         PartitionIndicesType const& NodesPartitions,
-                                         PartitionIndicesType const& ElementsPartitions,
-                                         PartitionIndicesType const& ConditionsPartitions,
-                                         PartitionIndicesContainerType const& NodesAllPartitions,
-                                         PartitionIndicesContainerType const& ElementsAllPartitions,
-                                         PartitionIndicesContainerType const& ConditionsAllPartitions);
+    void DivideInputToPartitions(SizeType NumberOfPartitions, GraphType const& DomainsColoredGraph,
+                                 PartitionIndicesType const& NodesPartitions,
+                                 PartitionIndicesType const& ElementsPartitions,
+                                 PartitionIndicesType const& ConditionsPartitions,
+                                 PartitionIndicesContainerType const& NodesAllPartitions,
+                                 PartitionIndicesContainerType const& ElementsAllPartitions,
+                                 PartitionIndicesContainerType const& ConditionsAllPartitions) override;
 
     ///@}
     ///@name Access
@@ -208,24 +206,11 @@ public:
     ///@name Input and output
     ///@{
 
-//       /// Turn back information as a string.
-//       virtual std::string Info() const
-//  {
-//    return "ModelPartIO";
-//  }
-
-//       /// Print information about this object.
-//       virtual void PrintInfo(std::ostream& rOStream) const
-//  {
-//    rOStream << "ModelPartIO";
-//  }
-
-
-//       /// Print object's data.
-//       virtual void PrintData(std::ostream& rOStream) const
-//  {
-//  }
-
+    /// Turn back information as a string.
+    std::string Info() const override
+    {
+        return "ModelPartIO";
+    }
 
     ///@}
     ///@name Friends
@@ -588,7 +573,6 @@ protected:
 
 
 ///@}
-
 
 }  // namespace Kratos.
 

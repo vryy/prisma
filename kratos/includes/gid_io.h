@@ -105,7 +105,7 @@ public:
     }
 
     ///Destructor.
-    virtual ~GidIO()
+    ~GidIO() override
     {
         Timer::PrintTimingInformation();
 
@@ -191,7 +191,7 @@ public:
                                           GiD_Point, "Kratos_Point3D_Mesh" ) );
 
 
-    }//SetUpMeshContainers
+    } //SetUpMeshContainers
 
     /**
      * creates the gauss point containers for all different element types.
@@ -444,7 +444,7 @@ public:
     /**
      * Turn back information as a string.
      */
-    virtual std::string Info() const
+    std::string Info() const override
     {
         return "gid io";
     }
@@ -452,7 +452,7 @@ public:
     /**
      * Print information about this object.
      */
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << Info();
     }
@@ -460,7 +460,7 @@ public:
     /**
      * Print object's data.
      */
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
     }
 
@@ -1349,52 +1349,43 @@ private:
 /**
  * Input and output
  */
-/*    GidIO& operator >> (GidIO& rInput, IO::NodeType& rNode)
-    {
-        rInput.ReadNode(rNode);
-        return rInput;
-    }
-
-    GidIO& operator >> (GidIO& rInput, IO::NodesContainerType& rNodes)
-    {
-        rInput.ReadNodes(rNodes);
-        return rInput;
-    }
-
-    GidIO& operator >> (GidIO& rInput, IO::PropertiesContainerType& rProperties)
-    {
-        rInput.ReadProperties(rProperties);
-        return rInput;
-    }
-
-    GidIO& operator >> (GidIO& rInput, IO::MeshType& rMesh)
-    {
-        rInput.ReadMesh(rMesh);
-        return rInput;
-    }
-
-    GidIO& operator << (GidIO& rOutput, IO::NodesContainerType& rNodes)
-    {
-        rOutput.WriteNodes(rNodes);
-        return rOutput;
-    }
-
-    GidIO& operator << (GidIO& rOutput, IO::ElementsContainerType& rElements)
-    {
-        rOutput.WriteElements(rElements);
-        return rOutput;
-    }*/
-
-/**
- * output stream function
- */
-inline std::ostream& operator << (std::ostream& rOStream, const GidIO<>& rThis)
+/*
+GidIO& operator >> (GidIO& rInput, IO::NodeType& rNode)
 {
-    rThis.PrintInfo(rOStream);
-    rOStream << std::endl;
-    rThis.PrintData(rOStream);
-    return rOStream;
+    rInput.ReadNode(rNode);
+    return rInput;
 }
+
+GidIO& operator >> (GidIO& rInput, IO::NodesContainerType& rNodes)
+{
+    rInput.ReadNodes(rNodes);
+    return rInput;
+}
+
+GidIO& operator >> (GidIO& rInput, IO::PropertiesContainerType& rProperties)
+{
+    rInput.ReadProperties(rProperties);
+    return rInput;
+}
+
+GidIO& operator >> (GidIO& rInput, IO::MeshType& rMesh)
+{
+    rInput.ReadMesh(rMesh);
+    return rInput;
+}
+
+GidIO& operator << (GidIO& rOutput, IO::NodesContainerType& rNodes)
+{
+    rOutput.WriteNodes(rNodes);
+    return rOutput;
+}
+
+GidIO& operator << (GidIO& rOutput, IO::ElementsContainerType& rElements)
+{
+    rOutput.WriteElements(rElements);
+    return rOutput;
+}
+*/
 
 }// namespace Kratos.
 
@@ -1411,4 +1402,3 @@ inline std::ostream& operator << (std::ostream& rOStream, const GidIO<>& rThis)
 #undef KRATOS_CONDITIONS_FIX_PARSER
 
 #endif // KRATOS_GID_IO_BASE_H_INCLUDED  defined
-

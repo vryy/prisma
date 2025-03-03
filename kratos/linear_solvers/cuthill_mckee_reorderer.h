@@ -465,18 +465,8 @@ private:
 ///@{
 
 
-/// input stream function
-//   inline std::istream& operator >> (std::istream& IStream,
-// 				    CuthillMcKeeReorderer& rThis);
-
-/// output stream function
-//   inline std::ostream& operator << (std::ostream& OStream,
-// 				    const CuthillMcKeeReorderer& rThis);
 ///@}
-
 
 }  // namespace Kratos.
 
-#endif // KRATOS_CUTHILL_MCKEE_REORDERER_H_INCLUDED  defined 
-
-
+#endif // KRATOS_CUTHILL_MCKEE_REORDERER_H_INCLUDED  defined

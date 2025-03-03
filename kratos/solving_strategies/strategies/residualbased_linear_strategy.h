@@ -4,8 +4,8 @@
 //   _|\_\_|  \__,_|\__|\___/ ____/
 //                   Multi-Physics
 //
-//  License:		 BSD License
-//					 Kratos default license: kratos/license.txt
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Riccardo Rossi
 //
@@ -289,7 +289,7 @@ public:
     // 1 -> printing time and basic informations
     // 2 -> printing linear solver data
     // 3 -> Print of debug informations:
-    //		Echo of stiffness matrix, Dx, b...
+    //      Echo of stiffness matrix, Dx, b...
 
     void SetEchoLevel(int Level)
     {
@@ -312,13 +312,13 @@ public:
         //if the operations needed were already performed this does nothing
         //if(mInitializeWasPerformed == false)
         //{
-        //	Initialize();
-        //	mInitializeWasPerformed = true;
+        //  Initialize();
+        //  mInitializeWasPerformed = true;
         //}
 
         ////initialize solution step
         //if (mSolutionStepIsInitialized == false)
-        //	InitializeSolutionStep();
+        //  InitializeSolutionStep();
 
 
         TSystemMatrixType& mA = *mpA;
@@ -663,7 +663,7 @@ private:
 
         //Initialize The Conditions - OPERATIONS TO BE DONE ONCE
         if (pScheme->ConditionsAreInitialized() == false)
-	  pScheme->InitializeConditions(BaseType::GetModelPart());
+      pScheme->InitializeConditions(BaseType::GetModelPart());
 
         if (BaseType::GetEchoLevel() > 2)
             std::cout << "exiting the  Initialize of the ResidualBasedLinearStrategy" << std::endl;

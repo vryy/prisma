@@ -2,13 +2,13 @@
 //    ' /   __| _` | __|  _ \   __|
 //    . \  |   (   | |   (   |\__ `
 //   _|\_\_|  \__,_|\__|\___/ ____/
-//                   Multi-Physics 
+//                   Multi-Physics
 //
-//  License:		 BSD License 
-//					 Kratos default license: kratos/license.txt
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Riccardo Rossi
-//                    
+//
 //
 
 #if !defined(KRATOS_SOLVING_STRATEGY )
@@ -84,7 +84,7 @@ class SolvingStrategy
 public:
     /**@name Type Definitions */
     /*@{ */
-    //		typedef std::set<Dof::Pointer,ComparePDof> DofSetType;
+    //      typedef std::set<Dof::Pointer,ComparePDof> DofSetType;
 
     typedef typename TSparseSpace::DataType TDataType;
     typedef typename TSparseSpace::MatrixType TSystemMatrixType;
@@ -107,7 +107,7 @@ public:
     typedef typename ModelPart::DofsArrayType DofsArrayType;
     //typedef Dof<TDataType> TDofType;
     //typedef PointerVectorSet<TDofType, IdentityFunction<TDofType> > DofsArrayType;
-    /* 		typedef PointerVectorSet<TDofType, IndexedObject> DofsArrayType; */
+    /*      typedef PointerVectorSet<TDofType, IndexedObject> DofsArrayType; */
     typedef typename PointerVectorSet<TDofType, IndexedObject>::iterator DofIterator;
     typedef typename PointerVectorSet<TDofType, IndexedObject>::const_iterator DofConstantIterator;
     /*@} */
@@ -156,16 +156,16 @@ public:
 
     /**
     the problem of interest is solved.
-	This function calls sequentially: Initialize(), InitializeSolutionStep(), Predict(), SolveSolutionStep() and FinalizeSolutionStep().
-	All those functions can otherwise be called separately.
+    This function calls sequentially: Initialize(), InitializeSolutionStep(), Predict(), SolveSolutionStep() and FinalizeSolutionStep().
+    All those functions can otherwise be called separately.
      */
     virtual double Solve()
     {
-		Initialize();
-		InitializeSolutionStep();
-		Predict();
-		SolveSolutionStep();
-		FinalizeSolutionStep();
+        Initialize();
+        InitializeSolutionStep();
+        Predict();
+        SolveSolutionStep();
+        FinalizeSolutionStep();
         return 0.00;
     }
 
@@ -195,30 +195,30 @@ public:
     {
     }
 
-	/**
+    /**
     Performs all the required operations that should be done (for each step) before solving the solution step.
-	A member variable should be used as a flag to make sure this function is called only once per step.
+    A member variable should be used as a flag to make sure this function is called only once per step.
     */
-	virtual void InitializeSolutionStep()
-	{
-	}
-	
-	/**
+    virtual void InitializeSolutionStep()
+    {
+    }
+
+    /**
     Performs all the required operations that should be done (for each step) after solving the solution step.
-	A member variable should be used as a flag to make sure this function is called only once per step.
+    A member variable should be used as a flag to make sure this function is called only once per step.
     */
-	virtual void FinalizeSolutionStep()
-	{
-	}
-	
-	/**
+    virtual void FinalizeSolutionStep()
+    {
+    }
+
+    /**
     Solves the current step. This function returns true if a solution has been found, false otherwise.
     */
-	virtual bool SolveSolutionStep()
-	{
-		return true;
-	}
-	
+    virtual bool SolveSolutionStep()
+    {
+        return true;
+    }
+
     //*********************************************************************************
 
     /**level of echo for the solving strategy
@@ -286,9 +286,9 @@ public:
             (i)->Y() = (i)->Y0() + i->GetSolutionStepValue(DISPLACEMENT_Y);
             (i)->Z() = (i)->Z0() + i->GetSolutionStepValue(DISPLACEMENT_Z);
         }
-	
-	/*   std::cout<<" MESH MOVED "<<std::endl; */
-	/* if( mEchoLevel > 0 ) */
+
+    /*   std::cout<<" MESH MOVED "<<std::endl; */
+    /* if( mEchoLevel > 0 ) */
 
         KRATOS_CATCH("")
     }
@@ -447,4 +447,3 @@ private:
 } /* namespace Kratos.*/
 
 #endif /* KRATOS_SOLVING_STRATEGY  defined */
-

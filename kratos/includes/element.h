@@ -1317,19 +1317,20 @@ private:
 ///@{
 
 /// input stream function
-inline std::istream & operator >>(std::istream& rIStream,
-                                  Element& rThis);
+inline std::istream & operator >>(std::istream& rIStream, Element& rThis)
+{
+    return rIStream;
+}
 
 /// output stream function
-
-inline std::ostream & operator <<(std::ostream& rOStream,
-                                  const Element& rThis)
+inline std::ostream & operator <<(std::ostream& rOStream, const Element& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << " : " << std::endl;
     rThis.PrintData(rOStream);
     return rOStream;
 }
+
 ///@}
 
 void KRATOS_API(KRATOS_CORE) AddKratosComponent(std::string const& Name, Element const& ThisComponent);

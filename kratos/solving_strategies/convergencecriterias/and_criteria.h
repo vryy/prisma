@@ -2,13 +2,13 @@
 //    ' /   __| _` | __|  _ \   __|
 //    . \  |   (   | |   (   |\__ `
 //   _|\_\_|  \__,_|\__|\___/ ____/
-//                   Multi-Physics 
+//                   Multi-Physics
 //
-//  License:		 BSD License 
-//					 Kratos default license: kratos/license.txt
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Riccardo Rossi
-//                    
+//
 //
 
 #if !defined(KRATOS_AND_CRITERIA_H)
@@ -75,7 +75,6 @@ Detail class definition.
       \URL[Extended documentation ps]{ extended_documentation/no_ext_doc.ps}
 
 */
-
 template<class TSparseSpace,
          class TDenseSpace
          >
@@ -126,7 +125,7 @@ public:
       :BaseType(rOther)
      {
        mpfirst_criterion   =  rOther.mpfirst_criterion;
-       mpsecond_criterion  =  rOther.mpsecond_criterion;      
+       mpsecond_criterion  =  rOther.mpsecond_criterion;
      }
 
     /** Destructor.
@@ -314,5 +313,4 @@ private:
 
 }  /* namespace Kratos.*/
 
-#endif /* KRATOS_NEW_AND_CRITERIA  defined */
-
+#endif /* KRATOS_AND_CRITERIA  defined */

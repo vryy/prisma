@@ -1,41 +1,3 @@
-/*
-==============================================================================
-Kratos
-A General Purpose Software for Multi-Physics Finite Element Analysis
-Version 1.0 (Released on march 05, 2007).
-
-Copyright 2007
-Pooyan Dadvand, Riccardo Rossi
-pooyan@cimne.upc.edu
-rrossi@cimne.upc.edu
-CIMNE (International Center for Numerical Methods in Engineering),
-Gran Capita' s/n, 08034 Barcelona, Spain
-
-Permission is hereby granted, free  of charge, to any person obtaining
-a  copy  of this  software  and  associated  documentation files  (the
-"Software"), to  deal in  the Software without  restriction, including
-without limitation  the rights to  use, copy, modify,  merge, publish,
-distribute,  sublicense and/or  sell copies  of the  Software,  and to
-permit persons to whom the Software  is furnished to do so, subject to
-the following condition:
-
-Distribution of this code for  any  commercial purpose  is permissible
-ONLY BY DIRECT ARRANGEMENT WITH THE COPYRIGHT OWNER.
-
-The  above  copyright  notice  and  this permission  notice  shall  be
-included in all copies or substantial portions of the Software.
-
-THE  SOFTWARE IS  PROVIDED  "AS  IS", WITHOUT  WARRANTY  OF ANY  KIND,
-EXPRESS OR  IMPLIED, INCLUDING  BUT NOT LIMITED  TO THE  WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT  SHALL THE AUTHORS OR COPYRIGHT HOLDERS  BE LIABLE FOR ANY
-CLAIM, DAMAGES OR  OTHER LIABILITY, WHETHER IN AN  ACTION OF CONTRACT,
-TORT  OR OTHERWISE, ARISING  FROM, OUT  OF OR  IN CONNECTION  WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-==============================================================================
-*/
-
 //
 //   Project Name:        Kratos
 //   Last Modified by:    $Author: rrossi $
@@ -75,9 +37,6 @@ namespace Kratos
 ///@}
 ///@name Type Definitions
 ///@{
-typedef  ModelPart::NodesContainerType NodesContainerType;
-typedef  ModelPart::ElementsContainerType ElementsContainerType;
-
 
 ///@}
 ///@name  Enum's
@@ -104,6 +63,9 @@ public:
     /// Pointer definition of FindNodalNeighboursProcess
     KRATOS_CLASS_POINTER_DEFINITION(FindNodalNeighboursProcess);
 
+    typedef ModelPart::NodesContainerType NodesContainerType;
+    typedef ModelPart::ElementsContainerType ElementsContainerType;
+
     ///@}
     ///@name Life Cycle
     ///@{
@@ -120,7 +82,7 @@ public:
     }
 
     /// Destructor.
-    virtual ~FindNodalNeighboursProcess()
+    ~FindNodalNeighboursProcess() override
     {
     }
 
@@ -129,17 +91,12 @@ public:
     ///@name Operators
     ///@{
 
-    void operator()()
-    {
-        Execute();
-    }
-
 
     ///@}
     ///@name Operations
     ///@{
 
-    virtual void Execute()
+    void Execute() override
     {
         NodesContainerType& rNodes = mr_model_part.Nodes();
         ElementsContainerType& rElems = mr_model_part.Elements();
@@ -217,22 +174,10 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const override
     {
         return "FindNodalNeighboursProcess";
     }
-
-    /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
-    {
-        rOStream << "FindNodalNeighboursProcess";
-    }
-
-    /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
-    {
-    }
-
 
     ///@}
     ///@name Friends
@@ -354,25 +299,8 @@ private:
 ///@{
 
 
-/// input stream function
-inline std::istream& operator >> (std::istream& rIStream,
-                                  FindNodalNeighboursProcess& rThis);
-
-/// output stream function
-inline std::ostream& operator << (std::ostream& rOStream,
-                                  const FindNodalNeighboursProcess& rThis)
-{
-    rThis.PrintInfo(rOStream);
-    rOStream << std::endl;
-    rThis.PrintData(rOStream);
-
-    return rOStream;
-}
 ///@}
-
 
 }  // namespace Kratos.
 
-#endif // KRATOS_FIND_NODAL_NEIGHBOURS_PROCESS_H_INCLUDED  defined 
-
-
+#endif // KRATOS_FIND_NODAL_NEIGHBOURS_PROCESS_H_INCLUDED  defined

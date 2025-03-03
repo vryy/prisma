@@ -154,7 +154,7 @@ public:
 
     /** Destructor.
     */
-    virtual ~ResidualBasedIncrementalUpdateStaticScheme() {}
+    ~ResidualBasedIncrementalUpdateStaticScheme() override {}
 
 
     /*@} */
@@ -343,6 +343,17 @@ public:
 
     /*@} */
 
+    ///@name Input and output
+    ///@{
+
+    /// Turn back information as a string.
+    std::string Info() const override
+    {
+        return "ResidualBasedIncrementalUpdateStaticScheme";
+    }
+
+    ///@}
+
 protected:
     /**@name Protected static Member Variables */
     /*@{ */
@@ -428,4 +439,3 @@ private:
 }  /* namespace Kratos.*/
 
 #endif /* KRATOS_RESIDUALBASED_INCREMENTAL_UPDATE_STATIC_SCHEME  defined */
-

@@ -195,7 +195,7 @@ public:
     ///@name Informations
     ///@{
 
-    /** Dimensional space of the element geometry
+    /** Dimensional space of the condition geometry
     @return SizeType, working space dimension of this geometry.
     */
 
@@ -281,7 +281,7 @@ public:
     virtual void EquationIdVector(EquationIdVectorType& rResult,
                                   const ProcessInfo& rCurrentProcessInfo) const
     {
-        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
+        KRATOS_ERROR << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
                      << __FUNCTION__ << " is not implemented";
     }
 
@@ -293,7 +293,7 @@ public:
     virtual void GetDofList(DofsVectorType& rConditionDofList,
                             const ProcessInfo& rCurrentProcessInfo) const
     {
-        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
+        KRATOS_ERROR << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
                      << __FUNCTION__ << " is not implemented";
     }
 
@@ -434,7 +434,7 @@ public:
                                       VectorType& rRightHandSideVector,
                                       const ProcessInfo& rCurrentProcessInfo)
     {
-        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
+        KRATOS_ERROR << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
                      << __FUNCTION__ << " is not implemented";
     }
 
@@ -453,7 +453,7 @@ public:
                                       const std::vector< Variable< VectorType > >& rRHSVariables,
                                       const ProcessInfo& rCurrentProcessInfo)
     {
-        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
+        KRATOS_ERROR << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
                      << __FUNCTION__ << " is not implemented";
     }
 
@@ -466,7 +466,7 @@ public:
     virtual void CalculateLeftHandSide(MatrixType& rLeftHandSideMatrix,
                                        const ProcessInfo& rCurrentProcessInfo)
     {
-        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
+        KRATOS_ERROR << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
                      << __FUNCTION__ << " is not implemented";
     }
 
@@ -481,7 +481,7 @@ public:
                     const std::vector< Variable< MatrixType > >& rLHSVariables,
                     const ProcessInfo& rCurrentProcessInfo)
     {
-        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
+        KRATOS_ERROR << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
                      << __FUNCTION__ << " is not implemented";
     }
 
@@ -494,7 +494,7 @@ public:
     virtual void CalculateRightHandSide(VectorType& rRightHandSideVector,
                                         const ProcessInfo& rCurrentProcessInfo)
     {
-        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
+        KRATOS_ERROR << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
                      << __FUNCTION__ << " is not implemented";
     }
 
@@ -509,7 +509,7 @@ public:
                     const std::vector< Variable< VectorType > >& rRHSVariables,
                     const ProcessInfo& rCurrentProcessInfo)
     {
-        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
+        KRATOS_ERROR << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
                      << __FUNCTION__ << " is not implemented";
     }
 
@@ -534,7 +534,7 @@ public:
                                                         VectorType& rRightHandSideVector,
                                                         const ProcessInfo& rCurrentProcessInfo)
     {
-        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
+        KRATOS_ERROR << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
                      << __FUNCTION__ << " is not implemented";
     }
 
@@ -547,7 +547,7 @@ public:
     virtual void CalculateFirstDerivativesLHS(MatrixType& rLeftHandSideMatrix,
                                               const ProcessInfo& rCurrentProcessInfo)
     {
-        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
+        KRATOS_ERROR << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
                      << __FUNCTION__ << " is not implemented";
     }
 
@@ -561,7 +561,7 @@ public:
     virtual void CalculateFirstDerivativesRHS(VectorType& rRightHandSideVector,
                                               const ProcessInfo& rCurrentProcessInfo)
     {
-        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
+        KRATOS_ERROR << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
                      << __FUNCTION__ << " is not implemented";
     }
 
@@ -586,7 +586,7 @@ public:
                                                          VectorType& rRightHandSideVector,
                                                          const ProcessInfo& rCurrentProcessInfo)
     {
-        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
+        KRATOS_ERROR << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
                      << __FUNCTION__ << " is not implemented";
     }
 
@@ -599,7 +599,7 @@ public:
     virtual void CalculateSecondDerivativesLHS(MatrixType& rLeftHandSideMatrix,
                                                const ProcessInfo& rCurrentProcessInfo)
     {
-        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
+        KRATOS_ERROR << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
                      << __FUNCTION__ << " is not implemented";
     }
 
@@ -612,7 +612,7 @@ public:
     virtual void CalculateSecondDerivativesRHS(VectorType& rRightHandSideVector,
                                                const ProcessInfo& rCurrentProcessInfo)
     {
-        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
+        KRATOS_ERROR << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
                      << __FUNCTION__ << " is not implemented";
     }
 
@@ -630,7 +630,7 @@ public:
      */
     virtual void CalculateMassMatrix(MatrixType& rMassMatrix, const ProcessInfo& rCurrentProcessInfo)
     {
-        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
+        KRATOS_ERROR << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
                      << __FUNCTION__ << " is not implemented";
     }
     /**
@@ -641,7 +641,7 @@ public:
      */
     virtual void CalculateDampingMatrix(MatrixType& rDampingMatrix, const ProcessInfo& rCurrentProcessInfo)
     {
-        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
+        KRATOS_ERROR << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
                      << __FUNCTION__ << " is not implemented";
     }
 
@@ -716,7 +716,7 @@ public:
         const ProcessInfo& rCurrentProcessInfo
         )
     {
-         KRATOS_ERROR << "base element class is not able to assemble rLHS to the desired variable. destination variable is " << rDestinationVariable;
+         KRATOS_ERROR << "base condition class is not able to assemble rLHS to the desired variable. destination variable is " << rDestinationVariable;
     }
 
     /**
@@ -975,7 +975,7 @@ public:
      */
     virtual void MassMatrix(MatrixType& rMassMatrix, const ProcessInfo& rCurrentProcessInfo)
     {
-        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
+        KRATOS_ERROR << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
                      << __FUNCTION__ << " is not implemented";
     }
 
@@ -998,7 +998,7 @@ public:
      */
     virtual void DampMatrix(MatrixType& rDampMatrix, const ProcessInfo& rCurrentProcessInfo)
     {
-        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
+        KRATOS_ERROR << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
                      << __FUNCTION__ << " is not implemented";
     }
 
@@ -1023,7 +1023,7 @@ public:
     /**
      * Calculate Mass matrix and add acceleration contribution to RHS
      * @param rMassMatrix the mass matrix
-     * @param rRightHandSideVector the elemental right hand side matrix
+     * @param rRightHandSideVector the conditional right hand side matrix
      * @param rCurrentProcessInfo the current process info instance
      */
     virtual void CalculateLocalAccelerationContribution(MatrixType& rMassMatrix,
@@ -1268,13 +1268,13 @@ private:
 ///@{
 
 /// input stream function
-inline std::istream & operator >>(std::istream& rIStream,
-                                  Condition& rThis);
+inline std::istream & operator >>(std::istream& rIStream, Condition& rThis)
+{
+    return rIStream;
+}
 
 /// output stream function
-
-inline std::ostream & operator <<(std::ostream& rOStream,
-                                  const Condition& rThis)
+inline std::ostream & operator <<(std::ostream& rOStream, const Condition& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << " : " << std::endl;
@@ -1282,6 +1282,7 @@ inline std::ostream & operator <<(std::ostream& rOStream,
 
     return rOStream;
 }
+
 ///@}
 
 void KRATOS_API(KRATOS_CORE) AddKratosComponent(std::string const& Name, Condition const& ThisComponent);
@@ -1299,5 +1300,5 @@ KRATOS_DEFINE_VARIABLE(WeakPointerVector< Condition >, NEIGHBOUR_CONDITIONS)
 #define KRATOS_EXPORT_MACRO KRATOS_NO_EXPORT
 
 } // namespace Kratos.
-#endif // KRATOS_CONDITION_H_INCLUDED  defined
 
+#endif // KRATOS_CONDITION_H_INCLUDED  defined

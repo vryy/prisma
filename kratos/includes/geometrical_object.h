@@ -336,14 +336,14 @@ private:
 ///@name Input and output
 ///@{
 
-
 /// input stream function
-inline std::istream& operator >> (std::istream& rIStream,
-                                  GeometricalObject& rThis);
+inline std::istream& operator >> (std::istream& rIStream, GeometricalObject& rThis)
+{
+    return rIStream;
+}
 
 /// output stream function
-inline std::ostream& operator << (std::ostream& rOStream,
-                                  const GeometricalObject& rThis)
+inline std::ostream& operator << (std::ostream& rOStream, const GeometricalObject& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;
@@ -351,8 +351,8 @@ inline std::ostream& operator << (std::ostream& rOStream,
 
     return rOStream;
 }
-///@}
 
+///@}
 
 }  // namespace Kratos.
 

@@ -202,12 +202,12 @@ public:
         KRATOS_ERROR << "Calling base class member. Please check the definition of derived class.";
     }
 
-    virtual void ReadMesh(MeshType & rThisMesh)
+    virtual void ReadMesh(MeshType& rThisMesh)
     {
         KRATOS_ERROR << "Calling base class member. Please check the definition of derived class.";
     }
 
-    virtual void ReadModelPart(ModelPart & rThisModelPart)
+    virtual void ReadModelPart(ModelPart& rThisModelPart)
     {
         KRATOS_ERROR << "Calling base class member. Please check the definition of derived class.";
     }
@@ -251,7 +251,7 @@ public:
     /// Print information about this object.
     virtual void PrintInfo(std::ostream& rOStream) const
     {
-        rOStream << "IO";
+        rOStream << Info();
     }
 
     /// Print object's data.
@@ -352,24 +352,22 @@ private:
 ///@name Input and output
 ///@{
 
-
 /// input stream function
-inline std::istream& operator >> (std::istream& rIStream,
-             IO& rThis)
+inline std::istream& operator >> (std::istream& rIStream, IO& rThis)
 {
     return rIStream;
 }
 
 /// output stream function
-inline std::ostream& operator << (std::ostream& rOStream,
-             const IO& rThis)
+inline std::ostream& operator << (std::ostream& rOStream, const IO& rThis)
 {
-  rThis.PrintInfo(rOStream);
-  rOStream << std::endl;
-  rThis.PrintData(rOStream);
+    rThis.PrintInfo(rOStream);
+    rOStream << std::endl;
+    rThis.PrintData(rOStream);
 
-  return rOStream;
+    return rOStream;
 }
+
 ///@}
 
 

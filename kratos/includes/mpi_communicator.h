@@ -207,7 +207,7 @@ public:
 
 
     /// Destructor.
-    virtual ~MPICommunicator()
+    ~MPICommunicator() override
     {
     }
 
@@ -1571,21 +1571,6 @@ private:
 ///@{
 
 
-/// input stream function
-inline std::istream & operator >>(std::istream& rIStream,
-                                  MPICommunicator& rThis);
-
-/// output stream function
-
-inline std::ostream & operator <<(std::ostream& rOStream,
-                                  const MPICommunicator& rThis)
-{
-    rThis.PrintInfo(rOStream);
-    rOStream << std::endl;
-    rThis.PrintData(rOStream);
-
-    return rOStream;
-}
 ///@}
 
 template<>
@@ -1599,7 +1584,6 @@ inline MPI_Datatype MPICommunicator::GetMPIDatatype<double>(const double& Value)
 {
     return MPI_DOUBLE;
 }
-
 
 } // namespace Kratos.
 

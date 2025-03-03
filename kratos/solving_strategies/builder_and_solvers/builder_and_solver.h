@@ -751,13 +751,29 @@ private:
 
 ///@}
 
-///@name Type Definitions
+///@name Input and output
 ///@{
 
+/// input stream function
+template<class TSparseSpace, class TDenseSpace, class TLinearSolver>
+inline std::istream& operator >> (std::istream& rIStream, BuilderAndSolver<TSparseSpace, TDenseSpace, TLinearSolver>& rThis)
+{
+    return rIStream;
+}
+
+/// output stream function
+template<class TSparseSpace, class TDenseSpace, class TLinearSolver>
+inline std::ostream& operator << (std::ostream& rOStream, const BuilderAndSolver<TSparseSpace, TDenseSpace, TLinearSolver>& rThis)
+{
+    rThis.PrintInfo(rOStream);
+    rOStream << std::endl;
+    rThis.PrintData(rOStream);
+
+    return rOStream;
+}
 
 ///@}
 
 } /* namespace Kratos.*/
 
 #endif /* KRATOS_BUILDER_AND_SOLVER  defined */
-

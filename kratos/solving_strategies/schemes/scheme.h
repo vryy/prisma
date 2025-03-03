@@ -819,7 +819,29 @@ private:
 
 }; // Class Scheme
 
+///@name Input and output
+///@{
+
+/// input stream function
+template<class TSparseSpace, class TDenseSpace>
+inline std::istream& operator >> (std::istream& rIStream, Scheme<TSparseSpace, TDenseSpace>& rThis)
+{
+    return rIStream;
+}
+
+/// output stream function
+template<class TSparseSpace, class TDenseSpace>
+inline std::ostream& operator << (std::ostream& rOStream, const Scheme<TSparseSpace, TDenseSpace>& rThis)
+{
+    rThis.PrintInfo(rOStream);
+    rOStream << std::endl;
+    rThis.PrintData(rOStream);
+
+    return rOStream;
+}
+
+///@}
+
 } // namespace Kratos.
 
 #endif /* KRATOS_SCHEME  defined */
-

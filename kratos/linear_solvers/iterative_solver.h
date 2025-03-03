@@ -387,7 +387,6 @@ public:
             rOStream << std::endl << "!!!!!!!!!!!! ITERATIVE SOLVER NON CONVERGED !!!!!!!!!!!!" << mMaxIterationsNumber;
     }
 
-
     ///@}
     ///@name Friends
     ///@{
@@ -507,35 +506,8 @@ private:
 ///@{
 
 
-/// input stream function
-template<class TSparseSpaceType, class TDenseSpaceType, class TPreconditionerType,
-         class TReordererType>
-inline std::istream& operator >> (std::istream& IStream,
-                                  IterativeSolver<TSparseSpaceType, TDenseSpaceType,
-                                  TPreconditionerType, TReordererType>& rThis)
-{
-    return IStream;
-}
-
-/// output stream function
-template<class TSparseSpaceType, class TDenseSpaceType, class TPreconditionerType,
-         class TReordererType>
-inline std::ostream& operator << (std::ostream& OStream,
-                                  const IterativeSolver<TSparseSpaceType, TDenseSpaceType,
-                                  TPreconditionerType, TReordererType>& rThis)
-{
-    rThis.PrintInfo(OStream);
-    OStream << std::endl;
-    rThis.PrintData(OStream);
-
-    return OStream;
-}
-
 ///@}
-
 
 }  // namespace Kratos.
 
-#endif // KRATOS_ITERATIVE_SOLVER_H_INCLUDED  defined 
-
-
+#endif // KRATOS_ITERATIVE_SOLVER_H_INCLUDED  defined

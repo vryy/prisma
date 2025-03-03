@@ -605,10 +605,11 @@ private:
 ///@name Input and output
 ///@{
 
-
 /// input stream function
-inline std::istream& operator >> (std::istream& rIStream,
-                                  ProcessInfo& rThis);
+inline std::istream& operator >> (std::istream& rIStream, ProcessInfo& rThis)
+{
+    return rIStream;
+}
 
 /// output stream function
 inline std::ostream& operator << (std::ostream& rOStream,
@@ -620,8 +621,8 @@ inline std::ostream& operator << (std::ostream& rOStream,
 
     return rOStream;
 }
-///@}
 
+///@}
 
 }  // namespace Kratos.
 

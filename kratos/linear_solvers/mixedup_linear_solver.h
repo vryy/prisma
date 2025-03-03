@@ -1,34 +1,3 @@
-/*
-==============================================================================
-Kratos
-A General Purpose Software for Multi-Physics Finite Element Analysis
-Version 1.0 (Released on march 05, 2007).
-Copyright 2007
-Pooyan Dadvand, Riccardo Rossi
-pooyan@cimne.upc.edu
-rrossi@cimne.upc.edu
-CIMNE (International Center for Numerical Methods in Engineering),
-Gran Capita' s/n, 08034 Barcelona, Spain
-Permission is hereby granted, free  of charge, to any person obtaining
-a  copy  of this  software  and  associated  documentation files  (the
-"Software"), to  deal in  the Software without  restriction, including
-without limitation  the rights to  use, copy, modify,  merge, publish,
-distribute,  sublicense and/or  sell copies  of the  Software,  and to
-permit persons to whom the Software  is furnished to do so, subject to
-the following condition:
-Distribution of this code for  any  commercial purpose  is permissible
-ONLY BY DIRECT ARRANGEMENT WITH THE COPYRIGHT OWNER.
-The  above  copyright  notice  and  this permission  notice  shall  be
-included in all copies or substantial portions of the Software.
-THE  SOFTWARE IS  PROVIDED  "AS  IS", WITHOUT  WARRANTY  OF ANY  KIND,
-EXPRESS OR  IMPLIED, INCLUDING  BUT NOT LIMITED  TO THE  WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT  SHALL THE AUTHORS OR COPYRIGHT HOLDERS  BE LIABLE FOR ANY
-CLAIM, DAMAGES OR  OTHER LIABILITY, WHETHER IN AN  ACTION OF CONTRACT,
-TORT  OR OTHERWISE, ARISING  FROM, OUT  OF OR  IN CONNECTION  WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-==============================================================================
-*/
 //
 //   Project Name:        Kratos
 //   Last Modified by:    $Author: rrossi $
@@ -136,19 +105,19 @@ public:
     @param rX. Solution vector. it's also the initial guess for iterative linear solvers.
     @param rB. Right hand side vector.
     */
-    virtual void Initialize (SparseMatrixType& rA, VectorType& rX, VectorType& rB)
+    void Initialize (SparseMatrixType& rA, VectorType& rX, VectorType& rB) override
     {
-    if (mBlocksAreAllocated == true)
-    {
+        if (mBlocksAreAllocated == true)
+        {
 
-        mpsolver_UU_block->Initialize(mK, mu, mru);
-        mpsolver_PP_block->Initialize(mS, mp, mrp);
-        mis_initialized = true;
-    }
-    else
-    {
-      std::cout << "linear solver intialization is deferred to the moment at which blocks are available" << std::endl;
-    }
+            mpsolver_UU_block->Initialize(mK, mu, mru);
+            mpsolver_PP_block->Initialize(mS, mp, mrp);
+            mis_initialized = true;
+        }
+        else
+        {
+          std::cout << "linear solver intialization is deferred to the moment at which blocks are available" << std::endl;
+        }
     }
     /** This function is designed to be called every time the coefficients change in the system
      * that is, normally at the beginning of each solve.
@@ -358,15 +327,6 @@ public:
     std::string Info() const override
     {
         return "Linear solver";
-    }
-    /// Print information about this object.
-    void PrintInfo (std::ostream& rOStream) const override
-    {
-        rOStream << "Linear solver";
-    }
-    /// Print object's data.
-    void PrintData (std::ostream& rOStream) const override
-    {
     }
     ///@}
     ///@name Friends
@@ -1101,23 +1061,6 @@ private:
 ///@}
 ///@name Input and output
 ///@{
-/// input stream function
-template<class TSparseSpaceType, class TDenseSpaceType, class TPreconditionerType, class TReordererType>
-inline std::istream& operator >> (std::istream& IStream,
-                                  MixedUPLinearSolver<TSparseSpaceType, TDenseSpaceType,TPreconditionerType, TReordererType>& rThis)
-{
-    return IStream;
-}
-/// output stream function
-template<class TSparseSpaceType, class TDenseSpaceType, class TPreconditionerType, class TReordererType>
-inline std::ostream& operator << (std::ostream& rOStream,
-                                  const MixedUPLinearSolver<TSparseSpaceType, TDenseSpaceType,TPreconditionerType, TReordererType>& rThis)
-{
-    rThis.PrintInfo (rOStream);
-    rOStream << std::endl;
-    rThis.PrintData (rOStream);
-    return rOStream;
-}
 ///@}
 }  // namespace Kratos.
 #endif // KRATOS_MIXEDUP_SOLVER_H_INCLUDED  defined

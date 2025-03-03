@@ -355,7 +355,7 @@ public:
     /// Print information about this object.
     virtual void PrintInfo(std::ostream& rOStream) const
     {
-        rOStream << "Linear solver";
+        rOStream << Info();
     }
 
     /// Print object's data.
@@ -460,7 +460,6 @@ private:
 ///@name Input and output
 ///@{
 
-
 /// input stream function
 template<class TSparseSpaceType, class TDenseSpaceType, class TReordererType>
 inline std::istream& operator >> (std::istream& IStream,
@@ -480,13 +479,9 @@ inline std::ostream& operator << (std::ostream& rOStream,
 
     return rOStream;
 }
-///@}
 
+///@}
 
 }  // namespace Kratos.
 
-#endif // KRATOS_LINEAR_SOLVER_H_INCLUDED  defined 
-
-
-
-
+#endif // KRATOS_LINEAR_SOLVER_H_INCLUDED  defined

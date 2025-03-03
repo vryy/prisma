@@ -4,8 +4,8 @@
 //   _|\_\_|  \__,_|\__|\___/ ____/
 //                   Multi-Physics
 //
-//  License:		 BSD License
-//					 Kratos default license: kratos/license.txt
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Pooyan Dadvand
 //                   Riccardo Rossi
@@ -2324,7 +2324,6 @@ private:
 ///@name Input and output
 ///@{
 
-
 /// input stream function
 template<class TPointType>
 inline std::istream& operator >> ( std::istream& rIStream,
@@ -2350,7 +2349,6 @@ inline std::ostream& operator << ( std::ostream& rOStream,
 //        template<class TPointType>
 // /*   const GeometryData Geometry<TPointType>::msEmptyGeometryData = GeometryData(TPointType::Dimension(), TPointType::Dimension(), TPointType::Dimension());  */
 //   const GeometryData Geometry<TPointType>::msEmptyGeometryData = Geometry<TPointType>::GenerateEmptyGeometryData();
-
 
 }  // namespace Kratos.
 

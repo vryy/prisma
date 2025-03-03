@@ -2,17 +2,17 @@
 //    ' /   __| _` | __|  _ \   __|
 //    . \  |   (   | |   (   |\__ `
 //   _|\_\_|  \__,_|\__|\___/ ____/
-//                   Multi-Physics 
+//                   Multi-Physics
 //
-//  License:		 BSD License 
-//					 Kratos default license: kratos/license.txt
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Josep Maria Carbonell
-//                    
+//
 //
 
-#if !defined(KRATOS_NEW_INCREMENTAL_DISPLACEMENT_CRITERIA )
-#define  KRATOS_NEW_INCREMENTAL_DISPLACEMENT_CRITERIA
+#if !defined(KRATOS_INCREMENTAL_DISPLACEMENT_CRITERIA )
+#define  KRATOS_INCREMENTAL_DISPLACEMENT_CRITERIA
 
 
 /* System includes */
@@ -119,10 +119,10 @@ public:
     /** Copy constructor.
     */
     IncrementalDisplacementCriteria( IncrementalDisplacementCriteria const& rOther)
-      :BaseType(rOther)
-      ,mRatioTolerance(rOther.mRatioTolerance)
-      ,mAlwaysConvergedNorm(rOther.mAlwaysConvergedNorm)
-      ,mReferenceDispNorm(rOther.mReferenceDispNorm)
+      : BaseType(rOther)
+      , mRatioTolerance(rOther.mRatioTolerance)
+      , mAlwaysConvergedNorm(rOther.mAlwaysConvergedNorm)
+      , mReferenceDispNorm(rOther.mReferenceDispNorm)
     {
     }
 
@@ -164,18 +164,18 @@ public:
 //KRATOS_WATCH(AbsoluteNorm)
 //KRATOS_WATCH(mAlwaysConvergedNorm)
 //KRATOS_WATCH(mRatioTolerance)
-	    if (this->GetEchoLevel() == 1)
-	      std::cout << "INCREMENTAL DISPLACEMENT CRITERIA :: Obtained tol = " << ratio << ";  Expected ratio = " << mRatioTolerance << "Absolute tol = " << AbsoluteNorm << std::endl;
+            if (this->GetEchoLevel() == 1)
+                std::cout << "INCREMENTAL DISPLACEMENT CRITERIA :: Obtained tol = " << ratio << ";  Expected ratio = " << mRatioTolerance << "Absolute tol = " << AbsoluteNorm << std::endl;
 
-	    r_model_part.GetProcessInfo()[CONVERGENCE_RATIO] = ratio;
-	    r_model_part.GetProcessInfo()[RESIDUAL_NORM] = AbsoluteNorm;
+            r_model_part.GetProcessInfo()[CONVERGENCE_RATIO] = ratio;
+            r_model_part.GetProcessInfo()[RESIDUAL_NORM] = AbsoluteNorm;
 
             if ( ratio <= mRatioTolerance  ||  AbsoluteNorm<mAlwaysConvergedNorm )  //  || (mFinalCorrectionNorm/x.size())<=1e-7)
             {
-	      if (this->GetEchoLevel() == 1)
-                KRATOS_WATCH("convergence is achieved")
-		  
-	      return true;
+                if (this->GetEchoLevel() == 1)
+                    KRATOS_WATCH("convergence is achieved")
+
+                return true;
             }
             else
             {
@@ -202,8 +202,7 @@ public:
         const TSystemVectorType& Dx,
         const TSystemVectorType& b
     )
-    {
-    }
+    {}
 
     void FinalizeSolutionStep(
         ModelPart& r_model_part,
@@ -211,7 +210,8 @@ public:
         const TSystemMatrixType& A,
         const TSystemVectorType& Dx,
         const TSystemVectorType& b
-    ) {}
+    )
+    {}
 
 
 
@@ -289,7 +289,7 @@ private:
     TDataType mAlwaysConvergedNorm;
 
     TDataType mReferenceDispNorm;
- 
+
     /*@} */
     /**@name Private Operators*/
     /*@{ */
@@ -303,11 +303,11 @@ private:
         //typename DofsArrayType::iterator it2;
         //for (it2=rDofSet.begin();it2 != rDofSet.end(); ++it2)
         //{
-        //	if ( !(*it2)->IsFixed()  )
-        //	{
-        //		temp = mpModel->Value(*it2);
-        //		mReferenceDispNorm += temp*temp;
-        //	}
+        //  if ( !(*it2)->IsFixed()  )
+        //  {
+        //      temp = mpModel->Value(*it2);
+        //      mReferenceDispNorm += temp*temp;
+        //  }
         //}
         for(typename DofsArrayType::iterator i_dof = rDofSet.begin() ; i_dof != rDofSet.end() ; ++i_dof)
         {
@@ -355,5 +355,4 @@ private:
 
 }  /* namespace Kratos.*/
 
-#endif /* KRATOS_NEW_INCREMENTAL_DISPLACEMENT_CRITERIA  defined */
-
+#endif /* KRATOS_INCREMENTAL_DISPLACEMENT_CRITERIA  defined */
