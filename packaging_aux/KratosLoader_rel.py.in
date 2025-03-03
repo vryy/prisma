@@ -1,0 +1,11 @@
+import sys
+import os
+kratos_install_path_=os.path.dirname(os.path.realpath(__file__)) + "/../"
+kratos_libs=kratos_install_path_+"libs"
+kratos_applications=kratos_install_path_+"applications"
+kratos_scripts=kratos_install_path_+"kratos/python_scripts"
+kratos_tests=kratos_install_path_+"kratos/tests"
+sys.path.append(kratos_libs)
+sys.path.append(kratos_applications)
+sys.path.append(kratos_scripts)
+sys.path.append(kratos_tests)

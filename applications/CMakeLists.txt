@@ -82,10 +82,6 @@ message("LEVEL_SET_APPLICATION............... ${LEVEL_SET_APPLICATION}")
 message("MFEM_APPLICATION.................... ${MFEM_APPLICATION}")
 message( " ")
 
-if(${INSTALL_PYTHON_FILES} MATCHES ON)
-  install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/applications_interface.py DESTINATION applications)
-endif(${INSTALL_PYTHON_FILES} MATCHES ON)
-
 # #include subdirectories for compilation
 # if(${INCOMPRESSIBLE_FLUID_APPLICATION} MATCHES ON)
 #   add_subdirectory(incompressible_fluid_application)

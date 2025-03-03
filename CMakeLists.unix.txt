@@ -463,15 +463,19 @@ endif()
 ################################################################################
 option(INSTALL_PYTHON_FILES "Install the Python scripts" OFF)
 if(${INSTALL_PYTHON_FILES} MATCHES ON)
-    set(KRATOS_SCRIPTS_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
+    configure_file(
+        ${CMAKE_SOURCE_DIR}/packaging_aux/KratosLoader_rel.py.in
+        ${CMAKE_BINARY_DIR}/packaging_aux/KratosLoader.py
+        @ONLY
+    )
 else()
     set(KRATOS_SCRIPTS_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}")
+    configure_file(
+        ${CMAKE_SOURCE_DIR}/packaging_aux/KratosLoader.py.in
+        ${CMAKE_BINARY_DIR}/packaging_aux/KratosLoader.py
+        @ONLY
+    )
 endif()
-configure_file(
-    ${CMAKE_SOURCE_DIR}/packaging_aux/KratosLoader.py.in
-    ${CMAKE_BINARY_DIR}/packaging_aux/KratosLoader.py
-    @ONLY
-)
 install(
     FILES ${CMAKE_BINARY_DIR}/packaging_aux/KratosLoader.py
     DESTINATION KratosMultiphysics
