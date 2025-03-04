@@ -17,14 +17,15 @@ namespace Kratos
 {
     Kernel::Kernel()
     {
-        std::cout << " |  /           |" << std::endl;
-        std::cout << " ' /   __| _` | __|  _ \\   __|" << std::endl;
-        std::cout << " . \\  |   (   | |   (   |\\__ \\" << std::endl;
-        std::cout << "_|\\_\\_|  \\__,_|\\__|\\___/ ____/" << std::endl;
+        std::cout << " ____       _" << std::endl;
+        std::cout << "|  _ \\ _ __(_)___ _ __ ___   __ _" << std::endl;
+        std::cout << "| |_) | '__| / __| '_ ` _ \\ / _` |" << std::endl;
+        std::cout << "|  __/| |  | \\__ \\ | | | | | (_| |" << std::endl;
+        std::cout << "|_|   |_|  |_|___/_| |_| |_|\\__,_|" << std::endl;
         #if PY_MAJOR_VERSION==3
-        std::cout << "         Multi-Physics (with interface to Python 3)" << std::endl;
+        std::cout << "         Macrophysics (with interface to Python 3)" << std::endl;
         #elif PY_MAJOR_VERSION==2
-        std::cout << "         Multi-Physics (with interface to Python 2)" << std::endl;
+        std::cout << "         Macrophysics (with interface to Python 2)" << std::endl;
         #else
         #error "PY_MAJOR_VERSION is undefined"
         #endif
@@ -32,6 +33,7 @@ namespace Kratos
         std::cout << "     Ruhr University Bochum     2013-2021" << std::endl;
         std::cout << "     Helmholtz-Zentrum Hereon   2022-2024" << std::endl;
         std::cout << "     University of Birmingham   2025-2026" << std::endl;
+        std::cout << ">>>This product includes Kratos Multi-Physics technology<<<" << std::endl;
 
         mKratosApplication.RegisterVariables();
     }

@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 2.8.6...3.19.4)
-project (KratosMultiphysics)
+project (Prisma)
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Android")
     message(STATUS "${PROJECT_NAME} is compiled on Android")
