@@ -2,7 +2,7 @@
 set (KratosMultiphysics_VERSION_MAJOR 3)
 set (KratosMultiphysics_VERSION_MINOR 3)
 
-#get subversion data. This is done automagically by the cmakes
+#get subversion data. This is done automatically by cmake
 include (GenerateExportHeader)
 
 find_package(Subversion QUIET)
