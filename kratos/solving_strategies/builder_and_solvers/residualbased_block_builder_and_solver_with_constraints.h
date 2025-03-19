@@ -604,7 +604,7 @@ public:
         ModelPart& rModelPart
     ) override
     {
-        KRATOS_TRY;
+        KRATOS_TRY
 
         if ( this->GetEchoLevel() > 1 && rModelPart.GetCommunicator().MyPID() == 0)
         {
@@ -621,12 +621,12 @@ public:
 
         typedef std::set < typename DofType::Pointer >  set_type;
 
-        if ( this->GetEchoLevel() > 2)
+        if ( this->GetEchoLevel() > 2 && rModelPart.GetCommunicator().MyPID() == 0)
         {
             std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraints: " << "Number of threads" << nthreads << "\n" << std::endl;
         }
 
-        if ( this->GetEchoLevel() > 2)
+        if ( this->GetEchoLevel() > 2 && rModelPart.GetCommunicator().MyPID() == 0)
         {
             std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraints: " << "Initializing element loop" << std::endl;
         }
@@ -642,7 +642,7 @@ public:
         #pragma omp parallel firstprivate(dof_list, second_dof_list)
         {
         #endif
-            ProcessInfo& r_current_process_info = rModelPart.GetProcessInfo();
+            const ProcessInfo& r_current_process_info = rModelPart.GetProcessInfo();
 
             // We create the temporal set
             set_type dofs_tmp_set;
@@ -701,7 +701,7 @@ public:
         }
         #endif
 
-        if ( this->GetEchoLevel() > 2)
+        if ( this->GetEchoLevel() > 2 && rModelPart.GetCommunicator().MyPID() == 0)
         {
             std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraints: " << "Initializing ordered array filling\n" << std::endl;
         }
@@ -724,7 +724,7 @@ public:
             KRATOS_ERROR << "No degrees of freedom!";
         }
 
-        if ( this->GetEchoLevel() > 2)
+        if ( this->GetEchoLevel() > 2 && rModelPart.GetCommunicator().MyPID() == 0)
         {
             std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraints: " << "Number of degrees of freedom:" << BaseType::mDofSet.size() << std::endl;
         }
@@ -736,11 +736,10 @@ public:
             std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraints: " << "Finished setting up the dofs" << std::endl;
         }
 
-        if ( this->GetEchoLevel() > 2)
+        if ( this->GetEchoLevel() > 2 && rModelPart.GetCommunicator().MyPID() == 0)
         {
             std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraints: " << "End of setup dof set\n" << std::endl;
         }
-
 
 #ifdef KRATOS_DEBUG
         // If reactions are to be calculated, we check if all the dofs have reactions defined
