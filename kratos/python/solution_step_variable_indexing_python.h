@@ -27,9 +27,6 @@
 
 
 // System includes
-//#include <string>
-//#include <iostream>
-//#include <sstream>
 
 
 // External includes
@@ -47,6 +44,7 @@ namespace Python
 {
 
 using namespace boost::python;
+
 ///@name Kratos Globals
 ///@{
 
@@ -212,8 +210,6 @@ private:
     /// Assignment operator.
     SolutionStepVariableIndexingPython& operator=(const SolutionStepVariableIndexingPython& rOther);
 
-
-
     ///@}
 
 }; // Class SolutionStepVariableIndexingPython
@@ -222,7 +218,6 @@ private:
 
 ///@name Type Definitions
 ///@{
-
 
 ///@}
 ///@name Input and output
@@ -234,6 +229,4 @@ private:
 
 }  // namespace Kratos.
 
-#endif // KRATOS_SOLUTION_STEP_VARIABLE_INDEXING_PYTHON_H_INCLUDED  defined 
-
-
+#endif // KRATOS_SOLUTION_STEP_VARIABLE_INDEXING_PYTHON_H_INCLUDED  defined
