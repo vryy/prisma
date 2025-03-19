@@ -1130,6 +1130,9 @@ public:
         }
         #endif
 
+        if (BaseType::mpLinearSystemSolver == nullptr)
+            KRATOS_ERROR << "Linear solver is not assigned";
+
         //provide additional data to the solver/preconditioner
         BaseType::mpLinearSystemSolver->ProvideAdditionalData(A, Dx, b, BaseType::mDofSet, r_model_part);
 
