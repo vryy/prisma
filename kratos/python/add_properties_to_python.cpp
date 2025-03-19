@@ -36,7 +36,7 @@
 #include "includes/condition.h"
 #include "includes/properties.h"
 #include "includes/constitutive_law.h"
-//#include "python/add_mesh_to_python.h"
+#include "python/add_properties_to_python.h"
 #include "python/pointer_vector_set_python_interface.h"
 //#include "python/variable_indexing_python.h"
 
@@ -45,9 +45,6 @@ namespace Kratos
 namespace Python
 {
 using namespace boost::python;
-
-typedef Mesh<Node<3>, Properties, Element, Condition> MeshType;
-typedef ConstitutiveLaw ConstitutiveLawBaseType;
 
 template< class TContainerType, class TVariableType > void SetValueHelperFunction1(
     TContainerType& el,
@@ -63,8 +60,6 @@ typename TVariableType::Type GetValueHelperFunction1( TContainerType& el,
 {
     return el.GetValue(rVar);
 }
-
-
 
 template< class TContainerType, class XVariableType, class YVariableType> void SetTableHelperFunction1(
     TContainerType& el,
@@ -85,6 +80,9 @@ typename Properties::TableType& GetTableHelperFunction1( TContainerType& el,
 
 void  AddPropertiesToPython()
 {
+    typedef Mesh<Node<3>, Properties, Element, Condition> MeshType;
+    typedef ConstitutiveLaw ConstitutiveLawBaseType;
+
     class_<Properties, Properties::Pointer, bases<Properties::BaseType > >("Properties", init<int>())
     .def(init<const Properties&>())
 

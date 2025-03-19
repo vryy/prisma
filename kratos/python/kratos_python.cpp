@@ -43,6 +43,8 @@
 #include "add_model_to_python.h"
 #include "add_model_part_to_python.h"
 #include "add_io_to_python.h"
+#include "add_node_to_python.h"
+#include "add_properties_to_python.h"
 #include "add_mesh_to_python.h"
 // #include "add_modeler_to_python.h"
 #include "add_kernel_to_python.h"
