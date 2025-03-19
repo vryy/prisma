@@ -80,6 +80,7 @@ message("CLOTH_APPLICATION................... ${CLOTH_APPLICATION}")
 message("OPENSEES_APPLICATION................ ${OPENSEES_APPLICATION}")
 message("LEVEL_SET_APPLICATION............... ${LEVEL_SET_APPLICATION}")
 message("MFEM_APPLICATION.................... ${MFEM_APPLICATION}")
+message("VISUAL_APPLICATION.................. ${VISUAL_APPLICATION}")
 message( " ")
 
 # #include subdirectories for compilation
@@ -454,6 +455,10 @@ endif(${LEVEL_SET_APPLICATION} MATCHES ON)
 if(${MFEM_APPLICATION} MATCHES ON)
   add_subdirectory(mfem_application)
 endif(${MFEM_APPLICATION} MATCHES ON)
+
+if(${VISUAL_APPLICATION} MATCHES ON)
+  add_subdirectory(visual_application)
+endif(${VISUAL_APPLICATION} MATCHES ON)
 
 # get_property(inc_dirs DIRECTORY PROPERTY INCLUDE_DIRECTORIES)
 # message("applications subdir inc_dirs = ${inc_dirs}")

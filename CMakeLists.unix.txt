@@ -498,6 +498,10 @@ if(${INSTALL_PYTHON_FILES} MATCHES ON)
     install(FILES ${CMAKE_SOURCE_DIR}/packaging_aux/kratos.conf DESTINATION packaging )
     install(FILES ${CMAKE_SOURCE_DIR}/packaging_aux/script.py DESTINATION . )
 
+    set(CPACK_PACKAGE_VERSION_MAJOR 8)
+    set(CPACK_PACKAGE_VERSION_MINOR 8)
+    set(CPACK_PACKAGE_VERSION_PATCH 8)
+
     if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
         set(CPACK_GENERATOR "DEB")
         set(CPACK_DEBIAN_PACKAGE_MAINTAINER "GB") #required
@@ -509,6 +513,11 @@ if(${INSTALL_PYTHON_FILES} MATCHES ON)
     elseif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
         set(CPACK_GENERATOR "NSIS")
         # CPACK_PACKAGING_INSTALL_PREFIX should not be set for Windows build, see https://gitlab.kitware.com/cmake/cmake/-/issues/17534
+        set(CPACK_NSIS_INSTALL_ROOT $PROFILE)                       # install to the user folder to avoid asking permission
+        set(CPACK_NSIS_DEFINES "RequestExecutionLevel user")        # no admin prompt
+        set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)          # uninstall previous version before installation
+        set(CPACK_PACKAGE_INSTALL_DIRECTORY ${CMAKE_PROJECT_NAME})  # do not add version number to the installation folder
+        set(CPACK_NSIS_MUI_ICON "${CMAKE_SOURCE_DIR}/packaging_aux/icons8-p-96.ico")    # installer icon
     endif()
     string(TIMESTAMP CURRENT_DATE "%Y.%m.%d")
     string(TIMESTAMP CURRENT_TIME "%H.%M.%S")
