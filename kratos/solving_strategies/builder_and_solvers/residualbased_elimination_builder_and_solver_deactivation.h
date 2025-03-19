@@ -526,8 +526,10 @@ public:
 //        KRATOS_WATCH("in Build: before thread looping for elements");
 
         double DiagonalSum = 0.0;
+        unsigned int num_computed_elements = 0;
+        unsigned int num_assembled_elements = 0;
 
-        #pragma omp parallel for reduction(+:DiagonalSum)
+        #pragma omp parallel for reduction(+:DiagonalSum) reduction(+:num_assembled_elements) reduction(+:num_computed_elements)
         for(int k = 0; k < number_of_threads; ++k)
         {
 //            std::cout << "thread " << k << " is spawned" << std::endl;
@@ -627,6 +629,14 @@ public:
 
                     //update the global diagonal sum
                     DiagonalSum += LocalDiagonalSum;
+                    //update the number of computed and assembled element
+                    num_computed_elements += 1;
+                    #ifdef DETECT_NAN_AT_BUILD
+                    if ((norm_elem_k > 0.0) || (norm_elem_r > 0.0))
+                    #endif
+                    {
+                        num_assembled_elements += 1;
+                    }
                 }
 
                 #ifdef MEASURE_TIME_CUT_CELL
@@ -635,15 +645,18 @@ public:
                 #endif
             }
         }
-        std::cout << "Element assembly completed" << std::endl;
+        std::cout << "Element assembly completed"
+                  << ", computed: " << num_computed_elements
+                  << ", assembled: " << num_assembled_elements << std::endl;
 
         boost::numeric::ublas::vector<unsigned int> condition_partition;
         OpenMPUtils::CreatePartition(number_of_threads, ConditionsArray.size(), condition_partition);
         KRATOS_WATCH( condition_partition );
 
-//        KRATOS_WATCH("in Build: before thread looping for conditions");
+        unsigned int num_computed_conditions = 0;
+        unsigned int num_assembled_conditions = 0;
 
-        #pragma omp parallel for reduction(+:DiagonalSum)
+        #pragma omp parallel for reduction(+:DiagonalSum) reduction(+:num_assembled_conditions) reduction(+:num_computed_conditions)
         for(int k = 0; k < number_of_threads; ++k)
         {
             //contributions to the system
@@ -720,10 +733,20 @@ public:
                     DiagonalSum += LocalDiagonalSum;
 //                    std::cout << "Condition " << it->Id() << " rhs: " << RHS_Contribution << std::endl;
 //                    std::cout << "Condition " << it->Id() << " is assembled" << std::endl;
+                    // update the number of computed and assembled conditions
+                    num_computed_conditions += 1;
+                    #ifdef DETECT_NAN_AT_BUILD
+                    if ((norm_cond_k > 0.0) || (norm_cond_r > 0.0))
+                    #endif
+                    {
+                        num_assembled_conditions += 1;
+                    }
                 }
             }
         }
-        std::cout << "Condition assembly completed" << std::endl;
+        std::cout << "Condition assembly completed"
+                  << ", computed: " << num_computed_conditions
+                  << ", assembled: " << num_assembled_conditions << std::endl;
 
         double stop_prod = omp_get_wtime();
         for(int i = 0; i < A_size; ++i)
@@ -733,7 +756,7 @@ public:
 
         // compute the modification factor: simply average of the diagonal
         double DiagonalAverage = DiagonalSum / (BaseType::mEquationSystemSize - mFixedLength);
-        KRATOS_WATCH(DiagonalAverage)
+        printf("DiagonalSum: %.16e, DiagonalAverage: %.16e\n", DiagonalSum, DiagonalAverage);
 
         // modify the matrix as needed
         for(std::set<std::size_t>::iterator it = InactiveIdSet.begin(); it != InactiveIdSet.end(); ++it)
