@@ -600,6 +600,8 @@ void  AddMeshToPython()
     .def("SetValue", SetValueHelperFunction< Element, Variable< array_1d<DataType, 3>  > >)
     .def("GetValue", GetValueHelperFunction< Element, Variable< array_1d<DataType, 3>  > >)
 
+    .def("SetValue", SetValueHelperFunction< Condition, VariableComponent<VectorComponentAdaptor<array_1d<DataType, 3> > > >)
+
     .def("__setitem__", SetValueHelperFunction< Element, Variable< Vector > >)
     .def("__getitem__", GetValueHelperFunction< Element, Variable< Vector > >)
     .def("Has", HasHelperFunction< Element, Variable< Vector > >)
@@ -724,6 +726,8 @@ void  AddMeshToPython()
     .def("Has", HasHelperFunction< Condition, Variable< array_1d<DataType, 3>  > >)
     .def("SetValue", SetValueHelperFunction< Condition, Variable< array_1d<DataType, 3>  > >)
     .def("GetValue", GetValueHelperFunction< Condition, Variable< array_1d<DataType, 3>  > >)
+
+    .def("SetValue", SetValueHelperFunction< Condition, VariableComponent<VectorComponentAdaptor<array_1d<DataType, 3> > > >)
 
     .def("__setitem__", SetValueHelperFunction< Condition, Variable< Vector > >)
     .def("__getitem__", GetValueHelperFunction< Condition, Variable< Vector > >)
