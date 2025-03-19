@@ -103,6 +103,24 @@ struct AD_Helper_Base
                 for (std::size_t k = 0; k < v[i][j].size(); ++k)
                     v[i][j][k] = 0.0;
     }
+
+    template<typename TDataType, typename TVectorType>
+    static inline void Norm2(TDataType& norm, const TVectorType& c)
+    {
+        norm = 0.0;
+        for (std::size_t i = 0; i < c.size(); ++i)
+            norm += c[i]*c[i];
+        norm = std::sqrt(norm);
+    }
+
+    template<typename TVectorType>
+    static inline void Normalize(TVectorType& c)
+    {
+        typename TVectorType::value_type normc;
+        Norm2(normc, c);
+        for (std::size_t i = 0; i < c.size(); ++i)
+            c[i] = c[i]/normc;
+    }
 };
 
 template<typename TDataType>
