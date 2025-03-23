@@ -20,6 +20,7 @@ see kratos/LICENSE.txt
 
 #include <iostream>
 #include <vector>
+#include <cmath>
 
 namespace Kratos
 {
