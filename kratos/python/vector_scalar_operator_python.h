@@ -104,7 +104,11 @@ public:
         .def("__add__", &add)
         .def("__sub__", &sub)
         .def("__mul__", &mul)
+        #if PY_MAJOR_VERSION==2
         .def("__div__", &div)
+        #elif PY_MAJOR_VERSION==3
+        .def("__truediv__", &div)
+        #endif
         .def("__radd__", &radd)
         .def("__rsub__", &rsub)
         .def("__rmul__", &rmul)
