@@ -638,7 +638,7 @@ namespace Kratos
     /** Inserts an element in the mesh with ThisIndex.
     */
     ModelPart::ElementType::Pointer ModelPart::CreateNewElement(std::string ElementName,
-        ModelPart::IndexType Id, std::vector<ModelPart::IndexType> ElementNodeIds,
+        ModelPart::IndexType Id, const std::vector<ModelPart::IndexType>& ElementNodeIds,
         ModelPart::PropertiesType::Pointer pProperties, ModelPart::IndexType ThisIndex)
     {
         if (IsSubModelPart())
@@ -1071,390 +1071,430 @@ const ModelPart::MasterSlaveConstraintType& ModelPart::GetMasterSlaveConstraint(
     return GetMesh(ThisIndex).GetMasterSlaveConstraint(MasterSlaveConstraintId);
 }
 
-    /** Inserts a condition in the mesh with ThisIndex.
-    */
-    void ModelPart::AddCondition(ModelPart::ConditionType::Pointer pNewCondition, ModelPart::IndexType ThisIndex)
-    {
-        if (IsSubModelPart())
-            mpParentModelPart->AddCondition(pNewCondition, ThisIndex);
+/** Inserts a condition in the mesh with ThisIndex.
+*/
+void ModelPart::AddCondition(ModelPart::ConditionType::Pointer pNewCondition, ModelPart::IndexType ThisIndex)
+{
+    if (IsSubModelPart())
+        mpParentModelPart->AddCondition(pNewCondition, ThisIndex);
 
-        GetMesh(ThisIndex).AddCondition(pNewCondition);
+    GetMesh(ThisIndex).AddCondition(pNewCondition);
+}
+
+/** Inserts a condition in the mesh with ThisIndex.
+*/
+ModelPart::ConditionType::Pointer ModelPart::CreateNewCondition(std::string ConditionName,
+    ModelPart::IndexType Id, const std::vector<IndexType>& ConditionNodeIds,
+    ModelPart::PropertiesType::Pointer pProperties, ModelPart::IndexType ThisIndex)
+{
+    Geometry< Node < 3 > >::PointsArrayType pConditionNodes;
+
+    for (unsigned int i = 0; i < ConditionNodeIds.size(); i++) {
+        pConditionNodes.push_back(pGetNode(ConditionNodeIds[i]));
     }
 
-    /** Inserts a condition in the mesh with ThisIndex.
-    */
-    ModelPart::ConditionType::Pointer ModelPart::CreateNewCondition(std::string ConditionName,
-        ModelPart::IndexType Id, std::vector<IndexType> ConditionNodeIds,
-        ModelPart::PropertiesType::Pointer pProperties, ModelPart::IndexType ThisIndex)
+    return CreateNewCondition(ConditionName, Id, pConditionNodes, pProperties, ThisIndex);
+}
+
+/** Inserts a condition in the mesh with ThisIndex.
+*/
+ModelPart::ConditionType::Pointer ModelPart::CreateNewCondition(std::string ConditionName,
+    ModelPart::IndexType Id, Geometry< Node < 3 > >::PointsArrayType pConditionNodes,
+    ModelPart::PropertiesType::Pointer pProperties, ModelPart::IndexType ThisIndex)
+{
+    if (IsSubModelPart())
     {
-        Geometry< Node < 3 > >::PointsArrayType pConditionNodes;
-
-        for (unsigned int i = 0; i < ConditionNodeIds.size(); i++) {
-            pConditionNodes.push_back(pGetNode(ConditionNodeIds[i]));
-        }
-
-        return CreateNewCondition(ConditionName, Id, pConditionNodes, pProperties, ThisIndex);
+        ConditionType::Pointer p_new_condition = mpParentModelPart->CreateNewCondition(ConditionName, Id, pConditionNodes, pProperties, ThisIndex);
+        GetMesh(ThisIndex).AddCondition(p_new_condition);
+        return p_new_condition;
     }
 
-    /** Inserts a condition in the mesh with ThisIndex.
-    */
-    ModelPart::ConditionType::Pointer ModelPart::CreateNewCondition(std::string ConditionName,
-        ModelPart::IndexType Id, Geometry< Node < 3 > >::PointsArrayType pConditionNodes,
-        ModelPart::PropertiesType::Pointer pProperties, ModelPart::IndexType ThisIndex)
+    //get the element
+    ConditionType const& r_clone_condition = KratosComponents<ConditionType>::Get(ConditionName);
+    ConditionType::Pointer p_condition = r_clone_condition.Create(Id, pConditionNodes, pProperties);
+
+    //add the new element
+    GetMesh(ThisIndex).AddCondition(p_condition);
+
+    return p_condition;
+}
+
+
+/** Remove the condition with given Id from mesh with ThisIndex in this modelpart and all its subs.
+*/
+void ModelPart::RemoveCondition(ModelPart::IndexType ConditionId, ModelPart::IndexType ThisIndex)
+{
+    GetMesh(ThisIndex).RemoveCondition(ConditionId);
+
+    for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
+        i_sub_model_part->RemoveCondition(ConditionId, ThisIndex);
+}
+
+/** Remove given condition from mesh with ThisIndex in this modelpart and all its subs.
+*/
+void ModelPart::RemoveCondition(ModelPart::ConditionType& ThisCondition, ModelPart::IndexType ThisIndex)
+{
+    GetMesh(ThisIndex).RemoveCondition(ThisCondition);
+
+    for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
+        i_sub_model_part->RemoveCondition(ThisCondition, ThisIndex);
+}
+
+/** Remove given condition from mesh with ThisIndex in this modelpart and all its subs.
+*/
+void ModelPart::RemoveCondition(ModelPart::ConditionType::Pointer pThisCondition, ModelPart::IndexType ThisIndex)
+{
+    GetMesh(ThisIndex).RemoveCondition(pThisCondition);
+
+    for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
+        i_sub_model_part->RemoveCondition(pThisCondition, ThisIndex);
+}
+
+/** Remove the condition with given Id from mesh with ThisIndex in parents, itself and children.
+*/
+void ModelPart::RemoveConditionFromAllLevels(ModelPart::IndexType ConditionId, ModelPart::IndexType ThisIndex)
+{
+    if (IsSubModelPart())
     {
-        if (IsSubModelPart())
-        {
-            ConditionType::Pointer p_new_condition = mpParentModelPart->CreateNewCondition(ConditionName, Id, pConditionNodes, pProperties, ThisIndex);
-            GetMesh(ThisIndex).AddCondition(p_new_condition);
-            return p_new_condition;
-        }
-
-        //get the element
-        ConditionType const& r_clone_condition = KratosComponents<ConditionType>::Get(ConditionName);
-        ConditionType::Pointer p_condition = r_clone_condition.Create(Id, pConditionNodes, pProperties);
-
-        //add the new element
-        GetMesh(ThisIndex).AddCondition(p_condition);
-
-        return p_condition;
+        mpParentModelPart->RemoveCondition(ConditionId, ThisIndex);
+        return;
     }
 
+    RemoveCondition(ConditionId, ThisIndex);
+}
 
-    /** Remove the condition with given Id from mesh with ThisIndex in this modelpart and all its subs.
-    */
-    void ModelPart::RemoveCondition(ModelPart::IndexType ConditionId, ModelPart::IndexType ThisIndex)
+/** Remove given condition from mesh with ThisIndex in parents, itself and children.
+*/
+void ModelPart::RemoveConditionFromAllLevels(ModelPart::ConditionType& ThisCondition, ModelPart::IndexType ThisIndex)
+{
+    if (IsSubModelPart())
     {
-        GetMesh(ThisIndex).RemoveCondition(ConditionId);
-
-        for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
-            i_sub_model_part->RemoveCondition(ConditionId, ThisIndex);
+        mpParentModelPart->RemoveCondition(ThisCondition, ThisIndex);
+        return;
     }
 
-    /** Remove given condition from mesh with ThisIndex in this modelpart and all its subs.
-    */
-    void ModelPart::RemoveCondition(ModelPart::ConditionType& ThisCondition, ModelPart::IndexType ThisIndex)
-    {
-        GetMesh(ThisIndex).RemoveCondition(ThisCondition);
+    RemoveCondition(ThisCondition, ThisIndex);
+}
 
-        for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
-            i_sub_model_part->RemoveCondition(ThisCondition, ThisIndex);
+/** Remove given condition from mesh with ThisIndex in parents, itself and children.
+*/
+void ModelPart::RemoveConditionFromAllLevels(ModelPart::ConditionType::Pointer pThisCondition, ModelPart::IndexType ThisIndex)
+{
+    if (IsSubModelPart())
+    {
+        mpParentModelPart->RemoveCondition(pThisCondition, ThisIndex);
+        return;
     }
 
-    /** Remove given condition from mesh with ThisIndex in this modelpart and all its subs.
-    */
-    void ModelPart::RemoveCondition(ModelPart::ConditionType::Pointer pThisCondition, ModelPart::IndexType ThisIndex)
-    {
-        GetMesh(ThisIndex).RemoveCondition(pThisCondition);
+    RemoveCondition(pThisCondition, ThisIndex);
+}
 
-        for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
-            i_sub_model_part->RemoveCondition(pThisCondition, ThisIndex);
+
+ModelPart&  ModelPart::CreateSubModelPart(std::string const& NewSubModelPartName)
+{
+    if (mSubModelParts.find(NewSubModelPartName) == mSubModelParts.end())
+    {
+        ModelPart* p_model_part = new ModelPart(NewSubModelPartName);
+        p_model_part->SetParentModelPart(this);
+        delete p_model_part->mpVariablesList;
+        p_model_part->mpVariablesList = mpVariablesList;
+        p_model_part->mBufferSize = this->mBufferSize;
+        p_model_part->mpProcessInfo = this->mpProcessInfo;
+        return *(mSubModelParts.insert(p_model_part));
+    }
+    else
+        // Here a warning would be enough. To be disscussed. Pooyan.
+        KRATOS_ERROR << "There is an already existing sub model part with name \"" << NewSubModelPartName << "\" in model part: \"" << Name() << "\"" << std::endl;
+}
+
+void ModelPart::AddSubModelPart(ModelPart& rThisSubModelPart)
+{
+    if (mSubModelParts.find(rThisSubModelPart.Name()) != mSubModelParts.end())
+        // Here a warning would be enough. To be disscussed. Pooyan.
+        KRATOS_ERROR << "There is an already existing sub model part with name " << rThisSubModelPart.Name();
+
+    if (IsSubModelPart())
+    {
+        mpParentModelPart->AddSubModelPart(rThisSubModelPart);
+        return;
     }
 
-    /** Remove the condition with given Id from mesh with ThisIndex in parents, itself and children.
-    */
-    void ModelPart::RemoveConditionFromAllLevels(ModelPart::IndexType ConditionId, ModelPart::IndexType ThisIndex)
-    {
-        if (IsSubModelPart())
-        {
-            mpParentModelPart->RemoveCondition(ConditionId, ThisIndex);
-            return;
-        }
+    rThisSubModelPart.SetParentModelPart(this);
+}
 
-        RemoveCondition(ConditionId, ThisIndex);
+void  ModelPart::RemoveSubModelPart(std::string const& ThisSubModelPartName)
+{
+    // finding the sub model part
+    SubModelPartIterator i_sub_model_part = mSubModelParts.find(ThisSubModelPartName);
+
+    if (i_sub_model_part == mSubModelParts.end())
+        return; // TODO: send a warning here. Pooyan.
+
+    // deallocate the sub model part
+    delete i_sub_model_part.base()->second;
+
+    // now erase the pointer from the list
+    mSubModelParts.erase(ThisSubModelPartName);
+}
+
+void  ModelPart::RemoveSubModelPart(ModelPart& ThisSubModelPart)
+{
+    std::string name = ThisSubModelPart.Name();
+    // finding the sub model part
+    SubModelPartIterator i_sub_model_part = mSubModelParts.find(name);
+
+    if (i_sub_model_part == mSubModelParts.end())
+        KRATOS_ERROR << "The sub modelpart  \"" << name << "\" does not exist in the \"" << Name() << "\" model part to be removed" << std::endl;
+
+                // deallocate the sub model part
+    delete i_sub_model_part.base()->second;
+
+    mSubModelParts.erase(name);
+}
+
+std::vector<std::string> ModelPart::GetSubModelPartNames()
+{
+    std::vector<std::string> SubModelPartsNames;
+
+    for(auto& r_sub_model_part : mSubModelParts) {
+      SubModelPartsNames.push_back(r_sub_model_part.Name());
     }
 
-    /** Remove given condition from mesh with ThisIndex in parents, itself and children.
-    */
-    void ModelPart::RemoveConditionFromAllLevels(ModelPart::ConditionType& ThisCondition, ModelPart::IndexType ThisIndex)
-    {
-        if (IsSubModelPart())
-        {
-            mpParentModelPart->RemoveCondition(ThisCondition, ThisIndex);
-            return;
-        }
+    return SubModelPartsNames;
+}
 
-        RemoveCondition(ThisCondition, ThisIndex);
+void ModelPart::SetBufferSize(ModelPart::IndexType NewBufferSize)
+{
+    if (IsSubModelPart())
+        KRATOS_ERROR << "Calling the SetBufferSize method of the sub model part " << Name()
+                     << " please call the one of the parent modelpart : " << mpParentModelPart->Name() << std::endl;
+
+    for(SubModelPartIterator i_sub_model_part = mSubModelParts.begin(); i_sub_model_part != mSubModelParts.end(); i_sub_model_part++)
+    {
+        i_sub_model_part->mBufferSize = NewBufferSize;
     }
 
-    /** Remove given condition from mesh with ThisIndex in parents, itself and children.
-    */
-    void ModelPart::RemoveConditionFromAllLevels(ModelPart::ConditionType::Pointer pThisCondition, ModelPart::IndexType ThisIndex)
-    {
-        if (IsSubModelPart())
-        {
-            mpParentModelPart->RemoveCondition(pThisCondition, ThisIndex);
-            return;
-        }
+    mBufferSize = NewBufferSize;
 
-        RemoveCondition(pThisCondition, ThisIndex);
+    for (NodeIterator node_iterator = NodesBegin(); node_iterator != NodesEnd(); node_iterator++)
+        node_iterator->SetBufferSize(mBufferSize);
+
+    auto* pProcessInfoWithDofs = dynamic_cast<ProcessInfoWithDofs*>(mpProcessInfo.get());
+    if (pProcessInfoWithDofs != NULL)
+    {
+        pProcessInfoWithDofs->SetBufferSize(mBufferSize);
+    }
+}
+
+void ModelPart::SetProcessInfo(ProcessInfo::Pointer pNewProcessInfo)
+{
+    mpProcessInfo = pNewProcessInfo;
+    auto* pProcessInfoWithDofs = dynamic_cast<ProcessInfoWithDofs*>(mpProcessInfo.get());
+    if (pProcessInfoWithDofs != NULL)
+    {
+        pProcessInfoWithDofs->SetSolutionStepVariablesList(*mpVariablesList);
+        pProcessInfoWithDofs->SetBufferSize(mBufferSize);
+    }
+}
+
+void ModelPart::SetProcessInfo(ProcessInfo& NewProcessInfo)
+{
+    *mpProcessInfo = NewProcessInfo;
+    auto* pProcessInfoWithDofs = dynamic_cast<ProcessInfoWithDofs*>(mpProcessInfo.get());
+    if (pProcessInfoWithDofs != NULL)
+    {
+        pProcessInfoWithDofs->SetSolutionStepVariablesList(*mpVariablesList);
+        pProcessInfoWithDofs->SetBufferSize(mBufferSize);
+    }
+}
+
+ModelPart::IndexType ModelPart::GetLastNodeId() const
+{
+    IndexType lastNodeId = 0;
+    for(typename NodesContainerType::const_iterator it = this->Nodes().begin();
+            it != this->Nodes().end(); ++it)
+    {
+        if(it->Id() > lastNodeId)
+            lastNodeId = it->Id();
     }
 
+    this->GetCommunicator().MaxAll(lastNodeId);
 
-    ModelPart&  ModelPart::CreateSubModelPart(std::string const& NewSubModelPartName)
+    return lastNodeId;
+}
+
+ModelPart::IndexType ModelPart::GetLastElementId() const
+{
+    IndexType lastElementId = 0;
+    for(typename ElementsContainerType::const_iterator it = this->Elements().begin();
+            it != this->Elements().end(); ++it)
     {
-        if (mSubModelParts.find(NewSubModelPartName) == mSubModelParts.end())
-        {
-            ModelPart* p_model_part = new ModelPart(NewSubModelPartName);
-            p_model_part->SetParentModelPart(this);
-            delete p_model_part->mpVariablesList;
-            p_model_part->mpVariablesList = mpVariablesList;
-            p_model_part->mBufferSize = this->mBufferSize;
-            p_model_part->mpProcessInfo = this->mpProcessInfo;
-            return *(mSubModelParts.insert(p_model_part));
-        }
-        else
-            // Here a warning would be enough. To be disscussed. Pooyan.
-            KRATOS_ERROR << "There is an already existing sub model part with name \"" << NewSubModelPartName << "\" in model part: \"" << Name() << "\"" << std::endl;
+        if(it->Id() > lastElementId)
+            lastElementId = it->Id();
     }
 
-    void ModelPart::AddSubModelPart(ModelPart& rThisSubModelPart)
+    this->GetCommunicator().MaxAll(lastElementId);
+
+    return lastElementId;
+}
+
+ModelPart::IndexType ModelPart::GetLastConditionId() const
+{
+    IndexType lastCondId = 0;
+    for(typename ConditionsContainerType::const_iterator it = this->Conditions().begin();
+            it != this->Conditions().end(); ++it)
     {
-        if (mSubModelParts.find(rThisSubModelPart.Name()) != mSubModelParts.end())
-            // Here a warning would be enough. To be disscussed. Pooyan.
-            KRATOS_ERROR << "There is an already existing sub model part with name " << rThisSubModelPart.Name();
-
-        if (IsSubModelPart())
-        {
-            mpParentModelPart->AddSubModelPart(rThisSubModelPart);
-            return;
-        }
-
-        rThisSubModelPart.SetParentModelPart(this);
+        if(it->Id() > lastCondId)
+            lastCondId = it->Id();
     }
 
-    void  ModelPart::RemoveSubModelPart(std::string const& ThisSubModelPartName)
+    this->GetCommunicator().MaxAll(lastCondId);
+
+    return lastCondId;
+}
+
+ModelPart::IndexType ModelPart::GetLastConstraintId() const
+{
+    IndexType lastConstraintId = 0;
+    for(typename ModelPart::MasterSlaveConstraintContainerType::const_iterator it = this->MasterSlaveConstraints().begin();
+            it != this->MasterSlaveConstraints().end(); ++it)
     {
-        // finding the sub model part
-        SubModelPartIterator i_sub_model_part = mSubModelParts.find(ThisSubModelPartName);
-
-        if (i_sub_model_part == mSubModelParts.end())
-            return; // TODO: send a warning here. Pooyan.
-
-        // deallocate the sub model part
-        delete i_sub_model_part.base()->second;
-
-        // now erase the pointer from the list
-        mSubModelParts.erase(ThisSubModelPartName);
+        if(it->Id() > lastConstraintId)
+            lastConstraintId = it->Id();
     }
 
-    void  ModelPart::RemoveSubModelPart(ModelPart& ThisSubModelPart)
+    this->GetCommunicator().MaxAll(lastConstraintId);
+
+    return lastConstraintId;
+}
+
+/// run input validation
+int ModelPart::Check(ProcessInfo& rCurrentProcessInfo) const
+{
+    KRATOS_TRY
+    int err = 0;
+
+    Kratos::progress_display show_progress_elements( NumberOfElements() );
+    std::cout << "Checking elements:" << std::endl;
+    for (ElementConstantIterator elem_iterator = ElementsBegin(); elem_iterator != ElementsEnd(); ++elem_iterator)
     {
-        std::string name = ThisSubModelPart.Name();
-        // finding the sub model part
-        SubModelPartIterator i_sub_model_part = mSubModelParts.find(name);
-
-        if (i_sub_model_part == mSubModelParts.end())
-            KRATOS_ERROR << "The sub modelpart  \"" << name << "\" does not exist in the \"" << Name() << "\" model part to be removed" << std::endl;
-
-                    // deallocate the sub model part
-        delete i_sub_model_part.base()->second;
-
-        mSubModelParts.erase(name);
+        err = elem_iterator->Check(rCurrentProcessInfo);
+        ++show_progress_elements;
     }
 
-    std::vector<std::string> ModelPart::GetSubModelPartNames()
+    Kratos::progress_display show_progress_conditions( NumberOfConditions() );
+    std::cout << "Checking conditions:" << std::endl;
+    for (ConditionConstantIterator condition_iterator = ConditionsBegin(); condition_iterator != ConditionsEnd(); ++condition_iterator)
     {
-        std::vector<std::string> SubModelPartsNames;
-
-        for(auto& r_sub_model_part : mSubModelParts) {
-          SubModelPartsNames.push_back(r_sub_model_part.Name());
-        }
-
-        return SubModelPartsNames;
+        err = condition_iterator->Check(rCurrentProcessInfo);
+        ++show_progress_conditions;
     }
 
-    void ModelPart::SetBufferSize(ModelPart::IndexType NewBufferSize)
+    Kratos::progress_display show_progress_constraints( NumberOfMasterSlaveConstraints() );
+    std::cout << "Checking constraints:" << std::endl;
+    for (MasterSlaveConstraintConstantIteratorType constraint_iterator = MasterSlaveConstraintsBegin();
+            constraint_iterator != MasterSlaveConstraintsEnd(); ++constraint_iterator)
     {
-        if (IsSubModelPart())
-            KRATOS_ERROR << "Calling the SetBufferSize method of the sub model part " << Name()
-                         << " please call the one of the parent modelpart : " << mpParentModelPart->Name() << std::endl;
-
-        for(SubModelPartIterator i_sub_model_part = mSubModelParts.begin(); i_sub_model_part != mSubModelParts.end(); i_sub_model_part++)
-        {
-            i_sub_model_part->mBufferSize = NewBufferSize;
-        }
-
-        mBufferSize = NewBufferSize;
-
-        for (NodeIterator node_iterator = NodesBegin(); node_iterator != NodesEnd(); node_iterator++)
-            node_iterator->SetBufferSize(mBufferSize);
-
-        auto* pProcessInfoWithDofs = dynamic_cast<ProcessInfoWithDofs*>(mpProcessInfo.get());
-        if (pProcessInfoWithDofs != NULL)
-        {
-            pProcessInfoWithDofs->SetBufferSize(mBufferSize);
-        }
+        err = constraint_iterator->Check(rCurrentProcessInfo);
+        ++show_progress_constraints;
     }
 
-    void ModelPart::SetProcessInfo(ProcessInfo::Pointer pNewProcessInfo)
+    return err;
+    KRATOS_CATCH("");
+}
+
+/// Turn back information as a string.
+std::string ModelPart::Info() const
+{
+    return mName + " model part";
+}
+
+/// Print information about this object.
+
+void ModelPart::PrintInfo(std::ostream& rOStream) const
+{
+    rOStream << Info();
+}
+
+/// Print object's data.
+
+void ModelPart::PrintData(std::ostream& rOStream) const
+{
+    if (!IsSubModelPart())
+        rOStream  << "    Buffer Size : " << mBufferSize << std::endl;
+    rOStream << "    Number of tables : " << NumberOfTables() << std::endl;
+    rOStream << "    Number of sub model parts : " << NumberOfSubModelParts() << std::endl;
+    if (!IsSubModelPart())
+        mpProcessInfo->PrintData(rOStream);
+    rOStream << std::endl;
+    for (IndexType i = 0; i < mMeshes.size(); i++)
     {
-        mpProcessInfo = pNewProcessInfo;
-        auto* pProcessInfoWithDofs = dynamic_cast<ProcessInfoWithDofs*>(mpProcessInfo.get());
-        if (pProcessInfoWithDofs != NULL)
-        {
-            pProcessInfoWithDofs->SetSolutionStepVariablesList(*mpVariablesList);
-            pProcessInfoWithDofs->SetBufferSize(mBufferSize);
-        }
+        rOStream << "    Mesh " << i << " : " << std::endl;
+        GetMesh(i).PrintData(rOStream, "    ");
     }
 
-    void ModelPart::SetProcessInfo(ProcessInfo& NewProcessInfo)
+    for (SubModelPartConstantIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
     {
-        *mpProcessInfo = NewProcessInfo;
-        auto* pProcessInfoWithDofs = dynamic_cast<ProcessInfoWithDofs*>(mpProcessInfo.get());
-        if (pProcessInfoWithDofs != NULL)
-        {
-            pProcessInfoWithDofs->SetSolutionStepVariablesList(*mpVariablesList);
-            pProcessInfoWithDofs->SetBufferSize(mBufferSize);
-        }
-    }
-
-    /// run input validation
-    int ModelPart::Check(ProcessInfo& rCurrentProcessInfo) const
-    {
-        KRATOS_TRY
-        int err = 0;
-
-        Kratos::progress_display show_progress_elements( NumberOfElements() );
-        std::cout << "Checking elements:" << std::endl;
-        for (ElementConstantIterator elem_iterator = ElementsBegin(); elem_iterator != ElementsEnd(); ++elem_iterator)
-        {
-            err = elem_iterator->Check(rCurrentProcessInfo);
-            ++show_progress_elements;
-        }
-
-        Kratos::progress_display show_progress_conditions( NumberOfConditions() );
-        std::cout << "Checking conditions:" << std::endl;
-        for (ConditionConstantIterator condition_iterator = ConditionsBegin(); condition_iterator != ConditionsEnd(); ++condition_iterator)
-        {
-            err = condition_iterator->Check(rCurrentProcessInfo);
-            ++show_progress_conditions;
-        }
-
-        Kratos::progress_display show_progress_constraints( NumberOfMasterSlaveConstraints() );
-        std::cout << "Checking constraints:" << std::endl;
-        for (MasterSlaveConstraintConstantIteratorType constraint_iterator = MasterSlaveConstraintsBegin();
-                constraint_iterator != MasterSlaveConstraintsEnd(); ++constraint_iterator)
-        {
-            err = constraint_iterator->Check(rCurrentProcessInfo);
-            ++show_progress_constraints;
-        }
-
-        return err;
-        KRATOS_CATCH("");
-    }
-
-    /// Turn back information as a string.
-    std::string ModelPart::Info() const
-    {
-        return mName + " model part";
-    }
-
-    /// Print information about this object.
-
-    void ModelPart::PrintInfo(std::ostream& rOStream) const
-    {
-        rOStream << Info();
-    }
-
-    /// Print object's data.
-
-    void ModelPart::PrintData(std::ostream& rOStream) const
-    {
-        if (!IsSubModelPart())
-            rOStream  << "    Buffer Size : " << mBufferSize << std::endl;
-        rOStream << "    Number of tables : " << NumberOfTables() << std::endl;
-        rOStream << "    Number of sub model parts : " << NumberOfSubModelParts() << std::endl;
-        if (!IsSubModelPart())
-            mpProcessInfo->PrintData(rOStream);
+        i_sub_model_part->PrintInfo(rOStream, "    ");
         rOStream << std::endl;
-        for (IndexType i = 0; i < mMeshes.size(); i++)
-        {
-            rOStream << "    Mesh " << i << " : " << std::endl;
-            GetMesh(i).PrintData(rOStream, "    ");
-        }
+        i_sub_model_part->PrintData(rOStream, "    ");
+    }
+}
 
-        for (SubModelPartConstantIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
-        {
-            i_sub_model_part->PrintInfo(rOStream, "    ");
-            rOStream << std::endl;
-            i_sub_model_part->PrintData(rOStream, "    ");
-        }
+
+/// Print information about this object.
+
+void ModelPart::PrintInfo(std::ostream& rOStream, std::string const& PrefixString) const
+{
+    rOStream << PrefixString << Info();
+}
+
+/// Print object's data.
+
+void ModelPart::PrintData(std::ostream& rOStream, std::string const& PrefixString) const
+{
+    if (!IsSubModelPart())
+        rOStream << PrefixString << "    Buffer Size : " << mBufferSize << std::endl;
+    rOStream << PrefixString << "    Number of tables : " << NumberOfTables() << std::endl;
+    rOStream << PrefixString << "    Number of sub model parts : " << NumberOfSubModelParts() << std::endl;
+    if (!IsSubModelPart())
+        mpProcessInfo->PrintData(rOStream);
+    rOStream << std::endl;
+    for (IndexType i = 0; i < mMeshes.size(); i++)
+    {
+        rOStream << PrefixString << "    Mesh " << i << " : " << std::endl;
+        GetMesh(i).PrintData(rOStream, PrefixString + "    ");
     }
 
-
-    /// Print information about this object.
-
-    void ModelPart::PrintInfo(std::ostream& rOStream, std::string const& PrefixString) const
+    for (SubModelPartConstantIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
     {
-        rOStream << PrefixString << Info();
-    }
-
-    /// Print object's data.
-
-    void ModelPart::PrintData(std::ostream& rOStream, std::string const& PrefixString) const
-    {
-        if (!IsSubModelPart())
-            rOStream << PrefixString << "    Buffer Size : " << mBufferSize << std::endl;
-        rOStream << PrefixString << "    Number of tables : " << NumberOfTables() << std::endl;
-        rOStream << PrefixString << "    Number of sub model parts : " << NumberOfSubModelParts() << std::endl;
-        if (!IsSubModelPart())
-            mpProcessInfo->PrintData(rOStream);
+        i_sub_model_part->PrintInfo(rOStream, PrefixString + "    ");
         rOStream << std::endl;
-        for (IndexType i = 0; i < mMeshes.size(); i++)
-        {
-            rOStream << PrefixString << "    Mesh " << i << " : " << std::endl;
-            GetMesh(i).PrintData(rOStream, PrefixString + "    ");
-        }
-
-        for (SubModelPartConstantIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
-        {
-            i_sub_model_part->PrintInfo(rOStream, PrefixString + "    ");
-            rOStream << std::endl;
-            i_sub_model_part->PrintData(rOStream, PrefixString + "    ");
-        }
+        i_sub_model_part->PrintData(rOStream, PrefixString + "    ");
     }
+}
 
-    void ModelPart::save(Serializer& rSerializer) const
-    {
-        KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, DataValueContainer);
-        rSerializer.save("Name", mName);
-        rSerializer.save("Buffer Size", mBufferSize);
-        rSerializer.save("ProcessInfo", mpProcessInfo);
-        //const VariablesList* p_list = &mVariablesList;
-        // I'm saving it as pointer so the nodes pointers will point to it as stored pointer. Pooyan.
-        rSerializer.save("Variables List", mpVariablesList);
-        rSerializer.save("Meshes", mMeshes);
-    }
+void ModelPart::save(Serializer& rSerializer) const
+{
+    KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, DataValueContainer);
+    rSerializer.save("Name", mName);
+    rSerializer.save("Buffer Size", mBufferSize);
+    rSerializer.save("ProcessInfo", mpProcessInfo);
+    //const VariablesList* p_list = &mVariablesList;
+    // I'm saving it as pointer so the nodes pointers will point to it as stored pointer. Pooyan.
+    rSerializer.save("Variables List", mpVariablesList);
+    rSerializer.save("Meshes", mMeshes);
+}
 
-    void ModelPart::load(Serializer& rSerializer)
-    {
-        KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, DataValueContainer);
-        rSerializer.load("Name", mName);
-        rSerializer.load("Buffer Size", mBufferSize);
-        rSerializer.load("ProcessInfo", mpProcessInfo);
-        //VariablesList* p_list = &mVariablesList;
-        rSerializer.load("Variables List", mpVariablesList);
-        rSerializer.load("Meshes", mMeshes);
-    }
-
-
-    /// input stream function
-//  inline std::istream & operator >>(std::istream& rIStream,
-//      ModelPart& rThis)
-//  {
-//      return rIStream;
-//  }
-
-//  /// output stream function
-//  inline std::ostream & operator <<(std::ostream& rOStream,
-//      const ModelPart& rThis)
-//  {
-//      rThis.PrintInfo(rOStream);
-//      rOStream << std::endl;
-//      rThis.PrintData(rOStream);
-
-//      return rOStream;
-//  }
-
+void ModelPart::load(Serializer& rSerializer)
+{
+    KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, DataValueContainer);
+    rSerializer.load("Name", mName);
+    rSerializer.load("Buffer Size", mBufferSize);
+    rSerializer.load("ProcessInfo", mpProcessInfo);
+    //VariablesList* p_list = &mVariablesList;
+    rSerializer.load("Variables List", mpVariablesList);
+    rSerializer.load("Meshes", mMeshes);
+}
 
 }  // namespace Kratos.

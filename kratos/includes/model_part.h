@@ -852,7 +852,7 @@ public:
 
     /** Inserts an element in the current mesh.
      */
-    ElementType::Pointer CreateNewElement(std::string ElementName, IndexType Id, std::vector<IndexType> ElementNodeIds, PropertiesType::Pointer pProperties, IndexType ThisIndex = 0);
+    ElementType::Pointer CreateNewElement(std::string ElementName, IndexType Id, const std::vector<IndexType>& ElementNodeIds, PropertiesType::Pointer pProperties, IndexType ThisIndex = 0);
 
     /** Inserts an element in the current mesh.
      */
@@ -966,7 +966,7 @@ public:
     /** Inserts a condition in the current mesh.
      */
     ConditionType::Pointer CreateNewCondition(std::string ConditionName,
-        IndexType Id, std::vector<IndexType> ConditionNodeIds,
+        IndexType Id, const std::vector<IndexType>& ConditionNodeIds,
         PropertiesType::Pointer pProperties, IndexType ThisIndex = 0);
 
     /** Inserts a condition in the current mesh.
@@ -1291,6 +1291,18 @@ public:
     {
         return (mpParentModelPart != NULL);
     }
+
+    /// Get the last node id of the model part
+    IndexType GetLastNodeId() const;
+
+    /// Get the last element id of the model part
+    IndexType GetLastElementId() const;
+
+    /// Get the last condition id of the model part
+    IndexType GetLastConditionId() const;
+
+    /// Get the last constraint id of the model part
+    IndexType GetLastConstraintId() const;
 
     ///@}
     ///@name Input and output
