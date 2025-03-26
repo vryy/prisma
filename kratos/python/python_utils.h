@@ -29,7 +29,7 @@ namespace Kratos
 namespace Python
 {
 
-struct IsogeometricPythonUtils
+struct PythonUtils
 {
 
     template<typename TInputValueType, typename TOutputValueType = TInputValueType>
@@ -122,46 +122,37 @@ struct IsogeometricPythonUtils
         return dim;
     }
 
-    template<class T>
-    static void Unpack(const boost::python::list& rPatchList, std::vector<typename T::PatchType::Pointer>& pPatches)
-    {
-        typedef boost::python::stl_input_iterator<typename T::PatchType::Pointer> iterator_value_type;
-        BOOST_FOREACH(const typename iterator_value_type::value_type & v,
-                      std::make_pair(iterator_value_type(rPatchList), iterator_value_type() ) )
-        {
-            pPatches.push_back(v);
-        }
-    }
-
     template<typename TDataType>
-    static void Unpack(const boost::python::dict& rPatchNodalValues,
-                       std::map<std::size_t, std::map<std::size_t, TDataType> >& patch_nodal_values)
+    static void Unpack(const boost::python::dict& rNodalValues,
+                       std::map<std::size_t, std::map<std::size_t, TDataType> >& nodal_values)
     {
-        boost::python::list keys = rPatchNodalValues.keys();
+        boost::python::list keys = rNodalValues.keys();
 
         typedef boost::python::stl_input_iterator<int> iterator_type;
         BOOST_FOREACH(const iterator_type::value_type & id,
                       std::make_pair(iterator_type(keys), // begin
                                      iterator_type() ) ) // end
         {
-            boost::python::object o = rPatchNodalValues.get(id);
+            boost::python::object o = rNodalValues.get(id);
 
-            // here assumed that the patch_data given as a dict
+            // here assumed that the nodal_data given as a dict
             boost::python::dict values = boost::python::extract<boost::python::dict>(o);
 
             boost::python::list keys2 = values.keys();
 
-            std::map<std::size_t, TDataType> nodal_values;
+            std::map<std::size_t, TDataType> tmp_nodal_values;
             BOOST_FOREACH(const typename iterator_type::value_type & id2,
                           std::make_pair(iterator_type(keys2), // begin
                                          iterator_type() ) ) // end
             {
                 boost::python::object o2 = values.get(id2);
                 TDataType v = boost::python::extract<TDataType>(o2);
-                nodal_values[static_cast<std::size_t>(id2)] = v;
+                tmp_nodal_values[static_cast<std::size_t>(id2)] = v;
             }
 
-            patch_nodal_values[static_cast<std::size_t>(id)] = nodal_values;
+            nodal_values[static_cast<std::size_t>(id)] = tmp_nodal_values;
+        }
+    }
         }
     }
 
