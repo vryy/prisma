@@ -153,6 +153,24 @@ struct PythonUtils
             nodal_values[static_cast<std::size_t>(id)] = tmp_nodal_values;
         }
     }
+
+    template<typename TDataType>
+    static void Unpack(const boost::python::dict& rNodalValues,
+                       std::map<TDataType, TDataType>& nodal_values)
+    {
+        boost::python::list keys = rNodalValues.keys();
+
+        typedef boost::python::stl_input_iterator<std::string> iterator_type;
+        BOOST_FOREACH(const iterator_type::value_type & id,
+                      std::make_pair(iterator_type(keys), // begin
+                                     iterator_type() ) ) // end
+        {
+            boost::python::object o = rNodalValues.get(id);
+
+            // here assumed that the patch_data given as a value
+            TDataType v = boost::python::extract<TDataType>(o);
+
+            nodal_values[static_cast<TDataType>(id)] = v;
         }
     }
 
