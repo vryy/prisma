@@ -1097,7 +1097,7 @@ public:
     {
         SubModelPartIterator i = mSubModelParts.find(SubModelPartName);
         if(i == mSubModelParts.end())
-          KRATOS_THROW_ERROR(std::logic_error, "There is no sub model part with name : ", SubModelPartName )
+            KRATOS_ERROR << "There is no sub model part with name " << SubModelPartName;
           //TODO: KRATOS_ERROR << "There is no sub model part with name : \"" << SubModelPartName << "\" in this model part"; // << std::endl;
 
         return *i;

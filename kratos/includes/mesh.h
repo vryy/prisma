@@ -717,8 +717,8 @@ public:
     typename MasterSlaveConstraintType::Pointer pGetMasterSlaveConstraint(IndexType MasterSlaveConstraintId)
     {
         auto i = mpMasterSlaveConstraints->find(MasterSlaveConstraintId);
-          if(i == mpMasterSlaveConstraints->end())
-            KRATOS_THROW_ERROR(std::logic_error, "master-slave constraint index not found: ", MasterSlaveConstraintId );
+        if(i == mpMasterSlaveConstraints->end())
+            KRATOS_ERROR << "master-slave constraint index " << MasterSlaveConstraintId << " not found";
         return *i.base();
     }
 
@@ -726,16 +726,16 @@ public:
     MasterSlaveConstraintType& GetMasterSlaveConstraint(IndexType MasterSlaveConstraintId)
     {
         auto i = mpMasterSlaveConstraints->find(MasterSlaveConstraintId);
-          if(i == mpMasterSlaveConstraints->end())
-            KRATOS_THROW_ERROR(std::logic_error, "master-slave constraint index not found: ", MasterSlaveConstraintId );
+        if(i == mpMasterSlaveConstraints->end())
+            KRATOS_ERROR << "master-slave constraint index " << MasterSlaveConstraintId << " not found";
         return *i;
     }
 
     const MasterSlaveConstraintType& GetMasterSlaveConstraint(IndexType MasterSlaveConstraintId) const
     {
         auto i = mpMasterSlaveConstraints->find(MasterSlaveConstraintId);
-          if(i == mpMasterSlaveConstraints->end())
-            KRATOS_THROW_ERROR(std::logic_error, "master-slave constraint index not found: ", MasterSlaveConstraintId );
+        if(i == mpMasterSlaveConstraints->end())
+            KRATOS_ERROR << "master-slave constraint index " << MasterSlaveConstraintId << " not found";
         return *i;
     }
 

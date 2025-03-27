@@ -788,9 +788,7 @@ public:
         if ( it!= mDofs.end() )
             return *it;
 
-        std::stringstream buffer;
-        buffer << "Not existant DOF in node #" << Id() << " for variable : " << rDofVariable.Name();
-        KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+        KRATOS_ERROR << "Not existant DOF in node #" << Id() << " for variable : " << rDofVariable.Name();
     }
 
     /** retuns the Dof asociated with variable  */
@@ -801,9 +799,7 @@ public:
         if ( it!= mDofs.end() )
             return *it;
 
-        std::stringstream buffer;
-        buffer << "Not existant DOF in node #" << Id() << " for variable : " << rDofVariable.Name();
-        KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+        KRATOS_ERROR << "Not existant DOF in node #" << Id() << " for variable : " << rDofVariable.Name();
     }
 
     /** retuns all of the Dofs  */
@@ -820,9 +816,7 @@ public:
         if ( it!= mDofs.end() )
             return *(it.base());
 
-        std::stringstream buffer;
-        buffer << "Not existant DOF in node #" << Id() << " for variable : " << rDofVariable.Name();
-        KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+        KRATOS_ERROR << "Not existant DOF in node #" << Id() << " for variable : " << rDofVariable.Name();
     }
 
     /**

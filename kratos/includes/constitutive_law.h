@@ -147,13 +147,13 @@ public:
      * Structure "Features" to be used by the element to get the the constitutive law characteristics*
      * its variables will be used to check constitutive law and element compatibility
      * @param mOptions        flags  with the current constitutive law characteristics
-     * @param mStrainSize     DataType with the strain vector size
+     * @param mStrainSize     SizeType with the strain vector size
      * @param mStrainMeasures vector with the strain measures accepted by the constitutive law
      */
 
       Flags                mOptions;
-      DataType               mStrainSize;
-      DataType               mSpaceDimension;
+      SizeType             mStrainSize;
+      SizeType             mSpaceDimension;
       std::vector< StrainMeasure > mStrainMeasures;
 
       /**
@@ -171,18 +171,18 @@ public:
       }
 
       // Set variables
-      void SetOptions       (const Flags&  rOptions)      {mOptions=rOptions;};
-      void SetStrainSize    (const DataType StrainSize)     {mStrainSize=StrainSize;};
-      void SetSpaceDimension(const DataType SpaceDimension) {mSpaceDimension=SpaceDimension;};
-      void SetStrainMeasure (const StrainMeasure Measure) {mStrainMeasures.push_back(Measure);};
+      void SetOptions        (const Flags&  rOptions)        {mOptions=rOptions;};
+      void SetStrainSize     (const SizeType StrainSize)     {mStrainSize=StrainSize;};
+      void SetSpaceDimension (const SizeType SpaceDimension) {mSpaceDimension=SpaceDimension;};
+      void SetStrainMeasure  (const StrainMeasure Measure)   {mStrainMeasures.push_back(Measure);};
 
       void SetStrainMeasures (const std::vector<StrainMeasure> MeasuresVector) {mStrainMeasures = MeasuresVector;};
 
       // Get variables
       const Flags& GetOptions () {return mOptions;};
 
-      const DataType& GetStrainSize() {return mStrainSize;};
-      const DataType& GetSpaceDimension() {return mSpaceDimension;};
+      const SizeType& GetStrainSize()     {return mStrainSize;};
+      const SizeType& GetSpaceDimension() {return mSpaceDimension;};
       std::vector<StrainMeasure>& GetStrainMeasures() {return mStrainMeasures;};
     };
 
@@ -226,7 +226,7 @@ public:
       /*** NOTE: Member Pointers are used only to point to a certain variable, no "new" or "malloc" can be used for this Parameters ***/
 
       Flags                                mOptions;
-      DataType                               mDeterminantF;
+      DataType                             mDeterminantF;
 
       StrainVectorType*                    mpStrainVector;
       StressVectorType*                    mpStressVector;
@@ -329,10 +329,10 @@ public:
       bool CheckShapeFunctions () const
       {
         if(!mpShapeFunctionsValues)
-            KRATOS_THROW_ERROR(std::invalid_argument,"ShapeFunctionsValues NOT SET","");
+            KRATOS_ERROR << "ShapeFunctionsValues NOT SET" << std::endl;
 
         if(!mpShapeFunctionsDerivatives)
-            KRATOS_THROW_ERROR(std::invalid_argument,"ShapeFunctionsDerivatives NOT SET","");
+            KRATOS_ERROR << "ShapeFunctionsDerivatives NOT SET" << std::endl;
 
         return 1;
       }
@@ -344,13 +344,13 @@ public:
       bool CheckInfoMaterialGeometry () const
       {
         if(!mpCurrentProcessInfo)
-            KRATOS_THROW_ERROR(std::invalid_argument,"CurrentProcessInfo NOT SET","");
+            KRATOS_ERROR << "CurrentProcessInfo NOT SET" << std::endl;
 
         if(!mpMaterialProperties)
-            KRATOS_THROW_ERROR(std::invalid_argument,"MaterialProperties NOT SET","");
+            KRATOS_ERROR << "MaterialProperties NOT SET" << std::endl;
 
         if(!mpElementGeometry)
-           KRATOS_THROW_ERROR(std::invalid_argument,"ElementGeometry NOT SET","");
+            KRATOS_ERROR << "ElementGeometry NOT SET" << std::endl;
 
         return 1;
       }
@@ -363,19 +363,19 @@ public:
       bool CheckMechanicalVariables () const
       {
           if(mDeterminantF<=0)
-            KRATOS_THROW_ERROR(std::invalid_argument,"DeterminantF NOT SET, value <= 0", "");
+            KRATOS_ERROR << "DeterminantF NOT SET, value <= 0" << std::endl;
 
           if(!mpDeformationGradientF)
-            KRATOS_THROW_ERROR(std::invalid_argument,"DeformationGradientF NOT SET","");
+            KRATOS_ERROR << "DeformationGradientF NOT SET" << std::endl;
 
           if(!mpStrainVector)
-            KRATOS_THROW_ERROR(std::invalid_argument,"StrainVector NOT SET","");
+            KRATOS_ERROR << "StrainVector NOT SET" << std::endl;
 
           if(!mpStressVector)
-            KRATOS_THROW_ERROR(std::invalid_argument,"StressVector NOT SET","");
+            KRATOS_ERROR << "StressVector NOT SET" << std::endl;
 
           if(!mpConstitutiveMatrix)
-            KRATOS_THROW_ERROR(std::invalid_argument,"ConstitutiveMatrix NOT SET","");
+            KRATOS_ERROR << "ConstitutiveMatrix NOT SET" << std::endl;
 
           return 1;
       }

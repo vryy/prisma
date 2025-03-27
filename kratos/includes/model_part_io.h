@@ -470,10 +470,8 @@ protected:
         typename TContainerType::iterator i_result;
         if((i_result = ThisContainer.find(ThisKey)) == ThisContainer.end())
         {
-            std::stringstream buffer;
-            buffer << ComponentName << " #" << ThisKey << " is not found.";
-            buffer << " [Line " << mNumberOfLines << " ]";
-            KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+            KRATOS_ERROR << ComponentName << " #" << ThisKey << " is not found."
+                         << " [Line " << mNumberOfLines << " ]";
         }
 
         return i_result;

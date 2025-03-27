@@ -992,14 +992,15 @@ public:
     virtual int Check(const ProcessInfo& rCurrentProcessInfo) const
     {
         KRATOS_TRY
+
         if (this->Id() < 1)
         {
-            KRATOS_THROW_ERROR(std::logic_error, "Element found with Id 0 or negative","")
+            KRATOS_ERROR << "Element found with Id 0 or negative";
         }
         if (this->GetGeometry().Area() <= 0)
         {
-            std::cout << "error on element -> " << this->Id() << std::endl;
-            KRATOS_THROW_ERROR(std::logic_error, "Area cannot be less than or equal to 0","")
+            KRATOS_ERROR << "error on element -> " << this->Id()
+                         << ". Area cannot be less than or equal to 0";
         }
         return 0;
 
