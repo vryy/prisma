@@ -527,15 +527,6 @@ if(${INSTALL_PYTHON_FILES} MATCHES ON)
 
     include(CPack)
 
-    ## Generate the checksum of all installed files to assist with package creation
-    file(GLOB_RECURSE INSTALLED_SO_FILES "${CMAKE_INSTALL_PREFIX}/*.so")
-    file(GLOB_RECURSE INSTALLED_PY_FILES "${CMAKE_INSTALL_PREFIX}/*.py")
-
-    add_custom_target(generate_checksum_target
-        COMMENT "Generate checksum for each installed file"
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}  # Working directory for the commands
-    )
-
 endif()
 
 ################################################################################
