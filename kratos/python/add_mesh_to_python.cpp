@@ -568,6 +568,46 @@ void SetValuesOnIntegrationPointsConstitutiveLaw( Element& dummy, const Variable
     dummy.SetValuesOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
 }
 
+template< class TObject, typename TDataType >
+TDataType CalculateOnPointScalar( TObject& rDummy, const Variable<TDataType>& rVariable,
+        const typename TObject::GeometryType::CoordinatesArrayType& rCoordinates )
+{
+    typename TObject::GeometryType::CoordinatesArrayType rLocalCoordinates;
+
+    rLocalCoordinates = rDummy.GetGeometry().PointLocalCoordinates(rLocalCoordinates, rCoordinates);
+
+    Vector N;
+    rDummy.GetGeometry().ShapeFunctionsValues(N, rLocalCoordinates);
+
+    TDataType rResult = 0.0;
+    for (std::size_t i = 0; i < rDummy.GetGeometry().size(); ++i)
+    {
+        rResult += N[i] * rDummy.GetGeometry()[i].GetSolutionStepValue(rVariable);
+    }
+
+    return rResult;
+}
+
+template< class TObject, typename TDataType >
+TDataType CalculateOnPointMatrixVector( TObject& rDummy, const Variable<TDataType>& rVariable,
+        const typename TObject::GeometryType::CoordinatesArrayType& rCoordinates )
+{
+    typename TObject::GeometryType::CoordinatesArrayType rLocalCoordinates;
+
+    rLocalCoordinates = rDummy.GetGeometry().PointLocalCoordinates(rLocalCoordinates, rCoordinates);
+
+    Vector N;
+    rDummy.GetGeometry().ShapeFunctionsValues(N, rLocalCoordinates);
+
+    TDataType rResult = N[0] * rDummy.GetGeometry()[0].GetSolutionStepValue(rVariable);
+    for (std::size_t i = 1; i < rDummy.GetGeometry().size(); ++i)
+    {
+        noalias(rResult) += N[i] * rDummy.GetGeometry()[i].GetSolutionStepValue(rVariable);
+    }
+
+    return rResult;
+}
+
 void  AddMeshToPython()
 {
 //             typedef Mesh<Node<3>, Properties, Element, Condition> MeshType;
@@ -687,6 +727,10 @@ void  AddMeshToPython()
     .def("Calculate", &ElementCalculateInterface<Element, array_1d<DataType, 3> >)
     .def("Calculate", &ElementCalculateInterface<Element, Vector >)
     .def("Calculate", &ElementCalculateInterface<Element, Matrix >)
+    .def("CalculateOnPoint", &CalculateOnPointScalar<Element, double>)
+    .def("CalculateOnPoint", &CalculateOnPointMatrixVector<Element, array_1d<double, 3> >)
+    .def("CalculateOnPoint", &CalculateOnPointMatrixVector<Element, Vector>)
+    .def("CalculateOnPoint", &CalculateOnPointMatrixVector<Element, Matrix>)
     //.def("__setitem__", SetValueHelperFunction< Element, Variable< VectorComponentAdaptor< array_1d<DataType, 3>  > > >)
     //.def("__getitem__", GetValueHelperFunction< Element, Variable< VectorComponentAdaptor< array_1d<DataType, 3>  > > >)
     //.def("SetValue", SetValueHelperFunction< Element, Variable< VectorComponentAdaptor< array_1d<DataType, 3>  > > >)
@@ -795,6 +839,10 @@ void  AddMeshToPython()
     .def("Calculate", &ElementCalculateInterface<Condition, array_1d<DataType, 3> >)
     .def("Calculate", &ElementCalculateInterface<Condition, Vector >)
     .def("Calculate", &ElementCalculateInterface<Condition, Matrix >)
+    .def("CalculateOnPoint", &CalculateOnPointScalar<Condition, double>)
+    .def("CalculateOnPoint", &CalculateOnPointMatrixVector<Condition, array_1d<double, 3> >)
+    .def("CalculateOnPoint", &CalculateOnPointMatrixVector<Condition, Vector>)
+    .def("CalculateOnPoint", &CalculateOnPointMatrixVector<Condition, Matrix>)
 //              .def(VariableIndexingPython<Condition, Variable<int> >())
 //              .def(VariableIndexingPython<Condition, Variable<DataType> >())
 //              .def(VariableIndexingPython<Condition, Variable<array_1d<DataType, 3> > >())
