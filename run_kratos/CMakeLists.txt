@@ -31,4 +31,3 @@ endif()
 
 target_link_libraries(runkratos ${EXTRA_LINK_LIBS} ${PYTHON_LIBRARIES})
 install(TARGETS runkratos DESTINATION .)
-

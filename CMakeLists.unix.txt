@@ -235,7 +235,7 @@ if (Boost_VERSION_MACRO GREATER 108100)
 endif()
 
 #follow the symbolic links for the python lib only if needed
-if(${INSTALL_EMBEDDED_PYTHON} MATCHES ON)
+if(${INSTALL_RUNKRATOS} MATCHES ON)
     if(NOT MSVC)
         foreach( l ${PYTHON_LIBRARIES})
         get_filename_component(aaa ${l} REALPATH)
@@ -395,8 +395,8 @@ add_subdirectory(kratos)
 add_subdirectory(applications)
 
 #embedded python - compiles "krun and packages the python lib needed"
-if(${INSTALL_EMBEDDED_PYTHON} MATCHES ON)
-    add_subdirectory(embedded_python)
+if(${INSTALL_RUNKRATOS} MATCHES ON)
+    add_subdirectory(run_kratos)
 endif()
 
 if(${MPI_NEEDED} MATCHES ON)
