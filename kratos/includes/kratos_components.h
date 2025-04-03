@@ -87,7 +87,7 @@ public:
         // Check if a different object was already registered with this name, since this is undefined behavior
         typename ComponentsContainerType::iterator it_comp =  msComponents.find(rName);
         if (it_comp != msComponents.end() && typeid(*(it_comp->second)) != typeid(rComponent))
-            KRATOS_THROW_ERROR(std::logic_error, "An object of different type was already registered with name ", rName);
+            KRATOS_ERROR << "An object of different type was already registered with name " << rName;
         msComponents.insert(ValueType(rName , &rComponent));
     }
 
@@ -100,7 +100,7 @@ public:
     {
         std::size_t num_erased = msComponents.erase(rName);
         if (num_erased == 0)
-            KRATOS_THROW_ERROR(std::logic_error, "Trying to remove inexistent component ", rName);
+            KRATOS_ERROR << "Trying to remove inexistent component " << rName;
     }
 
     /**
@@ -114,7 +114,7 @@ public:
     {
         typename ComponentsContainerType::iterator it_comp = msComponents.find(rName);
         if (it_comp == msComponents.end())
-            KRATOS_THROW_ERROR(std::logic_error, GetMessageUnregisteredComponent(rName), "");
+            KRATOS_ERROR << GetMessageUnregisteredComponent(rName);
         return *(it_comp->second);
     }
 
@@ -297,7 +297,7 @@ public:
     {
         std::size_t num_erased = msComponents.erase(rName);
         if (num_erased == 0)
-            KRATOS_THROW_ERROR(std::logic_error, "Trying to remove inexistent component ", rName);
+            KRATOS_ERROR << "Trying to remove inexistent component " << rName;
     }
 
     /**
@@ -320,7 +320,7 @@ public:
     {
         typename ComponentsContainerType::iterator it_comp =  msComponents.find(rName);
         if (it_comp == msComponents.end())
-            KRATOS_THROW_ERROR(std::logic_error, GetMessageUnregisteredVariable(rName), "");
+            KRATOS_ERROR << GetMessageUnregisteredVariable(rName);
         return *(it_comp->second);
     }
 
@@ -333,7 +333,7 @@ public:
     {
         typename ComponentsContainerType::iterator it_comp =  msComponents.find(rName);
         if (it_comp == msComponents.end())
-            KRATOS_THROW_ERROR(std::logic_error, GetMessageUnregisteredVariable(rName), "");
+            KRATOS_ERROR << GetMessageUnregisteredVariable(rName);
         return it_comp->second;
     }
 
