@@ -27,730 +27,721 @@
 
 namespace Kratos
 {
-    typedef ModelPart::DataType DataType;
 
-    KRATOS_CREATE_LOCAL_FLAG(ModelPart, ALL_ENTITIES, 0);
-    KRATOS_CREATE_LOCAL_FLAG(ModelPart, OVERWRITE_ENTITIES, 1);
+typedef ModelPart::DataType DataType;
 
-    /// Default constructor.
-    ModelPart::ModelPart()
-        : DataValueContainer()
-        , Flags()
-        , mBufferSize(1)
-        , mpProcessInfo(new ProcessInfo())
-        , mIndices(1, 0)
-        , mpVariablesList(new VariablesList)
-        , mpCommunicator(new Communicator)
-        , mpParentModelPart(NULL)
-        , mSubModelParts()
-        , mpModel(NULL)
+KRATOS_CREATE_LOCAL_FLAG(ModelPart, ALL_ENTITIES, 0);
+KRATOS_CREATE_LOCAL_FLAG(ModelPart, OVERWRITE_ENTITIES, 1);
+
+/// Default constructor.
+ModelPart::ModelPart()
+    : DataValueContainer()
+    , Flags()
+    , mBufferSize(1)
+    , mpProcessInfo(new ProcessInfo())
+    , mIndices(1, 0)
+    , mpVariablesList(new VariablesList)
+    , mpCommunicator(new Communicator)
+    , mpParentModelPart(NULL)
+    , mSubModelParts()
+    , mpModel(NULL)
+{
+    mName = "Default";
+    MeshType mesh;
+    mMeshes.push_back(mesh.Clone());
+    mpCommunicator->SetLocalMesh(pGetMesh());  // assigning the current mesh to the local mesh of communicator for openmp cases
+}
+
+/// Constructor with name
+ModelPart::ModelPart(std::string const& NewName)
+    : DataValueContainer()
+    , Flags()
+    , mBufferSize(1)
+    , mpProcessInfo(new ProcessInfo())
+    , mIndices(1, 0)
+    , mpVariablesList(new VariablesList)
+    , mpCommunicator(new Communicator)
+    , mpParentModelPart(NULL)
+    , mSubModelParts()
+    , mpModel(NULL)
+{
+    mName = NewName;
+    MeshType mesh;
+    mMeshes.push_back(mesh.Clone());
+    mpCommunicator->SetLocalMesh(pGetMesh());  // assigning the current mesh to the local mesh of communicator for openmp cases
+}
+
+/// Constructor with name and bufferSize
+ModelPart::ModelPart(std::string const& NewName, IndexType NewBufferSize)
+    : DataValueContainer()
+    , Flags()
+    , mBufferSize(NewBufferSize)
+    , mpProcessInfo(new ProcessInfo())
+    , mIndices(NewBufferSize, 0)
+    , mpVariablesList(new VariablesList)
+    , mpCommunicator(new Communicator)
+    , mpParentModelPart(NULL)
+    , mSubModelParts()
+    , mpModel(NULL)
+{
+    mName = NewName;
+    MeshType mesh;
+    mMeshes.push_back(mesh.Clone());
+    mpCommunicator->SetLocalMesh(pGetMesh());  // assigning the current mesh to the local mesh of communicator for openmp cases
+}
+
+/// Constructor with name and bufferSize
+ModelPart::ModelPart(std::string const& NewName, IndexType NewBufferSize, Model& rOwnerModel)
+    : DataValueContainer()
+    , Flags()
+    , mBufferSize(NewBufferSize)
+    , mpProcessInfo(new ProcessInfo())
+    , mIndices(NewBufferSize, 0)
+    , mpVariablesList(new VariablesList)
+    , mpCommunicator(new Communicator)
+    , mpParentModelPart(NULL)
+    , mSubModelParts()
+    , mpModel(&rOwnerModel)
+{
+    mName = NewName;
+    MeshType mesh;
+    mMeshes.push_back(mesh.Clone());
+    mpCommunicator->SetLocalMesh(pGetMesh());  // assigning the current mesh to the local mesh of communicator for openmp cases
+}
+
+// Copy constructor.
+ModelPart::ModelPart(ModelPart const& rOther)
+    : DataValueContainer(rOther)
+    , Flags(rOther)
+    , mName(rOther.mName)
+    , mBufferSize(rOther.mBufferSize)
+    , mpProcessInfo(rOther.mpProcessInfo)
+    , mIndices(rOther.mIndices)
+    , mMeshes(rOther.mMeshes)
+    , mpVariablesList(new VariablesList(*rOther.mpVariablesList))
+    , mpCommunicator(rOther.mpCommunicator)
+    , mpParentModelPart(rOther.mpParentModelPart)
+    , mSubModelParts(rOther.mSubModelParts)
+    , mpModel(rOther.mpModel)
+{
+}
+
+/// Destructor.
+ModelPart::~ModelPart()
+{
+    for (NodeIterator i_node = NodesBegin(); i_node != NodesEnd(); i_node++)
     {
-        mName = "Default";
-        MeshType mesh;
-        mMeshes.push_back(mesh.Clone());
-        mpCommunicator->SetLocalMesh(pGetMesh());  // assigning the current mesh to the local mesh of communicator for openmp cases
+        if (i_node->pGetVariablesList() == mpVariablesList)
+            i_node->ClearSolutionStepsData();
     }
 
-    /// Constructor with name
-    ModelPart::ModelPart(std::string const& NewName)
-        : DataValueContainer()
-        , Flags()
-        , mBufferSize(1)
-        , mpProcessInfo(new ProcessInfo())
-        , mIndices(1, 0)
-        , mpVariablesList(new VariablesList)
-        , mpCommunicator(new Communicator)
-        , mpParentModelPart(NULL)
-        , mSubModelParts()
-        , mpModel(NULL)
+    for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
+        delete i_sub_model_part.base()->second;
+
+    auto* pProcessInfoWithDofs = dynamic_cast<ProcessInfoWithDofs*>(mpProcessInfo.get());
+    if (pProcessInfoWithDofs != NULL)
+        pProcessInfoWithDofs->Finalize();
+
+    if (!IsSubModelPart())
+        delete mpVariablesList;
+
+    std::cout << "ModelPart " << Name() << " destructor is called" << std::endl;
+}
+
+
+/// Assignment operator.
+ModelPart & ModelPart::operator=(ModelPart const& rOther)
+{
+    mName = rOther.mName;
+    mBufferSize = rOther.mBufferSize;
+    mpProcessInfo = rOther.mpProcessInfo;
+    mIndices = rOther.mIndices;
+    mMeshes = rOther.mMeshes;
+    // I should not set the parent for a model part while it breaks the hierarchy. Pooyan.
+    //mpParentModelPart = rOther.mpParentModelPart;
+    mSubModelParts = rOther.mSubModelParts;
+
+    //KRATOS_THROW_ERROR(std::logic_error, "This method needs updating and is not working. Pooyan", "")
+
+    *mpVariablesList = *rOther.mpVariablesList;
+
+    return *this;
+}
+
+
+ModelPart::IndexType ModelPart::CreateSolutionStep()
+{
+    KRATOS_ERROR << "This method needs updating and is not working. Pooyan";
+    return 0;
+}
+
+ModelPart::IndexType ModelPart::CloneSolutionStep()
+{
+    if (IsSubModelPart())
+      //Todo KRATOS_THROW_ERROR(std::logic_error, "Calling the method of the sub model part ", Name())
+      KRATOS_ERROR << "Calling the CloneSolutionStep method of the sub model part " << Name()
+            << " please call the one of the parent modelpart : " << mpParentModelPart->Name() << std::endl;
+
+    for (NodeIterator node_iterator = NodesBegin(); node_iterator != NodesEnd(); node_iterator++)
+        node_iterator->CloneSolutionStepData();
+
+    mpProcessInfo->CloneSolutionStepInfo();
+
+    auto* pProcessInfoWithDofs = dynamic_cast<ProcessInfoWithDofs*>(mpProcessInfo.get());
+    if (pProcessInfoWithDofs != NULL)
     {
-        mName = NewName;
-        MeshType mesh;
-        mMeshes.push_back(mesh.Clone());
-        mpCommunicator->SetLocalMesh(pGetMesh());  // assigning the current mesh to the local mesh of communicator for openmp cases
+        pProcessInfoWithDofs->CloneSolutionStepData();
     }
 
-    /// Constructor with name and bufferSize
-    ModelPart::ModelPart(std::string const& NewName, IndexType NewBufferSize)
-        : DataValueContainer()
-        , Flags()
-        , mBufferSize(NewBufferSize)
-        , mpProcessInfo(new ProcessInfo())
-        , mIndices(NewBufferSize, 0)
-        , mpVariablesList(new VariablesList)
-        , mpCommunicator(new Communicator)
-        , mpParentModelPart(NULL)
-        , mSubModelParts()
-        , mpModel(NULL)
-    {
-        mName = NewName;
-        MeshType mesh;
-        mMeshes.push_back(mesh.Clone());
-        mpCommunicator->SetLocalMesh(pGetMesh());  // assigning the current mesh to the local mesh of communicator for openmp cases
-    }
+    mpProcessInfo->ClearHistory(mBufferSize);
 
-    /// Constructor with name and bufferSize
-    ModelPart::ModelPart(std::string const& NewName, IndexType NewBufferSize, Model& rOwnerModel)
-        : DataValueContainer()
-        , Flags()
-        , mBufferSize(NewBufferSize)
-        , mpProcessInfo(new ProcessInfo())
-        , mIndices(NewBufferSize, 0)
-        , mpVariablesList(new VariablesList)
-        , mpCommunicator(new Communicator)
-        , mpParentModelPart(NULL)
-        , mSubModelParts()
-        , mpModel(&rOwnerModel)
-    {
-        mName = NewName;
-        MeshType mesh;
-        mMeshes.push_back(mesh.Clone());
-        mpCommunicator->SetLocalMesh(pGetMesh());  // assigning the current mesh to the local mesh of communicator for openmp cases
-    }
+    return 0;
+}
 
-    // Copy constructor.
-    ModelPart::ModelPart(ModelPart const& rOther)
-        : DataValueContainer(rOther)
-        , Flags(rOther)
-        , mName(rOther.mName)
-        , mBufferSize(rOther.mBufferSize)
-        , mpProcessInfo(rOther.mpProcessInfo)
-        , mIndices(rOther.mIndices)
-        , mMeshes(rOther.mMeshes)
-        , mpVariablesList(new VariablesList(*rOther.mpVariablesList))
-        , mpCommunicator(rOther.mpCommunicator)
-        , mpParentModelPart(rOther.mpParentModelPart)
-        , mSubModelParts(rOther.mSubModelParts)
-        , mpModel(rOther.mpModel)
-    {
-    }
+ModelPart::IndexType ModelPart::CloneTimeStep()
+{
+    if (IsSubModelPart())
+        KRATOS_ERROR << "Calling the CloneTimeStep method of the sub model part " << Name()
+                     << " please call the one of the parent modelpart : " << mpParentModelPart->Name() << std::endl;
 
-    /// Destructor.
-    ModelPart::~ModelPart()
-    {
-        for (NodeIterator i_node = NodesBegin(); i_node != NodesEnd(); i_node++)
-        {
-            if (i_node->pGetVariablesList() == mpVariablesList)
-                i_node->ClearSolutionStepsData();
-        }
+    IndexType new_index = CloneSolutionStep();
+    mpProcessInfo->SetAsTimeStepInfo();
 
-        for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
-            delete i_sub_model_part.base()->second;
-
-        auto* pProcessInfoWithDofs = dynamic_cast<ProcessInfoWithDofs*>(mpProcessInfo.get());
-        if (pProcessInfoWithDofs != NULL)
-            pProcessInfoWithDofs->Finalize();
-
-        if (!IsSubModelPart())
-            delete mpVariablesList;
-
-        std::cout << "ModelPart " << Name() << " destructor is called" << std::endl;
-    }
+    return new_index;
+}
 
 
-    /// Assignment operator.
-    ModelPart & ModelPart::operator=(ModelPart const& rOther)
-    {
-        mName = rOther.mName;
-        mBufferSize = rOther.mBufferSize;
-        mpProcessInfo = rOther.mpProcessInfo;
-        mIndices = rOther.mIndices;
-        mMeshes = rOther.mMeshes;
-        // I should not set the parent for a model part while it breaks the hierarchy. Pooyan.
-        //mpParentModelPart = rOther.mpParentModelPart;
-        mSubModelParts = rOther.mSubModelParts;
+ModelPart::IndexType ModelPart::CreateTimeStep(DataType NewTime)
+{
+    if (IsSubModelPart())
+        KRATOS_ERROR << "Calling the CreateTimeStep method of the sub model part " << Name()
+                     << " please call the one of the parent modelpart : " << mpParentModelPart->Name() << std::endl;
 
-        //KRATOS_THROW_ERROR(std::logic_error, "This method needs updating and is not working. Pooyan", "")
+    IndexType new_index = CreateSolutionStep();
+    mpProcessInfo->SetAsTimeStepInfo(NewTime);
 
-        *mpVariablesList = *rOther.mpVariablesList;
+    return new_index;
+}
 
-        return *this;
-    }
+ModelPart::IndexType ModelPart::CloneTimeStep(DataType NewTime)
+{
+    if (IsSubModelPart())
+        KRATOS_ERROR << "Calling the CloneTimeStep method of the sub model part " << Name()
+                     << " please call the one of the parent modelpart : " << mpParentModelPart->Name() << std::endl;
 
+    IndexType new_index = CloneSolutionStep();
+    mpProcessInfo->SetAsTimeStepInfo(NewTime);
 
-    ModelPart::IndexType ModelPart::CreateSolutionStep()
-    {
-        KRATOS_ERROR << "This method needs updating and is not working. Pooyan";
-        return 0;
-    }
+    return new_index;
+}
 
-    ModelPart::IndexType ModelPart::CloneSolutionStep()
-    {
-        if (IsSubModelPart())
-          //Todo KRATOS_THROW_ERROR(std::logic_error, "Calling the method of the sub model part ", Name())
-          KRATOS_ERROR << "Calling the CloneSolutionStep method of the sub model part " << Name()
-                << " please call the one of the parent modelpart : " << mpParentModelPart->Name() << std::endl;
+void ModelPart::OverwriteSolutionStepData(IndexType SourceSolutionStepIndex, IndexType DestinationSourceSolutionStepIndex)
+{
+    if (IsSubModelPart())
+        KRATOS_ERROR << "Calling the OverwriteSolutionStepData method of the sub model part " << Name()
+                     << " please call the one of the parent modelpart : " << mpParentModelPart->Name() << std::endl;
 
-        for (NodeIterator node_iterator = NodesBegin(); node_iterator != NodesEnd(); node_iterator++)
-            node_iterator->CloneSolutionStepData();
+    for (NodeIterator node_iterator = NodesBegin(); node_iterator != NodesEnd(); node_iterator++)
+        node_iterator->OverwriteSolutionStepData(SourceSolutionStepIndex, DestinationSourceSolutionStepIndex);
 
-        mpProcessInfo->CloneSolutionStepInfo();
+}
 
-        auto* pProcessInfoWithDofs = dynamic_cast<ProcessInfoWithDofs*>(mpProcessInfo.get());
-        if (pProcessInfoWithDofs != NULL)
-        {
-            pProcessInfoWithDofs->CloneSolutionStepData();
-        }
+void ModelPart::ReduceTimeStep(ModelPart& rModelPart, DataType NewTime)
+{
+    KRATOS_TRY
 
-        mpProcessInfo->ClearHistory(mBufferSize);
+        //ATTENTION: this function does not touch the coordinates of the nodes.
+        //It just resets the database values to the values at the beginning of the time step
 
-        return 0;
-    }
-
-    ModelPart::IndexType ModelPart::CloneTimeStep()
-    {
-        if (IsSubModelPart())
-            KRATOS_ERROR << "Calling the CloneTimeStep method of the sub model part " << Name()
-                         << " please call the one of the parent modelpart : " << mpParentModelPart->Name() << std::endl;
-
-        IndexType new_index = CloneSolutionStep();
-        mpProcessInfo->SetAsTimeStepInfo();
-
-        return new_index;
-    }
-
-
-    ModelPart::IndexType ModelPart::CreateTimeStep(DataType NewTime)
-    {
-        if (IsSubModelPart())
-            KRATOS_ERROR << "Calling the CreateTimeStep method of the sub model part " << Name()
-                         << " please call the one of the parent modelpart : " << mpParentModelPart->Name() << std::endl;
-
-        IndexType new_index = CreateSolutionStep();
-        mpProcessInfo->SetAsTimeStepInfo(NewTime);
-
-        return new_index;
-    }
-
-    ModelPart::IndexType ModelPart::CloneTimeStep(DataType NewTime)
-    {
-        if (IsSubModelPart())
-            KRATOS_ERROR << "Calling the CloneTimeStep method of the sub model part " << Name()
-                         << " please call the one of the parent modelpart : " << mpParentModelPart->Name() << std::endl;
-
-        IndexType new_index = CloneSolutionStep();
-        mpProcessInfo->SetAsTimeStepInfo(NewTime);
-
-        return new_index;
-    }
-
-    void ModelPart::OverwriteSolutionStepData(IndexType SourceSolutionStepIndex, IndexType DestinationSourceSolutionStepIndex)
-    {
         if (IsSubModelPart())
             KRATOS_ERROR << "Calling the OverwriteSolutionStepData method of the sub model part " << Name()
                          << " please call the one of the parent modelpart : " << mpParentModelPart->Name() << std::endl;
 
-        for (NodeIterator node_iterator = NodesBegin(); node_iterator != NodesEnd(); node_iterator++)
-            node_iterator->OverwriteSolutionStepData(SourceSolutionStepIndex, DestinationSourceSolutionStepIndex);
+        rModelPart.OverwriteSolutionStepData(1, 0);
+        rModelPart.GetProcessInfo().SetCurrentTime(NewTime);
 
-    }
+    KRATOS_CATCH("error in reducing the time step")
 
-    void ModelPart::ReduceTimeStep(ModelPart& rModelPart, DataType NewTime)
+}
+
+Model& ModelPart::GetModel()
+{
+    if (mpModel == NULL)
     {
-        KRATOS_TRY
-
-            //ATTENTION: this function does not touch the coordinates of the nodes.
-            //It just resets the database values to the values at the beginning of the time step
-
-            if (IsSubModelPart())
-                KRATOS_ERROR << "Calling the OverwriteSolutionStepData method of the sub model part " << Name()
-                             << " please call the one of the parent modelpart : " << mpParentModelPart->Name() << std::endl;
-
-            rModelPart.OverwriteSolutionStepData(1, 0);
-            rModelPart.GetProcessInfo().SetCurrentTime(NewTime);
-
-        KRATOS_CATCH("error in reducing the time step")
-
+        std::cout << "The ModelPart " << this->Name() << " is not associated with any model" << std::endl;
+        return *pKratosDefaultModel;
     }
+    else
+        return *mpModel;
+}
 
-    Model& ModelPart::GetModel()
+const Model& ModelPart::GetModel() const
+{
+    if (mpModel == NULL)
     {
-        if (mpModel == NULL)
-        {
-            std::cout << "The ModelPart " << this->Name() << " is not associated with any model" << std::endl;
-            return *pKratosDefaultModel;
-        }
-        else
-            return *mpModel;
+        std::cout << "The ModelPart " << this->Name() << " is not associated with any model" << std::endl;
+        return *pKratosDefaultModel;
     }
+    else
+        return *mpModel;
+}
 
-    const Model& ModelPart::GetModel() const
+/** Inserts a node in the mesh with ThisIndex.
+*/
+void ModelPart::AddNode(ModelPart::NodeType::Pointer pNewNode, ModelPart::IndexType ThisIndex)
+{
+    if (IsSubModelPart())
+        mpParentModelPart->AddNode(pNewNode, ThisIndex);
+
+    GetMesh(ThisIndex).AddNode(pNewNode);
+}
+
+/** Inserts a node in the mesh with ThisIndex.
+*/
+ModelPart::NodeType::Pointer ModelPart::CreateNewNode(int Id, DataType x, DataType y, DataType z, VariablesList* pNewVariablesList, ModelPart::IndexType ThisIndex)
+{
+    if (IsSubModelPart())
     {
-        if (mpModel == NULL)
-        {
-            std::cout << "The ModelPart " << this->Name() << " is not associated with any model" << std::endl;
-            return *pKratosDefaultModel;
-        }
-        else
-            return *mpModel;
-    }
-
-    /** Inserts a node in the mesh with ThisIndex.
-    */
-    void ModelPart::AddNode(ModelPart::NodeType::Pointer pNewNode, ModelPart::IndexType ThisIndex)
-    {
-        if (IsSubModelPart())
-            mpParentModelPart->AddNode(pNewNode, ThisIndex);
-
-        GetMesh(ThisIndex).AddNode(pNewNode);
-    }
-
-    /** Inserts a node in the mesh with ThisIndex.
-    */
-    ModelPart::NodeType::Pointer ModelPart::CreateNewNode(int Id, DataType x, DataType y, DataType z, VariablesList* pNewVariablesList, ModelPart::IndexType ThisIndex)
-    {
-        if (IsSubModelPart())
-        {
-            NodeType::Pointer p_new_node = mpParentModelPart->CreateNewNode(Id, x, y, z, pNewVariablesList, ThisIndex);
-            GetMesh(ThisIndex).AddNode(p_new_node);
-
-            return p_new_node;
-        }
-
-        //create a new node
-//      NodeType::Pointer p_new_node = NodeType::Pointer(new NodeType(Id, x, y, z));
-        NodeType::Pointer p_new_node = boost::make_shared< NodeType >( Id, x, y, z );
-
-        // Giving model part's variables list to the node
-        p_new_node->SetSolutionStepVariablesList(pNewVariablesList);
-
-        //set buffer size
-        p_new_node->SetBufferSize(mBufferSize);
-
-        //add the new node to the list of nodes
+        NodeType::Pointer p_new_node = mpParentModelPart->CreateNewNode(Id, x, y, z, pNewVariablesList, ThisIndex);
         GetMesh(ThisIndex).AddNode(p_new_node);
 
         return p_new_node;
     }
 
-    ModelPart::NodeType::Pointer ModelPart::CreateNewNode(ModelPart::IndexType Id, DataType x, DataType y, DataType z, ModelPart::IndexType ThisIndex)
+    //create a new node
+    NodeType::Pointer p_new_node(new NodeType(Id, x, y, z));
+
+    // Giving model part's variables list to the node
+    p_new_node->SetSolutionStepVariablesList(pNewVariablesList);
+
+    //set buffer size
+    p_new_node->SetBufferSize(mBufferSize);
+
+    //add the new node to the list of nodes
+    GetMesh(ThisIndex).AddNode(p_new_node);
+
+    return p_new_node;
+}
+
+ModelPart::NodeType::Pointer ModelPart::CreateNewNode(ModelPart::IndexType Id, DataType x, DataType y, DataType z, ModelPart::IndexType ThisIndex)
+{
+    if (IsSubModelPart())
     {
-        if (IsSubModelPart())
-        {
-            NodeType::Pointer p_new_node = mpParentModelPart->CreateNewNode(Id, x, y, z, ThisIndex);
-            GetMesh(ThisIndex).AddNode(p_new_node);
-
-            return p_new_node;
-        }
-
-        //create a new node
-//      NodeType::Pointer p_new_node = NodeType::Pointer(new NodeType(Id, x, y, z));
-        NodeType::Pointer p_new_node = boost::make_shared< NodeType >( Id, x, y, z);
-
-        // Giving model part's variables list to the node
-        p_new_node->SetSolutionStepVariablesList(mpVariablesList);
-
-        //set buffer size
-        p_new_node->SetBufferSize(mBufferSize);
-
-        //add the new node to the list of nodes
+        NodeType::Pointer p_new_node = mpParentModelPart->CreateNewNode(Id, x, y, z, ThisIndex);
         GetMesh(ThisIndex).AddNode(p_new_node);
 
         return p_new_node;
     }
 
-    ModelPart::NodeType::Pointer ModelPart::CreateNewNode(ModelPart::IndexType Id, DataType x, DataType y, DataType z, DataType* pThisData, ModelPart::IndexType ThisIndex)
+    //create a new node
+    NodeType::Pointer p_new_node(new NodeType(Id, x, y, z));
+
+    // Giving model part's variables list to the node
+    p_new_node->SetSolutionStepVariablesList(mpVariablesList);
+
+    //set buffer size
+    p_new_node->SetBufferSize(mBufferSize);
+
+    //add the new node to the list of nodes
+    GetMesh(ThisIndex).AddNode(p_new_node);
+
+    return p_new_node;
+}
+
+ModelPart::NodeType::Pointer ModelPart::CreateNewNode(ModelPart::IndexType Id, DataType x, DataType y, DataType z, DataType* pThisData, ModelPart::IndexType ThisIndex)
+{
+    if (IsSubModelPart())
+
     {
-        if (IsSubModelPart())
-
-        {
-            NodeType::Pointer p_new_node = mpParentModelPart->CreateNewNode(Id, x, y, z, pThisData, ThisIndex);
-            GetMesh(ThisIndex).AddNode(p_new_node);
-
-            return p_new_node;
-        }
-
-        //create a new node
-        //NodeType::Pointer p_new_node = NodeType::Pointer(new NodeType(Id, x, y, z, mpVariablesList, pThisData, mBufferSize));
-        NodeType::Pointer p_new_node = boost::make_shared< NodeType >( Id, x, y, z, mpVariablesList, pThisData, mBufferSize);
-
-        //add the new node to the list of nodes
+        NodeType::Pointer p_new_node = mpParentModelPart->CreateNewNode(Id, x, y, z, pThisData, ThisIndex);
         GetMesh(ThisIndex).AddNode(p_new_node);
 
         return p_new_node;
-
     }
 
-    ModelPart::NodeType::Pointer ModelPart::CreateNewNode(ModelPart::IndexType NodeId, ModelPart::NodeType const& rSourceNode, ModelPart::IndexType ThisIndex)
+    //create a new node
+    NodeType::Pointer p_new_node(new NodeType(Id, x, y, z, mpVariablesList, pThisData, mBufferSize));
+
+    //add the new node to the list of nodes
+    GetMesh(ThisIndex).AddNode(p_new_node);
+
+    return p_new_node;
+}
+
+ModelPart::NodeType::Pointer ModelPart::CreateNewNode(ModelPart::IndexType NodeId, ModelPart::NodeType const& rSourceNode, ModelPart::IndexType ThisIndex)
+{
+    if (IsSubModelPart())
     {
-        if (IsSubModelPart())
-        {
-            NodeType::Pointer p_new_node = mpParentModelPart->CreateNewNode(NodeId, rSourceNode, ThisIndex);
-            GetMesh(ThisIndex).AddNode(p_new_node);
-
-            return p_new_node;
-        }
-
-        //create a new node
-//      NodeType::Pointer p_new_node = NodeType::Pointer(new NodeType(NodeId, rSourceNode.X(), rSourceNode.Y(), rSourceNode.Z()));
-        NodeType::Pointer p_new_node = boost::make_shared< NodeType >( NodeId, rSourceNode.X(), rSourceNode.Y(), rSourceNode.Z() );
-
-        // Giving model part's variables list to the node
-        p_new_node->SetSolutionStepVariablesList(mpVariablesList);
-
-        //set buffer size
-        p_new_node->SetBufferSize(mBufferSize);
-
-        //add the new node to the list of nodes
+        NodeType::Pointer p_new_node = mpParentModelPart->CreateNewNode(NodeId, rSourceNode, ThisIndex);
         GetMesh(ThisIndex).AddNode(p_new_node);
 
         return p_new_node;
-
     }
 
-    void ModelPart::AssignNode(ModelPart::NodeType::Pointer pThisNode, ModelPart::IndexType ThisIndex)
+    //create a new node
+    NodeType::Pointer p_new_node(new NodeType(NodeId, rSourceNode.X(), rSourceNode.Y(), rSourceNode.Z()));
+
+    // Giving model part's variables list to the node
+    p_new_node->SetSolutionStepVariablesList(mpVariablesList);
+
+    //set buffer size
+    p_new_node->SetBufferSize(mBufferSize);
+
+    //add the new node to the list of nodes
+    GetMesh(ThisIndex).AddNode(p_new_node);
+
+    return p_new_node;
+}
+
+void ModelPart::AssignNode(ModelPart::NodeType::Pointer pThisNode, ModelPart::IndexType ThisIndex)
+{
+    if (IsSubModelPart())
     {
-        if (IsSubModelPart())
-        {
-            mpParentModelPart->AssignNode(pThisNode, ThisIndex);
-
-            //add the new node to the list of nodes
-            GetMesh(ThisIndex).AddNode(pThisNode);
-
-            return;
-        }
-
-        // Giving model part's variables list to the node
-        pThisNode->SetSolutionStepVariablesList(mpVariablesList);
-
-        //set buffer size
-        pThisNode->SetBufferSize(mBufferSize);
+        mpParentModelPart->AssignNode(pThisNode, ThisIndex);
 
         //add the new node to the list of nodes
         GetMesh(ThisIndex).AddNode(pThisNode);
 
+        return;
     }
 
+    // Giving model part's variables list to the node
+    pThisNode->SetSolutionStepVariablesList(mpVariablesList);
 
-    /** Remove the node with given Id from mesh with ThisIndex in this modelpart and all its subs.
-    */
-    void ModelPart::RemoveNode(ModelPart::IndexType NodeId, ModelPart::IndexType ThisIndex)
-    {
-        GetMesh(ThisIndex).RemoveNode(NodeId);
+    //set buffer size
+    pThisNode->SetBufferSize(mBufferSize);
 
-        for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
-            i_sub_model_part->RemoveNode(NodeId, ThisIndex);
-    }
-
-    /** Remove given node from mesh with ThisIndex in this modelpart and all its subs.
-    */
-    void ModelPart::RemoveNode(ModelPart::NodeType& ThisNode, ModelPart::IndexType ThisIndex)
-    {
-        GetMesh(ThisIndex).RemoveNode(ThisNode);
-
-        for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
-            i_sub_model_part->RemoveNode(ThisNode, ThisIndex);
-    }
-
-    /** Remove given node from mesh with ThisIndex in this modelpart and all its subs.
-    */
-    void ModelPart::RemoveNode(ModelPart::NodeType::Pointer pThisNode, ModelPart::IndexType ThisIndex)
-    {
-        GetMesh(ThisIndex).RemoveNode(pThisNode);
-
-        for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
-            i_sub_model_part->RemoveNode(pThisNode, ThisIndex);
-    }
-
-    /** Remove the node with given Id from mesh with ThisIndex in parents, itself and children.
-    */
-    void ModelPart::RemoveNodeFromAllLevels(ModelPart::IndexType NodeId, ModelPart::IndexType ThisIndex)
-    {
-        if (IsSubModelPart())
-        {
-            mpParentModelPart->RemoveNodeFromAllLevels(NodeId, ThisIndex);
-            return;
-        }
-        RemoveNode(NodeId, ThisIndex);
-    }
-
-    /** Remove given node from mesh with ThisIndex in parents, itself and children.
-    */
-    void ModelPart::RemoveNodeFromAllLevels(ModelPart::NodeType& ThisNode, ModelPart::IndexType ThisIndex)
-    {
-        if (IsSubModelPart())
-        {
-            mpParentModelPart->RemoveNode(ThisNode, ThisIndex);
-            return;
-        }
-        RemoveNode(ThisNode, ThisIndex);
-    }
-
-    /** Remove given node from mesh with ThisIndex in parents, itself and children.
-    */
-    void ModelPart::RemoveNodeFromAllLevels(ModelPart::NodeType::Pointer pThisNode, ModelPart::IndexType ThisIndex)
-    {
-        if (IsSubModelPart())
-        {
-            mpParentModelPart->RemoveNode(pThisNode, ThisIndex);
-            return;
-        }
-        RemoveNode(pThisNode, ThisIndex);
-    }
-
-    ModelPart& ModelPart::GetRootModelPart()
-    {
-        if (IsSubModelPart())
-            return mpParentModelPart->GetRootModelPart();
-        else
-            return *this;
-    }
-
-    const ModelPart& ModelPart::GetRootModelPart() const
-    {
-        if (IsSubModelPart())
-            return mpParentModelPart->GetRootModelPart();
-        else
-            return *this;
-    }
-
-    void ModelPart::SetNodalSolutionStepVariablesList()
-    {
-        if (IsSubModelPart())
-            KRATOS_ERROR << "Calling the SetNodalSolutionStepVariablesList method of the sub model part " << Name()
-                         << " please call the one of the parent modelpart : " << mpParentModelPart->Name() << std::endl;
-
-        for (NodeIterator i_node = NodesBegin(); i_node != NodesEnd(); ++i_node)
-            i_node->SetSolutionStepVariablesList(mpVariablesList);
-    }
-
-    /** Inserts a Table
-    */
-    void ModelPart::AddTable(ModelPart::IndexType TableId, ModelPart::TableType::Pointer pNewTable)
-    {
-        if (IsSubModelPart())
-            mpParentModelPart->AddTable(TableId, pNewTable);
-
-        mTables.insert(TableId, pNewTable);
-    }
-
-    /** Remove the Table with given Id from current mesh.
-    */
-    void ModelPart::RemoveTable(ModelPart::IndexType TableId)
-    {
-        mTables.erase(TableId);
-
-        for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
-            i_sub_model_part->RemoveTable(TableId);
-    }
-
-    /** Remove the Table with given Id from current mesh in parents, itself and all children.
-    */
-    void ModelPart::RemoveTableFromAllLevels(ModelPart::IndexType TableId)
-    {
-        if (IsSubModelPart())
-        {
-            mpParentModelPart->RemoveTableFromAllLevels(TableId);
-            return;
-        }
-
-        RemoveTable(TableId);
-    }
+    //add the new node to the list of nodes
+    GetMesh(ThisIndex).AddNode(pThisNode);
+}
 
 
-    /** Inserts a properties in the mesh with ThisIndex.
-    */
-    void ModelPart::AddProperties(ModelPart::PropertiesType::Pointer pNewProperties, ModelPart::IndexType ThisIndex)
-    {
-        if (IsSubModelPart())
-            mpParentModelPart->AddProperties(pNewProperties);
-
-        GetMesh(ThisIndex).AddProperties(pNewProperties);
-    }
-
-    /** Remove the Properties with given Id from mesh with ThisIndex in this modelpart and all its subs.
-    */
-    void ModelPart::RemoveProperties(ModelPart::IndexType PropertiesId, IndexType ThisIndex)
-    {
-        GetMesh(ThisIndex).RemoveProperties(PropertiesId);
-
-        for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
-            i_sub_model_part->RemoveProperties(PropertiesId, ThisIndex);
-    }
-
-    /** Remove given Properties from mesh with ThisIndex in this modelpart and all its subs.
-    */
-    void ModelPart::RemoveProperties(ModelPart::PropertiesType& ThisProperties, ModelPart::IndexType ThisIndex)
-    {
-        GetMesh(ThisIndex).RemoveProperties(ThisProperties);
-
-        for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
-            i_sub_model_part->RemoveProperties(ThisProperties, ThisIndex);
-    }
-
-    /** Remove given Properties from mesh with ThisIndex in this modelpart and all its subs.
-    */
-    void ModelPart::RemoveProperties(ModelPart::PropertiesType::Pointer pThisProperties, ModelPart::IndexType ThisIndex)
-    {
-        GetMesh(ThisIndex).RemoveProperties(pThisProperties);
-
-        for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
-            i_sub_model_part->RemoveProperties(pThisProperties, ThisIndex);
-    }
-
-    /** Remove the Properties with given Id from mesh with ThisIndex in parents, itself and children.
-    */
-    void ModelPart::RemovePropertiesFromAllLevels(ModelPart::IndexType PropertiesId, IndexType ThisIndex)
-    {
-        if (IsSubModelPart())
-        {
-            mpParentModelPart->RemovePropertiesFromAllLevels(PropertiesId, ThisIndex);
-            return;
-        }
-
-        RemoveProperties(PropertiesId, ThisIndex);
-    }
-
-    /** Remove given Properties from mesh with ThisIndex in parents, itself and children.
-    */
-    void ModelPart::RemovePropertiesFromAllLevels(ModelPart::PropertiesType& ThisProperties, ModelPart::IndexType ThisIndex)
-    {
-        if (IsSubModelPart())
-        {
-            mpParentModelPart->RemoveProperties(ThisProperties, ThisIndex);
-        }
-
-        RemoveProperties(ThisProperties, ThisIndex);
-    }
-
-    /** Remove given Properties from mesh with ThisIndex in parents, itself and children.
-    */
-    void ModelPart::RemovePropertiesFromAllLevels(ModelPart::PropertiesType::Pointer pThisProperties, ModelPart::IndexType ThisIndex)
-    {
-        if (IsSubModelPart())
-        {
-            mpParentModelPart->RemoveProperties(pThisProperties, ThisIndex);
-        }
-
-        RemoveProperties(pThisProperties, ThisIndex);
-    }
-
-    /** Inserts a element in the mesh with ThisIndex.
-    */
-    void ModelPart::AddElement(ModelPart::ElementType::Pointer pNewElement, ModelPart::IndexType ThisIndex)
-    {
-        if (IsSubModelPart())
-            mpParentModelPart->AddElement(pNewElement, ThisIndex);
-
-        GetMesh(ThisIndex).AddElement(pNewElement);
-    }
-
-    /** Inserts an element in the mesh with ThisIndex.
-    */
-    ModelPart::ElementType::Pointer ModelPart::CreateNewElement(std::string ElementName,
-        ModelPart::IndexType Id, const std::vector<ModelPart::IndexType>& ElementNodeIds,
-        ModelPart::PropertiesType::Pointer pProperties, ModelPart::IndexType ThisIndex)
-    {
-        if (IsSubModelPart())
-        {
-            ElementType::Pointer p_new_element = mpParentModelPart->CreateNewElement(ElementName, Id, ElementNodeIds, pProperties, ThisIndex);
-            GetMesh(ThisIndex).AddElement(p_new_element);
-            return p_new_element;
-        }
-
-        Geometry< Node < 3 > >::PointsArrayType pElementNodes;
-
-        for (unsigned int i = 0; i < ElementNodeIds.size(); i++) {
-            pElementNodes.push_back(pGetNode(ElementNodeIds[i]));
-        }
-
-        return CreateNewElement(ElementName, Id, pElementNodes, pProperties, ThisIndex);
-    }
-
-    /** Inserts an element in the mesh with ThisIndex.
-    */
-    ModelPart::ElementType::Pointer ModelPart::CreateNewElement(std::string ElementName,
-        ModelPart::IndexType Id, Geometry< Node < 3 > >::PointsArrayType pElementNodes,
-        ModelPart::PropertiesType::Pointer pProperties, ModelPart::IndexType ThisIndex)
-    {
-        if (IsSubModelPart())
-        {
-            ElementType::Pointer p_new_element = mpParentModelPart->CreateNewElement(ElementName, Id, pElementNodes, pProperties, ThisIndex);
-            GetMesh(ThisIndex).AddElement(p_new_element);
-            return p_new_element;
-        }
-
-        //create the new element
-        ElementType const& r_clone_element = KratosComponents<ElementType>::Get(ElementName);
-        Element::Pointer p_element = r_clone_element.Create(Id, pElementNodes, pProperties);
-
-        //add the new element
-        GetMesh(ThisIndex).AddElement(p_element);
-
-        return p_element;
-    }
-
-    /** Remove the element with given Id from mesh with ThisIndex in this modelpart and all its subs.
-    */
-    void ModelPart::RemoveElement(ModelPart::IndexType ElementId, ModelPart::IndexType ThisIndex)
-    {
-        GetMesh(ThisIndex).RemoveElement(ElementId);
-
-        for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
-            i_sub_model_part->RemoveElement(ElementId, ThisIndex);
-    }
-
-    /** Remove given element from mesh with ThisIndex in this modelpart and all its subs.
-    */
-    void ModelPart::RemoveElement(ModelPart::ElementType& ThisElement, ModelPart::IndexType ThisIndex)
-    {
-        GetMesh(ThisIndex).RemoveElement(ThisElement);
-
-        for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
-            i_sub_model_part->RemoveElement(ThisElement, ThisIndex);
-    }
-
-    /** Remove given element from mesh with ThisIndex in this modelpart and all its subs.
-    */
-    void ModelPart::RemoveElement(ModelPart::ElementType::Pointer pThisElement, ModelPart::IndexType ThisIndex)
-    {
-        GetMesh(ThisIndex).RemoveElement(pThisElement);
-
-        for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
-            i_sub_model_part->RemoveElement(pThisElement, ThisIndex);
-    }
-
-    /** Remove the element with given Id from mesh with ThisIndex in parents, itself and children.
-    */
-    void ModelPart::RemoveElementFromAllLevels(ModelPart::IndexType ElementId, ModelPart::IndexType ThisIndex)
-    {
-        if (IsSubModelPart())
-        {
-            mpParentModelPart->RemoveElement(ElementId, ThisIndex);
-            return;
-        }
-
-        RemoveElement(ElementId, ThisIndex);
-    }
-
-    /** Remove given element from mesh with ThisIndex in parents, itself and children.
-    */
-    void ModelPart::RemoveElementFromAllLevels(ModelPart::ElementType& ThisElement, ModelPart::IndexType ThisIndex)
-    {
-        if (IsSubModelPart())
-        {
-            mpParentModelPart->RemoveElement(ThisElement, ThisIndex);
-            return;
-        }
-
-        RemoveElement(ThisElement, ThisIndex);
-    }
-
-    /** Remove given element from mesh with ThisIndex in parents, itself and children.
-    */
-    void ModelPart::RemoveElementFromAllLevels(ModelPart::ElementType::Pointer pThisElement, ModelPart::IndexType ThisIndex)
-    {
-        if (IsSubModelPart())
-        {
-            mpParentModelPart->RemoveElement(pThisElement, ThisIndex);
-            return;
-        }
-
-        RemoveElement(pThisElement, ThisIndex);
-    }
-/*
-    Functions for Master-Slave Constraint
+/** Remove the node with given Id from mesh with ThisIndex in this modelpart and all its subs.
 */
+void ModelPart::RemoveNode(ModelPart::IndexType NodeId, ModelPart::IndexType ThisIndex)
+{
+    GetMesh(ThisIndex).RemoveNode(NodeId);
+
+    for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
+        i_sub_model_part->RemoveNode(NodeId, ThisIndex);
+}
+
+/** Remove given node from mesh with ThisIndex in this modelpart and all its subs.
+*/
+void ModelPart::RemoveNode(ModelPart::NodeType& ThisNode, ModelPart::IndexType ThisIndex)
+{
+    GetMesh(ThisIndex).RemoveNode(ThisNode);
+
+    for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
+        i_sub_model_part->RemoveNode(ThisNode, ThisIndex);
+}
+
+/** Remove given node from mesh with ThisIndex in this modelpart and all its subs.
+*/
+void ModelPart::RemoveNode(ModelPart::NodeType::Pointer pThisNode, ModelPart::IndexType ThisIndex)
+{
+    GetMesh(ThisIndex).RemoveNode(pThisNode);
+
+    for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
+        i_sub_model_part->RemoveNode(pThisNode, ThisIndex);
+}
+
+/** Remove the node with given Id from mesh with ThisIndex in parents, itself and children.
+*/
+void ModelPart::RemoveNodeFromAllLevels(ModelPart::IndexType NodeId, ModelPart::IndexType ThisIndex)
+{
+    if (IsSubModelPart())
+    {
+        mpParentModelPart->RemoveNodeFromAllLevels(NodeId, ThisIndex);
+        return;
+    }
+    RemoveNode(NodeId, ThisIndex);
+}
+
+/** Remove given node from mesh with ThisIndex in parents, itself and children.
+*/
+void ModelPart::RemoveNodeFromAllLevels(ModelPart::NodeType& ThisNode, ModelPart::IndexType ThisIndex)
+{
+    if (IsSubModelPart())
+    {
+        mpParentModelPart->RemoveNode(ThisNode, ThisIndex);
+        return;
+    }
+    RemoveNode(ThisNode, ThisIndex);
+}
+
+/** Remove given node from mesh with ThisIndex in parents, itself and children.
+*/
+void ModelPart::RemoveNodeFromAllLevels(ModelPart::NodeType::Pointer pThisNode, ModelPart::IndexType ThisIndex)
+{
+    if (IsSubModelPart())
+    {
+        mpParentModelPart->RemoveNode(pThisNode, ThisIndex);
+        return;
+    }
+    RemoveNode(pThisNode, ThisIndex);
+}
+
+ModelPart& ModelPart::GetRootModelPart()
+{
+    if (IsSubModelPart())
+        return mpParentModelPart->GetRootModelPart();
+    else
+        return *this;
+}
+
+const ModelPart& ModelPart::GetRootModelPart() const
+{
+    if (IsSubModelPart())
+        return mpParentModelPart->GetRootModelPart();
+    else
+        return *this;
+}
+
+void ModelPart::SetNodalSolutionStepVariablesList()
+{
+    if (IsSubModelPart())
+        KRATOS_ERROR << "Calling the SetNodalSolutionStepVariablesList method of the sub model part " << Name()
+                     << " please call the one of the parent modelpart : " << mpParentModelPart->Name() << std::endl;
+
+    for (NodeIterator i_node = NodesBegin(); i_node != NodesEnd(); ++i_node)
+        i_node->SetSolutionStepVariablesList(mpVariablesList);
+}
+
+/** Inserts a Table
+*/
+void ModelPart::AddTable(ModelPart::IndexType TableId, ModelPart::TableType::Pointer pNewTable)
+{
+    if (IsSubModelPart())
+        mpParentModelPart->AddTable(TableId, pNewTable);
+
+    mTables.insert(TableId, pNewTable);
+}
+
+/** Remove the Table with given Id from current mesh.
+*/
+void ModelPart::RemoveTable(ModelPart::IndexType TableId)
+{
+    mTables.erase(TableId);
+
+    for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
+        i_sub_model_part->RemoveTable(TableId);
+}
+
+/** Remove the Table with given Id from current mesh in parents, itself and all children.
+*/
+void ModelPart::RemoveTableFromAllLevels(ModelPart::IndexType TableId)
+{
+    if (IsSubModelPart())
+    {
+        mpParentModelPart->RemoveTableFromAllLevels(TableId);
+        return;
+    }
+
+    RemoveTable(TableId);
+}
+
+
+/** Inserts a properties in the mesh with ThisIndex.
+*/
+void ModelPart::AddProperties(ModelPart::PropertiesType::Pointer pNewProperties, ModelPart::IndexType ThisIndex)
+{
+    if (IsSubModelPart())
+        mpParentModelPart->AddProperties(pNewProperties);
+
+    GetMesh(ThisIndex).AddProperties(pNewProperties);
+}
+
+/** Remove the Properties with given Id from mesh with ThisIndex in this modelpart and all its subs.
+*/
+void ModelPart::RemoveProperties(ModelPart::IndexType PropertiesId, IndexType ThisIndex)
+{
+    GetMesh(ThisIndex).RemoveProperties(PropertiesId);
+
+    for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
+        i_sub_model_part->RemoveProperties(PropertiesId, ThisIndex);
+}
+
+/** Remove given Properties from mesh with ThisIndex in this modelpart and all its subs.
+*/
+void ModelPart::RemoveProperties(ModelPart::PropertiesType& ThisProperties, ModelPart::IndexType ThisIndex)
+{
+    GetMesh(ThisIndex).RemoveProperties(ThisProperties);
+
+    for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
+        i_sub_model_part->RemoveProperties(ThisProperties, ThisIndex);
+}
+
+/** Remove given Properties from mesh with ThisIndex in this modelpart and all its subs.
+*/
+void ModelPart::RemoveProperties(ModelPart::PropertiesType::Pointer pThisProperties, ModelPart::IndexType ThisIndex)
+{
+    GetMesh(ThisIndex).RemoveProperties(pThisProperties);
+
+    for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
+        i_sub_model_part->RemoveProperties(pThisProperties, ThisIndex);
+}
+
+/** Remove the Properties with given Id from mesh with ThisIndex in parents, itself and children.
+*/
+void ModelPart::RemovePropertiesFromAllLevels(ModelPart::IndexType PropertiesId, IndexType ThisIndex)
+{
+    if (IsSubModelPart())
+    {
+        mpParentModelPart->RemovePropertiesFromAllLevels(PropertiesId, ThisIndex);
+        return;
+    }
+
+    RemoveProperties(PropertiesId, ThisIndex);
+}
+
+/** Remove given Properties from mesh with ThisIndex in parents, itself and children.
+*/
+void ModelPart::RemovePropertiesFromAllLevels(ModelPart::PropertiesType& ThisProperties, ModelPart::IndexType ThisIndex)
+{
+    if (IsSubModelPart())
+    {
+        mpParentModelPart->RemoveProperties(ThisProperties, ThisIndex);
+    }
+
+    RemoveProperties(ThisProperties, ThisIndex);
+}
+
+/** Remove given Properties from mesh with ThisIndex in parents, itself and children.
+*/
+void ModelPart::RemovePropertiesFromAllLevels(ModelPart::PropertiesType::Pointer pThisProperties, ModelPart::IndexType ThisIndex)
+{
+    if (IsSubModelPart())
+    {
+        mpParentModelPart->RemoveProperties(pThisProperties, ThisIndex);
+    }
+
+    RemoveProperties(pThisProperties, ThisIndex);
+}
+
+/** Inserts a element in the mesh with ThisIndex.
+*/
+void ModelPart::AddElement(ModelPart::ElementType::Pointer pNewElement, ModelPart::IndexType ThisIndex)
+{
+    if (IsSubModelPart())
+        mpParentModelPart->AddElement(pNewElement, ThisIndex);
+
+    GetMesh(ThisIndex).AddElement(pNewElement);
+}
+
+/** Inserts an element in the mesh with ThisIndex.
+*/
+ModelPart::ElementType::Pointer ModelPart::CreateNewElement(std::string ElementName,
+    ModelPart::IndexType Id, const std::vector<ModelPart::IndexType>& ElementNodeIds,
+    ModelPart::PropertiesType::Pointer pProperties, ModelPart::IndexType ThisIndex)
+{
+    if (IsSubModelPart())
+    {
+        ElementType::Pointer p_new_element = mpParentModelPart->CreateNewElement(ElementName, Id, ElementNodeIds, pProperties, ThisIndex);
+        GetMesh(ThisIndex).AddElement(p_new_element);
+        return p_new_element;
+    }
+
+    Geometry< Node < 3 > >::PointsArrayType pElementNodes;
+
+    for (unsigned int i = 0; i < ElementNodeIds.size(); i++) {
+        pElementNodes.push_back(pGetNode(ElementNodeIds[i]));
+    }
+
+    return CreateNewElement(ElementName, Id, pElementNodes, pProperties, ThisIndex);
+}
+
+/** Inserts an element in the mesh with ThisIndex.
+*/
+ModelPart::ElementType::Pointer ModelPart::CreateNewElement(std::string ElementName,
+    ModelPart::IndexType Id, Geometry< Node < 3 > >::PointsArrayType pElementNodes,
+    ModelPart::PropertiesType::Pointer pProperties, ModelPart::IndexType ThisIndex)
+{
+    if (IsSubModelPart())
+    {
+        ElementType::Pointer p_new_element = mpParentModelPart->CreateNewElement(ElementName, Id, pElementNodes, pProperties, ThisIndex);
+        GetMesh(ThisIndex).AddElement(p_new_element);
+        return p_new_element;
+    }
+
+    //create the new element
+    ElementType const& r_clone_element = KratosComponents<ElementType>::Get(ElementName);
+    Element::Pointer p_element = r_clone_element.Create(Id, pElementNodes, pProperties);
+
+    //add the new element
+    GetMesh(ThisIndex).AddElement(p_element);
+
+    return p_element;
+}
+
+/** Remove the element with given Id from mesh with ThisIndex in this modelpart and all its subs.
+*/
+void ModelPart::RemoveElement(ModelPart::IndexType ElementId, ModelPart::IndexType ThisIndex)
+{
+    GetMesh(ThisIndex).RemoveElement(ElementId);
+
+    for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
+        i_sub_model_part->RemoveElement(ElementId, ThisIndex);
+}
+
+/** Remove given element from mesh with ThisIndex in this modelpart and all its subs.
+*/
+void ModelPart::RemoveElement(ModelPart::ElementType& ThisElement, ModelPart::IndexType ThisIndex)
+{
+    GetMesh(ThisIndex).RemoveElement(ThisElement);
+
+    for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
+        i_sub_model_part->RemoveElement(ThisElement, ThisIndex);
+}
+
+/** Remove given element from mesh with ThisIndex in this modelpart and all its subs.
+*/
+void ModelPart::RemoveElement(ModelPart::ElementType::Pointer pThisElement, ModelPart::IndexType ThisIndex)
+{
+    GetMesh(ThisIndex).RemoveElement(pThisElement);
+
+    for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
+        i_sub_model_part->RemoveElement(pThisElement, ThisIndex);
+}
+
+/** Remove the element with given Id from mesh with ThisIndex in parents, itself and children.
+*/
+void ModelPart::RemoveElementFromAllLevels(ModelPart::IndexType ElementId, ModelPart::IndexType ThisIndex)
+{
+    if (IsSubModelPart())
+    {
+        mpParentModelPart->RemoveElement(ElementId, ThisIndex);
+        return;
+    }
+
+    RemoveElement(ElementId, ThisIndex);
+}
+
+/** Remove given element from mesh with ThisIndex in parents, itself and children.
+*/
+void ModelPart::RemoveElementFromAllLevels(ModelPart::ElementType& ThisElement, ModelPart::IndexType ThisIndex)
+{
+    if (IsSubModelPart())
+    {
+        mpParentModelPart->RemoveElement(ThisElement, ThisIndex);
+        return;
+    }
+
+    RemoveElement(ThisElement, ThisIndex);
+}
+
+/** Remove given element from mesh with ThisIndex in parents, itself and children.
+*/
+void ModelPart::RemoveElementFromAllLevels(ModelPart::ElementType::Pointer pThisElement, ModelPart::IndexType ThisIndex)
+{
+    if (IsSubModelPart())
+    {
+        mpParentModelPart->RemoveElement(pThisElement, ThisIndex);
+        return;
+    }
+
+    RemoveElement(pThisElement, ThisIndex);
+}
 
 /** Inserts a master-slave constraint in the current mesh.
  */
