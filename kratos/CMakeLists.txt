@@ -90,6 +90,7 @@ if( ${KRATOS_PYTHON} MATCHES TRUE)
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_node_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_linear_solvers_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_strategies_to_python.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/python/add_spaces_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_utilities_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_process_info_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_parallel_strategies_to_python.cpp

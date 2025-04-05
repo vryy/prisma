@@ -58,6 +58,7 @@
 //#include "add_sparse_vector_to_python.h"
 
 #include "add_linear_solvers_to_python.h"
+#include "add_spaces_to_python.h"
 #include "add_strategies_to_python.h"
 #include "add_utilities_to_python.h"
 
@@ -128,6 +129,7 @@ BOOST_PYTHON_MODULE(Kratos)
     AddKratosApplicationToPython();
 //  AddEquationSystemsToPython();
     AddLinearSolversToPython();
+    AddSpacesToPython();
     AddStrategiesToPython();
     AddUtilitiesToPython();
     AddProcessInfoToPython();

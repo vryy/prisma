@@ -70,4 +70,4 @@ void  AddStrategiesToPython();
 
 }  // namespace Kratos.
 
-#endif // KRATOS_STRATEGIES_PYTHON_H_INCLUDED  defined 
+#endif // KRATOS_STRATEGIES_PYTHON_H_INCLUDED  defined

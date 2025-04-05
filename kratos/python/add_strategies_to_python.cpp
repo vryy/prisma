@@ -85,96 +85,6 @@ namespace Kratos
         typedef UblasSpace<DataType, CompressedMatrix, Vector> SparseSpaceType;
         typedef UblasSpace<DataType, Matrix, Vector> LocalSpaceType;
 
-        //ADDED BY PAOLO (next two)
-
-        DataType Dot(SparseSpaceType& dummy, const SparseSpaceType::VectorType& rX, const SparseSpaceType::VectorType& rY)
-        {
-            return dummy.Dot(rX, rY);
-        }
-
-        void ScaleAndAdd(SparseSpaceType& dummy, const DataType A, const SparseSpaceType::VectorType& rX, const DataType B, SparseSpaceType::VectorType& rY)
-        //(const DataType A,const  VectorType& rX, const DataType B, VectorType& rY) // rY = (A * rX) + (B * rY)
-        {
-            dummy.ScaleAndAdd(A, rX, B, rY);
-        }
-
-        void Mult(SparseSpaceType& dummy, SparseSpaceType::MatrixType& rA, SparseSpaceType::VectorType& rX, SparseSpaceType::VectorType& rY)
-        //rY=A*rX (the product is stored inside the rY)
-        {
-            dummy.Mult(rA, rX, rY);
-        }
-
-        void TransposeMult(SparseSpaceType& dummy, SparseSpaceType::MatrixType& rA, SparseSpaceType::VectorType& rX, SparseSpaceType::VectorType& rY)
-        //rY=A*rX (the product is stored inside the rY)
-        {
-            dummy.TransposeMult(rA, rX, rY);
-        }
-
-        SparseSpaceType::IndexType Size(SparseSpaceType& dummy, SparseSpaceType::VectorType const& rV)
-        {
-            return rV.size();
-        }
-
-        SparseSpaceType::IndexType Size1(SparseSpaceType& dummy, SparseSpaceType::MatrixType const& rM)
-        {
-            return rM.size1();
-        }
-
-        SparseSpaceType::IndexType Size2(SparseSpaceType& dummy, SparseSpaceType::MatrixType const& rM)
-        {
-            return rM.size2();
-        }
-
-        void ResizeMatrix(SparseSpaceType& dummy, SparseSpaceType::MatrixType& A, unsigned int i1, unsigned int i2)
-        {
-            dummy.Resize(A, i1, i2);
-        }
-
-        void ResizeVector(SparseSpaceType& dummy, SparseSpaceType::VectorType& x, unsigned int i1)
-        {
-            dummy.Resize(x, i1);
-        }
-
-        void SetToZeroMatrix(SparseSpaceType& dummy, SparseSpaceType::MatrixType& A)
-        {
-            dummy.SetToZero(A);
-        }
-
-        void SetToZeroVector(SparseSpaceType& dummy, SparseSpaceType::VectorType& x)
-        {
-            dummy.SetToZero(x);
-        }
-
-        void ClearMatrix(SparseSpaceType& dummy, SparseSpaceType::MatrixPointerType& A)
-        {
-            dummy.Clear(A);
-        }
-
-        void ClearVector(SparseSpaceType& dummy, SparseSpaceType::VectorPointerType& x)
-        {
-            dummy.Clear(x);
-        }
-
-        DataType TwoNorm(SparseSpaceType& dummy, const SparseSpaceType::VectorType& x)
-        {
-            return dummy.TwoNorm(x);
-        }
-
-        void UnaliasedAdd(SparseSpaceType& dummy, SparseSpaceType::VectorType& x, const DataType A, const SparseSpaceType::VectorType& rY) // x+= a*Y
-        {
-            dummy.UnaliasedAdd(x, A, rY);
-        }
-
-        void CopyVector(SparseSpaceType& dummy, SparseSpaceType::VectorType const& rX, SparseSpaceType::VectorType& rY)
-        {
-            dummy.Copy(rX, rY);
-        }
-
-        void CopyMatrix(SparseSpaceType& dummy, SparseSpaceType::MatrixType const& rX, SparseSpaceType::MatrixType& rY)
-        {
-            dummy.Copy(rX, rY);
-        }
-
         void MoveMesh(Scheme< SparseSpaceType, LocalSpaceType >& dummy, ModelPart::NodesContainerType& rNodes)
         {
             for (ModelPart::NodeIterator i = rNodes.begin(); i != rNodes.end(); ++i)
@@ -186,83 +96,8 @@ namespace Kratos
             }
         }
 
-        SparseSpaceType::MatrixPointerType CreateEmptyMatrixPointer(SparseSpaceType& dummy)
-        {
-            return dummy.CreateEmptyMatrixPointer();
-        }
-
-        SparseSpaceType::VectorPointerType CreateEmptyVectorPointer(SparseSpaceType& dummy)
-        {
-            return dummy.CreateEmptyVectorPointer();
-        }
-
-        void PrintMatrixInfo(SparseSpaceType& dummy, const typename SparseSpaceType::MatrixType& rA, const int level)
-        {
-            dummy.PrintMatrixInfo(std::cout, rA, level);
-        }
-
-        void PrintVectorInfo(SparseSpaceType& dummy, const typename SparseSpaceType::VectorType& rX, const int level)
-        {
-            dummy.PrintVectorInfo(std::cout, rX, level);
-        }
-
-        //  boost::shared_ptr< CompressedMatrix > CreateEmptyMatrixPointer()
-        //  {
-        //      boost::shared_ptr<CompressedMatrix> pNewMat = boost::shared_ptr<CompressedMatrix>(new CompressedMatrix() );
-        //      return pNewMat;
-        //  }
-        //
-        //  boost::shared_ptr< Vector > CreateEmptyVectorPointer()
-        //  {
-        //      boost::shared_ptr<Vector > pNewVec = boost::shared_ptr<Vector >(new Vector() );
-        //      return pNewVec;
-        //  }
-
-        CompressedMatrix& GetMatRef(boost::shared_ptr<CompressedMatrix>& dummy)
-        {
-            return *dummy;
-        }
-
-        Vector& GetVecRef(boost::shared_ptr<Vector>& dummy)
-        {
-            return *dummy;
-        }
-
-        template< class TOtherMatrixType >
-        bool WriteMatrixMarketMatrix(SparseSpaceType& dummy, const char *FileName, TOtherMatrixType &M, bool Symmetric)
-        {
-            return dummy.WriteMatrixMarketMatrix(FileName, M, Symmetric);
-        }
-
-        template< class VectorType >
-        bool WriteMatrixMarketVector(SparseSpaceType& dummy, const char *FileName, VectorType& V)
-        {
-            return dummy.WriteMatrixMarketVector(FileName, V);
-        }
-
-        template< class CompressedMatrixType >
-        bool ReadMatrixMarketMatrix_(SparseSpaceType& dummy, const char *FileName, CompressedMatrixType& M)
-        {
-            return ReadMatrixMarketMatrix<CompressedMatrixType>(FileName, M);
-        }
-
-        template< class VectorType >
-        bool ReadMatrixMarketVector_(SparseSpaceType& dummy, const char *FileName, VectorType& M)
-        {
-            return ReadMatrixMarketVector<VectorType>(FileName, M);
-        }
-
         void AddStrategiesToPython()
         {
-            class_< boost::shared_ptr<CompressedMatrix> >("CompressedMatrixPointer", init<boost::shared_ptr<CompressedMatrix> >())
-                    .def("GetReference", GetMatRef, return_value_policy<reference_existing_object > ())
-                    //                  .def("GetReference", GetRef, return_internal_reference<1>() )
-                    ;
-
-            class_< boost::shared_ptr<Vector> >("VectorPointer", init< boost::shared_ptr<Vector> >())
-                    .def("GetReference", GetVecRef, return_value_policy<reference_existing_object > ())
-                    ;
-
             typedef LinearSolver<SparseSpaceType, LocalSpaceType > LinearSolverType;
             typedef SolvingStrategy< SparseSpaceType, LocalSpaceType, LinearSolverType > BaseSolvingStrategyType;
             typedef Scheme< SparseSpaceType, LocalSpaceType > BaseSchemeType;
@@ -488,37 +323,6 @@ namespace Kratos
             //             (m,"ResidualBasedBlockBuilderAndSolverWithConstraints").def(init< LinearSolverType::Pointer > ());
             //********************************************************************
             //********************************************************************
-
-            class_< SparseSpaceType, boost::noncopyable > ("UblasSparseSpace", init<>())
-                    .def("ClearMatrix", ClearMatrix)
-                    .def("ClearVector", ClearVector)
-                    .def("ResizeMatrix", ResizeMatrix)
-                    .def("ResizeVector", ResizeVector)
-                    .def("SetToZeroMatrix", SetToZeroMatrix)
-                    .def("SetToZeroVector", SetToZeroVector)
-                    .def("TwoNorm", TwoNorm)
-                    .def("Copy", CopyVector)
-                    .def("Copy", CopyMatrix)
-                    //the dot product of two vectors
-                    .def("Dot", Dot)
-                    //the matrix-vector multiplication
-                    .def("Mult", Mult)
-                    .def("TransposeMult", TransposeMult)
-                    .def("Size", Size)
-                    .def("Size1", Size1)
-                    .def("Size2", Size2)
-                    .def("UnaliasedAdd", UnaliasedAdd)
-                    .def("ScaleAndAdd", ScaleAndAdd)
-                    .def("CreateEmptyMatrixPointer", CreateEmptyMatrixPointer)
-                    .def("CreateEmptyVectorPointer", CreateEmptyVectorPointer)
-                    .def("WriteMatrixMarketMatrix", WriteMatrixMarketMatrix<CompressedMatrix>)
-                    .def("WriteMatrixMarketVector", WriteMatrixMarketVector<Vector>)
-                    .def("ReadMatrixMarketMatrix", ReadMatrixMarketMatrix_<CompressedMatrix>)
-                    .def("ReadMatrixMarketVector", ReadMatrixMarketVector_<Vector>)
-                    .def("PrintMatrixInfo", PrintMatrixInfo)
-                    .def("PrintVectorInfo", PrintVectorInfo)
-                    .def(self_ns::str(self))
-                    ;
         }
 
     } // namespace Python.
