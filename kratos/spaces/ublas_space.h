@@ -228,7 +228,7 @@ public:
     }
 
     /// rX * rY
-    static TDataType Dot(VectorType const& rX, VectorType const& rY)
+    static DataType Dot(VectorType const& rX, VectorType const& rY)
     {
 #ifndef _OPENMP
         return inner_prod(rX, rY);
@@ -237,7 +237,7 @@ public:
         int number_of_threads = omp_get_max_threads();
         OpenMPUtils::CreatePartition(number_of_threads, rX.size(), partition);
 
-        vector< TDataType > partial_results(number_of_threads);
+        vector< DataType > partial_results(number_of_threads);
 
         #pragma omp parallel for
         for (int i = 0; i < number_of_threads; i++)
@@ -245,10 +245,10 @@ public:
             partial_results[i] = std::inner_product(rX.data().begin() + partition[i],
                                                     rX.data().begin() + partition[i + 1],
                                                     rY.data().begin() + partition[i],
-                                                    TDataType());
+                                                    DataType());
         }
 
-        auto total = TDataType();
+        auto total = DataType();
         for (int i = 0; i < number_of_threads; i++)
             total += partial_results[i];
         return total;
@@ -256,17 +256,17 @@ public:
     }
 
     /// ||rX||2
-    static TDataType TwoNorm(VectorType const& rX)
+    static DataType TwoNorm(VectorType const& rX)
     {
         return sqrt(Dot(rX, rX));
     }
 
     // Frobenious norm
-    static TDataType TwoNorm(const MatrixType& rA)
+    static DataType TwoNorm(const MatrixType& rA)
     {
         if constexpr (std::is_same<MatrixType, Matrix>::value)
         {
-            TDataType aux_sum = TDataType();
+            DataType aux_sum = DataType();
             #pragma omp parallel for reduction(+:aux_sum)
             for (int i=0; i<static_cast<int>(rA.size1()); ++i) {
                 for (int j=0; j<static_cast<int>(rA.size2()); ++j) {
@@ -275,9 +275,9 @@ public:
             }
             return std::sqrt(aux_sum);
         }
-        else if constexpr (std::is_same<MatrixType, compressed_matrix<TDataType> >::value)
+        else if constexpr (std::is_same<MatrixType, compressed_matrix<DataType> >::value)
         {
-            TDataType aux_sum = TDataType();
+            DataType aux_sum = DataType();
 
             const auto& r_values = rA.value_data();
 
@@ -296,11 +296,11 @@ public:
      * @param rA The matrix to compute the Jacobi norm
      * @return aux_sum: The Jacobi norm
      */
-    static TDataType JacobiNorm(const MatrixType& rA)
+    static DataType JacobiNorm(const MatrixType& rA)
     {
         if constexpr (std::is_same<MatrixType, Matrix>::value)
         {
-            TDataType aux_sum = TDataType();
+            DataType aux_sum = DataType();
             #pragma omp parallel for reduction(+:aux_sum)
             for (int i=0; i<static_cast<int>(rA.size1()); ++i) {
                 for (int j=0; j<static_cast<int>(rA.size2()); ++j) {
@@ -311,9 +311,9 @@ public:
             }
             return aux_sum;
         }
-        else if constexpr (std::is_same<MatrixType, compressed_matrix<TDataType> >::value)
+        else if constexpr (std::is_same<MatrixType, compressed_matrix<DataType> >::value)
         {
-            TDataType aux_sum = TDataType();
+            DataType aux_sum = DataType();
 
             typedef typename MatrixType::const_iterator1 t_it_1;
             typedef typename MatrixType::const_iterator2 t_it_2;
@@ -337,7 +337,7 @@ public:
         axpy_prod(rA, rX, rY, true);
     }
 
-    static void Mult(const compressed_matrix<TDataType>& rA, const VectorType& rX, VectorType& rY)
+    static void Mult(const compressed_matrix<DataType>& rA, const VectorType& rX, VectorType& rY)
     {
 #ifndef _OPENMP
         axpy_prod(rA, rX, rY, true);
@@ -386,9 +386,8 @@ public:
 
     //********************************************************************
     //checks if a multiplication is needed and tries to do otherwise
-    static void InplaceMult(VectorType& rX, const TDataType A)
+    static void InplaceMult(VectorType& rX, const DataType A)
     {
-
         if (A == 1.00)
         {
         }
@@ -430,7 +429,7 @@ public:
     //checks if a multiplication is needed and tries to do otherwise
     //ATTENTION it is assumed no aliasing between rX and rY
     // X = A*y;
-    static void Assign(VectorType& rX, const TDataType A, const VectorType& rY)
+    static void Assign(VectorType& rX, const DataType A, const VectorType& rY)
     {
 #ifndef _OPENMP
         if (A == 1.00)
@@ -469,7 +468,7 @@ public:
     //checks if a multiplication is needed and tries to do otherwise
     //ATTENTION it is assumed no aliasing between rX and rY
     // X += A*y;
-    static void UnaliasedAdd(VectorType& rX, const TDataType A, const VectorType& rY)
+    static void UnaliasedAdd(VectorType& rX, const DataType A, const VectorType& rY)
     {
 #ifndef _OPENMP
         if (A == 1.00)
@@ -506,13 +505,13 @@ public:
 
     //********************************************************************
 
-    static void ScaleAndAdd(const TDataType A, const VectorType& rX, const TDataType B, const VectorType& rY, VectorType& rZ) // rZ = (A * rX) + (B * rY)
+    static void ScaleAndAdd(const DataType A, const VectorType& rX, const DataType B, const VectorType& rY, VectorType& rZ) // rZ = (A * rX) + (B * rY)
     {
         Assign(rZ, A, rX); //rZ = A*rX
         UnaliasedAdd(rZ, B, rY); //rZ += B*rY
     }
 
-    static void ScaleAndAdd(const TDataType A, const VectorType& rX, const TDataType B, VectorType& rY) // rY = (A * rX) + (B * rY)
+    static void ScaleAndAdd(const DataType A, const VectorType& rX, const DataType B, VectorType& rY) // rY = (A * rX) + (B * rY)
     {
         InplaceMult(rY, B);
         UnaliasedAdd(rY, A, rX);
@@ -520,18 +519,18 @@ public:
 
 
     /// rA[i] * rX
-    static TDataType RowDot(unsigned int i, MatrixType& rA, VectorType& rX)
+    static DataType RowDot(unsigned int i, MatrixType& rA, VectorType& rX)
     {
         return inner_prod(row(rA, i), rX);
     }
 
-    static void SetValue(VectorType& rX, IndexType i, TDataType value)
+    static void SetValue(VectorType& rX, IndexType i, DataType value)
     {
         rX[i] = value;
     }
 
     /// rX = A
-    static void Set(VectorType& rX, TDataType A)
+    static void Set(VectorType& rX, DataType A)
     {
         std::fill(rX.begin(), rX.end(), A);
     }
@@ -564,7 +563,7 @@ public:
         rA.clear();
     }
 
-    inline static void ClearData(compressed_matrix<TDataType>& rA)
+    inline static void ClearData(compressed_matrix<DataType>& rA)
     {
         rA.clear();
     }
@@ -579,20 +578,20 @@ public:
     {
         rA.resize(m, false);
 #ifndef _OPENMP
-        std::fill(rA.begin(), rA.end(), TDataType());
+        std::fill(rA.begin(), rA.end(), DataType());
 #else
-        ParallelFill(rA.begin(), rA.end(), TDataType());
+        ParallelFill(rA.begin(), rA.end(), DataType());
 
 #endif
     }
 
-    inline static void ResizeData(compressed_matrix<TDataType>& rA, SizeType m)
+    inline static void ResizeData(compressed_matrix<DataType>& rA, SizeType m)
     {
         rA.value_data().resize(m);
 #ifndef _OPENMP
-        std::fill(rA.value_data().begin(), rA.value_data().end(), TDataType());
+        std::fill(rA.value_data().begin(), rA.value_data().end(), DataType());
 #else
-        ParallelFill(rA.value_data().begin(), rA.value_data().end(), TDataType());
+        ParallelFill(rA.value_data().begin(), rA.value_data().end(), DataType());
 #endif
     }
 
@@ -600,9 +599,9 @@ public:
     {
         rX.resize(m, false);
 #ifndef _OPENMP
-        std::fill(rX.begin(), rX.end(), TDataType());
+        std::fill(rX.begin(), rX.end(), DataType());
 #else
-        ParallelFill(rX.begin(), rX.end(), TDataType());
+        ParallelFill(rX.begin(), rX.end(), DataType());
 #endif
     }
 
@@ -610,27 +609,27 @@ public:
     inline static void SetToZero(TOtherMatrixType& rA)
     {
 #ifndef _OPENMP
-        std::fill(rA.begin(), rA.end(), TDataType());
+        std::fill(rA.begin(), rA.end(), DataType());
 #else
-        ParallelFill(rA.begin(), rA.end(), TDataType());
+        ParallelFill(rA.begin(), rA.end(), DataType());
 #endif
     }
 
-    inline static void SetToZero(compressed_matrix<TDataType>& rA)
+    inline static void SetToZero(compressed_matrix<DataType>& rA)
     {
 #ifndef _OPENMP
-        std::fill(rA.value_data().begin(), rA.value_data().end(), TDataType());
+        std::fill(rA.value_data().begin(), rA.value_data().end(), DataType());
 #else
-        ParallelFill(rA.value_data().begin(), rA.value_data().end(), TDataType());
+        ParallelFill(rA.value_data().begin(), rA.value_data().end(), DataType());
 #endif
     }
 
     inline static void SetToZero(VectorType& rX)
     {
 #ifndef _OPENMP
-        std::fill(rX.begin(), rX.end(), TDataType());
+        std::fill(rX.begin(), rX.end(), DataType());
 #else
-        ParallelFill(rX.begin(), rX.end(), TDataType());
+        ParallelFill(rX.begin(), rX.end(), DataType());
 #endif
     }
 
@@ -665,14 +664,14 @@ public:
 
     //***********************************************************************
 
-    inline static TDataType GetValue(const VectorType& x, IndexType I)
+    inline static DataType GetValue(const VectorType& x, IndexType I)
     {
         return x[I];
     }
 
     //***********************************************************************
 
-    static void GatherValues(const VectorType& x, const std::vector<IndexType>& IndexArray, TDataType* pValues)
+    static void GatherValues(const VectorType& x, const std::vector<IndexType>& IndexArray, DataType* pValues)
     {
         KRATOS_TRY
 
@@ -713,7 +712,7 @@ public:
                     for (IndexType j = 0; j < Size2(rA); ++j)
                         if (rA(i, j) != 0) ++num_entries;
             }
-            else if constexpr (std::is_same<MatrixType, compressed_matrix<TDataType> >::value)
+            else if constexpr (std::is_same<MatrixType, compressed_matrix<DataType> >::value)
             {
                 for (t_it_1 it_1 = rA.begin1(); it_1 != rA.end1(); ++it_1)
                     for (t_it_2 it_2 = it_1.begin(); it_2 != it_1.end(); ++it_2)
@@ -725,7 +724,7 @@ public:
 
         if (level > 2)
         {
-            DataType max_diag = -1e99, sum_diag = 0.0;
+            ValueType max_diag = -1e99, sum_diag = 0.0;
 
             if constexpr (std::is_same<MatrixType, Matrix>::value)
             {
@@ -733,19 +732,19 @@ public:
                     for (IndexType j = 0; j < Size2(rA); ++j)
                         if (i == j)
                         {
-                            const DataType v = std::abs(rA(i, j));
+                            const ValueType v = std::abs(rA(i, j));
                             sum_diag += v;
                             if (v > max_diag)
                                 max_diag = v;
                         }
             }
-            else if constexpr (std::is_same<MatrixType, compressed_matrix<TDataType> >::value)
+            else if constexpr (std::is_same<MatrixType, compressed_matrix<DataType> >::value)
             {
                 for (t_it_1 it_1 = rA.begin1(); it_1 != rA.end1(); ++it_1)
                     for (t_it_2 it_2 = it_1.begin(); it_2 != it_1.end(); ++it_2)
                         if (it_2.index1() == it_2.index2())
                         {
-                            const DataType v = std::abs(*it_2);
+                            const ValueType v = std::abs(*it_2);
                             sum_diag += v;
                             if (v > max_diag)
                                 max_diag = v;
@@ -783,10 +782,10 @@ public:
 
         if (level > 2)
         {
-            DataType max_entry = -1e99, sum_entry = 0.0;
+            ValueType max_entry = -1e99, sum_entry = 0.0;
             for (t_it it = rX.begin(); it != rX.end(); ++it)
             {
-                const DataType v = std::abs(*it);
+                const ValueType v = std::abs(*it);
                 sum_entry += v;
                 if (v > max_entry)
                     max_entry = v;
@@ -898,9 +897,9 @@ private:
         {
             int thread_id = omp_get_thread_num();
             int number_of_rows = partition[thread_id + 1] - partition[thread_id];
-            typename compressed_matrix<TDataType>::index_array_type::const_iterator row_iter_begin = A.index1_data().begin() + partition[thread_id];
-            typename compressed_matrix<TDataType>::index_array_type::const_iterator index_2_begin = A.index2_data().begin()+*row_iter_begin;
-            typename compressed_matrix<TDataType>::value_array_type::const_iterator value_begin = A.value_data().begin()+*row_iter_begin;
+            typename compressed_matrix<DataType>::index_array_type::const_iterator row_iter_begin = A.index1_data().begin() + partition[thread_id];
+            typename compressed_matrix<DataType>::index_array_type::const_iterator index_2_begin = A.index2_data().begin()+*row_iter_begin;
+            typename compressed_matrix<DataType>::value_array_type::const_iterator value_begin = A.value_data().begin()+*row_iter_begin;
             //                  typename VectorType::iterator output_vec_begin = out.begin()+partition[thread_id];
 
             partial_product_no_add(number_of_rows,
@@ -919,9 +918,9 @@ private:
      */
     static void partial_product_no_add(
         int number_of_rows,
-        typename compressed_matrix<TDataType>::index_array_type::const_iterator row_begin,
-        typename compressed_matrix<TDataType>::index_array_type::const_iterator index2_begin,
-        typename compressed_matrix<TDataType>::value_array_type::const_iterator value_begin,
+        typename compressed_matrix<DataType>::index_array_type::const_iterator row_begin,
+        typename compressed_matrix<DataType>::index_array_type::const_iterator index2_begin,
+        typename compressed_matrix<DataType>::value_array_type::const_iterator value_begin,
         const VectorType& input_vec,
         unsigned int output_begin_index,
         VectorType& output_vec
@@ -935,7 +934,7 @@ private:
         {
             row_size = *(row_it + 1)-*row_it;
             row_it++;
-            TDataType t = TDataType();
+            DataType t = DataType();
 
             for (int i = 0; i < row_size; i++)
                 t += *value_begin++ * (input_vec[*index2_begin++]);
@@ -947,7 +946,7 @@ private:
 #endif
 
     template <class TIterartorType>
-    static void ParallelFill(TIterartorType Begin, TIterartorType End, TDataType const& Value)
+    static void ParallelFill(TIterartorType Begin, TIterartorType End, DataType const& Value)
     {
 #ifndef _OPENMP
         std::fill(Begin, End, Value);
