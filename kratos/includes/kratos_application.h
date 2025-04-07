@@ -98,7 +98,7 @@ public:
     }
 
 
-    void RegisterVariables();
+    virtual void RegisterVariables();
 
     ///////////////////////////////////////////////////////////////////
     void RegisterDeprecatedVariables(); //TODO: remove, this variables should not be there
