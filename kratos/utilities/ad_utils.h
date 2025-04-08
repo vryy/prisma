@@ -2,7 +2,6 @@
 see kratos/LICENSE.txt
 */
 
-
 /* *********************************************************
 *
 *   Last Modified by:    $Author: Giang Bui-Hoang $
@@ -533,7 +532,6 @@ public:
     }
 };
 
-
 template<std::size_t dim, typename TDataType>
 class AD_Utils<4, dim, TDataType>
 {
@@ -551,8 +549,6 @@ public:
     }
 };
 
-
 }  /* namespace Kratos.*/
 
 #endif /* KRATOS_AD_UTILS  defined */
-

@@ -1,50 +1,17 @@
-/*
-==============================================================================
-Kratos
-A General Purpose Software for Multi-Physics Finite Element Analysis
-Version 1.0 (Released on march 05, 2007).
-
-Copyright 2007
-Pooyan Dadvand, Riccardo Rossi
-pooyan@cimne.upc.edu
-rrossi@cimne.upc.edu
-CIMNE (International Center for Numerical Methods in Engineering),
-Gran Capita' s/n, 08034 Barcelona, Spain
-
-Permission is hereby granted, free  of charge, to any person obtaining
-a  copy  of this  software  and  associated  documentation files  (the
-"Software"), to  deal in  the Software without  restriction, including
-without limitation  the rights to  use, copy, modify,  merge, publish,
-distribute,  sublicense and/or  sell copies  of the  Software,  and to
-permit persons to whom the Software  is furnished to do so, subject to
-the following condition:
-
-Distribution of this code for  any  commercial purpose  is permissible
-ONLY BY DIRECT ARRANGEMENT WITH THE COPYRIGHT OWNER.
-
-The  above  copyright  notice  and  this permission  notice  shall  be
-included in all copies or substantial portions of the Software.
-
-THE  SOFTWARE IS  PROVIDED  "AS  IS", WITHOUT  WARRANTY  OF ANY  KIND,
-EXPRESS OR  IMPLIED, INCLUDING  BUT NOT LIMITED  TO THE  WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT  SHALL THE AUTHORS OR COPYRIGHT HOLDERS  BE LIABLE FOR ANY
-CLAIM, DAMAGES OR  OTHER LIABILITY, WHETHER IN AN  ACTION OF CONTRACT,
-TORT  OR OTHERWISE, ARISING  FROM, OUT  OF OR  IN CONNECTION  WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-==============================================================================
-*/
-
-/*
- * File:   openmp_utils.h
- * Author: jcotela
- *
- * Created on 15 June 2010, 10:40
- */
+//    |  /           |
+//    ' /   __| _` | __|  _ \   __|
+//    . \  |   (   | |   (   |\__ \.
+//   _|\_\_|  \__,_|\__|\___/ ____/
+//                   Multi-Physics
+//
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
+//
+//  Main authors:    Riccardo Rossi
+//
 
 #ifndef KRATOS_OPENMP_UTILS_H
-#define	KRATOS_OPENMP_UTILS_H
+#define KRATOS_OPENMP_UTILS_H
 
 #include <stdio.h>
 #include <vector>
@@ -126,7 +93,7 @@ public:
 #ifndef _OPENMP
         return std::clock()/static_cast<double>(CLOCKS_PER_SEC);
 #else
-        return  omp_get_wtime();
+        return omp_get_wtime();
 #endif
     }
 
@@ -200,19 +167,19 @@ public:
     static inline void SetNumThreads(int NumThreads = 1)
     {
 #ifdef _OPENMP
-      
-      int procs    = omp_get_num_procs();
-      if( procs < NumThreads ){
-	std::cout<<" WARNING: Maximimun number of threads is EXCEEDED "<<std::endl;
-	/* Set thread number */  
-	omp_set_num_threads(procs);
-	std::cout<<" Number of Threads Set To : "<<procs<<std::endl;
-      }
-      else{
-	/* Set thread number */  
-	omp_set_num_threads(NumThreads);
-      }
-
+        int procs    = omp_get_num_procs();
+        if( procs < NumThreads )
+        {
+            std::cout<<" WARNING: Maximimun number of threads is EXCEEDED "<<std::endl;
+            /* Set thread number */
+            omp_set_num_threads(procs);
+            std::cout<<" Number of Threads Set To : "<<procs<<std::endl;
+        }
+        else
+        {
+            /* Set thread number */
+            omp_set_num_threads(NumThreads);
+        }
 #endif
     }
 
@@ -223,48 +190,44 @@ public:
     {
 #ifdef _OPENMP
 
-      int nthreads,tid, procs, maxt, inpar, dynamic, nested;
-  
-      /* Start parallel region */
-  
+        int nthreads,tid, procs, maxt, inpar, dynamic, nested;
+
+        /* Start parallel region */
+
 #pragma omp parallel private(nthreads, tid)
-      {
-	/* Obtain thread number */
-	tid = omp_get_thread_num();
-    
-	/* Only master thread does this */
-	if (tid == 0)
-	  {
-	    printf("  Thread %d getting environment info...\n", tid);
-	
-	    /* Get environment information */
-	    procs    = omp_get_num_procs();
-	    nthreads = omp_get_num_threads();
-	    maxt     = omp_get_max_threads();
-	    inpar    = omp_in_parallel();
-	    //omp_set_dynamic(true);
-	    dynamic  = omp_get_dynamic();
-	    //omp_set_nested(true);
-	    nested   = omp_get_nested();
-	
-	    /* Print environment information */
-	    printf( "  | ------------ OMP IN USE --------- |\n");
-	    printf( "  | Machine number of processors  = %d |\n", procs);
-	    printf( "  | Number of threads set         = %d |\n", nthreads);
-	    printf( "  | Max threads in use            = %d |\n", maxt);
-	    printf( "  | In parallel?                  = %d |\n", inpar);
-	    printf( "  | Dynamic threads enabled?      = %d |\n", dynamic);
-	    printf( "  | Nested parallelism supported? = %d |\n", nested);
-	    printf( "  | --------------------------------- |\n");
-	
-	    
-	    if( procs < nthreads )
-	      std::cout<<" ( WARNING: Maximimun number of threads is EXCEEDED )"<<std::endl;
-	    	    
-	  }
-    
-      }
-      
+        {
+            /* Obtain thread number */
+            tid = omp_get_thread_num();
+
+            /* Only master thread does this */
+            if (tid == 0)
+            {
+                printf("  Thread %d getting environment info...\n", tid);
+
+                /* Get environment information */
+                procs    = omp_get_num_procs();
+                nthreads = omp_get_num_threads();
+                maxt     = omp_get_max_threads();
+                inpar    = omp_in_parallel();
+                //omp_set_dynamic(true);
+                dynamic  = omp_get_dynamic();
+                //omp_set_nested(true);
+                nested   = omp_get_nested();
+
+                /* Print environment information */
+                printf( "  | ------------ OMP IN USE --------- |\n");
+                printf( "  | Machine number of processors  = %d |\n", procs);
+                printf( "  | Number of threads set         = %d |\n", nthreads);
+                printf( "  | Max threads in use            = %d |\n", maxt);
+                printf( "  | In parallel?                  = %d |\n", inpar);
+                printf( "  | Dynamic threads enabled?      = %d |\n", dynamic);
+                printf( "  | Nested parallelism supported? = %d |\n", nested);
+                printf( "  | --------------------------------- |\n");
+
+                if( procs < nthreads )
+                  std::cout<<" ( WARNING: Maximimun number of threads is EXCEEDED )"<<std::endl;
+            }
+        }
 #endif
     }
 
@@ -287,5 +250,4 @@ public:
 ///@} addtogroup block
 }
 
-#endif	/* KRATOS_OPENMP_UTILS_H */
-
+#endif  /* KRATOS_OPENMP_UTILS_H */

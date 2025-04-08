@@ -259,7 +259,7 @@ public:
     std::string Info() const override
     {
         std::stringstream buffer;
-        buffer << Name() << " variable" <<" #" << static_cast<unsigned int>(Key());
+        buffer << Name() << " variable";
         return buffer.str();
     }
 
@@ -273,7 +273,8 @@ public:
     }
 
     /// Print object's data.
-    void PrintData(std::ostream& rOStream) const override{
+    void PrintData(std::ostream& rOStream) const override
+    {
         VariableData::PrintData(rOStream);
     }
 
@@ -352,8 +353,8 @@ private:
      */
     void save(Serializer& rSerializer) const override
     {
-        KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, VariableData );
-        rSerializer.save("Zero",mZero);
+        KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, VariableData);
+        rSerializer.save("Zero", mZero);
     }
 
     /**
@@ -362,8 +363,8 @@ private:
      */
     void load(Serializer& rSerializer) override
     {
-        KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, VariableData );
-        rSerializer.load("Zero",mZero);
+        KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, VariableData);
+        rSerializer.load("Zero", mZero);
     }
 
     ///@}
@@ -421,6 +422,4 @@ inline std::ostream& operator << (std::ostream& rOStream,
 
 }  // namespace Kratos.
 
-#endif // KRATOS_VARIABLE_H_INCLUDED  defined 
-
-
+#endif // KRATOS_VARIABLE_H_INCLUDED  defined
