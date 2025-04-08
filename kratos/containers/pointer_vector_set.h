@@ -245,6 +245,7 @@ public:
      */
     bool operator==(const PointerVectorSet& r) const noexcept
     {
+        assert( !empty() );
         if (size() != r.size())
             return false;
         else
@@ -261,6 +262,7 @@ public:
      */
     bool operator<(const PointerVectorSet& r) const noexcept
     {
+        assert( !empty() );
         return std::lexicographical_compare(mData.begin(), mData.end(), r.mData.begin(), r.mData.end(), CompareKey());
     }
 
@@ -555,76 +557,146 @@ public:
             mSortedPartSize = mData.size();
     }
 
+    /**
+     * @brief Createa and adds a pointer to the end of the set.
+     * @details This function appends a given pointer to the end of the set.
+     * @param x The pointer to be added to the end of the set.
+     */
     template<class TOtherDataType>
     void push_back(TOtherDataType const& x)
     {
         push_back(TPointerType(new TOtherDataType(x)));
     }
 
+    /**
+     * @brief Creates and inserts a pointer from the value at the specified position.
+     * @details This function creates a pointer from value and inserts. If the given Position is valid, then
+     * it uses that to insert the value, otherwise the Position is discarded to maintain the dataset
+     * sorted. If there is an existing element with the same key as in the value, then an iterator for
+     * the existing element is returned.
+     * @param Position An iterator pointing to the position where the pointer may be inserted.
+     * @param rData The value to be inserted.
+     * @return An iterator pointing to the inserted element.
+     */
     template<class TOtherDataType>
     iterator insert(iterator Position, const TOtherDataType& rData)
     {
-        ptr_iterator sorted_part_end;
-
-        key_type key = KeyOf(rData);
-
-        if(mData.size() - mSortedPartSize >= mMaxBufferSize)
-        {
-            Sort();
-            sorted_part_end = mData.end();
-        }
-        else
-            sorted_part_end	= mData.begin() + mSortedPartSize;
-
-        ptr_iterator i(std::lower_bound(mData.begin(), sorted_part_end, key, CompareKey()));
-        if (i == sorted_part_end)
-        {
-            mSortedPartSize++;
-            return mData.insert(sorted_part_end, TPointerType(new TOtherDataType(rData)));
-        }
-
-        if (!EqualKeyTo(key)(*i))
-            if((i = std::find_if(sorted_part_end, mData.end(), EqualKeyTo(key))) == mData.end())
-            {
+        if (empty()) {
+            // the dataset is empty. So use push back.
+            mData.push_back(TPointerType(new TOtherDataType(rData)));
+            mSortedPartSize = mData.size();
+            return iterator(mData.end() - 1);
+        } else if (Position == cend()) {
+            // trying to insert at the end.
+            if (KeyOf(*(Position - 1)) < KeyOf(rData)) {
+                // key at the position hint is less than the value of key. Hence position hint
+                // is valid. So using the push back.
                 mData.push_back(TPointerType(new TOtherDataType(rData)));
-                //return iterator(--mData.end());
-                return iterator(mData.end()-1);
+                mSortedPartSize = mData.size();
+                return iterator(mData.end() - 1);
+            } else {
+                // given position is invalid. Hence, discarding the hint.
+                return insert(TPointerType(new TOtherDataType(rData)));
             }
-        **i = rData;
-        return i;
+        } else if (Position == cbegin()) {
+            // trying to insert at the front.
+            if (KeyOf(rData) < KeyOf(*Position)) {
+                // key at the position hint is greater than the value of key. Hence position hint
+                // is valid. So using insertion at the beginning.
+                mSortedPartSize = mData.size() + 1;
+                return mData.insert(mData.begin(), TPointerType(new TOtherDataType(rData)));
+            } else {
+                // given position is invalid. Hence, discarding the hint.
+                return insert(TPointerType(new TOtherDataType(rData)));
+            }
+        } else {
+            // trying to insert at an arbitrary position.
+            if (KeyOf(rData) < KeyOf(*Position) && (KeyOf(*(Position - 1)) < KeyOf(rData))) {
+                mSortedPartSize = mData.size() + 1;
+                return mData.insert(mData.begin() + (Position - cbegin()), TPointerType(new TOtherDataType(rData)));
+            } else {
+                // given position is invalid. Hence, discarding the hint.
+                return insert(TPointerType(new TOtherDataType(rData)));
+            }
+        }
     }
 
-    iterator insert(iterator Position, const TPointerType pData)
+    /**
+     * @brief Inserts a pointer.
+     * @details This function inserts a given pointer such that the resulting PointerVectorSet
+     * is kept sorted. If there exists already a pointer with a key same as the key of the value, then
+     * this will return iterator of that existing pointer (The value will not be inserted.)
+     * @param pData The pointer to be inserted.
+     * @return An iterator pointing to the inserted element.
+     */
+    iterator insert(const TPointerType& pData)
     {
-        ptr_iterator sorted_part_end;
-
-        key_type key = KeyOf(*pData);
-
-        if(mData.size() - mSortedPartSize >= mMaxBufferSize)
-        {
-            Sort();
-            sorted_part_end = mData.end();
+        auto itr_pos = std::lower_bound(mData.begin(), mData.end(), KeyOf(*pData), CompareKey());
+        if (itr_pos == mData.end()) {
+            // the position to insert is at the end.
+            mData.push_back(pData);
+            mSortedPartSize = mData.size();
+            return iterator(mData.end() - 1);
+        } else if (EqualKeyTo(KeyOf(*pData))(*itr_pos)) {
+            // already found existing element with the same key, hence returning the existing element.
+            return iterator(itr_pos);
+        } else {
+            // insert the new pData before the itr_pos.
+            mSortedPartSize = mData.size() + 1;
+            return mData.insert(itr_pos, pData);
         }
-        else
-            sorted_part_end	= mData.begin() + mSortedPartSize;
+    }
 
-        ptr_iterator i(std::lower_bound(mData.begin(), sorted_part_end, key, CompareKey()));
-        if (i == sorted_part_end)
-        {
-            mSortedPartSize++;
-            return mData.insert(sorted_part_end, pData);
-        }
-
-        if (!EqualKeyTo(key)(*i))
-            if((i = std::find_if(sorted_part_end, mData.end(), EqualKeyTo(key))) == mData.end())
-            {
+    /**
+     * @brief Inserts a pointer at the specified position.
+     * @details This function inserts a given pointer. If the given position_hint is valid, then
+     * it uses that to insert the value, otherwise the position_hint is discarded to maintain the dataset
+     * sorted. If there is an existing element with the same key as in the value, then an iterator for
+     * the existing element is returned.
+     * @param Position An iterator pointing to the position where the pointer may be inserted.
+     * @param pData The pointer to be inserted.
+     * @return An iterator pointing to the inserted element.
+     */
+    iterator insert(iterator Position, const TPointerType& pData)
+    {
+        if (empty()) {
+            // the dataset is empty. So use push back.
+            mData.push_back(pData);
+            mSortedPartSize = mData.size();
+            return iterator(mData.end() - 1);
+        } else if (Position == cend()) {
+            // trying to insert at the end.
+            if (KeyOf(*(Position - 1)) < KeyOf(*pData)) {
+                // key at the position hint is less than the value of key. Hence position hint
+                // is valid. So using the push back.
                 mData.push_back(pData);
-                return iterator(mData.end()-1);
-// 	  return iterator(--mData.end());
+                mSortedPartSize = mData.size();
+                return iterator(mData.end() - 1);
+            } else {
+                // given position is invalid. Hence, discarding the hint.
+                return insert(pData);
             }
-
-        *i = pData;
-        return i;
+        } else if (Position == cbegin()) {
+            // trying to insert at the front.
+            if (KeyOf(*pData) < KeyOf(*Position)) {
+                // key at the position hint is greater than the value of key. Hence position hint
+                // is valid. So using insertion at the beginning.
+                mSortedPartSize = mData.size() + 1;
+                return mData.insert(mData.begin(), pData);
+            } else {
+                // given position is invalid. Hence, discarding the hint.
+                return insert(pData);
+            }
+        } else {
+            // trying to insert at an arbitrary position.
+            if (KeyOf(*pData) < KeyOf(*Position) && (KeyOf(*(Position - 1)) < KeyOf(*pData))) {
+                mSortedPartSize = mData.size() + 1;
+                return mData.insert(mData.begin() + (Position - cbegin()), pData);
+            } else {
+                // given position is invalid. Hence, discarding the hint.
+                return insert(pData);
+            }
+        }
     }
 
     /**
@@ -636,12 +708,41 @@ public:
      * @param last An input iterator pointing to the end of the range to insert.
      */
     template <class InputIterator>
-    void insert(InputIterator First, InputIterator Last)
+    void insert(InputIterator first, InputIterator last)
     {
-        for(; First != Last; ++First)
-            insert(begin(),*First);
+        // We copy always the input range to a temp not to have the input range mutated.
+        std::vector<TPointerType> temp;
+        temp.reserve(std::distance(first, last));
+        for (auto it = first; it != last; ++it) {
+            temp.push_back(GetPointer(it));
+        }
+        std::sort(temp.begin(), temp.end(), CompareKey());
+        auto new_last = std::unique(temp.begin(), temp.end(), EqualKeyTo());
+        SortedInsert(temp.begin(), new_last);
     }
 
+    /**
+     * @brief Insert elements from another PointerVectorSet range.
+     * @details This function inserts element pointers from another PointerVectorSet range specified by first and last into the current set.
+     * Since, PointerVectorSet is assumed to be sorted and unique, the incoming PointerVectorSet is not
+     * sorted and made unique again. This will not insert any elements in the incoming set, if there exists an element with a key
+     * which is equal to an element's key in the input range.
+     * @param first Other PointerVectorSet starting iterator
+     * @param last Other PointerVectorSet ending iterator
+     */
+    void insert(PointerVectorSet::const_iterator first, PointerVectorSet::const_iterator last)
+    {
+        SortedInsert(first, last);
+    }
+
+    /**
+     * @brief Insert elements from another PointerVectorSet.
+     * @details This function inserts element pointers from another PointerVectorSet into the current set.
+     * Since, PointerVectorSet is assumed to be sorted and unique, the incoming PointerVectorSet is not
+     * sorted and made unique again. This will not insert any elements in the incoming set, if there exists an element with a key
+     * which is equal to an element's key in the input range.
+     * @param rOther Other PointerVectorSet
+     */
     void insert(const PointerVectorSet& rOther)
     {
         insert(rOther.begin(), rOther.end());

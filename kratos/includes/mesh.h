@@ -73,104 +73,79 @@ public:
     /// Pointer definition of Mesh
     KRATOS_CLASS_POINTER_DEFINITION(Mesh);
 
+    // Alias for representing data type stored at node, element, etc
     typedef KRATOS_DOUBLE_TYPE DataType;
 
+    // Alias for representing indices, typically used for indexing arrays or collections.
     typedef KRATOS_INDEX_TYPE IndexType;
 
+    // Alias for representing sizes or counts, commonly used to indicate the size of data structures.
     typedef KRATOS_SIZE_TYPE SizeType;
 
+    // Alias for representing node types in a mesh data structure.
     typedef TNodeType NodeType;
 
+    // Alias for representing properties associated with nodes or elements in a mesh.
     typedef TPropertiesType PropertiesType;
 
+    // Alias for representing the geometry associated with a specific node type.
     typedef Geometry<NodeType> GeometryType;
 
+    // Alias for representing element types in a mesh data structure.
     typedef TElementType ElementType;
 
+    // Alias for representing condition types in a mesh data structure.
     typedef TConditionType ConditionType;
 
+    // Alias for representing master-slave constraints that can be applied in the mesh.
     typedef MasterSlaveConstraint MasterSlaveConstraintType;
 
+    // Alias for the complete mesh data structure, including nodes, properties, elements, and conditions.
     typedef Mesh<TNodeType, TPropertiesType, TElementType, TConditionType> MeshType;
 
-    /// Nodes container. Which is a vector set of nodes with their Id's as key.
+    /// Type alias for the container of nodes.
     typedef PointerVectorSet<NodeType, IndexedObject> NodesContainerType;
 
-    /** Iterator over the nodes. This iterator is an indirect
-    iterator over Node::Pointer which turn back a reference to
-    node by * operator and not a pointer for more convenient
-    usage. */
+    /// Iterator for nodes in the container. Provides direct references to nodes.
     typedef typename NodesContainerType::iterator NodeIterator;
 
-    /** Const iterator over the nodes. This iterator is an indirect
-    iterator over Node::Pointer which turn back a reference to
-    node by * operator and not a pointer for more convenient
-    usage. */
+    /// Const iterator for nodes in the container. Provides direct references to nodes.
     typedef typename NodesContainerType::const_iterator NodeConstantIterator;
 
-    /// Properties container. A vector set of properties with their Id's as key.
+    /// Type alias for the container of properties.
     typedef PointerVectorSet<PropertiesType, IndexedObject> PropertiesContainerType;
 
-    /** Iterator over the properties. This iterator is an indirect
-    iterator over Properties::Pointer which turn back a reference to
-    properties by * operator and not a pointer for more convenient
-    usage. */
+    /// Iterator for properties in the container. Provides direct references to properties.
     typedef typename PropertiesContainerType::iterator PropertiesIterator;
 
-    /** Const iterator over the properties. This iterator is an indirect
-    iterator over Properties::Pointer which turn back a reference to
-    properties by * operator and not a pointer for more convenient
-    usage. */
+    /// Const iterator for properties in the container. Provides direct references to properties.
     typedef typename PropertiesContainerType::const_iterator PropertiesConstantIterator;
 
-    /// Geometries container. A vector map of Geometries with given Id's as key.
-    /*       typedef PointerVectorMap<GeometryType> GeometriesContainerType; */
-
-    /// Element container. A vector set of Elements with their Id's as key.
+    /// Type alias for the container of elements.
     typedef PointerVectorSet<ElementType, IndexedObject> ElementsContainerType;
 
-    /** Iterator over the Elements. This iterator is an indirect
-    iterator over Elements::Pointer which turn back a reference to
-    Element by * operator and not a pointer for more convenient
-    usage. */
+    /// Iterator for elements in the container. Provides direct references to elements.
     typedef typename ElementsContainerType::iterator ElementIterator;
 
-    /** Const iterator over the Elements. This iterator is an indirect
-    iterator over Elements::Pointer which turn back a reference to
-    Element by * operator and not a pointer for more convenient
-    usage. */
+    /// Const iterator for elements in the container. Provides direct references to elements.
     typedef typename ElementsContainerType::const_iterator ElementConstantIterator;
 
-    /// Conditions container. A vector set of Conditions with their Id's as key.
+    /// Type alias for the container of conditions.
     typedef PointerVectorSet<ConditionType, IndexedObject> ConditionsContainerType;
 
-    /** Iterator over the Conditions. This iterator is an indirect
-    iterator over Conditions::Pointer which turn back a reference to
-    Condition by * operator and not a pointer for more convenient
-    usage. */
+    /// Iterator for conditions in the container. Provides direct references to conditions.
     typedef typename ConditionsContainerType::iterator ConditionIterator;
 
-    /** Const iterator over the Conditions. This iterator is an indirect
-    iterator over Conditions::Pointer which turn back a reference to
-    Condition by * operator and not a pointer for more convenient
-    usage. */
+    /// Const iterator for conditions in the container. Provides direct references to conditions.
     typedef typename ConditionsContainerType::const_iterator ConditionConstantIterator;
 
-    // Defining the constraint base type
-
-    /// The container of the constraints
+    /// Type alias for the container of master-slave constraints.
     typedef PointerVectorSet<MasterSlaveConstraintType, IndexedObject> MasterSlaveConstraintContainerType;
 
-    /** Iterator over the constraints. This iterator is an indirect
-    iterator over MasterSlaveConstraint::Pointer which turn back a reference to
-    MasterSlaveConstraint by * operator and not a pointer for more convenient
-    usage. */
+    /// Iterator for master-slave constraints in the container. Provides direct references to constraints.
     typedef typename MasterSlaveConstraintContainerType::iterator MasterSlaveConstraintIteratorType;
 
-    /** Const iterator over the constraints. This iterator is an indirect
-    iterator over MasterSlaveConstraint::Pointer which turn back a reference to
-    Table by * operator and not a pointer for more convenient
-    usage. */
+    /// Const iterator for master-slave constraints in the container. Provides direct references to constraints.
     typedef typename MasterSlaveConstraintContainerType::const_iterator MasterSlaveConstraintConstantIteratorType;
 
 
@@ -241,7 +216,7 @@ public:
     ///@{
 
     /** Dimensional space of the mesh geometries
-    @return SizeType, working space dimension of this geometry.
+        @return SizeType, working space dimension of this geometry.
     */
 
     SizeType WorkingSpaceDimension() const
@@ -275,31 +250,41 @@ public:
     */
     void AddNode(typename NodeType::Pointer pNewNode)
     {
-        mpNodes->insert(mpNodes->begin(), pNewNode);
+        mpNodes->insert(mpNodes->end(), pNewNode);
     }
 
     /** Returns the Node::Pointer  corresponding to it's identifier */
     typename NodeType::Pointer pGetNode(IndexType NodeId)
     {
-        return (*mpNodes)(NodeId);
+        auto i = mpNodes->find(NodeId);
+        KRATOS_ERROR_IF(i == mpNodes->end()) << "Node index not found: " << NodeId << "." << std::endl;
+        return *i.base();
     }
 
     /** Returns the Node::Pointer  corresponding to it's identifier */
-    const typename NodeType::Pointer pGetNode(IndexType NodeId) const
+    const typename NodeType::Pointer pGetNode(const IndexType NodeId) const
     {
-        return (*mpNodes)(NodeId);
+        const auto& r_nodes = *mpNodes;
+        auto i = r_nodes.find(NodeId);
+        KRATOS_ERROR_IF(i == r_nodes.end()) << "Node index not found: " << NodeId << "." << std::endl;
+        return *i.base();
     }
 
     /** Returns a reference node corresponding to it's identifier */
     NodeType& GetNode(IndexType NodeId)
     {
-        return (*mpNodes)[NodeId];
+        auto i = mpNodes->find(NodeId);
+        KRATOS_ERROR_IF(i == mpNodes->end()) << "Node index not found: " << NodeId << "." << std::endl;
+        return *i;
     }
 
     /** Returns a reference node corresponding to it's identifier */
     const NodeType& GetNode(IndexType NodeId) const
     {
-        return (*mpNodes)[NodeId];
+        const auto& r_nodes = *mpNodes;
+        auto i = r_nodes.find(NodeId);
+        KRATOS_ERROR_IF(i == r_nodes.end()) << "Node index not found: " << NodeId << "." << std::endl;
+        return *i;
     }
 
     /** Remove the node with given Id from mesh.
@@ -370,7 +355,8 @@ public:
 
     bool HasNode(IndexType NodeId) const
     {
-        return (mpNodes->find(NodeId) != mpNodes->end());
+        const auto& r_nodes = *mpNodes;
+        return (r_nodes.find(NodeId) != r_nodes.end());
     }
 
     ///@}
@@ -474,7 +460,8 @@ public:
 
     bool HasProperties(IndexType NodeId) const
     {
-        return (mpProperties->find(NodeId) != mpProperties->end());
+        const auto& r_properties = *mpProperties;
+        return (r_properties.find(NodeId) != r_properties.end());
     }
 
     ///@}
@@ -490,25 +477,41 @@ public:
     */
     void AddElement(typename ElementType::Pointer pNewElement)
     {
-        mpElements->insert(mpElements->begin(), pNewElement);
+        mpElements->insert(mpElements->end(), pNewElement);
     }
 
     /** Returns the Element::Pointer  corresponding to it's identifier */
     typename ElementType::Pointer pGetElement(IndexType ElementId)
     {
-        return (*mpElements)(ElementId);
+        auto i = mpElements->find(ElementId);
+        KRATOS_ERROR_IF(i == mpElements->end()) << "Element index not found: " << ElementId << "." << std::endl;
+        return *i.base();
+    }
+
+    /** Returns the Element::Pointer  corresponding to it's identifier */
+    const typename ElementType::Pointer pGetElement(const IndexType ElementId) const
+    {
+        const auto& r_elements = *mpElements;
+        auto i = r_elements.find(ElementId);
+        KRATOS_ERROR_IF(i == r_elements.end()) << "Element index not found: " << ElementId << "." << std::endl;
+        return *i.base();
     }
 
     /** Returns a reference element corresponding to it's identifier */
     ElementType& GetElement(IndexType ElementId)
     {
-        return (*mpElements)[ElementId];
+        auto i = mpElements->find(ElementId);
+        KRATOS_ERROR_IF(i == mpElements->end()) << "Element index not found: " << ElementId << "." << std::endl;
+        return *i;
     }
 
     /** Returns a reference element corresponding to it's identifier */
     const ElementType& GetElement(IndexType ElementId) const
     {
-        return (*mpElements)[ElementId];
+        const auto& r_elements = *mpElements;
+        auto i = r_elements.find(ElementId);
+        KRATOS_ERROR_IF(i == r_elements.end()) << "Element index not found: " << ElementId << "." << std::endl;
+        return *i;
     }
 
     /** Remove the element with given Id from mesh.
@@ -582,9 +585,10 @@ public:
         return mpElements->GetContainer();
     }
 
-    bool HasElement(IndexType NodeId) const
+    bool HasElement(IndexType ElementId) const
     {
-        return (mpElements->find(NodeId) != mpElements->end());
+        const auto& r_elements = *mpElements;
+        return (r_elements.find(ElementId) != r_elements.end());
     }
 
     ///@}
@@ -600,25 +604,41 @@ public:
     */
     void AddCondition(typename ConditionType::Pointer pNewCondition)
     {
-        mpConditions->insert(mpConditions->begin(), pNewCondition);
+        mpConditions->insert(mpConditions->end(), pNewCondition);
     }
 
     /** Returns the Condition::Pointer  corresponding to it's identifier */
     typename ConditionType::Pointer pGetCondition(IndexType ConditionId)
     {
-        return (*mpConditions)(ConditionId);
+        auto i = mpConditions->find(ConditionId);
+        KRATOS_ERROR_IF(i == mpConditions->end()) << "Condition index not found: " << ConditionId << "." << std::endl;
+        return *i.base();
+    }
+
+    /** Returns the Condition::Pointer  corresponding to it's identifier */
+    const typename ConditionType::Pointer pGetCondition(const IndexType ConditionId) const
+    {
+        const auto& r_conditions = *mpConditions;
+        auto i = r_conditions.find(ConditionId);
+        KRATOS_ERROR_IF(i == r_conditions.end()) << "Condition index not found: " << ConditionId << "." << std::endl;
+        return *i.base();
     }
 
     /** Returns a reference condition corresponding to it's identifier */
     ConditionType& GetCondition(IndexType ConditionId)
     {
-        return (*mpConditions)[ConditionId];
+        auto i = mpConditions->find(ConditionId);
+        KRATOS_ERROR_IF(i == mpConditions->end()) << "Condition index not found: " << ConditionId << "." << std::endl;
+        return *i;
     }
 
     /** Returns a reference condition corresponding to it's identifier */
     const ConditionType& GetCondition(IndexType ConditionId) const
     {
-        return (*mpConditions)[ConditionId];
+        const auto& r_conditions = *mpConditions;
+        auto i = r_conditions.find(ConditionId);
+        KRATOS_ERROR_IF(i == r_conditions.end()) << "Condition index not found: " << ConditionId << "." << std::endl;
+        return *i;
     }
 
     /** Remove the condition with given Id from mesh.
@@ -692,9 +712,10 @@ public:
         return mpConditions->GetContainer();
     }
 
-    bool HasCondition(IndexType NodeId) const
+    bool HasCondition(IndexType ConditionId) const
     {
-        return (mpConditions->find(NodeId) != mpConditions->end());
+        const auto& r_conditions = *mpConditions;
+        return (r_conditions.find(ConditionId) != r_conditions.end());
     }
 
     ///@}
@@ -706,19 +727,26 @@ public:
         return mpMasterSlaveConstraints->size();
     }
 
-    /** Inserts a master-slave constraint  in the mesh.
-    */
-    void AddMasterSlaveConstraint(typename MasterSlaveConstraintType::Pointer pNewMasterSlaveConstraint)
+    /// @brief Insert a @ref MasterSlaveConstraint.
+    /// @returns @a false if a constraint with identical ID already exists
+    ///          in the mesh and the insertion did not take place, @a true
+    ///          otherwise.
+    bool AddMasterSlaveConstraint(typename MasterSlaveConstraintType::Pointer pNewMasterSlaveConstraint)
     {
-        mpMasterSlaveConstraints->insert(mpMasterSlaveConstraints->begin(), pNewMasterSlaveConstraint);
+        const auto it_existing_constraint = mpMasterSlaveConstraints->find(pNewMasterSlaveConstraint->Id());
+        if (it_existing_constraint == mpMasterSlaveConstraints->end()) {
+            const auto it_insert_position = mpMasterSlaveConstraints->end();
+            mpMasterSlaveConstraints->insert(it_insert_position, pNewMasterSlaveConstraint);
+            return true;
+        }
+        return false;
     }
 
     /** Returns the MasterSlaveConstraint::Pointer  corresponding to it's identifier */
     typename MasterSlaveConstraintType::Pointer pGetMasterSlaveConstraint(IndexType MasterSlaveConstraintId)
     {
         auto i = mpMasterSlaveConstraints->find(MasterSlaveConstraintId);
-        if(i == mpMasterSlaveConstraints->end())
-            KRATOS_ERROR << "master-slave constraint index " << MasterSlaveConstraintId << " not found";
+        KRATOS_ERROR_IF(i == mpMasterSlaveConstraints->end()) << " master-slave constraint index not found: " << MasterSlaveConstraintId << ".";
         return *i.base();
     }
 
@@ -726,16 +754,14 @@ public:
     MasterSlaveConstraintType& GetMasterSlaveConstraint(IndexType MasterSlaveConstraintId)
     {
         auto i = mpMasterSlaveConstraints->find(MasterSlaveConstraintId);
-        if(i == mpMasterSlaveConstraints->end())
-            KRATOS_ERROR << "master-slave constraint index " << MasterSlaveConstraintId << " not found";
+        KRATOS_ERROR_IF(i == mpMasterSlaveConstraints->end()) << " master-slave constraint index not found: " << MasterSlaveConstraintId << ".";
         return *i;
     }
 
     const MasterSlaveConstraintType& GetMasterSlaveConstraint(IndexType MasterSlaveConstraintId) const
     {
         auto i = mpMasterSlaveConstraints->find(MasterSlaveConstraintId);
-        if(i == mpMasterSlaveConstraints->end())
-            KRATOS_ERROR << "master-slave constraint index " << MasterSlaveConstraintId << " not found";
+        KRATOS_ERROR_IF(i == mpMasterSlaveConstraints->end()) << " master-slave constraint index not found: " << MasterSlaveConstraintId << ".";
         return *i;
     }
 
