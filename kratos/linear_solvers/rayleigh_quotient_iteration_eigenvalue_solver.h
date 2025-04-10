@@ -258,7 +258,7 @@ namespace Kratos
                 KRATOS_THROW_ERROR(std::runtime_error, "Perpendicular eigenvector to M", "");
 
 
-            double convergence_norm = fabs((ro - old_ro) / ro);
+            double convergence_norm = std::abs((ro - old_ro) / ro);
 
             if(convergence_norm < mShiftingConvergence) // Start shifting after certain convergence
             {

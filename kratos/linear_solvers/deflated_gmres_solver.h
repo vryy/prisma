@@ -595,7 +595,7 @@ private:
         else
         {
             const DataType rnorm = 1.0/sqrt (dx*dx + dy*dy);
-            cs = fabs (dx) * rnorm;
+            cs = std::abs (dx) * rnorm;
             sn = cs * dy / dx;
         }
     }

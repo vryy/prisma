@@ -124,7 +124,7 @@ public:
         {
             DataType diag_Aii = rA(i,i);
             if(diag_Aii != zero)
-                mDiagonal[i] = 1.00 / sqrt(fabs(diag_Aii));
+                mDiagonal[i] = 1.00 / std::sqrt(std::abs(diag_Aii));
             else
                 KRATOS_THROW_ERROR(std::logic_error,"zero found in the diagonal. Diagonal preconditioner can not be used","");
         }
