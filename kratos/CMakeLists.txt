@@ -110,9 +110,9 @@ endif()
 add_library(KratosCore SHARED ${KRATOS_CORE_SOURCES})
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Android")
-    set_target_properties(KratosCore PROPERTIES COMPILE_DEFINITIONS "KRATOS_CORE=")
+    target_compile_definitions(KratosCore PRIVATE KRATOS_CORE=)
 else()
-    set_target_properties(KratosCore PROPERTIES COMPILE_DEFINITIONS "KRATOS_CORE=EXPORT")
+    target_compile_definitions(KratosCore PRIVATE KRATOS_CORE=EXPORT)
 endif()
 
 if(MSVC)
@@ -132,10 +132,15 @@ if(Backtrace_FOUND)
     target_link_libraries(KratosCore PUBLIC ${Backtrace_LIBRARY})
 endif()
 
-# cotire(KratosCore)
+# expose the parent directory to any linking target in case it wants to link with external_libraries
+target_include_directories(KratosCore PUBLIC ${CMAKE_SOURCE_DIR})
+# expose the kratos directory to any linking target
+target_include_directories(KratosCore PUBLIC ${CMAKE_SOURCE_DIR}/kratos)
+# expose the applications directory in case the target wants to include like appname_application/custom...
+target_include_directories(KratosCore PUBLIC ${CMAKE_SOURCE_DIR}/applications)
 
 # if(${ADOL_C_FOUND} MATCHES TRUE)
-#     target_link_libraries(KratosCore ${ADOL_C_LIBRARIES} )
+#     target_link_libraries(KratosCore PRIVATE ${ADOL_C_LIBRARIES} )
 # endif()
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Android")
@@ -156,8 +161,8 @@ if(${KRATOS_PYTHON} MATCHES TRUE)
     if(MSVC)
         target_compile_options(Kratos PRIVATE $<$<CONFIG:Debug>:/bigobj>)
     endif()
-    target_link_libraries(Kratos KratosCore)
-    set_target_properties(Kratos PROPERTIES COMPILE_DEFINITIONS "KRATOS_CORE=IMPORT")
+    target_link_libraries(Kratos PRIVATE KratosCore)
+    target_compile_definitions(Kratos PRIVATE KRATOS_CORE=IMPORT)
     set_target_properties(Kratos PROPERTIES PREFIX "")
 
     # changing the .dll suffix to .pyd
