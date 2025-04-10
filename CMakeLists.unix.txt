@@ -422,7 +422,7 @@ add_subdirectory(external_libraries/tetgen1.5.0)
 add_subdirectory(kratos)
 add_subdirectory(applications)
 
-#embedded python - compiles "krun and packages the python lib needed"
+# compiles "krun and packages the python lib needed"
 if(${INSTALL_RUNKRATOS} MATCHES ON)
     add_subdirectory(run_kratos)
 endif()
@@ -440,6 +440,22 @@ if(DEFINED KRATOS_INSTALL_PREFIX)
 else(DEFINED KRATOS_INSTALL_PREFIX)
     set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR} )
     message("---- standard install dir = ${CMAKE_INSTALL_PREFIX}")
+endif()
+
+################################################################################
+
+# install embedded python - install a portable version of Python, which free user from installing it manually
+# This is mostly useful for Windows users. I'm asking myself if I allowed the students to be so much lazy.
+if(${INSTALL_EMBEDDED_PYTHON} MATCHES ON)
+    if(NOT EMBEDDED_PYTHON_DIR)
+        message(FATAL_ERROR "EMBEDDED_PYTHON_DIR must be provided to install the embedded python")
+    endif()
+    file(TO_CMAKE_PATH "${EMBEDDED_PYTHON_DIR}" EMBEDDED_PYTHON_DIR)
+    install(DIRECTORY ${EMBEDDED_PYTHON_DIR}/ DESTINATION embedded_python)
+    if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+        configure_file(${CMAKE_SOURCE_DIR}/embedded_python_cmd.bat.in ${CMAKE_BINARY_DIR}/embedded_python_cmd.bat)
+        install(FILES ${CMAKE_BINARY_DIR}/embedded_python_cmd.bat DESTINATION . RENAME ${CMAKE_PROJECT_NAME}.bat)
+    endif()
 endif()
 
 ################################################################################
