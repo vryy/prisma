@@ -1,0 +1,4 @@
+$KRATOS_INSTALL_PREFIX = Get-Location
+$env:PATH = "$KRATOS_INSTALL_PREFIX\embedded_python;$KRATOS_INSTALL_PREFIX\embedded_python\Scripts;$env:PATH"
+$env:QT_PLUGIN_PATH = "$KRATOS_INSTALL_PREFIX\libs\plugins;$env:QT_PLUGIN_PATH"
+cmd
