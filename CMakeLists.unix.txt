@@ -573,6 +573,10 @@ if(${INSTALL_PYTHON_FILES} MATCHES ON)
 
     include(CPack)
 
+    # Tell NSIS to run the post-install script
+    if(${INSTALL_EMBEDDED_PYTHON} MATCHES ON)
+        set(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "ExecWait '\\\"$INSTDIR\\\\${CMAKE_PROJECT_NAME}Pip.bat\\\"'")
+    endif()
 endif()
 
 ################################################################################

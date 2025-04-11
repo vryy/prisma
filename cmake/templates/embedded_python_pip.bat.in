@@ -1,4 +1,6 @@
 @echo off
+set "KRATOS_INSTALL_PREFIX=%cd%"
+set "PATH=%KRATOS_INSTALL_PREFIX%\embedded_python;%KRATOS_INSTALL_PREFIX%\embedded_python\Scripts;%PATH%"
 cd embedded_python
 python get-pip.py
 pip install numpy pandas scipy six xarray
