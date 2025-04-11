@@ -98,7 +98,7 @@ if(${MSVC14})
 endif()
 
 #set kratos specific module path
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake_modules")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules")
 
 ######################################################################################
 ######################################################################################
@@ -453,8 +453,8 @@ if(${INSTALL_EMBEDDED_PYTHON} MATCHES ON)
     file(TO_CMAKE_PATH "${EMBEDDED_PYTHON_DIR}" EMBEDDED_PYTHON_DIR)
     install(DIRECTORY ${EMBEDDED_PYTHON_DIR}/ DESTINATION embedded_python)
     if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-        configure_file(${CMAKE_SOURCE_DIR}/embedded_python_cmd.bat.in ${CMAKE_BINARY_DIR}/embedded_python_cmd.bat)
-        install(FILES ${CMAKE_BINARY_DIR}/embedded_python_cmd.bat DESTINATION . RENAME ${CMAKE_PROJECT_NAME}.bat)
+        configure_file(${CMAKE_SOURCE_DIR}/cmake/templates/embedded_python_cmd.bat.in ${CMAKE_BINARY_DIR}/embedded_python_cmd.bat)
+        install(FILES ${CMAKE_BINARY_DIR}/embedded_python_cmd.bat DESTINATION . RENAME ${CMAKE_PROJECT_NAME}Cmd.bat)
     endif()
 endif()
 

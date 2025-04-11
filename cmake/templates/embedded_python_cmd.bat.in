@@ -1,4 +1,5 @@
 @echo off
-set "KRATOS_INSTALL_PREFIX=@KRATOS_INSTALL_PREFIX@"
+set "KRATOS_INSTALL_PREFIX=%cd%"
 set "PATH=%KRATOS_INSTALL_PREFIX%\embedded_python;%KRATOS_INSTALL_PREFIX%\embedded_python\Scripts;%PATH%"
+set "QT_PLUGIN_PATH=%KRATOS_INSTALL_PREFIX%\libs\plugins;%QT_PLUGIN_PATH%""
 cmd
