@@ -455,6 +455,8 @@ if(${INSTALL_EMBEDDED_PYTHON} MATCHES ON)
     if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
         configure_file(${CMAKE_SOURCE_DIR}/cmake/templates/embedded_python_cmd.bat.in ${CMAKE_BINARY_DIR}/embedded_python_cmd.bat)
         install(FILES ${CMAKE_BINARY_DIR}/embedded_python_cmd.bat DESTINATION . RENAME ${CMAKE_PROJECT_NAME}Cmd.bat)
+        configure_file(${CMAKE_SOURCE_DIR}/cmake/templates/embedded_python_pip.bat.in ${CMAKE_BINARY_DIR}/embedded_python_pip.bat)
+        install(FILES ${CMAKE_BINARY_DIR}/embedded_python_pip.bat DESTINATION . RENAME ${CMAKE_PROJECT_NAME}Pip.bat)
     endif()
 endif()
 

@@ -1,0 +1,4 @@
+@echo off
+cd embedded_python
+python get-pip.py
+pip install numpy pandas scipy six xarray
