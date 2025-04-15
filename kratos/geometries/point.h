@@ -470,7 +470,10 @@ private:
 /// input stream function
 template<std::size_t TDimension, class TDataType>
 inline std::istream& operator >> (std::istream& rIStream,
-                                  Point<TDimension, TDataType>& rThis);
+                                  Point<TDimension, TDataType>& rThis)
+{
+    return rIStream;
+}
 
 /// output stream function
 template<std::size_t TDimension, class TDataType>

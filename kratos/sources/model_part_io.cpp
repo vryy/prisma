@@ -10,27 +10,12 @@
 //  Main authors:    Pooyan Dadvand
 //
 
-
-
-
-
-
-
-
-
-
-
-
 // Project includes
 #include "includes/model_part_io.h"
 #include "utilities/timer.h"
 
-
-
 namespace Kratos
 {
-
-
     /// Constructor with  filenames.
     ModelPartIO::ModelPartIO(std::string const& Filename, const Flags Options )
         : mNumberOfLines(1)

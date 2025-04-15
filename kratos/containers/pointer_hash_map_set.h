@@ -469,7 +469,6 @@ private:
 ///@name Input and output
 ///@{
 
-
 /// output stream function
 template<class TDataType,
          class TGetKeyType,
@@ -486,9 +485,9 @@ std::ostream& operator << (std::ostream& rOStream,
 
     return rOStream;
 }
-///@}
 
+///@}
 
 }  // namespace Kratos.
 
-#endif // KRATOS_POINTER_HASH_MAP_SET_H_INCLUDED  defined 
+#endif // KRATOS_POINTER_HASH_MAP_SET_H_INCLUDED  defined

@@ -1010,7 +1010,10 @@ private:
 /// input stream function
 template<class TNodeType, class TPropertiesType, class TElementType, class TConditionType>
 inline std::istream& operator >> (std::istream& rIStream,
-                                  Mesh<TNodeType, TPropertiesType, TElementType, TConditionType>& rThis);
+                                  Mesh<TNodeType, TPropertiesType, TElementType, TConditionType>& rThis)
+{
+    return rIStream;
+}
 
 /// output stream function
 template<class TNodeType, class TPropertiesType, class TElementType, class TConditionType>

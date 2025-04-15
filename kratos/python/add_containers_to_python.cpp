@@ -239,7 +239,6 @@ void  AddContainersToPython()
     .def( self_ns::str( self ) )
     ;
 
-
     KRATOS_REGISTER_IN_PYTHON_FLAG(STRUCTURE);
     KRATOS_REGISTER_IN_PYTHON_FLAG(INTERFACE);
     KRATOS_REGISTER_IN_PYTHON_FLAG(FLUID);
@@ -283,7 +282,6 @@ void  AddContainersToPython()
     .def("SetTransferCoefficientVariable",&ConvectionDiffusionSettings::SetTransferCoefficientVariable)
     .def("SetSpecificHeatVariable",&ConvectionDiffusionSettings::SetSpecificHeatVariable)
     .def("SetVelocityVariable",&ConvectionDiffusionSettings::SetVelocityVariable)
-
 
     .def("GetDensityVariable",&ConvectionDiffusionSettings::GetDensityVariable, return_internal_reference<>() )
     .def("GetDiffusionVariable",&ConvectionDiffusionSettings::GetDiffusionVariable, return_internal_reference<>() )

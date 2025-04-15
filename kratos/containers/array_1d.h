@@ -755,7 +755,7 @@ private:
 
 ///@}
 
-///@name Type	Definitions
+///@name Type Definitions
 ///@{
 
 
@@ -778,4 +778,4 @@ template<> struct DataTypeToString<boost::numeric::ublas::vector<array_1d<std::c
 
 }  // namespace	Kratos.
 
-#endif // KRATOS_ARRAY_1D_H_INCLUDED  defined 
+#endif // KRATOS_ARRAY_1D_H_INCLUDED  defined

@@ -592,8 +592,10 @@ template<class TDataType> const Variable<TDataType> Dof<TDataType>::msNone("NONE
 /// input stream function
 template<class TDataType>
 inline std::istream& operator >> (std::istream& rIStream,
-                                  Dof<TDataType>& rThis);
-
+                                  Dof<TDataType>& rThis)
+{
+    return rIStream;
+}
 
 /// output stream function
 template<class TDataType>
@@ -603,7 +605,6 @@ inline std::ostream& operator << (std::ostream& rOStream,
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;
     rThis.PrintData(rOStream);
-
 
     return rOStream;
 }

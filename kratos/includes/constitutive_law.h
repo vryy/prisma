@@ -1476,7 +1476,10 @@ private:
 
 /// input stream function
 inline std::istream & operator >>(std::istream& rIStream,
-                                  ConstitutiveLaw& rThis);
+                                  ConstitutiveLaw& rThis)
+{
+    return rIStream;
+}
 
 /// output stream function
 

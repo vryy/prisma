@@ -88,7 +88,6 @@
 namespace Kratos
 {
 
-class ModelPart;
 class VariableData;
 template <class TDataType> class Variable;
 //  template <class TDataType> class KratosComponents;
@@ -534,7 +533,6 @@ public:
     KRATOS_SERIALIZATION_DIRECT_SAVE(unsigned int)
     KRATOS_SERIALIZATION_DIRECT_SAVE(unsigned char)
     KRATOS_SERIALIZATION_DIRECT_SAVE(std::string)
-//        KRATOS_SERIALIZATION_DIRECT_SAVE(Vector)
     KRATOS_SERIALIZATION_DIRECT_SAVE(Matrix)
     KRATOS_SERIALIZATION_DIRECT_SAVE(SymmetricMatrix)
     KRATOS_SERIALIZATION_DIRECT_SAVE(long long)
@@ -1154,7 +1152,6 @@ private:
 //     return rThis;
 //   }
 
-
 //   template<class TDataType>
 //   inline Serializer& operator << (Serializer& rThis, TDataType& rObject)
 //   {
@@ -1162,22 +1159,26 @@ private:
 
 //     return rThis;
 //   }
+
 /// input stream function
-//   inline std::istream& operator >> (std::istream& rIStream,
-//                  Serializer& rThis);
+inline std::istream& operator >> (std::istream& rIStream,
+                                  Serializer& rThis)
+{
+    return rIStream;
+}
 
 /// output stream function
-//   inline std::ostream& operator << (std::ostream& rOStream,
-//                  const Serializer& rThis)
-//     {
-//       rThis.PrintInfo(rOStream);
-//       rOStream << std::endl;
-//       rThis.PrintData(rOStream);
+inline std::ostream& operator << (std::ostream& rOStream,
+                                  const Serializer& rThis)
+{
+    rThis.PrintInfo(rOStream);
+    rOStream << std::endl;
+    rThis.PrintData(rOStream);
 
-//       return rOStream;
-//     }
+    return rOStream;
+}
+
 ///@}
-
 
 }  // namespace Kratos.
 
