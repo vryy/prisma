@@ -77,7 +77,7 @@ public:
 
     /// Check if the point is inside the bounding volume
     /// tolerance parameter is to account for proximity
-    bool IsInside(const PointType& r_point, const double& tolerance) const
+    bool IsInside(const PointType& r_point, const double tolerance) const
     {
         bool is_inside = true;
         for(std::size_t i = 0; i < this->NumberOfDirections(); ++i)
@@ -95,7 +95,7 @@ public:
     ///     +   0: the two BVs are not overlapping within the tolerance, which mean this condition is satisfied in at least one direction: (this.max <= other.min - tol) or (this.min >= other.max + tol)
     ///     +   1: the two BVs are overlapping, which means in all direction, this condition is satisfied: (this.max >= other.min + tol) or (this.min <= other.max - tol)
     ///     +   2: the two BVs are in tangent to each other (only enabled if test_tangent == true)
-    int TestOverlapped(const kDOP& rOther, const double& tolerance, const bool& test_tangent = true) const
+    int TestOverlapped(const kDOP& rOther, const double tolerance, const bool test_tangent = true) const
     {
         if(this->NumberOfDirections() != rOther.NumberOfDirections())
             return false;
@@ -126,7 +126,7 @@ public:
     }
 
     /// Add a point to the DOP /// This is mainly used for debugging
-    void InsertPoint(const double& rX, const double& rY, const double& rZ)
+    void InsertPoint(const double rX, const double rY, const double rZ)
     {
         for(std::size_t i = 0; i < this->NumberOfDirections(); ++i)
         {
@@ -144,14 +144,14 @@ public:
     {
         for(std::size_t i = 0; i < rGeometry.size(); ++i)
         {
-            if(TFrame == 1)
+            if constexpr(TFrame == 1)
             {
                 this->InsertPoint(rGeometry[i].X0() + rGeometry[i].GetSolutionStepValue(DISPLACEMENT_X),
                                   rGeometry[i].Y0() + rGeometry[i].GetSolutionStepValue(DISPLACEMENT_Y),
                                   rGeometry[i].Z0() + rGeometry[i].GetSolutionStepValue(DISPLACEMENT_Z));
 //                this->InsertPoint(rGeometry[i].X(), rGeometry[i].Y(), rGeometry[i].Z());
             }
-            else if(TFrame == 0)
+            else if constexpr(TFrame == 0)
             {
                 this->InsertPoint(rGeometry[i].X0(), rGeometry[i].Y0(), rGeometry[i].Z0());
             }
@@ -162,7 +162,7 @@ public:
     void SetVolume(const kDOP& rBV1, const kDOP& rBV2)
     {
         if( (rBV1.GetType() != this->GetType()) || (rBV2.GetType() != this->GetType()) )
-            KRATOS_THROW_ERROR(std::logic_error, "The BV type is incompatible", "")
+            KRATOS_ERROR << "The BV type is incompatible";
 
         for(std::size_t i = 0; i < this->NumberOfDirections(); ++i)
         {
@@ -172,7 +172,7 @@ public:
     }
 
     /// Set the bounding volume by intersecting two BVs. It will re-initialize all data of this kDOP
-    bool SetVolumeIntersection(const kDOP& rBV1, const kDOP& rBV2, const double& tolerance)
+    bool SetVolumeIntersection(const kDOP& rBV1, const kDOP& rBV2, const double tolerance)
     {
         int test = rBV1.TestOverlapped(rBV2, tolerance, true);
         if(test == 1)
@@ -265,7 +265,7 @@ private:
     static const double msDirectionNormalized[][3];
     virtual const double (*Direction() const)[3];
     virtual const double (*DirectionNormalized() const)[3];
-    double NormalCoordinate(int i, const double& rX, const double& rY, const double& rZ) const
+    double NormalCoordinate(int i, const double rX, const double rY, const double rZ) const
     {
         return rX * DirectionNormalized()[i][0] + rY * DirectionNormalized()[i][1] + rZ * DirectionNormalized()[i][2];
     }
@@ -289,8 +289,8 @@ public:
 private:
     static const double msDirection[][3];
     static const double msDirectionNormalized[][3];
-    virtual const double (*Direction() const)[3];
-    virtual const double (*DirectionNormalized() const)[3];
+    const double (*Direction() const)[3] override;
+    const double (*DirectionNormalized() const)[3] override;
 };
 
 class KRATOS_API(KRATOS_CORE) _8DOP : public kDOP
@@ -303,8 +303,8 @@ public:
 private:
     static const double msDirection[][3];
     static const double msDirectionNormalized[][3];
-    virtual const double (*Direction() const)[3];
-    virtual const double (*DirectionNormalized() const)[3];
+    const double (*Direction() const)[3] override;
+    const double (*DirectionNormalized() const)[3] override;
 };
 
 class KRATOS_API(KRATOS_CORE) _12DOP : public kDOP
@@ -317,8 +317,8 @@ public:
 private:
     static const double msDirection[][3];
     static const double msDirectionNormalized[][3];
-    virtual const double (*Direction() const)[3];
-    virtual const double (*DirectionNormalized() const)[3];
+    const double (*Direction() const)[3] override;
+    const double (*DirectionNormalized() const)[3] override;
 };
 
 class KRATOS_API(KRATOS_CORE) _14DOP : public kDOP
@@ -331,8 +331,8 @@ public:
 private:
     static const double msDirection[][3];
     static const double msDirectionNormalized[][3];
-    virtual const double (*Direction() const)[3];
-    virtual const double (*DirectionNormalized() const)[3];
+    const double (*Direction() const)[3] override;
+    const double (*DirectionNormalized() const)[3] override;
 };
 
 class KRATOS_API(KRATOS_CORE) _18DOP : public kDOP
@@ -345,8 +345,8 @@ public:
 private:
     static const double msDirection[][3];
     static const double msDirectionNormalized[][3];
-    virtual const double (*Direction() const)[3];
-    virtual const double (*DirectionNormalized() const)[3];
+    const double (*Direction() const)[3] override;
+    const double (*DirectionNormalized() const)[3] override;
 };
 
 class KRATOS_API(KRATOS_CORE) _20DOP : public kDOP
@@ -359,8 +359,8 @@ public:
 private:
     static const double msDirection[][3];
     static const double msDirectionNormalized[][3];
-    virtual const double (*Direction() const)[3];
-    virtual const double (*DirectionNormalized() const)[3];
+    const double (*Direction() const)[3] override;
+    const double (*DirectionNormalized() const)[3] override;
 };
 
 class KRATOS_API(KRATOS_CORE) _26DOP : public kDOP
@@ -373,8 +373,8 @@ public:
 private:
     static const double msDirection[][3];
     static const double msDirectionNormalized[][3];
-    virtual const double (*Direction() const)[3];
-    virtual const double (*DirectionNormalized() const)[3];
+    const double (*Direction() const)[3] override;
+    const double (*DirectionNormalized() const)[3] override;
 };
 
 
@@ -398,7 +398,7 @@ public:
                            ContainerType& rOutputSet1,
                            ContainerType& rOutputSet2) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling base function", "")
+        KRATOS_ERROR << "Calling base function";
     }
 
     void ComputeCentroid(GeometryType& rGeometry, double C[3]) const
@@ -408,7 +408,7 @@ public:
         C[2] = 0.0;
         unsigned int n = rGeometry.size();
 
-        if (TFrame == 0)
+        if constexpr (TFrame == 0)
         {
             for(std::size_t i = 0; i < n; ++i)
             {
@@ -417,7 +417,7 @@ public:
                 C[2] += rGeometry[i].Z0();
             }
         }
-        else if (TFrame == 1)
+        else if constexpr (TFrame == 1)
         {
             for(std::size_t i = 0; i < n; ++i)
             {
@@ -526,7 +526,7 @@ public:
                 return; // return on success
         } while (ncheck < rBoundingVolume.NumberOfDirections());
 
-        KRATOS_THROW_ERROR(std::logic_error, "The simple partitioning strategy does not work. That can't happen but if it does, the medians are possibly coincident.", "")
+        KRATOS_ERROR << "The simple partitioning strategy does not work. That can't happen but if it does, the medians are possibly coincident.";
     }
 };
 
@@ -579,7 +579,7 @@ public:
 
     typedef kDOP::PointType PointType;
 
-    BoundingVolumeTree(const int& type)
+    BoundingVolumeTree(const int type)
     {
         if(type == 6)
             mpBV = kDOP::Pointer(new _6DOP());
@@ -596,7 +596,7 @@ public:
         else if(type == 26)
             mpBV = kDOP::Pointer(new _26DOP());
         else
-            KRATOS_THROW_ERROR(std::logic_error, "Invalid k-DOP type", "")
+            KRATOS_ERROR << "Invalid k-DOP type " << type;
     }
 
     virtual ~BoundingVolumeTree()
@@ -618,7 +618,7 @@ public:
         // size check
         if( (ChildSet1.size() == 0 && ChildSet2.size() > 0)
          || (ChildSet1.size() > 0 && ChildSet2.size() == 0) )
-            KRATOS_THROW_ERROR(std::logic_error, "There is something wrong with the partitioning. The size of the two sub-sets must be non-zero concurrently", "")
+            KRATOS_ERROR << "There is something wrong with the partitioning. The size of the two sub-sets must be non-zero concurrently";
 
         if(ChildSet1.size() > 0)
         {
@@ -662,7 +662,7 @@ public:
     }
 
     template<typename TGeometryContainerType>
-    void GetContainingGeometries(TGeometryContainerType& rGeometryIds, const PointType& r_point, const double& tolerance) const
+    void GetContainingGeometries(TGeometryContainerType& rGeometryIds, const PointType& r_point, const double tolerance) const
     {
         if(mGeometryIds.size() == 0)
             return;
