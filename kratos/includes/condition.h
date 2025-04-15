@@ -55,23 +55,21 @@ namespace Kratos
  * not all of them have to be implemented if they are not needed for
  * the actual problem
  */
-class Condition : public GeometricalObject
+template<typename TNodeType = Node<3> >
+class BaseCondition : public GeometricalObject
 {
 public:
     ///@name Type Definitions
     ///@{
 
-    /// Pointer definition of Condition
-    KRATOS_CLASS_POINTER_DEFINITION(Condition);
-
-    ///definition of condition type
-    typedef Condition ConditionType;
+    /// Pointer definition of BaseCondition
+    KRATOS_CLASS_POINTER_DEFINITION(BaseCondition);
 
     ///base type: an GeometricalObject that automatically has a unique number
     typedef GeometricalObject BaseType;
 
     ///definition of node type (default is: Node<3>)
-    typedef Node < 3 > NodeType;
+    typedef TNodeType NodeType;
 
     /**
      * Properties are used to store any parameters
@@ -83,15 +81,7 @@ public:
     typedef Geometry<NodeType> GeometryType;
 
     ///definition of nodes container type, redefined from GeometryType
-    typedef Geometry<NodeType>::PointsArrayType NodesArrayType;
-
-    typedef Vector VectorType;
-
-    typedef Matrix MatrixType;
-
-    typedef ComplexVector ComplexVectorType;
-
-    typedef ComplexMatrix ComplexMatrixType;
+    typedef typename Geometry<NodeType>::PointsArrayType NodesArrayType;
 
     typedef BaseType::IndexType IndexType;
 
@@ -100,6 +90,10 @@ public:
     typedef typename NodeType::DofType DofType;
 
     typedef typename DofType::DataType DataType;
+
+    typedef typename MatrixVectorTypeSelector<DataType>::VectorType VectorType;
+
+    typedef typename MatrixVectorTypeSelector<DataType>::MatrixType MatrixType;
 
     typedef std::vector<IndexType> EquationIdVectorType;
 
@@ -128,7 +122,7 @@ public:
     /**
      * Constructor.
      */
-    Condition(IndexType NewId = 0)
+    BaseCondition(IndexType NewId = 0)
         : BaseType(NewId)
         , mpProperties(new PropertiesType)
     {
@@ -137,8 +131,8 @@ public:
     /**
      * Constructor using an array of nodes
      */
-    Condition(IndexType NewId, const NodesArrayType& ThisNodes)
-        : BaseType(NewId,GeometryType::Pointer(new GeometryType(ThisNodes)))
+    BaseCondition(IndexType NewId, const NodesArrayType& ThisNodes)
+        : BaseType(NewId, typename GeometryType::Pointer(new GeometryType(ThisNodes)))
         , mpProperties(new PropertiesType)
     {
     }
@@ -146,7 +140,7 @@ public:
     /**
      * Constructor using Geometry
      */
-    Condition(IndexType NewId, GeometryType::Pointer pGeometry)
+    BaseCondition(IndexType NewId, typename GeometryType::Pointer pGeometry)
         : BaseType(NewId,pGeometry)
         , mpProperties(new PropertiesType)
     {
@@ -155,7 +149,7 @@ public:
     /**
      * Constructor using Properties
      */
-    Condition(IndexType NewId, GeometryType::Pointer pGeometry, PropertiesType::Pointer pProperties)
+    BaseCondition(IndexType NewId, typename GeometryType::Pointer pGeometry, PropertiesType::Pointer pProperties)
         : BaseType(NewId,pGeometry)
         , mpProperties(pProperties)
     {
@@ -163,7 +157,7 @@ public:
 
     /// Copy constructor.
 
-    Condition(Condition const& rOther)
+    BaseCondition(BaseCondition const& rOther)
         : BaseType(rOther)
         , mpProperties(rOther.mpProperties)
     {
@@ -171,7 +165,7 @@ public:
 
     /// Destructor.
 
-    ~Condition() override
+    ~BaseCondition() override
     {
     }
 
@@ -186,7 +180,7 @@ public:
 
     /// Assignment operator.
 
-    Condition & operator=(Condition const& rOther)
+    BaseCondition & operator=(BaseCondition const& rOther)
     {
         BaseType::operator=(rOther);
         mpProperties = rOther.mpProperties;
@@ -239,7 +233,7 @@ public:
      * @return a Pointer to the new condition
      */
     virtual Pointer Create(IndexType NewId,
-                           GeometryType::Pointer pGeom,
+                           typename GeometryType::Pointer pGeom,
                            PropertiesType::Pointer pProperties) const
     {
         KRATOS_ERROR << "Please implement the Second Create method in your derived Condition" << Info() << std::endl;
@@ -253,7 +247,7 @@ public:
      * @return a Pointer to the new condition
      */
     virtual Pointer Create(IndexType NewId,
-                           std::vector<GeometryType::Pointer> pGeom,
+                           std::vector<typename GeometryType::Pointer> pGeom,
                            PropertiesType::Pointer pProperties) const
     {
         KRATOS_ERROR << "Please implement the Third Create method in your derived Condition" << Info() << std::endl;
@@ -436,22 +430,6 @@ public:
      */
     virtual void CalculateLocalSystem(MatrixType& rLeftHandSideMatrix,
                                       VectorType& rRightHandSideVector,
-                                      const ProcessInfo& rCurrentProcessInfo)
-    {
-        KRATOS_ERROR << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
-                     << __FUNCTION__ << " is not implemented";
-    }
-
-    /**
-     * this is called during the assembling process in order
-     * to calculate all condition contributions to the global system
-     * matrix and the right hand side
-     * @param rLeftHandSideMatrix the condition (complex) left hand side matrix
-     * @param rRightHandSideVector the condition (complex) right hand side
-     * @param rCurrentProcessInfo the current process info instance
-     */
-    virtual void CalculateLocalSystem(ComplexMatrixType& rLeftHandSideMatrix,
-                                      ComplexVectorType& rRightHandSideVector,
                                       const ProcessInfo& rCurrentProcessInfo)
     {
         KRATOS_ERROR << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
@@ -1117,7 +1095,7 @@ public:
     }
 
     ///@}
-    ///@name Condition Data
+    ///@name BaseCondition Data
     ///@{
 
     /**
@@ -1179,7 +1157,7 @@ public:
     std::string Info() const override
     {
         std::stringstream buffer;
-        buffer << "Condition #" << Id();
+        buffer << "BaseCondition #" << Id();
         return buffer.str();
     }
 
@@ -1187,7 +1165,7 @@ public:
 
     void PrintInfo(std::ostream& rOStream) const override
     {
-        rOStream << "Condition #" << Id();
+        rOStream << "BaseCondition #" << Id();
     }
 
     /// Print object's data.
@@ -1279,7 +1257,7 @@ private:
     ///@{
     ///@}
 
-}; // Class Condition
+}; // Class BaseCondition
 
 ///@}
 ///@name Type Definitions
@@ -1289,13 +1267,15 @@ private:
 ///@{
 
 /// input stream function
-inline std::istream & operator >>(std::istream& rIStream, Condition& rThis)
+template<class TNodeType>
+inline std::istream & operator >>(std::istream& rIStream, BaseCondition<TNodeType>& rThis)
 {
     return rIStream;
 }
 
 /// output stream function
-inline std::ostream & operator <<(std::ostream& rOStream, const Condition& rThis)
+template<class TNodeType>
+inline std::ostream & operator <<(std::ostream& rOStream, const BaseCondition<TNodeType>& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << " : " << std::endl;
@@ -1306,7 +1286,11 @@ inline std::ostream & operator <<(std::ostream& rOStream, const Condition& rThis
 
 ///@}
 
+typedef BaseCondition<Node<3, KRATOS_DOUBLE_TYPE, Dof<KRATOS_DOUBLE_TYPE> > > Condition;
+typedef BaseCondition<Node<3, KRATOS_DOUBLE_TYPE, Dof<KRATOS_COMPLEX_TYPE> > > ComplexCondition;
+
 void KRATOS_API(KRATOS_CORE) AddKratosComponent(std::string const& Name, Condition const& ThisComponent);
+// void KRATOS_API(KRATOS_CORE) AddKratosComponent(std::string const& Name, ComplexCondition const& ThisComponent);
 
 /**
  * definition of condition specific variables

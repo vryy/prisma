@@ -5,12 +5,12 @@
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 //
-// 	-	Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-// 	-	Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
-// 		in the documentation and/or other materials provided with the distribution.
-// 	-	All advertising materials mentioning features or use of this software must display the following acknowledgement:
-// 			This product includes Kratos Multi-Physics technology.
-// 	-	Neither the name of the CIMNE nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+//  -   Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+//  -   Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
+//      in the documentation and/or other materials provided with the distribution.
+//  -   All advertising materials mentioning features or use of this software must display the following acknowledgement:
+//          This product includes Kratos Multi-Physics technology.
+//  -   Neither the name of the CIMNE nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
 // THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
@@ -19,44 +19,52 @@
 // THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THISSOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
-
-
-
 #if !defined(KRATOS_GLOBAL_VARIABLES_H_INCLUDED )
 #define  KRATOS_GLOBAL_VARIABLES_H_INCLUDED
 
-
-
 // System includes
 
-
 // External includes
-
 
 // Project includes
 #include "containers/variables_list.h"
 
-
 namespace Kratos
 {
+
 namespace Globals
 {
 
-/*		class VariableData;
-		class Element;
-		class Condition;
-	*/
 ///@name Kratos Globals
 ///@{
 //
+
+// Default variables list for different data type
 // This variable is NOT synchronized between different applications threads
-extern KRATOS_API(KRATOS_CORE) VariablesList DefaultVariablesList;
-/*
-		extern KratosComponents<VariableData> VariableDataComponents;
-		extern KratosComponents<Condition> ConditionComponents;
-		extern KratosComponents<Element> ElementComponents;
-  */
+extern KRATOS_API(KRATOS_CORE) VariablesList<KRATOS_DOUBLE_TYPE> DefaultVariablesList;
+extern KRATOS_API(KRATOS_CORE) VariablesList<KRATOS_COMPLEX_TYPE> DefaultComplexVariablesList;
+
+// Selector for default variables list
+template<typename TDataType> struct DefaultVariablesListSelector;
+
+template<>
+struct DefaultVariablesListSelector<KRATOS_DOUBLE_TYPE>
+{
+    static inline VariablesList<KRATOS_DOUBLE_TYPE>& Get()
+    {
+        return DefaultVariablesList;
+    }
+};
+
+template<>
+struct DefaultVariablesListSelector<KRATOS_COMPLEX_TYPE>
+{
+    static inline VariablesList<KRATOS_COMPLEX_TYPE>& Get()
+    {
+        return DefaultComplexVariablesList;
+    }
+};
+
 ///@}
 ///@name Type Definitions
 ///@{
@@ -71,7 +79,7 @@ extern KRATOS_API(KRATOS_CORE) VariablesList DefaultVariablesList;
 
 ///@}
 
-}
+}  // namespace Globals.
 
 }  // namespace Kratos.
 

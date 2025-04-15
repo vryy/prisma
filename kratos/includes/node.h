@@ -65,8 +65,8 @@ namespace Kratos
 /// This class defines the node
 /** The node class from Kratos is defined in this class
 */
-template<std::size_t TDimension, class TDofType = Dof<KRATOS_DOUBLE_TYPE> >
-class Node : public Point<TDimension, typename TDofType::DataType>,  public IndexedObject, public Flags
+template<std::size_t TDimension, typename TDoubleType = KRATOS_DOUBLE_TYPE, class TDofType = Dof<KRATOS_DOUBLE_TYPE> >
+class Node : public Point<TDimension, TDoubleType>,  public IndexedObject, public Flags
 {
     class GetDofKey
     {
@@ -88,7 +88,13 @@ public:
     /// Pointer definition of Node
     KRATOS_CLASS_POINTER_DEFINITION(Node);
 
-    typedef typename TDofType::DataType DataType;
+    typedef TDofType DofType;
+
+    typedef TDoubleType DataType;
+
+    typedef KRATOS_INDEX_TYPE IndexType;
+
+    typedef KRATOS_SIZE_TYPE SizeType;
 
     typedef Node<TDimension, TDofType> NodeType;
 
@@ -96,19 +102,13 @@ public:
 
     typedef Point<TDimension, DataType> PointType;
 
-    typedef TDofType DofType;
-
-    typedef KRATOS_INDEX_TYPE IndexType;
-
-    typedef KRATOS_SIZE_TYPE SizeType;
-
     typedef PointerVectorSet<TDofType, GetDofKey> DofsContainerType;
 
-    typedef VariablesListDataValueContainer SolutionStepsNodalDataContainerType;
+    typedef VariablesListDataValueContainer<typename DofType::DataType> SolutionStepsNodalDataContainerType;
 
-    typedef VariablesListDataValueContainer::BlockType BlockType;
+    typedef typename SolutionStepsNodalDataContainerType::VariablesListType VariablesListType;
 
-    typedef Variable<DataType> DoubleVariableType;
+    typedef typename SolutionStepsNodalDataContainerType::BlockType BlockType;
 
     ///@}
     ///@name Life Cycle
@@ -313,13 +313,13 @@ public:
     }
 
     /// 3d with variables list and data constructor.
-    Node(IndexType NewId, const DataType NewX, const DataType NewY, const DataType NewZ, VariablesList*  pVariablesList, BlockType const* ThisData, SizeType NewQueueSize = 1)
+    Node(IndexType NewId, const DataType NewX, const DataType NewY, const DataType NewZ, VariablesListType* pVariablesList, BlockType const* ThisData, SizeType NewQueueSize = 1)
         : BaseType(NewX, NewY, NewZ)
         , IndexedObject(NewId)
         , Flags()
         , mDofs()
         , mData()
-        , mSolutionStepsNodalData(pVariablesList,ThisData,NewQueueSize)
+        , mSolutionStepsNodalData(pVariablesList, ThisData, NewQueueSize)
         , mInitialPosition(NewX, NewY, NewZ)
     {
 #ifdef _OPENMP
@@ -339,8 +339,8 @@ public:
     void SetId(IndexType NewId) override
     {
         IndexedObject::SetId(NewId);
-        typename Node<TDimension>::DofsContainerType& my_dofs = (this)->GetDofs();
-        for(typename Node<TDimension>::DofsContainerType::iterator iii = my_dofs.begin();    iii != my_dofs.end(); iii++)
+        DofsContainerType& my_dofs = this->GetDofs();
+        for(typename DofsContainerType::iterator iii = my_dofs.begin(); iii != my_dofs.end(); iii++)
         {
             iii->SetId(NewId);
         }
@@ -458,7 +458,7 @@ public:
     void CreateSolutionStepData()
     {
         mSolutionStepsNodalData.PushFront();
-//    VariablesListDataValueContainer temp(&Globals::DefaultVariablesList);
+//    SolutionStepsNodalDataContainerType temp(&Globals::DefaultVariablesList);
 //    if(!mSolutionStepsNodalData.empty())
 //        mSolutionStepsNodalData.push_front(temp);
 //    else
@@ -484,17 +484,17 @@ public:
         mSolutionStepsNodalData.Clear();
     }
 
-    void SetSolutionStepVariablesList(VariablesList* pVariablesList)
+    void SetSolutionStepVariablesList(VariablesListType* pVariablesList)
     {
         mSolutionStepsNodalData.SetVariablesList(pVariablesList);
     }
 
-    VariablesListDataValueContainer& SolutionStepData()
+    SolutionStepsNodalDataContainerType& SolutionStepData()
     {
         return mSolutionStepsNodalData;
     }
 
-    const VariablesListDataValueContainer& SolutionStepData() const
+    const SolutionStepsNodalDataContainerType& SolutionStepData() const
     {
         return mSolutionStepsNodalData;
     }
@@ -703,12 +703,12 @@ public:
         mInitialPosition.Z() = Z;
     }
 
-    VariablesList* pGetVariablesList()
+    VariablesListType* pGetVariablesList()
     {
         return mSolutionStepsNodalData.pGetVariablesList();
     }
 
-    const VariablesList* pGetVariablesList() const
+    const VariablesListType* pGetVariablesList() const
     {
         return mSolutionStepsNodalData.pGetVariablesList();
     }
@@ -1133,14 +1133,17 @@ private:
 
 
 /// input stream function
-template<std::size_t TDimension, class TDofType>
+template<std::size_t TDimension, typename TDoubleType, class TDofType>
 inline std::istream& operator >> (std::istream& rIStream,
-                                  Node<TDimension, TDofType>& rThis);
+                                  Node<TDimension, TDoubleType, TDofType>& rThis)
+{
+    return rIStream;
+}
 
 /// output stream function
-template<std::size_t TDimension, class TDofType>
+template<std::size_t TDimension, typename TDoubleType, class TDofType>
 inline std::ostream& operator << (std::ostream& rOStream,
-                                  const Node<TDimension, TDofType>& rThis)
+                                  const Node<TDimension, TDoubleType, TDofType>& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << " : ";

@@ -43,6 +43,7 @@ namespace Kratos
 /** This class works tightly with VariablesListDataValueContainer and provides the
  * the positions of variables for that containers
  */
+template<typename TBlockType = KRATOS_DOUBLE_TYPE>
 class KRATOS_API(KRATOS_CORE) VariablesList
 {
 public:
@@ -52,11 +53,11 @@ public:
     /// Pointer definition of VariablesList
     KRATOS_CLASS_POINTER_DEFINITION(VariablesList);
 
-    typedef std::size_t SizeType;
+    typedef KRATOS_SIZE_TYPE SizeType;
 
-    typedef std::size_t IndexType;
+    typedef KRATOS_INDEX_TYPE IndexType;
 
-    typedef KRATOS_DOUBLE_TYPE BlockType;
+    typedef TBlockType BlockType;
 
     typedef std::vector<IndexType> PositionsContainerType;
 
@@ -439,15 +440,17 @@ private:
 ///@{
 
 /// input stream function
+template<typename TBlockType>
 inline std::istream& operator >> (std::istream& rIStream,
-                                  VariablesList& rThis)
+                                  VariablesList<TBlockType>& rThis)
 {
     return rIStream;
 }
 
 /// output stream function
+template<typename TBlockType>
 inline std::ostream& operator << (std::ostream& rOStream,
-                                  const VariablesList& rThis)
+                                  const VariablesList<TBlockType>& rThis)
 {
     rThis.PrintInfo(rOStream);
     rThis.PrintData(rOStream);

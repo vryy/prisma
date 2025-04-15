@@ -92,6 +92,7 @@ namespace Kratos
 /// Short class definition.
 /** Detail class definition.
 */
+template<typename TBlockType = KRATOS_DOUBLE_TYPE>
 class FixDataValueContainer
 {
 public:
@@ -101,28 +102,32 @@ public:
     /// Pointer definition of FixDataValueContainer
     KRATOS_CLASS_POINTER_DEFINITION(FixDataValueContainer);
 
+    typedef TBlockType BlockType;
+
     /// Type of the container used for variables
-    typedef double* ContainerType;
+    typedef TBlockType* ContainerType;
 
-    typedef std::size_t IndexType;
+    typedef KRATOS_INDEX_TYPE IndexType;
 
-    typedef std::size_t SizeType;
+    typedef KRATOS_SIZE_TYPE SizeType;
+
+    typedef VariablesList<BlockType> VariablesListType;
 
     ///@}
     ///@name Life Cycle
     ///@{
 
     /// Default constructor.
-    FixDataValueContainer() : mSize(0), mpData(0), mpVariablesList(&Globals::DefaultVariablesList) {}
+    FixDataValueContainer() : mSize(0), mpData(0), mpVariablesList(&Globals::DefaultVariablesListSelector<BlockType>::Get()) {}
 
     /// Copy constructor.
     FixDataValueContainer(FixDataValueContainer const& rOther) : mSize(rOther.Size()), mpData(0), mpVariablesList(rOther.mpVariablesList)
     {
         if(mSize == 0)
             return;
-        mpData = (double*)malloc(mSize * sizeof(double));
+        mpData = (BlockType*)malloc(mSize * sizeof(BlockType));
 
-        VariablesList::VariablesContainerType const& variables = mpVariablesList->Variables();
+        typename VariablesListType::VariablesContainerType const& variables = mpVariablesList->Variables();
 
         SizeType size = variables.size();
 
@@ -138,15 +143,15 @@ public:
     }
 
     /// Variables list constructor.
-    FixDataValueContainer(VariablesList*  pVariablesList) : mSize(0), mpData(0), mpVariablesList(pVariablesList)
+    FixDataValueContainer(VariablesListType*  pVariablesList) : mSize(0), mpData(0), mpVariablesList(pVariablesList)
     {
         mpVariablesList = pVariablesList;
 
         mSize = mpVariablesList->DataSize();
 
-        mpData = (double*)malloc(mSize * sizeof(double));
+        mpData = (BlockType*)malloc(mSize * sizeof(BlockType));
 
-        VariablesList::VariablesContainerType const& variables = mpVariablesList->Variables();
+        typename VariablesListType::VariablesContainerType const& variables = mpVariablesList->Variables();
 
         SizeType size = variables.size();
 
@@ -162,8 +167,7 @@ public:
     /// Destructor.
     virtual ~FixDataValueContainer()
     {
-
-        VariablesList::VariablesContainerType const& variables = mpVariablesList->Variables();
+        typename VariablesListType::VariablesContainerType const& variables = mpVariablesList->Variables();
 
         SizeType size = variables.size();
 
@@ -250,7 +254,7 @@ public:
         if(mpVariablesList == rOther.mpVariablesList)
         {
 // 	      std::cout << "using same variables list" << std::endl;
-            VariablesList::VariablesContainerType const& variables = mpVariablesList->Variables();
+            typename VariablesListType::VariablesContainerType const& variables = mpVariablesList->Variables();
 
             SizeType size = variables.size();
 
@@ -258,7 +262,7 @@ public:
             if(mpVariablesList->DataSize() != mSize)
             {
                 mSize = mpVariablesList->DataSize();
-                mpData = (double*)realloc(mpData, mSize * sizeof(double));
+                mpData = (BlockType*)realloc(mpData, mSize * sizeof(BlockType));
             }
 
             for(IndexType i = 0 ; i < size ; ++i)
@@ -274,7 +278,7 @@ public:
         }
         else
         {
-            VariablesList::VariablesContainerType const& old_variables = mpVariablesList->Variables();
+            typename VariablesListType::VariablesContainerType const& old_variables = mpVariablesList->Variables();
 
             SizeType size = old_variables.size();
 
@@ -290,9 +294,9 @@ public:
 
             mSize = mpVariablesList->DataSize();
 
-            mpData = (double*)realloc(mpData, mSize * sizeof(double));
+            mpData = (BlockType*)realloc(mpData, mSize * sizeof(BlockType));
 
-            VariablesList::VariablesContainerType const& variables = mpVariablesList->Variables();
+            typename VariablesListType::VariablesContainerType const& variables = mpVariablesList->Variables();
 
             size = variables.size();
 
@@ -414,7 +418,7 @@ public:
 
     void Clear()
     {
-        VariablesList::VariablesContainerType const& variables = mpVariablesList->Variables();
+        typename VariablesListType::VariablesContainerType const& variables = mpVariablesList->Variables();
 
         SizeType size = variables.size();
 
@@ -436,12 +440,11 @@ public:
         mSize = mpVariablesList->DataSize();
 
         if(mpData)
-            mpData = (double*)realloc(mpData, mSize * sizeof(double));
+            mpData = (BlockType*)realloc(mpData, mSize * sizeof(BlockType));
         else
-            mpData = (double*)malloc(mSize * sizeof(double));
+            mpData = (BlockType*)malloc(mSize * sizeof(BlockType));
 
-
-        VariablesList::VariablesContainerType const& variables = mpVariablesList->Variables();
+        typename VariablesListType::VariablesContainerType const& variables = mpVariablesList->Variables();
 
         SizeType size = variables.size();
 
@@ -454,9 +457,9 @@ public:
         }
     }
 
-    void UpdateVariablesList(VariablesList* pVariablesList)
+    void UpdateVariablesList(VariablesListType* pVariablesList)
     {
-        VariablesList::VariablesContainerType const& old_variables = mpVariablesList->Variables();
+        typename VariablesListType::VariablesContainerType const& old_variables = mpVariablesList->Variables();
 
         SizeType size = old_variables.size();
 
@@ -473,9 +476,9 @@ public:
 //	  if(mpData)
 //	    free(mpData);
 
-        mpData = (double*)realloc(mpData, mpVariablesList->DataSize() * sizeof(double));
+        mpData = (BlockType*)realloc(mpData, mpVariablesList->DataSize() * sizeof(BlockType));
 
-        VariablesList::VariablesContainerType const& variables = mpVariablesList->Variables();
+        typename VariablesListType::VariablesContainerType const& variables = mpVariablesList->Variables();
 
         size = variables.size();
 
@@ -494,7 +497,7 @@ public:
     ///@name Access
     ///@{
 
-    VariablesList* pGetVariablesList()
+    VariablesListType* pGetVariablesList()
     {
         return mpVariablesList;
     }
@@ -537,7 +540,7 @@ public:
     /// Print object's data.
     virtual void PrintData(std::ostream& rOStream) const
     {
-        VariablesList::VariablesContainerType const& variables = mpVariablesList->Variables();
+        typename VariablesListType::VariablesContainerType const& variables = mpVariablesList->Variables();
 
         SizeType size = variables.size();
 
@@ -616,7 +619,7 @@ private:
 
     ContainerType mpData;
 
-    VariablesList* mpVariablesList;
+    VariablesListType* mpVariablesList;
 
     ///@}
     ///@name Private Operators
@@ -658,12 +661,17 @@ private:
 
 
 /// input stream function
+template<typename TBlockType>
 inline std::istream& operator >> (std::istream& rIStream,
-                                  FixDataValueContainer& rThis);
+                                  FixDataValueContainer<TBlockType>& rThis)
+{
+    return rIStream;
+}
 
 /// output stream function
+template<typename TBlockType>
 inline std::ostream& operator << (std::ostream& rOStream,
-                                  const FixDataValueContainer& rThis)
+                                  const FixDataValueContainer<TBlockType>& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;
@@ -676,6 +684,4 @@ inline std::ostream& operator << (std::ostream& rOStream,
 
 }  // namespace Kratos.
 
-#endif // KRATOS_FIX_DATA_VALUE_CONTAINER_H_INCLUDED  defined 
-
-
+#endif // KRATOS_FIX_DATA_VALUE_CONTAINER_H_INCLUDED  defined

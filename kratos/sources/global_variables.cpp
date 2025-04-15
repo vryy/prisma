@@ -22,9 +22,10 @@ namespace Kratos
 
 namespace Globals
 {
-VariablesList DefaultVariablesList;
-// 	Node<3> DefaultNode3;
-}
+
+VariablesList<KRATOS_DOUBLE_TYPE> DefaultVariablesList;
+VariablesList<KRATOS_COMPLEX_TYPE> DefaultComplexVariablesList;
+
 }
 
-
+}

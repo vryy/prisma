@@ -62,23 +62,23 @@ namespace Kratos
 class Model;
 
 /**
-* @class ModelPart
+* @class BaseModelPart
 * @ingroup KratosCore
 * @brief This class aims to manage meshes for multi-physics simulations
 * @author Pooyan Dadvand
 * @author Riccardo Rossi
 */
-class KRATOS_API(KRATOS_CORE) ModelPart
-    : public DataValueContainer, public Flags
+class BaseModelPart : public DataValueContainer, public Flags
 {
+protected:
     class GetModelPartName
     {
     public:
 
-        using argument_type = const ModelPart* const;
+        using argument_type = const BaseModelPart* const;
         using result_type = std::string;
 
-        std::string const& operator()(const ModelPart& rModelPart) const
+        std::string const& operator()(const BaseModelPart& rModelPart) const
         {
             return rModelPart.Name();
         }
@@ -97,50 +97,314 @@ public:
     };
 
     ///@}
+    ///@name Flags
+    ///@{
+
+    KRATOS_DEFINE_LOCAL_FLAG(ALL_ENTITIES);
+    KRATOS_DEFINE_LOCAL_FLAG(OVERWRITE_ENTITIES);
+
+    ///@}
+
     ///@name Type Definitions
     ///@{
 
-    /// Pointer definition of ModelPart
-    KRATOS_CLASS_POINTER_DEFINITION(ModelPart);
+    /// The container of the sub model parts. A hash table is used.
+    /**
+    */
+    typedef PointerHashMapSet<BaseModelPart, std::hash<std::string>, GetModelPartName, BaseModelPart*>  SubModelPartsContainerType;
 
-    typedef Node < 3 > NodeType;
+    /// Iterator over the sub model parts of this model part.
+    /** Note that this iterator only iterates over the next level of
+        sub model parts and does not go through the hierarchy of the
+        sub model parts
+    */
+    typedef typename SubModelPartsContainerType::iterator SubModelPartIterator;
+
+    /// Constant iterator over the sub model parts of this model part.
+    /** Note that this iterator only iterates over the next level of
+        sub model parts and does not go through the hierarchy of the
+        sub model parts
+    */
+    typedef typename SubModelPartsContainerType::const_iterator SubModelPartConstantIterator;
+
+    ///@}
+
+    /// Default constructor.
+    BaseModelPart();
+
+    /// Constructor with name
+    BaseModelPart(std::string const& NewName);
+
+    /// Copy constructor.
+    BaseModelPart(BaseModelPart const& rOther);
+
+    ///@name Operators
+    ///@{
+
+    /// Assignment operator.
+    BaseModelPart & operator=(BaseModelPart const& rOther);
+
+    ///@}
+
+    ///@name Operations
+    ///@{
+
+    //this function returns the "Owner" Model
+    Model& GetModel();
+    const Model& GetModel() const;
+
+    std::string& Name()
+    {
+        return mName;
+    }
+
+    std::string const& Name() const
+    {
+        return mName;
+    }
+
+    BaseModelPart* GetParentModelPart() const
+    {
+        return mpParentModelPart;
+    }
+
+    /** this function gives back the "root" model part, that is the model_part that has no father (non-const version)*/
+    BaseModelPart& GetRootModelPart();
+
+    /** this function gives back the "root" model part, that is the model_part that has no father (const version)*/
+    const BaseModelPart& GetRootModelPart() const;
+
+    /**
+     * @brief This method returns the full name of the model part (including the parents model parts)
+     * @details This is evaluated in a recursive way
+     * @return The full name of the model part
+     */
+    std::string FullName() const
+    {
+        std::string full_name = this->Name();
+        if (this->IsSubModelPart()) {
+            full_name = this->GetParentModelPart()->FullName() + "." + full_name;
+        }
+        return full_name;
+    }
+
+    ///@}
+
+    ///@name Sub model parts
+    ///@{
+
+    SizeType NumberOfSubModelParts() const
+    {
+        return mSubModelParts.size();
+    }
+
+    /** Creates a new sub model part with given name.
+    Does nothing if a sub model part with the same name exist.
+    */
+    virtual BaseModelPart& CreateSubModelPart(std::string const& NewSubModelPartName);
+
+    /** Add an existing model part as a sub model part.
+        All the meshes will be added to the parents.
+        NOTE: The added sub model part should not have
+        mesh entities with id in conflict with other ones in the parent
+        In the case of conflict the new one would replace the old one
+        resulting inconsitency in parent.
+    */
+    virtual void AddSubModelPart(BaseModelPart& rThisSubModelPart);
+
+    /** Returns a reference to the sub_model part with given string name
+        In debug gives an error if does not exist.
+    */
+    virtual BaseModelPart& GetSubModelPart(std::string const& SubModelPartName)
+    {
+        SubModelPartIterator i = mSubModelParts.find(SubModelPartName);
+        if(i == mSubModelParts.end())
+            KRATOS_ERROR << "There is no sub model part with name " << SubModelPartName;
+          //TODO: KRATOS_ERROR << "There is no sub model part with name : \"" << SubModelPartName << "\" in this model part"; // << std::endl;
+
+        return *i;
+    }
+
+    /** Remove a sub modelpart with given name.
+    */
+    void RemoveSubModelPart(std::string const& ThisSubModelPartName);
+
+    /** Remove given sub model part.
+    */
+    void RemoveSubModelPart(BaseModelPart& ThisSubModelPart);
+
+    SubModelPartIterator SubModelPartsBegin()
+    {
+        return mSubModelParts.begin();
+    }
+
+    SubModelPartConstantIterator SubModelPartsBegin() const
+    {
+        return mSubModelParts.begin();
+    }
+
+    SubModelPartIterator SubModelPartsEnd()
+    {
+        return mSubModelParts.end();
+    }
+
+    SubModelPartConstantIterator SubModelPartsEnd() const
+    {
+        return mSubModelParts.end();
+    }
+
+    SubModelPartsContainerType& SubModelParts()
+    {
+        return mSubModelParts;
+    }
+
+    bool HasSubModelPart(std::string const& ThisSubModelPartName)
+    {
+        return (mSubModelParts.find(ThisSubModelPartName) != mSubModelParts.end());
+    }
+
+    ///@}
+
+    ///@name Inquiry
+    ///@{
+
+    bool IsSubModelPart() const
+    {
+        return (mpParentModelPart != NULL);
+    }
+
+    /**
+     * @brief This method returns the name list of submodelparts
+     * @return A vector conrtaining the list of submodelparts contained
+     */
+    std::vector<std::string> GetSubModelPartNames();
+
+    ///@}
+
+    ///@name Input and output
+    ///@{
+
+    /// Turn back information as a string.
+    std::string Info() const override;
+
+    /// Print information about this object.
+    void PrintInfo(std::ostream& rOStream) const override;
+
+    /// Print object's data.
+    void PrintData(std::ostream& rOStream) const override;
+
+    /// Print information about this object.
+    virtual void PrintInfo(std::ostream& rOStream, std::string const& PrefixString) const;
+
+    /// Print object's data.
+    virtual void PrintData(std::ostream& rOStream, std::string const& PrefixString) const;
+
+    ///@}
+
+protected:
+
+    BaseModelPart* mpParentModelPart = nullptr; /// The parent model part of the current model part
+
+    SubModelPartsContainerType mSubModelParts; /// The container of the submodelparts, mSubModelParts()
+
+    friend class Model;
+
+    /// Constructor with name and owner model
+    BaseModelPart(std::string const& NewName, Model& rOwnerModel);
+
+    ///@name Serialization
+    ///@{
+
+    friend class Serializer;
+
+    void save(Serializer& rSerializer) const override;
+
+    void load(Serializer& rSerializer) override;
+
+    ///@}
+
+    ///@name Protected Operations
+    ///@{
+
+    void SetParentModelPart(BaseModelPart* pParentModelPart)
+    {
+        mpParentModelPart = pParentModelPart;
+    }
+
+    ///@}
+
+private:
+
+    std::string mName; /// The name of the model part
+
+    Model* mpModel; /// The model which contains this model part
+};
+
+/**
+* @class ModelPartImpl
+* @ingroup KratosCore
+* @brief Concrete implementation of ModelPart for different nodal dof type, including complex
+* @author Pooyan Dadvand
+* @author Riccardo Rossi
+*/
+template<class TNodeType>
+class ModelPartImpl : public BaseModelPart
+{
+public:
+    ///@name  Enum's
+    ///@{
+
+    ///@}
+    ///@name Type Definitions
+    ///@{
+
+    /// Pointer definition of ModelPartImpl
+    KRATOS_CLASS_POINTER_DEFINITION(ModelPartImpl);
+
+    typedef TNodeType NodeType;
     typedef Properties PropertiesType;
-    typedef Element ElementType;
-    typedef Condition ConditionType;
+    typedef BaseElement<NodeType> ElementType;
+    typedef BaseCondition<NodeType> ConditionType;
+
+    typedef typename ElementType::GeometryType GeometryType;
 
     typedef typename NodeType::DofType DofType;
     typedef std::vector< typename DofType::Pointer > DofsVectorType;
     typedef PointerVectorSet<DofType, SetIdentityFunction<DofType> > DofsArrayType;
 
+    typedef typename NodeType::VariablesListType VariablesListType;
+
     typedef Mesh<NodeType, PropertiesType, ElementType, ConditionType> MeshType;
 
-    typedef MeshType::DataType DataType;
+    typedef typename DofType::DataType DataType;
 
-    typedef MeshType::IndexType IndexType;
+    typedef typename DataTypeToValueType<DataType>::value_type ValueType;
 
-    typedef MeshType::SizeType SizeType;
+    typedef typename MeshType::IndexType IndexType;
+
+    typedef typename MeshType::SizeType SizeType;
 
     typedef PointerVector<MeshType> MeshesContainerType;
 
-    typedef Kratos::Variable<DataType> DoubleVariableType;
-    typedef Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<DataType, 3>>> VariableComponentType;
-    typedef Matrix MatrixType;
-    typedef Vector VectorType;
+    typedef Variable<DataType> DoubleVariableType;
+    typedef VariableComponent<VectorComponentAdaptor<array_1d<DataType, 3>>> VariableComponentType;
+    typedef typename MatrixVectorTypeSelector<DataType>::MatrixType MatrixType;
+    typedef typename MatrixVectorTypeSelector<DataType>::VectorType VectorType;
 
     /// Nodes container. Which is a vector set of nodes with their Id's as key.
-    typedef MeshType::NodesContainerType NodesContainerType;
+    typedef typename MeshType::NodesContainerType NodesContainerType;
 
     /** Iterator over the nodes. This iterator is an indirect
         iterator over Node::Pointer which turn back a reference to
         node by * operator and not a pointer for more convenient
         usage. */
-    typedef MeshType::NodeIterator NodeIterator;
+    typedef typename MeshType::NodeIterator NodeIterator;
 
     /** Const iterator over the nodes. This iterator is an indirect
         iterator over Node::Pointer which turn back a reference to
         node by * operator and not a pointer for more convenient
         usage. */
-    typedef MeshType::NodeConstantIterator NodeConstantIterator;
+    typedef typename MeshType::NodeConstantIterator NodeConstantIterator;
 
     /** Iterator over the properties. This iterator is an indirect
         iterator over Properties::Pointer which turn back a reference to
@@ -148,19 +412,19 @@ public:
         usage. */
 
     /// Properties container. Which is a vector set of Properties with their Id's as key.
-    typedef MeshType::PropertiesContainerType PropertiesContainerType;
+    typedef typename MeshType::PropertiesContainerType PropertiesContainerType;
 
     /** Iterator over the Properties. This iterator is an indirect
         iterator over Node::Pointer which turn back a reference to
         node by * operator and not a pointer for more convenient
         usage. */
-    typedef MeshType::PropertiesIterator PropertiesIterator;
+    typedef typename MeshType::PropertiesIterator PropertiesIterator;
 
     /** Const iterator over the Properties. This iterator is an indirect
         iterator over Properties::Pointer which turn back a reference to
         Properties by * operator and not a pointer for more convenient
         usage. */
-    typedef MeshType::PropertiesConstantIterator PropertiesConstantIterator;
+    typedef typename MeshType::PropertiesConstantIterator PropertiesConstantIterator;
 
     /** Iterator over the properties. This iterator is an indirect
         iterator over Properties::Pointer which turn back a reference to
@@ -168,34 +432,34 @@ public:
         usage. */
 
     /// Element container. A vector set of Elements with their Id's as key.
-    typedef MeshType::ElementsContainerType ElementsContainerType;
+    typedef typename MeshType::ElementsContainerType ElementsContainerType;
 
     /** Iterator over the Elements. This iterator is an indirect
         iterator over Elements::Pointer which turn back a reference to
         Element by * operator and not a pointer for more convenient
         usage. */
-    typedef MeshType::ElementIterator ElementIterator;
+    typedef typename MeshType::ElementIterator ElementIterator;
 
     /** Const iterator over the Elements. This iterator is an indirect
         iterator over Elements::Pointer which turn back a reference to
         Element by * operator and not a pointer for more convenient
         usage. */
-    typedef MeshType::ElementConstantIterator ElementConstantIterator;
+    typedef typename MeshType::ElementConstantIterator ElementConstantIterator;
 
     /// Condintions container. A vector set of Conditions with their Id's as key.
-    typedef MeshType::ConditionsContainerType ConditionsContainerType;
+    typedef typename MeshType::ConditionsContainerType ConditionsContainerType;
 
     /** Iterator over the Conditions. This iterator is an indirect
        iterator over Conditions::Pointer which turn back a reference to
        Condition by * operator and not a pointer for more convenient
        usage. */
-    typedef MeshType::ConditionIterator ConditionIterator;
+    typedef typename MeshType::ConditionIterator ConditionIterator;
 
     /** Const iterator over the Conditions. This iterator is an indirect
         iterator over Conditions::Pointer which turn back a reference to
         Condition by * operator and not a pointer for more convenient
         usage. */
-    typedef MeshType::ConditionConstantIterator ConditionConstantIterator;
+    typedef typename MeshType::ConditionConstantIterator ConditionConstantIterator;
 
     /// Defining a table with DataType argument and result type as table type.
     typedef Table<DataType, DataType> TableType;
@@ -207,84 +471,64 @@ public:
     iterator over Tables::Pointer which turn back a reference to
     Table by * operator and not a pointer for more convenient
     usage. */
-    typedef TablesContainerType::iterator TableIterator;
+    typedef typename TablesContainerType::iterator TableIterator;
 
     /** Const iterator over the Tables. This iterator is an indirect
-    iterator over Tables::Pointer which turn back a reference to
+    iterator over Table::Pointer which turn back a reference to
     Table by * operator and not a pointer for more convenient
     usage. */
-    typedef TablesContainerType::const_iterator TableConstantIterator;
+    typedef typename TablesContainerType::const_iterator TableConstantIterator;
     /**
      *
      */
     /// The container of the constraints
-    typedef MeshType::MasterSlaveConstraintType MasterSlaveConstraintType;
-    typedef MeshType::MasterSlaveConstraintContainerType MasterSlaveConstraintContainerType;
+    typedef typename MeshType::MasterSlaveConstraintType MasterSlaveConstraintType;
+    typedef typename MeshType::MasterSlaveConstraintContainerType MasterSlaveConstraintContainerType;
 
     /** Iterator over the constraints. This iterator is an indirect
     iterator over MasterSlaveConstraint::Pointer which turn back a reference to
     MasterSlaveConstraint by * operator and not a pointer for more convenient
     usage. */
-    typedef MeshType::MasterSlaveConstraintIteratorType MasterSlaveConstraintIteratorType;
+    typedef typename MeshType::MasterSlaveConstraintIteratorType MasterSlaveConstraintIteratorType;
 
     /** Const iterator over the constraints. This iterator is an indirect
     iterator over MasterSlaveConstraint::Pointer which turn back a reference to
     Table by * operator and not a pointer for more convenient
     usage. */
-    typedef MeshType::MasterSlaveConstraintConstantIteratorType MasterSlaveConstraintConstantIteratorType;
+    typedef typename MeshType::MasterSlaveConstraintConstantIteratorType MasterSlaveConstraintConstantIteratorType;
 
-    /// The container of the sub model parts. A hash table is used.
-    /**
-    */
-    typedef PointerHashMapSet<ModelPart, std::hash< std::string >, GetModelPartName, ModelPart*>  SubModelPartsContainerType;
-
-    /// Iterator over the sub model parts of this model part.
-    /** Note that this iterator only iterates over the next level of
-        sub model parts and does not go through the hierarchy of the
-        sub model parts
-    */
-    typedef SubModelPartsContainerType::iterator SubModelPartIterator;
-
-    /// Constant iterator over the sub model parts of this model part.
-    /** Note that this iterator only iterates over the next level of
-        sub model parts and does not go through the hierarchy of the
-        sub model parts
-    */
-    typedef SubModelPartsContainerType::const_iterator SubModelPartConstantIterator;
+    /// Type of the communicator
+    typedef Communicator<NodeType> CommunicatorType;
 
     ///@}
     ///@name Flags
     ///@{
-
-    KRATOS_DEFINE_LOCAL_FLAG(ALL_ENTITIES);
-    KRATOS_DEFINE_LOCAL_FLAG(OVERWRITE_ENTITIES);
 
     ///@}
     ///@name Life Cycle
     ///@{
 
     /// Default constructor.
-    ModelPart();
+    ModelPartImpl();
 
     /// Constructor with name
-    ModelPart(std::string const& NewName);
+    ModelPartImpl(std::string const& NewName);
 
     /// Constructor with name and bufferSize
-    ModelPart(std::string const& NewName, IndexType NewBufferSize);
+    ModelPartImpl(std::string const& NewName, IndexType NewBufferSize);
 
     /// Copy constructor.
-    ModelPart(ModelPart const& rOther);
-
+    ModelPartImpl(ModelPartImpl const& rOther);
 
     /// Destructor.
-    ~ModelPart() override;
+    ~ModelPartImpl() override;
 
     ///@}
     ///@name Operators
     ///@{
 
     /// Assignment operator.
-    ModelPart & operator=(ModelPart const& rOther);
+    ModelPartImpl & operator=(ModelPartImpl const& rOther);
 
     ///@}
     ///@name Solution Steps
@@ -305,19 +549,15 @@ public:
 
     IndexType CloneTimeStep();
 
-    IndexType CreateTimeStep(DataType NewTime);
+    IndexType CreateTimeStep(ValueType NewTime);
 
-    IndexType CloneTimeStep(DataType NewTime);
+    IndexType CloneTimeStep(ValueType NewTime);
 
     void OverwriteSolutionStepData(IndexType SourceSolutionStepIndex, IndexType DestinationSourceSolutionStepIndex);
 
-    //this function returns the "Owner" Model
-    Model& GetModel();
-    const Model& GetModel() const;
-
     ///ATTENTION: this function does not touch the coordinates of the nodes.
     ///It just resets the database values to the values at the beginning of the time step
-    void ReduceTimeStep(ModelPart& rModelPart, DataType NewTime);
+    void ReduceTimeStep(ModelPartImpl& rModelPart, ValueType NewTime);
 
     ///@}
     ///@name Nodes
@@ -330,19 +570,19 @@ public:
 
     /** Inserts a node in the current mesh.
      */
-    void AddNode(NodeType::Pointer pNewNode, IndexType ThisIndex = 0);
+    void AddNode(typename NodeType::Pointer pNewNode, IndexType ThisIndex = 0);
 
     /** Inserts a node in the current mesh.
      */
-    NodeType::Pointer CreateNewNode(int Id, DataType x, DataType y, DataType z, VariablesList* pNewVariablesList, IndexType ThisIndex = 0);
+    typename NodeType::Pointer CreateNewNode(int Id, ValueType x, ValueType y, ValueType z, VariablesListType* pNewVariablesList, IndexType ThisIndex = 0);
 
-    NodeType::Pointer CreateNewNode(IndexType Id, DataType x, DataType y, DataType z, IndexType ThisIndex = 0);
+    typename NodeType::Pointer CreateNewNode(IndexType Id, ValueType x, ValueType y, ValueType z, IndexType ThisIndex = 0);
 
-    NodeType::Pointer CreateNewNode(IndexType Id, DataType x, DataType y, DataType z, DataType* pThisData, IndexType ThisIndex = 0);
+    typename NodeType::Pointer CreateNewNode(IndexType Id, ValueType x, ValueType y, ValueType z, DataType* pThisData, IndexType ThisIndex = 0);
 
-    NodeType::Pointer CreateNewNode(IndexType NodeId, NodeType const& rSourceNode, IndexType ThisIndex = 0);
+    typename NodeType::Pointer CreateNewNode(IndexType NodeId, NodeType const& rSourceNode, IndexType ThisIndex = 0);
 
-    void AssignNode(NodeType::Pointer pThisNode, IndexType ThisIndex = 0);
+    void AssignNode(typename NodeType::Pointer pThisNode, IndexType ThisIndex = 0);
 
     /** Returns if the Node corresponding to it's identifier exists */
     bool HasNode(IndexType NodeId, IndexType ThisIndex = 0) const
@@ -351,13 +591,13 @@ public:
     }
 
     /** Returns the Node::Pointer  corresponding to it's identifier */
-    NodeType::Pointer pGetNode(IndexType NodeId, IndexType ThisIndex = 0)
+    typename NodeType::Pointer pGetNode(IndexType NodeId, IndexType ThisIndex = 0)
     {
         return GetMesh(ThisIndex).pGetNode(NodeId);
     }
 
     /** Returns the Node::Pointer corresponding to it's identifier */
-    const NodeType::Pointer pGetNode(const IndexType NodeId, const IndexType ThisIndex = 0) const
+    const typename NodeType::Pointer pGetNode(const IndexType NodeId, const IndexType ThisIndex = 0) const
     {
         return GetMesh(ThisIndex).pGetNode(NodeId);
     }
@@ -383,7 +623,7 @@ public:
 
     /** Remove given node from mesh with ThisIndex in this modelpart and all its subs.
     */
-    void RemoveNode(NodeType::Pointer pThisNode, IndexType ThisIndex = 0);
+    void RemoveNode(typename NodeType::Pointer pThisNode, IndexType ThisIndex = 0);
 
     /** Remove the node with given Id from mesh with ThisIndex in parents and children.
     */
@@ -395,13 +635,7 @@ public:
 
     /** Remove given node from current mesh with ThisIndex in parents and children.
     */
-    void RemoveNodeFromAllLevels(NodeType::Pointer pThisNode, IndexType ThisIndex = 0);
-
-    /** this function gives back the "root" model part, that is the model_part that has no father (non-const version)*/
-    ModelPart& GetRootModelPart();
-
-    /** this function gives back the "root" model part, that is the model_part that has no father (const version)*/
-    const ModelPart& GetRootModelPart() const;
+    void RemoveNodeFromAllLevels(typename NodeType::Pointer pThisNode, IndexType ThisIndex = 0);
 
     NodeIterator NodesBegin(IndexType ThisIndex = 0)
     {
@@ -433,23 +667,23 @@ public:
         return GetMesh(ThisIndex).Nodes();
     }
 
-    NodesContainerType::Pointer pNodes(IndexType ThisIndex = 0)
+    typename NodesContainerType::Pointer pNodes(IndexType ThisIndex = 0)
     {
         return GetMesh(ThisIndex).pNodes();
     }
 
-    void SetNodes(NodesContainerType::Pointer pOtherNodes, IndexType ThisIndex = 0)
+    void SetNodes(typename NodesContainerType::Pointer pOtherNodes, IndexType ThisIndex = 0)
     {
         GetMesh(ThisIndex).SetNodes(pOtherNodes);
     }
 
-    NodesContainerType::ContainerType& NodesArray(IndexType ThisIndex = 0)
+    typename NodesContainerType::ContainerType& NodesArray(IndexType ThisIndex = 0)
     {
         return GetMesh(ThisIndex).NodesArray();
     }
 
-    template<class TDataType>
-    void AddNodalSolutionStepVariable(Variable<TDataType> const& ThisVariable)
+    template<class TOtherDataType>
+    void AddNodalSolutionStepVariable(Variable<TOtherDataType> const& ThisVariable)
     {
         mpVariablesList->Add(ThisVariable);
     }
@@ -459,24 +693,24 @@ public:
         return mpVariablesList->Has(ThisVariable);
     }
 
-    VariablesList& GetNodalSolutionStepVariablesList()
+    VariablesListType& GetNodalSolutionStepVariablesList()
     {
         return *mpVariablesList;
     }
 
-    VariablesList const& GetNodalSolutionStepVariablesList() const
+    VariablesListType const& GetNodalSolutionStepVariablesList() const
     {
         return *mpVariablesList;
     }
 
-    const VariablesList* pGetNodalSolutionStepVariablesList() const
+    const VariablesListType* pGetNodalSolutionStepVariablesList() const
     {
         return mpVariablesList;
     }
 
     void SetNodalSolutionStepVariablesList();
 
-    void SetNodalSolutionStepVariablesList(VariablesList* pNewVariablesList)
+    void SetNodalSolutionStepVariablesList(VariablesListType* pNewVariablesList)
     {
         mpVariablesList = pNewVariablesList;
     }
@@ -502,10 +736,10 @@ public:
 
     /** Inserts a Table
      */
-    void AddTable(IndexType TableId, TableType::Pointer pNewTable);
+    void AddTable(IndexType TableId, typename TableType::Pointer pNewTable);
 
     /** Returns the Table::Pointer  corresponding to it's identifier */
-    TableType::Pointer pGetTable(IndexType TableId)
+    typename TableType::Pointer pGetTable(IndexType TableId)
     {
         return mTables(TableId);
     }
@@ -550,7 +784,7 @@ public:
         return mTables;
     }
 
-    TablesContainerType::ContainerType& TablesArray()
+    typename TablesContainerType::ContainerType& TablesArray()
     {
         return mTables.GetContainer();
     }
@@ -574,7 +808,7 @@ public:
         return GetMesh(ThisIndex).MasterSlaveConstraints();
     }
 
-    MasterSlaveConstraintContainerType::Pointer pMasterSlaveConstraints(IndexType ThisIndex = 0)
+    typename MasterSlaveConstraintContainerType::Pointer pMasterSlaveConstraints(IndexType ThisIndex = 0)
     {
         return GetMesh(ThisIndex).pMasterSlaveConstraints();
     }
@@ -601,7 +835,7 @@ public:
 
     /** Inserts a master-slave constraint in the current modelpart.
      */
-    void AddMasterSlaveConstraint(MasterSlaveConstraintType::Pointer pNewMasterSlaveConstraint, IndexType ThisIndex = 0);
+    void AddMasterSlaveConstraint(typename MasterSlaveConstraintType::Pointer pNewMasterSlaveConstraint, IndexType ThisIndex = 0);
 
     /** Inserts a list of master-slave constraints to a submodelpart provided their Id. Does nothing if applied to the top model part
      */
@@ -613,9 +847,9 @@ public:
     void AddMasterSlaveConstraints(TIteratorType constraints_begin,  TIteratorType constraints_end, IndexType ThisIndex = 0)
     {
         KRATOS_TRY
-        ModelPart::MasterSlaveConstraintContainerType  aux;
-        ModelPart::MasterSlaveConstraintContainerType  aux_root;
-        ModelPart* root_model_part = &this->GetRootModelPart();
+        ModelPartImpl::MasterSlaveConstraintContainerType  aux;
+        ModelPartImpl::MasterSlaveConstraintContainerType  aux_root;
+        ModelPartImpl* root_model_part = &this->GetRootModelPart();
 
         for(TIteratorType it = constraints_begin; it!=constraints_end; it++)
         {
@@ -640,7 +874,7 @@ public:
 
         //add to all of the leaves
 
-        ModelPart* current_part = this;
+        ModelPartImpl* current_part = this;
         while(current_part->IsSubModelPart())
         {
             for(auto it = aux.begin(); it!=aux.end(); it++)
@@ -658,21 +892,21 @@ public:
      * @brief Creates a new master-slave constraint in the current modelpart.
      * @todo Replace these 3 functions by one that perfectly forwards arguments, then just define these 3 interfaces on the pybind side
      */
-    MasterSlaveConstraint::Pointer CreateNewMasterSlaveConstraint(const std::string& ConstraintName,
+    typename MasterSlaveConstraintType::Pointer CreateNewMasterSlaveConstraint(const std::string& ConstraintName,
         const IndexType& Id, DofsVectorType& rMasterDofsVector, DofsVectorType& rSlaveDofsVector,
         const MatrixType& RelationMatrix, const VectorType& ConstantVector, const IndexType& ThisIndex = 0);
 
-    MasterSlaveConstraint::Pointer CreateNewMasterSlaveConstraint(const std::string& ConstraintName,
+    typename MasterSlaveConstraintType::Pointer CreateNewMasterSlaveConstraint(const std::string& ConstraintName,
         const IndexType& Id, NodeType& rMasterNode, const DoubleVariableType& rMasterVariable,
         NodeType& rSlaveNode, const DoubleVariableType& rSlaveVariable,
         const DataType& Weight, const DataType& Constant, const IndexType& ThisIndex = 0);
 
-    MasterSlaveConstraint::Pointer CreateNewMasterSlaveConstraint(const std::string& ConstraintName,
+    typename MasterSlaveConstraintType::Pointer CreateNewMasterSlaveConstraint(const std::string& ConstraintName,
         const IndexType& Id, NodeType& rMasterNode, const VariableComponentType& rMasterVariable,
         NodeType& rSlaveNode, const VariableComponentType& rSlaveVariable,
         const DataType& Weight, const DataType& Constant, const IndexType& ThisIndex = 0);
 
-    MasterSlaveConstraint::Pointer CreateNewMasterSlaveConstraintNoUnique(const std::string& ConstraintName,
+    typename MasterSlaveConstraintType::Pointer CreateNewMasterSlaveConstraintNoUnique(const std::string& ConstraintName,
         const IndexType& Id, DofsVectorType& rMasterDofsVector, DofsVectorType& rSlaveDofsVector,
         const MatrixType& RelationMatrix, const VectorType& ConstantVector, const IndexType& ThisIndex = 0);
     /**
@@ -723,10 +957,11 @@ public:
     }
 
     /** Returns the MasterSlaveConstraint::Pointer  corresponding to it's identifier */
-    MasterSlaveConstraintType::Pointer pGetMasterSlaveConstraint(IndexType ConstraintId, IndexType ThisIndex = 0);
+    typename MasterSlaveConstraintType::Pointer pGetMasterSlaveConstraint(IndexType ConstraintId, IndexType ThisIndex = 0);
 
     /** Returns a reference MasterSlaveConstraint corresponding to it's identifier */
     MasterSlaveConstraintType& GetMasterSlaveConstraint(IndexType MasterSlaveConstraintId, IndexType ThisIndex = 0);
+
     /** Returns a const reference MasterSlaveConstraint corresponding to it's identifier */
     const MasterSlaveConstraintType& GetMasterSlaveConstraint(IndexType MasterSlaveConstraintId, IndexType ThisIndex = 0) const ;
 
@@ -817,22 +1052,22 @@ public:
         return GetMesh(ThisIndex).Properties();
     }
 
-    PropertiesContainerType::Pointer pProperties(IndexType ThisIndex = 0)
+    typename PropertiesContainerType::Pointer pProperties(IndexType ThisIndex = 0)
     {
         return GetMesh(ThisIndex).pProperties();
     }
 
-    void SetProperties(PropertiesContainerType::Pointer pOtherProperties, IndexType ThisIndex = 0)
+    void SetProperties(typename PropertiesContainerType::Pointer pOtherProperties, IndexType ThisIndex = 0)
     {
         GetMesh(ThisIndex).SetProperties(pOtherProperties);
     }
 
-    PropertiesContainerType::ContainerType& PropertiesArray(IndexType ThisIndex = 0)
+    typename PropertiesContainerType::ContainerType& PropertiesArray(IndexType ThisIndex = 0)
     {
         return GetMesh(ThisIndex).PropertiesArray();
     }
 
-    const PropertiesContainerType::ContainerType& PropertiesArray(IndexType ThisIndex = 0) const
+    const typename PropertiesContainerType::ContainerType& PropertiesArray(IndexType ThisIndex = 0) const
     {
         return GetMesh(ThisIndex).PropertiesArray();
     }
@@ -848,18 +1083,18 @@ public:
 
     /** Inserts a element in the current mesh.
      */
-    void AddElement(ElementType::Pointer pNewElement, IndexType ThisIndex = 0);
+    void AddElement(typename ElementType::Pointer pNewElement, IndexType ThisIndex = 0);
 
     /** Inserts an element in the current mesh.
      */
-    ElementType::Pointer CreateNewElement(std::string ElementName, IndexType Id, const std::vector<IndexType>& ElementNodeIds, PropertiesType::Pointer pProperties, IndexType ThisIndex = 0);
+    typename ElementType::Pointer CreateNewElement(std::string ElementName, IndexType Id, const std::vector<IndexType>& ElementNodeIds, PropertiesType::Pointer pProperties, IndexType ThisIndex = 0);
 
     /** Inserts an element in the current mesh.
      */
-    ElementType::Pointer CreateNewElement(std::string ElementName, IndexType Id, Geometry< Node < 3 > >::PointsArrayType pElementNodes, PropertiesType::Pointer pProperties, IndexType ThisIndex = 0);
+    typename ElementType::Pointer CreateNewElement(std::string ElementName, IndexType Id, typename GeometryType::PointsArrayType pElementNodes, PropertiesType::Pointer pProperties, IndexType ThisIndex = 0);
 
     /** Returns the Element::Pointer  corresponding to it's identifier */
-    ElementType::Pointer pGetElement(IndexType ElementId, IndexType ThisIndex = 0)
+    typename ElementType::Pointer pGetElement(IndexType ElementId, IndexType ThisIndex = 0)
     {
         return GetMesh(ThisIndex).pGetElement(ElementId);
     }
@@ -886,7 +1121,7 @@ public:
 
     /** Remove given element from mesh with ThisIndex in this modelpart and all its subs.
     */
-    void RemoveElement(ElementType::Pointer pThisElement, IndexType ThisIndex = 0);
+    void RemoveElement(typename ElementType::Pointer pThisElement, IndexType ThisIndex = 0);
 
     /** Remove the element with given Id from mesh with ThisIndex in parents, itself and children.
     */
@@ -898,7 +1133,7 @@ public:
 
     /** Remove given element from mesh with ThisIndex in parents, itself and children.
     */
-    void RemoveElementFromAllLevels(ElementType::Pointer pThisElement, IndexType ThisIndex = 0);
+    void RemoveElementFromAllLevels(typename ElementType::Pointer pThisElement, IndexType ThisIndex = 0);
 
     ElementIterator ElementsBegin(IndexType ThisIndex = 0)
     {
@@ -930,22 +1165,22 @@ public:
         return GetMesh(ThisIndex).Elements();
     }
 
-    ElementsContainerType::Pointer pElements(IndexType ThisIndex = 0)
+    typename ElementsContainerType::Pointer pElements(IndexType ThisIndex = 0)
     {
         return GetMesh(ThisIndex).pElements();
     }
 
-    void SetElements(ElementsContainerType::Pointer pOtherElements, IndexType ThisIndex = 0)
+    void SetElements(typename ElementsContainerType::Pointer pOtherElements, IndexType ThisIndex = 0)
     {
         GetMesh(ThisIndex).SetElements(pOtherElements);
     }
 
-    ElementsContainerType::ContainerType& ElementsArray(IndexType ThisIndex = 0)
+    typename ElementsContainerType::ContainerType& ElementsArray(IndexType ThisIndex = 0)
     {
         return GetMesh(ThisIndex).ElementsArray();
     }
 
-    const ElementsContainerType::ContainerType& ElementsArray(IndexType ThisIndex = 0) const
+    const typename ElementsContainerType::ContainerType& ElementsArray(IndexType ThisIndex = 0) const
     {
         return GetMesh(ThisIndex).ElementsArray();
     }
@@ -961,22 +1196,22 @@ public:
 
     /** Inserts a condition in the current mesh.
      */
-    void AddCondition(ConditionType::Pointer pNewCondition, IndexType ThisIndex = 0);
+    void AddCondition(typename ConditionType::Pointer pNewCondition, IndexType ThisIndex = 0);
 
     /** Inserts a condition in the current mesh.
      */
-    ConditionType::Pointer CreateNewCondition(std::string ConditionName,
+    typename ConditionType::Pointer CreateNewCondition(std::string ConditionName,
         IndexType Id, const std::vector<IndexType>& ConditionNodeIds,
         PropertiesType::Pointer pProperties, IndexType ThisIndex = 0);
 
     /** Inserts a condition in the current mesh.
      */
-    ConditionType::Pointer CreateNewCondition(std::string ConditionName,
-        IndexType Id, Geometry< Node < 3 > >::PointsArrayType pConditionNodes,
+    typename ConditionType::Pointer CreateNewCondition(std::string ConditionName,
+        IndexType Id, typename GeometryType::PointsArrayType pConditionNodes,
         PropertiesType::Pointer pProperties, IndexType ThisIndex = 0);
 
     /** Returns the Condition::Pointer  corresponding to it's identifier */
-    ConditionType::Pointer pGetCondition(IndexType ConditionId, IndexType ThisIndex = 0)
+    typename ConditionType::Pointer pGetCondition(IndexType ConditionId, IndexType ThisIndex = 0)
     {
         return GetMesh(ThisIndex).pGetCondition(ConditionId);
     }
@@ -1003,7 +1238,7 @@ public:
 
     /** Remove given condition from mesh with ThisIndex in this modelpart and all its subs.
     */
-    void RemoveCondition(ConditionType::Pointer pThisCondition, IndexType ThisIndex = 0);
+    void RemoveCondition(typename ConditionType::Pointer pThisCondition, IndexType ThisIndex = 0);
 
     /**  Remove the condition with given Id from mesh with ThisIndex in parents, itself and children.
     */
@@ -1015,7 +1250,7 @@ public:
 
     /** Remove given condition from mesh with ThisIndex in parents, itself and children.
     */
-    void RemoveConditionFromAllLevels(ConditionType::Pointer pThisCondition, IndexType ThisIndex = 0);
+    void RemoveConditionFromAllLevels(typename ConditionType::Pointer pThisCondition, IndexType ThisIndex = 0);
 
     ConditionIterator ConditionsBegin(IndexType ThisIndex = 0)
     {
@@ -1047,22 +1282,22 @@ public:
         return GetMesh(ThisIndex).Conditions();
     }
 
-    ConditionsContainerType::Pointer pConditions(IndexType ThisIndex = 0)
+    typename ConditionsContainerType::Pointer pConditions(IndexType ThisIndex = 0)
     {
         return GetMesh(ThisIndex).pConditions();
     }
 
-    void SetConditions(ConditionsContainerType::Pointer pOtherConditions, IndexType ThisIndex = 0)
+    void SetConditions(typename ConditionsContainerType::Pointer pOtherConditions, IndexType ThisIndex = 0)
     {
         GetMesh(ThisIndex).SetConditions(pOtherConditions);
     }
 
-    ConditionsContainerType::ContainerType& ConditionsArray(IndexType ThisIndex = 0)
+    typename ConditionsContainerType::ContainerType& ConditionsArray(IndexType ThisIndex = 0)
     {
         return GetMesh(ThisIndex).ConditionsArray();
     }
 
-    const ConditionsContainerType::ContainerType& ConditionsArray(IndexType ThisIndex = 0) const
+    const typename ConditionsContainerType::ContainerType& ConditionsArray(IndexType ThisIndex = 0) const
     {
         return GetMesh(ThisIndex).ConditionsArray();
     }
@@ -1071,15 +1306,10 @@ public:
     ///@name Sub model parts
     ///@{
 
-    SizeType NumberOfSubModelParts() const
-    {
-        return mSubModelParts.size();
-    }
-
     /** Creates a new sub model part with given name.
     Does nothing if a sub model part with the same name exist.
     */
-    ModelPart& CreateSubModelPart(std::string const& NewSubModelPartName);
+    BaseModelPart& CreateSubModelPart(std::string const& NewSubModelPartName) override;
 
     /** Add an existing model part as a sub model part.
         All the meshes will be added to the parents.
@@ -1088,64 +1318,7 @@ public:
         In the case of conflict the new one would replace the old one
         resulting inconsitency in parent.
     */
-    void AddSubModelPart(ModelPart& rThisSubModelPart);
-
-    /** Returns a reference to the sub_model part with given string name
-        In debug gives an error if does not exist.
-    */
-    ModelPart& GetSubModelPart(std::string const& SubModelPartName)
-    {
-        SubModelPartIterator i = mSubModelParts.find(SubModelPartName);
-        if(i == mSubModelParts.end())
-            KRATOS_ERROR << "There is no sub model part with name " << SubModelPartName;
-          //TODO: KRATOS_ERROR << "There is no sub model part with name : \"" << SubModelPartName << "\" in this model part"; // << std::endl;
-
-        return *i;
-    }
-
-    /** Remove a sub modelpart with given name.
-    */
-    void RemoveSubModelPart(std::string const& ThisSubModelPartName);
-
-    /** Remove given sub model part.
-    */
-    void RemoveSubModelPart(ModelPart& ThisSubModelPart);
-
-    SubModelPartIterator SubModelPartsBegin()
-    {
-        return mSubModelParts.begin();
-    }
-
-    SubModelPartConstantIterator SubModelPartsBegin() const
-    {
-        return mSubModelParts.begin();
-    }
-
-    SubModelPartIterator SubModelPartsEnd()
-    {
-        return mSubModelParts.end();
-    }
-
-    SubModelPartConstantIterator SubModelPartsEnd() const
-    {
-        return mSubModelParts.end();
-    }
-
-    SubModelPartsContainerType& SubModelParts()
-    {
-        return mSubModelParts;
-    }
-
-    ModelPart* GetParentModelPart() const
-    {
-        return mpParentModelPart;
-    }
-
-    bool HasSubModelPart(std::string const& ThisSubModelPartName)
-    {
-        return (mSubModelParts.find(ThisSubModelPartName) != mSubModelParts.end());
-    }
-
+    void AddSubModelPart(BaseModelPart& rThisSubModelPart) override;
 
     ///@}
     ///@name Access
@@ -1180,12 +1353,12 @@ public:
         return mMeshes.size();
     }
 
-    MeshType::Pointer pGetMesh(IndexType ThisIndex = 0)
+    typename MeshType::Pointer pGetMesh(IndexType ThisIndex = 0)
     {
         return mMeshes(ThisIndex);
     }
 
-    const MeshType::Pointer pGetMesh(IndexType ThisIndex = 0) const
+    const typename MeshType::Pointer pGetMesh(IndexType ThisIndex = 0) const
     {
         return mMeshes(ThisIndex);
     }
@@ -1210,32 +1383,22 @@ public:
         return mMeshes;
     }
 
-    std::string& Name()
-    {
-        return mName;
-    }
-
-    std::string const& Name() const
-    {
-        return mName;
-    }
-
-    Communicator& GetCommunicator()
+    CommunicatorType& GetCommunicator()
     {
         return *mpCommunicator;
     }
 
-    Communicator const& GetCommunicator() const
+    CommunicatorType const& GetCommunicator() const
     {
         return *mpCommunicator;
     }
 
-    Communicator::Pointer pGetCommunicator()
+    typename CommunicatorType::Pointer pGetCommunicator()
     {
         return mpCommunicator;
     }
 
-    void SetCommunicator(Communicator::Pointer pNewCommunicator)
+    void SetCommunicator(typename CommunicatorType::Pointer pNewCommunicator)
     {
         mpCommunicator = pNewCommunicator;
     }
@@ -1243,26 +1406,6 @@ public:
     ///@}
     ///@name Operations
     ///@{
-
-    /**
-     * @brief This method returns the full name of the model part (including the parents model parts)
-     * @details This is evaluated in a recursive way
-     * @return The full name of the model part
-     */
-    std::string FullName() const
-    {
-        std::string full_name = this->Name();
-        if (this->IsSubModelPart()) {
-            full_name = this->GetParentModelPart()->FullName() + "." + full_name;
-        }
-        return full_name;
-    }
-
-    /**
-     * @brief This method returns the name list of submodelparts
-     * @return A vector conrtaining the list of submodelparts contained
-     */
-    std::vector<std::string> GetSubModelPartNames();
 
     void SetBufferSize(IndexType NewBufferSize);
 
@@ -1287,11 +1430,6 @@ public:
     ///@name Inquiry
     ///@{
 
-    bool IsSubModelPart() const
-    {
-        return (mpParentModelPart != NULL);
-    }
-
     /// Get the last node id of the model part
     IndexType GetLastNodeId() const;
 
@@ -1308,9 +1446,6 @@ public:
     ///@name Input and output
     ///@{
 
-    /// Turn back information as a string.
-    std::string Info() const override;
-
     /// Print information about this object.
     void PrintInfo(std::ostream& rOStream) const override;
 
@@ -1318,11 +1453,10 @@ public:
     void PrintData(std::ostream& rOStream) const override;
 
     /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream, std::string const& PrefixString) const;
+    void PrintInfo(std::ostream& rOStream, std::string const& PrefixString) const override;
 
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream, std::string const& PrefixString) const;
-
+    void PrintData(std::ostream& rOStream, std::string const& PrefixString) const override;
 
     ///@}
     ///@name Friends
@@ -1336,7 +1470,7 @@ private:
     friend class Model;
 
     /// Constructor with name and bufferSize and owner model
-    ModelPart(std::string const& NewName, IndexType NewBufferSize, Model& rOwnerModel);
+    ModelPartImpl(std::string const& NewName, IndexType NewBufferSize, Model& rOwnerModel);
 
     ///@name Static Member Variables
     ///@{
@@ -1345,8 +1479,6 @@ private:
     ///@}
     ///@name Member Variables
     ///@{
-
-    std::string mName; /// The name of the model part
 
     IndexType mBufferSize; /// The buffers size of the database
 
@@ -1358,15 +1490,9 @@ private:
 
     MeshesContainerType mMeshes; /// The container of all meshes
 
-    VariablesList* mpVariablesList;
+    VariablesListType* mpVariablesList;
 
-    Communicator::Pointer mpCommunicator; /// The communicator
-
-    ModelPart* mpParentModelPart = NULL; /// The parent model part of the current model part
-
-    SubModelPartsContainerType mSubModelParts; /// The container of the submodelparts
-
-    Model* mpModel; /// The model which contains this model part
+    typename CommunicatorType::Pointer mpCommunicator; /// The communicator
 
     ///@}
     ///@name Private Operators
@@ -1376,11 +1502,6 @@ private:
     ///@}
     ///@name Private Operations
     ///@{
-
-    void SetParentModelPart(ModelPart* pParentModelPart)
-    {
-        mpParentModelPart = pParentModelPart;
-    }
 
     template <typename TEntitiesContainerType>
     void AddEntities(TEntitiesContainerType const& Source, TEntitiesContainerType& rDestination, Flags Options)
@@ -1418,7 +1539,12 @@ private:
 
     ///@}
 
-}; // Class ModelPart
+}; // Class ModelPartImpl
+
+// Officially define the ModelPart
+typedef ModelPartImpl<Node<3, KRATOS_DOUBLE_TYPE, Dof<KRATOS_DOUBLE_TYPE> > > ModelPart;
+typedef ModelPartImpl<Node<3, KRATOS_DOUBLE_TYPE, Dof<KRATOS_COMPLEX_TYPE> > > ComplexModelPart;
+typedef ModelPartImpl<Node<3, KRATOS_COMPLEX_TYPE, Dof<KRATOS_COMPLEX_TYPE> > > GComplexModelPart;
 
 ///@}
 
@@ -1447,13 +1573,14 @@ struct ModelPartEntitiesContainerSelector<Condition>
 
 /// input stream function
 KRATOS_API(KRATOS_CORE) inline std::istream & operator >>(std::istream& rIStream,
-        ModelPart& rThis)
+        BaseModelPart& rThis)
 {
     return rIStream;
 }
+
 /// output stream function
 KRATOS_API(KRATOS_CORE) inline std::ostream & operator <<(std::ostream& rOStream,
-        const ModelPart& rThis)
+        const BaseModelPart& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;

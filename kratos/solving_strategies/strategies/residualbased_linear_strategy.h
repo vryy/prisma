@@ -96,7 +96,7 @@ public:
 
     typedef SolvingStrategy<TSparseSpace, TDenseSpace, TLinearSolver> BaseType;
 
-    typedef typename BaseType::TDataType TDataType;
+    typedef typename BaseType::TDataType DataType;
 
     typedef TSparseSpace SparseSpaceType;
 
@@ -446,7 +446,7 @@ public:
         double normDx = 0.00;
         if (mCalculateNormDxFlag == true)
         {
-            normDx = TSparseSpace::TwoNorm(mDx);
+            normDx = std::abs(TSparseSpace::TwoNorm(mDx));
         }
 
         //calculate reactions if required
@@ -496,7 +496,7 @@ public:
     double GetResidualNorm()
     {
         if (TSparseSpace::Size(*mpb) != 0)
-            return TSparseSpace::TwoNorm(*mpb);
+            return std::abs(TSparseSpace::TwoNorm(*mpb));
         else
             return 0.0;
 

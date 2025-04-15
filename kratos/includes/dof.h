@@ -39,7 +39,6 @@ namespace Kratos
         KRATOS_MAKE_DOF_TRAIT(1) VariableComponent<VectorComponentAdaptor<array_1d<TDataType, 3> > > KRATOS_END_DOF_TRAIT(1);
 
 
-
 template<class TDataType, class TVariableType = Variable<TDataType> >
 struct DofTrait
 {
@@ -106,7 +105,7 @@ public:
 
     typedef IndexType EquationIdType;
 
-    typedef VariablesListDataValueContainer SolutionStepsDataContainerType;
+    typedef VariablesListDataValueContainer<DataType> SolutionStepsDataContainerType;
 
     ///@}
     ///@name Life Cycle
@@ -509,7 +508,7 @@ private:
 #define KRATOS_END_DOF_TRAIT(id) \
  const&>(ThisVariable), SolutionStepIndex);
 
-    TDataType& GetReference(VariableData const& ThisVariable, VariablesListDataValueContainer& rData, IndexType SolutionStepIndex, int ThisId)
+    TDataType& GetReference(VariableData const& ThisVariable, VariablesListDataValueContainer<TDataType>& rData, IndexType SolutionStepIndex, int ThisId)
     {
         switch(ThisId)
         {
@@ -518,7 +517,7 @@ private:
         KRATOS_ERROR << "Not supported type for Dof" << std::endl;
     }
 
-    TDataType const& GetReference(VariableData const& ThisVariable, VariablesListDataValueContainer const& rData, IndexType SolutionStepIndex, int ThisId) const
+    TDataType const& GetReference(VariableData const& ThisVariable, VariablesListDataValueContainer<TDataType> const& rData, IndexType SolutionStepIndex, int ThisId) const
     {
         switch(ThisId)
         {

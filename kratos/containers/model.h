@@ -63,7 +63,7 @@ public:
     ///@{
 
     /// Definition of the index type
-    using IndexType = ModelPart::IndexType;
+    typedef KRATOS_INDEX_TYPE IndexType;
 
     /// Pointer definition of Model
     KRATOS_CLASS_POINTER_DEFINITION(Model);
@@ -104,7 +104,8 @@ public:
      * @param ModelPartName The name of the new model part to be created
      * @param NewBufferSize The size of the buffer of the new model part created
      */
-    ModelPart& CreateModelPart( const std::string& ModelPartName, IndexType NewBufferSize=1 );
+    template<class TModelPartType>
+    BaseModelPart& CreateModelPart( const std::string& ModelPartName, IndexType NewBufferSize=1 );
 
     /**
      * @brief This method deletes a modelpart with a given name
@@ -119,6 +120,7 @@ public:
      * @param OldName The name of the model part to be renamed
      * @param NewName The new name for the model part to be renamed
      */
+    template<class TModelPartType>
     void RenameModelPart( const std::string& OldName, const std::string& NewName );
 
     /**
@@ -127,7 +129,7 @@ public:
      * @param rFullModelPartName The name of the model part to be returned
      * @return Reference to the model part of interest
      */
-    ModelPart& GetModelPart(const std::string& rFullModelPartName);
+    BaseModelPart& GetModelPart(const std::string& rFullModelPartName);
 
     /**
      * @brief This method returns a model part given a certain name
@@ -135,7 +137,7 @@ public:
      * @param rFullModelPartName The name of the model part to be returned
      * @return Reference to the model part of interest
      */
-    const ModelPart& GetModelPart(const std::string& rFullModelPartName) const;
+    const BaseModelPart& GetModelPart(const std::string& rFullModelPartName) const;
 
     /**
      * @brief This method checks if a certain a model part exists given a certain name
@@ -218,7 +220,7 @@ private:
 
     std::string mName;
 
-    std::map< std::string, std::unique_ptr<ModelPart> > mRootModelPartMap; /// The map containing the list of model parts
+    std::map< std::string, std::unique_ptr<BaseModelPart> > mRootModelPartMap; /// The map containing the list of model parts
 
     ///@}
     ///@name Private Operators
@@ -234,7 +236,7 @@ private:
      * @param pModelPart Pointer of the model part where search recursively
      * @return The pointer of the model part of interest
      */
-    ModelPart* RecursiveSearchByName(const std::string& rModelPartName, ModelPart* pModelPart) const;
+    BaseModelPart* RecursiveSearchByName(const std::string& rModelPartName, BaseModelPart* pModelPart) const;
 
     /**
      * @brief This method splits the name of the model part using "." to define the hierarchy
@@ -248,7 +250,8 @@ private:
      * @param ModelPartName The name of the new model part to be created
      * @param NewBufferSize The size of the buffer of the new model part created
      */
-    void CreateRootModelPart(const std::string& ModelPartName, ModelPart::IndexType NewBufferSize);
+    template<class TModelPartType>
+    void CreateRootModelPart(const std::string& ModelPartName, IndexType NewBufferSize);
 
     /**
      * @brief This method gets the names of all parent-modelparts given a submodelpart-name
@@ -256,7 +259,7 @@ private:
      * @param rModelPartNames The names of the ModelParts
      * @TODO remove this function when the flat-map is removed (it will no longer be needed)
      */
-    void GetNameWithAscendants(const ModelPart& rModelPart, std::vector<std::string>& rModelPartNames) const;
+    void GetNameWithAscendants(const BaseModelPart& rModelPart, std::vector<std::string>& rModelPartNames) const;
 
     ///@}
     ///@name Private  Access

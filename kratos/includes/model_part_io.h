@@ -80,6 +80,8 @@ public:
 
     typedef ModelPart::DataType DataType;
 
+    typedef ModelPart::CommunicatorType CommunicatorType;
+
     ///@}
     ///@name Life Cycle
     ///@{
@@ -336,11 +338,11 @@ protected:
 
     void FillNodalConnectivitiesFromConditionBlock(ConnectivitiesContainerType& rNodalConnectivities);
 
-    void ReadCommunicatorDataBlock(Communicator& rThisCommunicator, NodesContainerType& rThisNodes);
+    void ReadCommunicatorDataBlock(CommunicatorType& rThisCommunicator, NodesContainerType& rThisNodes);
 
-    void ReadCommunicatorLocalNodesBlock(Communicator& rThisCommunicator, NodesContainerType& rThisNodes);
+    void ReadCommunicatorLocalNodesBlock(CommunicatorType& rThisCommunicator, NodesContainerType& rThisNodes);
 
-    void ReadCommunicatorGhostNodesBlock(Communicator& rThisCommunicator, NodesContainerType& rThisNodes);
+    void ReadCommunicatorGhostNodesBlock(CommunicatorType& rThisCommunicator, NodesContainerType& rThisNodes);
 
     void ReadMeshBlock(ModelPart& rModelPart);
 

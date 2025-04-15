@@ -11,6 +11,7 @@
 //
 
 // System includes
+#include <type_traits>
 #include <unordered_set>
 #include <unordered_map>
 
@@ -22,7 +23,8 @@
 namespace Kratos
 {
 
-void ConstraintUtilities::ResetSlaveDofs(ModelPart& rModelPart)
+template<class TModelPartType>
+void ConstraintUtilities<TModelPartType>::ResetSlaveDofs(TModelPartType& rModelPart)
 {
     KRATOS_TRY
 
@@ -57,7 +59,8 @@ void ConstraintUtilities::ResetSlaveDofs(ModelPart& rModelPart)
 /***********************************************************************************/
 /***********************************************************************************/
 
-void ConstraintUtilities::ApplyConstraints(ModelPart& rModelPart)
+template<class TModelPartType>
+void ConstraintUtilities<TModelPartType>::ApplyConstraints(TModelPartType& rModelPart)
 {
     KRATOS_TRY
 
@@ -92,8 +95,9 @@ void ConstraintUtilities::ApplyConstraints(ModelPart& rModelPart)
 /***********************************************************************************/
 /***********************************************************************************/
 
-void ConstraintUtilities::PreComputeExplicitConstraintConstribution(
-    ModelPart& rModelPart,
+template<class TModelPartType>
+void ConstraintUtilities<TModelPartType>::PreComputeExplicitConstraintConstribution(
+    TModelPartType& rModelPart,
     const std::vector<std::string>& rDofVariableNames,
     const std::vector<std::string>& rResidualDofVariableNames
     )
@@ -101,11 +105,11 @@ void ConstraintUtilities::PreComputeExplicitConstraintConstribution(
     KRATOS_TRY
 
     if (rDofVariableNames.size() == rResidualDofVariableNames.size())
-        KRATOS_THROW_ERROR(std::logic_error, "PreComputeExplicitConstraintConstribution not properly defined variables", "");
+        KRATOS_ERROR << "PreComputeExplicitConstraintConstribution not properly defined variables";
 
     // Defining variable maps
     std::unordered_map<std::size_t, Variable<DataType>> double_variable_map;
-    typedef ModelPart::VariableComponentType VariableComponentType;
+    typedef typename TModelPartType::VariableComponentType VariableComponentType;
     std::unordered_map<std::size_t, VariableComponentType> components_variable_map;
 
     std::size_t counter = 0;
@@ -141,10 +145,10 @@ void ConstraintUtilities::PreComputeExplicitConstraintConstribution(
     const auto it_cont_begin = rModelPart.MasterSlaveConstraints().begin();
 
     // Auxiliar values
-    Matrix transformation_matrix;
-    Vector constant_vector, slave_solution_vector, master_solution_vector;
-    ModelPart::NodeType::Pointer p_master_node = *(rModelPart.Nodes().begin()).base();
-    ModelPart::NodeType::Pointer p_slave_node = *(rModelPart.Nodes().begin()).base();
+    typename TModelPartType::MatrixType transformation_matrix;
+    typename TModelPartType::VectorType constant_vector, slave_solution_vector, master_solution_vector;
+    typename TModelPartType::NodeType::Pointer p_master_node = *(rModelPart.Nodes().begin()).base();
+    typename TModelPartType::NodeType::Pointer p_slave_node = *(rModelPart.Nodes().begin()).base();
 
     #pragma omp parallel firstprivate(transformation_matrix, constant_vector, slave_solution_vector, master_solution_vector, p_master_node, p_slave_node)
     {
@@ -196,13 +200,23 @@ void ConstraintUtilities::PreComputeExplicitConstraintConstribution(
                 if (double_variable_map.find(master_variable_key) != double_variable_map.end()) {
                     const auto& r_aux_var = double_variable_map.find(master_variable_key)->second;
                     DataType& aux_value = p_master_node->FastGetSolutionStepValue(r_aux_var);
-                    #pragma omp atomic
-                    aux_value += master_solution_vector[counter];
+                    if constexpr (std::is_arithmetic<DataType>::value)
+                    {
+                        #pragma omp atomic
+                        aux_value += master_solution_vector[counter];
+                    }
+                    else
+                        aux_value += master_solution_vector[counter];
                 } else if (components_variable_map.find(master_variable_key) != components_variable_map.end()) {
                     const auto& r_aux_var = components_variable_map.find(master_variable_key)->second;
                     DataType& aux_value = p_master_node->FastGetSolutionStepValue(r_aux_var);
-                    #pragma omp atomic
-                    aux_value += master_solution_vector[counter];
+                    if constexpr (std::is_arithmetic<DataType>::value)
+                    {
+                        #pragma omp atomic
+                        aux_value += master_solution_vector[counter];
+                    }
+                    else
+                        aux_value += master_solution_vector[counter];
                 }
 
                 ++counter;
@@ -216,18 +230,19 @@ void ConstraintUtilities::PreComputeExplicitConstraintConstribution(
 /***********************************************************************************/
 /***********************************************************************************/
 
-void ConstraintUtilities::PreComputeExplicitConstraintMassAndInertia(
-    ModelPart& rModelPart,
-    const std::string DofDisplacementVariableName,
-    const std::string MassVariableName,
-    const std::string DofRotationVariableName,
-    const std::string InertiaVariableName
+template<class TModelPartType>
+void ConstraintUtilities<TModelPartType>::PreComputeExplicitConstraintMassAndInertia(
+    TModelPartType& rModelPart,
+    const std::string& DofDisplacementVariableName,
+    const std::string& MassVariableName,
+    const std::string& DofRotationVariableName,
+    const std::string& InertiaVariableName
     )
 {
     KRATOS_TRY
 
     // Defining variable maps
-    typedef ModelPart::VariableComponentType VariableComponentType;
+    typedef typename TModelPartType::VariableComponentType VariableComponentType;
     std::unordered_map<std::size_t, Variable<DataType>> displacement_variable_map;
 //     std::unordered_map<std::size_t, VariableComponentType> displacement_variable_map; // NOTE: Mass should be components for consistency
 //     std::unordered_map<std::size_t, VariableComponentType> rotation_variable_map; // TODO: Add in the future
@@ -252,10 +267,10 @@ void ConstraintUtilities::PreComputeExplicitConstraintMassAndInertia(
     const auto it_cont_begin = rModelPart.MasterSlaveConstraints().begin();
 
     // Auxiliar values
-    Matrix transformation_matrix;
-    Vector constant_vector, slave_solution_vector, master_solution_vector;
-    ModelPart::NodeType::Pointer p_master_node = *(rModelPart.Nodes().begin()).base();
-    ModelPart::NodeType::Pointer p_slave_node = *(rModelPart.Nodes().begin()).base();
+    typename TModelPartType::MatrixType transformation_matrix;
+    typename TModelPartType::VectorType constant_vector, slave_solution_vector, master_solution_vector;
+    typename TModelPartType::NodeType::Pointer p_master_node = *(rModelPart.Nodes().begin()).base();
+    typename TModelPartType::NodeType::Pointer p_slave_node = *(rModelPart.Nodes().begin()).base();
 
     // Auxiliar map to count the mass added (NOTE: mass should be components for sake of consistency)
     std::unordered_set<std::size_t> slave_mass_map_counter, mass_mass_map_counter;
@@ -317,8 +332,13 @@ void ConstraintUtilities::PreComputeExplicitConstraintMassAndInertia(
                     const auto& r_aux_var = displacement_variable_map.find(master_variable_key)->second;
                     DataType& aux_value = p_master_node->GetValue(r_aux_var);
 
-                    #pragma omp atomic
-                    aux_value += master_solution_vector[counter];
+                    if constexpr (std::is_arithmetic<DataType>::value)
+                    {
+                        #pragma omp atomic
+                        aux_value += master_solution_vector[counter];
+                    }
+                    else
+                        aux_value += master_solution_vector[counter];
 
                     mass_mass_map_counter.insert(dof_id);
                 }
@@ -330,5 +350,11 @@ void ConstraintUtilities::PreComputeExplicitConstraintMassAndInertia(
 
     KRATOS_CATCH("")
 }
+
+/***********************************************************************************/
+/***********************************************************************************/
+
+template class ConstraintUtilities<ModelPart>;
+template class ConstraintUtilities<ComplexModelPart>;
 
 } // namespace Kratos

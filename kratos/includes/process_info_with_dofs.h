@@ -54,6 +54,7 @@ namespace Kratos
 /// Short class definition.
 /** Detail class definition.
 */
+template<typename TDofType = Dof<KRATOS_DOUBLE_TYPE> >
 class ProcessInfoWithDofs : public ProcessInfo
 {
 public:
@@ -65,11 +66,13 @@ public:
 
     typedef ProcessInfo BaseType;
 
-    typedef Dof<KRATOS_DOUBLE_TYPE> DofType;
+    typedef TDofType DofType;
 
-    typedef std::deque<DofType::Pointer> DofsContainerType;
+    typedef std::deque<typename DofType::Pointer> DofsContainerType;
 
-    typedef VariablesListDataValueContainer SolutionStepsNodalDataContainerType;
+    typedef typename DofType::SolutionStepsDataContainerType SolutionStepsDataContainerType;
+
+    typedef typename SolutionStepsDataContainerType::VariablesListType VariablesListType;
 
     typedef BaseType::SizeType SizeType;
 
@@ -117,13 +120,13 @@ public:
     ///@name Operations
     ///@{
 
-    void SetSolutionStepVariablesList(VariablesList& rVariablesList)
+    void SetSolutionStepVariablesList(VariablesListType& rVariablesList)
     {
         std::cout << "SetSolutionStepVariablesList is called" << std::endl;
         mpVariablesList = &rVariablesList;
     }
 
-    void SetBufferSize(IndexType NewBufferSize)
+    void SetBufferSize(SizeType NewBufferSize)
     {
         std::cout << "SetBufferSize is called" << std::endl;
         mBufferSize = NewBufferSize;
@@ -142,10 +145,10 @@ public:
     {
         KRATOS_TRY_LEVEL_3
 
-        mSolutionStepsNodalData.push_back(SolutionStepsNodalDataContainerType());
+        mSolutionStepsNodalData.push_back(SolutionStepsDataContainerType());
         mSolutionStepsNodalData.back().SetVariablesList(mpVariablesList);
         mSolutionStepsNodalData.back().Resize(mBufferSize);
-        mDofs.push_back(DofType::Pointer(new DofType(mId--, &mSolutionStepsNodalData.back(), rDofVariable)));
+        mDofs.push_back(typename DofType::Pointer(new DofType(mId--, &mSolutionStepsNodalData.back(), rDofVariable)));
         std::cout << "Dof " << rDofVariable.Name() << " is added at position " << mDofs.size()-1 << std::endl;
 
         KRATOS_CATCH_LEVEL_3(*this);
@@ -311,10 +314,10 @@ private:
     ///@{
 
     DofsContainerType mDofs;
-    std::deque<SolutionStepsNodalDataContainerType> mSolutionStepsNodalData;
-    VariablesList* mpVariablesList;
-    SizeType mId;
-    IndexType mBufferSize;
+    std::deque<SolutionStepsDataContainerType> mSolutionStepsNodalData;
+    VariablesListType* mpVariablesList;
+    IndexType mId;
+    SizeType mBufferSize;
 
     ///@}
     ///@name Private Operators
@@ -333,14 +336,14 @@ private:
     void save(Serializer& rSerializer) const override
     {
         KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, BaseType );
-        std::vector<DofType::Pointer> DofsVector(mDofs.begin(), mDofs.end());
+        std::vector<typename DofType::Pointer> DofsVector(mDofs.begin(), mDofs.end());
         rSerializer.save("Dofs", DofsVector);
     }
 
     void load(Serializer& rSerializer) override
     {
         KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, BaseType );
-        std::vector<DofType::Pointer> DofsVector;
+        std::vector<typename DofType::Pointer> DofsVector;
         rSerializer.load("Dofs", DofsVector);
         mDofs.clear();
         std::copy(DofsVector.begin(), DofsVector.end(), mDofs.begin());

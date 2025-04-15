@@ -56,22 +56,20 @@ namespace Kratos
  * not all of them have to be implemented if they are not needed for
  * the actual problem
  */
-class Element : public GeometricalObject
+template<class TNodeType = Node<3> >
+class BaseElement : public GeometricalObject
 {
 public:
     ///@name Type Definitions
     ///@{
-    /// Pointer definition of Element
-    KRATOS_CLASS_POINTER_DEFINITION(Element);
-
-    ///definition of element type
-    typedef Element ElementType;
+    /// Pointer definition of BaseElement
+    KRATOS_CLASS_POINTER_DEFINITION(BaseElement);
 
     ///base type: an GeometricalObject that automatically has a unique number
     typedef GeometricalObject BaseType;
 
     ///definition of node type (default is: Node<3>)
-    typedef Node < 3 > NodeType;
+    typedef TNodeType NodeType;
 
     /**
      * Properties are used to store any parameters
@@ -83,15 +81,7 @@ public:
     typedef Geometry<NodeType> GeometryType;
 
     ///definition of nodes container type, redefined from GeometryType
-    typedef Geometry<NodeType>::PointsArrayType NodesArrayType;
-
-    typedef Vector VectorType;
-
-    typedef Matrix MatrixType;
-
-    typedef ComplexVector ComplexVectorType;
-
-    typedef ComplexMatrix ComplexMatrixType;
+    typedef typename Geometry<NodeType>::PointsArrayType NodesArrayType;
 
     typedef BaseType::IndexType IndexType;
 
@@ -100,6 +90,10 @@ public:
     typedef typename NodeType::DofType DofType;
 
     typedef typename DofType::DataType DataType;
+
+    typedef typename MatrixVectorTypeSelector<DataType>::VectorType VectorType;
+
+    typedef typename MatrixVectorTypeSelector<DataType>::MatrixType MatrixType;
 
     typedef std::vector<IndexType> EquationIdVectorType;
 
@@ -126,7 +120,7 @@ public:
     /**
      * Constructor.
      */
-    Element(IndexType NewId = 0)
+    BaseElement(IndexType NewId = 0)
         : BaseType(NewId)
         , mpProperties(new PropertiesType)
     {
@@ -135,7 +129,7 @@ public:
     /**
      * Constructor using an array of nodes
      */
-    Element(IndexType NewId, const NodesArrayType& ThisNodes)
+    BaseElement(IndexType NewId, const NodesArrayType& ThisNodes)
         : BaseType(NewId,GeometryType::Pointer(new GeometryType(ThisNodes)))
         , mpProperties(new PropertiesType)
     {
@@ -144,7 +138,7 @@ public:
     /**
      * Constructor using Geometry
      */
-    Element(IndexType NewId, GeometryType::Pointer pGeometry)
+    BaseElement(IndexType NewId, typename GeometryType::Pointer pGeometry)
         : BaseType(NewId,pGeometry)
         , mpProperties(new PropertiesType)
     {
@@ -153,7 +147,7 @@ public:
     /**
      * Constructor using Properties
      */
-    Element(IndexType NewId, GeometryType::Pointer pGeometry, PropertiesType::Pointer pProperties)
+    BaseElement(IndexType NewId, typename GeometryType::Pointer pGeometry, PropertiesType::Pointer pProperties)
         : BaseType(NewId,pGeometry)
         , mpProperties(pProperties)
     {
@@ -161,7 +155,7 @@ public:
 
     /// Copy constructor.
 
-    Element(Element const& rOther)
+    BaseElement(BaseElement const& rOther)
         : BaseType(rOther)
         , mpProperties(rOther.mpProperties)
     {
@@ -169,7 +163,7 @@ public:
 
     /// Destructor.
 
-    ~Element() override
+    ~BaseElement() override
     {
     }
 
@@ -184,7 +178,7 @@ public:
 
     /// Assignment operator.
 
-    Element & operator=(Element const& rOther)
+    BaseElement & operator=(BaseElement const& rOther)
     {
         BaseType::operator=(rOther);
         mpProperties = rOther.mpProperties;
@@ -234,7 +228,7 @@ public:
      * @return a Pointer to the new element
      */
     virtual Pointer Create(IndexType NewId,
-                           GeometryType::Pointer pGeom,
+                           typename GeometryType::Pointer pGeom,
                            PropertiesType::Pointer pProperties) const
     {
         KRATOS_ERROR << "Please implement the Second Create method in your derived Element" << Info() << std::endl;
@@ -248,7 +242,7 @@ public:
      * @return a Pointer to the new element
      */
     virtual Pointer Create(IndexType NewId,
-                           std::vector<GeometryType::Pointer> pGeom,
+                           std::vector<typename GeometryType::Pointer> pGeom,
                            PropertiesType::Pointer pProperties) const
     {
         KRATOS_ERROR << "Please implement the Third Create method in your derived Element" << Info() << std::endl;
@@ -440,22 +434,6 @@ public:
      */
     virtual void CalculateLocalSystem(MatrixType& rLeftHandSideMatrix,
                                       VectorType& rRightHandSideVector,
-                                      const ProcessInfo& rCurrentProcessInfo)
-    {
-        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
-                     << __FUNCTION__ << " is not implemented";
-    }
-
-    /**
-     * this is called during the assembling process in order
-     * to calculate all elemental contributions to the global system
-     * matrix and the right hand side
-     * @param rLeftHandSideMatrix the elemental (complex) left hand side matrix
-     * @param rRightHandSideVector the elemental (complex) right hand side
-     * @param rCurrentProcessInfo the current process info instance
-     */
-    virtual void CalculateLocalSystem(ComplexMatrixType& rLeftHandSideMatrix,
-                                      ComplexVectorType& rRightHandSideVector,
                                       const ProcessInfo& rCurrentProcessInfo)
     {
         KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
@@ -1328,7 +1306,7 @@ private:
     ///@{
     ///@}
 
-}; // Class Element
+}; // Class BaseElement
 
 ///@}
 ///@name Type Definitions
@@ -1338,13 +1316,15 @@ private:
 ///@{
 
 /// input stream function
-inline std::istream & operator >>(std::istream& rIStream, Element& rThis)
+template<class TNodeType>
+inline std::istream & operator >>(std::istream& rIStream, BaseElement<TNodeType>& rThis)
 {
     return rIStream;
 }
 
 /// output stream function
-inline std::ostream & operator <<(std::ostream& rOStream, const Element& rThis)
+template<class TNodeType>
+inline std::ostream & operator <<(std::ostream& rOStream, const BaseElement<TNodeType>& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << " : " << std::endl;
@@ -1354,7 +1334,11 @@ inline std::ostream & operator <<(std::ostream& rOStream, const Element& rThis)
 
 ///@}
 
+typedef BaseElement<Node<3, KRATOS_DOUBLE_TYPE, Dof<KRATOS_DOUBLE_TYPE> > > Element;
+typedef BaseElement<Node<3, KRATOS_DOUBLE_TYPE, Dof<KRATOS_COMPLEX_TYPE> > > ComplexElement;
+
 void KRATOS_API(KRATOS_CORE) AddKratosComponent(std::string const& Name, Element const& ThisComponent);
+// void KRATOS_API(KRATOS_CORE) AddKratosComponent(std::string const& Name, ComplexElement const& ThisComponent);
 
 /**
  * definition of elemental specific variables
@@ -1372,4 +1356,5 @@ template<> struct DataTypeToString<WeakPointerVector<Element> > { static inline 
 template<> struct DataTypeToString<typename Element::Pointer> { static inline constexpr const char* Get() {return "Element::Pointer";} };
 
 } // namespace Kratos.
+
 #endif // KRATOS_ELEMENT_H_INCLUDED  defined

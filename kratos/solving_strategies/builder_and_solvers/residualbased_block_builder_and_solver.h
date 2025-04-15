@@ -1072,15 +1072,16 @@ public:
         {
             key = dof_iterator->GetVariable().Key();
             row = dof_iterator->EquationId();
-            if (diag_values.find(key) != diag_values.end())
+            auto it = diag_values.find(key);
+            if (it != diag_values.end())
             {
                 ++dof_numbers[key];
-                diag_values[key] += A(row, row);
+                it->second += A(row, row);
             }
             else
             {
                 dof_numbers[key] = 0;
-                diag_values[key] = 0.0;
+                it->second = 0.0;
             }
         }
 
@@ -1130,7 +1131,7 @@ public:
             std::size_t col_begin = Arow_indices[k];
             std::size_t col_end = Arow_indices[k+1];
             const auto k_factor = scaling_factors[k];
-            if (k_factor == 0)
+            if (k_factor == 0.0)
             {
                 // zero out the whole row, except the diagonal
                 for (std::size_t j = col_begin; j < col_end; ++j)
@@ -1144,7 +1145,7 @@ public:
             {
                 // zero out the column which is associated with the zero'ed row
                 for (std::size_t j = col_begin; j < col_end; ++j)
-                    if(scaling_factors[ Acol_indices[j] ] == 0 )
+                    if(scaling_factors[ Acol_indices[j] ] == 0.0 )
                         Avalues[j] = 0.0;
             }
         }

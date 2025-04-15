@@ -82,7 +82,7 @@ namespace Kratos
 
 /** Detail class definition.
  */
-class MPICommunicator : public Communicator
+class MPICommunicator : public Communicator<>
 {
 public:
     ///@name  Enum's

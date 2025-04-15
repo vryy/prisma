@@ -126,6 +126,23 @@ namespace Kratos
     // declare namespace usage to avoid downstream explosion of compilation errors
     using namespace boost::numeric::ublas;
 
+    // selector for vector and matrix type
+    template<typename TDataType> struct MatrixVectorTypeSelector;
+
+    template<>
+    struct MatrixVectorTypeSelector<KRATOS_DOUBLE_TYPE>
+    {
+        typedef Vector VectorType;
+        typedef Matrix MatrixType;
+    };
+
+    template<>
+    struct MatrixVectorTypeSelector<KRATOS_COMPLEX_TYPE>
+    {
+        typedef ComplexVector VectorType;
+        typedef ComplexMatrix MatrixType;
+    };
+
     // more specialization for DataTypeToString
     template<> struct DataTypeToString<boost::numeric::ublas::vector<int> > { static inline constexpr const char* Get() {return "boost::numeric::ublas::vector<int>";} };
     template<> struct DataTypeToString<boost::numeric::ublas::vector<double> > { static inline constexpr const char* Get() {return "boost::numeric::ublas::vector<double>";} };

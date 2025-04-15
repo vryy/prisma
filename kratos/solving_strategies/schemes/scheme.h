@@ -52,7 +52,8 @@ namespace Kratos
  * @author Riccardo Rossi
  */
 template<class TSparseSpace,
-         class TDenseSpace //= DenseSpace<double>
+         class TDenseSpace, //= DenseSpace<double>
+         class TModelPartType = ModelPart
          >
 class Scheme
 {
@@ -70,18 +71,17 @@ public:
     typedef typename TDenseSpace::MatrixType LocalSystemMatrixType;
     typedef typename TDenseSpace::VectorType LocalSystemVectorType;
 
-    typedef ModelPart::DofType DofType;
-    typedef ModelPart::DofsArrayType DofsArrayType;
+    typedef TModelPartType ModelPartType;
+
+    typedef typename ModelPartType::DofType DofType;
+    typedef typename ModelPartType::DofsArrayType DofsArrayType;
     typedef typename DofsArrayType::iterator DofIterator;
     typedef typename DofsArrayType::const_iterator DofConstantIterator;
 
-    typedef ModelPart::ElementsContainerType ElementsArrayType;
-    typedef ModelPart::ConditionsContainerType ConditionsArrayType;
-
-    //typedef PointerVectorSet<TDofType, IndexedObject> DofsArrayType;
-    //typedef Node::DofArrayType DofArrayType;
-
-
+    typedef typename ModelPartType::ElementType ElementType;
+    typedef typename ModelPartType::ConditionType ConditionType;
+    typedef typename ModelPartType::ElementsContainerType ElementsContainerType;
+    typedef typename ModelPartType::ConditionsContainerType ConditionsContainerType;
 
     ///@}
     ///@name Life Cycle
@@ -102,9 +102,9 @@ public:
     /** Copy Constructor.
      */
     Scheme(Scheme& rOther)
-      :mSchemeIsInitialized(rOther.mSchemeIsInitialized)
-      ,mElementsAreInitialized(rOther.mElementsAreInitialized)
-      ,mConditionsAreInitialized(rOther.mConditionsAreInitialized)
+    : mSchemeIsInitialized(rOther.mSchemeIsInitialized)
+    , mElementsAreInitialized(rOther.mElementsAreInitialized)
+    , mConditionsAreInitialized(rOther.mConditionsAreInitialized)
     {
     }
 
@@ -137,7 +137,7 @@ public:
      * @details This is intended to be called just once when the strategy is initialized
      * @param rModelPart The model part of the problem to solve
      */
-    virtual void Initialize(ModelPart& rModelPart)
+    virtual void Initialize(ModelPartType& rModelPart)
     {
         KRATOS_TRY
         mSchemeIsInitialized = true;
@@ -203,7 +203,7 @@ public:
      * @details This is intended to be called just once when the strategy is initialized
      * @param rModelPart The model part of the problem to solve
      */
-    virtual void InitializeElements( ModelPart& rModelPart)
+    virtual void InitializeElements(ModelPartType& rModelPart)
     {
         KRATOS_TRY
 
@@ -215,14 +215,13 @@ public:
         #pragma omp parallel
         {
             int k = OpenMPUtils::ThisThread();
-            ElementsArrayType::iterator ElemBegin = rModelPart.Elements().begin() + ElementPartition[k];
-            ElementsArrayType::iterator ElemEnd = rModelPart.Elements().begin() + ElementPartition[k + 1];
+            typename ElementsContainerType::iterator ElemBegin = rModelPart.Elements().begin() + ElementPartition[k];
+            typename ElementsContainerType::iterator ElemEnd = rModelPart.Elements().begin() + ElementPartition[k + 1];
 
-            for (ElementsArrayType::iterator itElem = ElemBegin; itElem != ElemEnd; itElem++)
+            for (typename ElementsContainerType::iterator itElem = ElemBegin; itElem != ElemEnd; itElem++)
             {
                 itElem->Initialize(CurrentProcessInfo); //function to initialize the element
             }
-
         }
 
         mElementsAreInitialized = true;
@@ -235,12 +234,12 @@ public:
      * @details This is intended to be called just once when the strategy is initialized
      * @param rModelPart The model part of the problem to solve
      */
-    virtual void InitializeConditions(ModelPart& rModelPart)
+    virtual void InitializeConditions(ModelPartType& rModelPart)
     {
         KRATOS_TRY
 
         if(mElementsAreInitialized==false)
-            KRATOS_THROW_ERROR(std::logic_error, "Before initilizing Conditions, initialize Elements FIRST","")
+            KRATOS_ERROR << "Before initilizing Conditions, initialize Elements FIRST";
 
         int NumThreads = OpenMPUtils::GetNumThreads();
         OpenMPUtils::PartitionVector ConditionPartition;
@@ -250,10 +249,10 @@ public:
         #pragma omp parallel
         {
             int k = OpenMPUtils::ThisThread();
-            ConditionsArrayType::iterator CondBegin = rModelPart.Conditions().begin() + ConditionPartition[k];
-            ConditionsArrayType::iterator CondEnd = rModelPart.Conditions().begin() + ConditionPartition[k + 1];
+            typename ConditionsContainerType::iterator CondBegin = rModelPart.Conditions().begin() + ConditionPartition[k];
+            typename ConditionsContainerType::iterator CondEnd = rModelPart.Conditions().begin() + ConditionPartition[k + 1];
 
-            for (ConditionsArrayType::iterator itCond = CondBegin; itCond != CondEnd; itCond++)
+            for (typename ConditionsContainerType::iterator itCond = CondBegin; itCond != CondEnd; itCond++)
             {
                 itCond->Initialize(CurrentProcessInfo); //function to initialize the condition
             }
@@ -261,6 +260,7 @@ public:
         }
 
         mConditionsAreInitialized = true;
+
         KRATOS_CATCH("")
     }
 
@@ -274,27 +274,29 @@ public:
      * @param b RHS Vector
      */
     virtual void InitializeSolutionStep(
-        ModelPart& rModelPart,
+        ModelPartType& rModelPart,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
         TSystemVectorType& b
     )
     {
         KRATOS_TRY
+
         //initialize solution step for all of the elements
-        ElementsArrayType& pElements = rModelPart.Elements();
+        ElementsContainerType& pElements = rModelPart.Elements();
         const ProcessInfo& CurrentProcessInfo = rModelPart.GetProcessInfo();
 
-        for (ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
+        for (typename ElementsContainerType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
             (it) -> InitializeSolutionStep(CurrentProcessInfo);
         }
 
-        ConditionsArrayType& pConditions = rModelPart.Conditions();
-        for (ConditionsArrayType::iterator it = pConditions.begin(); it != pConditions.end(); ++it)
+        ConditionsContainerType& pConditions = rModelPart.Conditions();
+        for (typename ConditionsContainerType::iterator it = pConditions.begin(); it != pConditions.end(); ++it)
         {
             (it) -> InitializeSolutionStep(CurrentProcessInfo);
         }
+
         KRATOS_CATCH("")
     }
 
@@ -306,7 +308,7 @@ public:
      * @param b RHS Vector
      */
     virtual void FinalizeSolutionStep(
-        ModelPart& rModelPart,
+        ModelPartType& rModelPart,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
         TSystemVectorType& b)
@@ -314,7 +316,7 @@ public:
         KRATOS_TRY
 
         // Finalizes solution step for all of the elements, conditions and constraints
-        ElementsArrayType& rElements = rModelPart.Elements();
+        ElementsContainerType& rElements = rModelPart.Elements();
         const ProcessInfo& CurrentProcessInfo = rModelPart.GetProcessInfo();
 
         int NumThreads = OpenMPUtils::GetNumThreads();
@@ -325,16 +327,16 @@ public:
         {
             int k = OpenMPUtils::ThisThread();
 
-            ElementsArrayType::iterator ElementsBegin = rElements.begin() + ElementPartition[k];
-            ElementsArrayType::iterator ElementsEnd = rElements.begin() + ElementPartition[k + 1];
+            typename ElementsContainerType::iterator ElementsBegin = rElements.begin() + ElementPartition[k];
+            typename ElementsContainerType::iterator ElementsEnd = rElements.begin() + ElementPartition[k + 1];
 
-            for (ElementsArrayType::iterator itElem = ElementsBegin; itElem != ElementsEnd; itElem++)
+            for (typename ElementsContainerType::iterator itElem = ElementsBegin; itElem != ElementsEnd; itElem++)
             {
                 itElem->FinalizeSolutionStep(CurrentProcessInfo);
             }
         }
 
-        ConditionsArrayType& rConditions = rModelPart.Conditions();
+        ConditionsContainerType& rConditions = rModelPart.Conditions();
 
         OpenMPUtils::PartitionVector ConditionPartition;
         OpenMPUtils::DivideInPartitions(rConditions.size(), NumThreads, ConditionPartition);
@@ -343,14 +345,15 @@ public:
         {
             int k = OpenMPUtils::ThisThread();
 
-            ConditionsArrayType::iterator ConditionsBegin = rConditions.begin() + ConditionPartition[k];
-            ConditionsArrayType::iterator ConditionsEnd = rConditions.begin() + ConditionPartition[k + 1];
+            typename ConditionsContainerType::iterator ConditionsBegin = rConditions.begin() + ConditionPartition[k];
+            typename ConditionsContainerType::iterator ConditionsEnd = rConditions.begin() + ConditionPartition[k + 1];
 
-            for (ConditionsArrayType::iterator itCond = ConditionsBegin; itCond != ConditionsEnd; itCond++)
+            for (typename ConditionsContainerType::iterator itCond = ConditionsBegin; itCond != ConditionsEnd; itCond++)
             {
                 itCond->FinalizeSolutionStep(CurrentProcessInfo);
             }
         }
+
         KRATOS_CATCH("")
     }
 
@@ -365,26 +368,28 @@ public:
      * @param b RHS Vector
      */
     virtual void InitializeNonLinIteration(
-        ModelPart& rModelPart,
+        ModelPartType& rModelPart,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
         TSystemVectorType& b
         )
     {
         KRATOS_TRY
-        ElementsArrayType& pElements = rModelPart.Elements();
+
+        ElementsContainerType& pElements = rModelPart.Elements();
         const ProcessInfo& CurrentProcessInfo = rModelPart.GetProcessInfo();
 
-        for (ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
+        for (typename ElementsContainerType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
             (it) -> InitializeNonLinearIteration(CurrentProcessInfo);
         }
 
-        ConditionsArrayType& pConditions = rModelPart.Conditions();
-        for (ConditionsArrayType::iterator it = pConditions.begin(); it != pConditions.end(); ++it)
+        ConditionsContainerType& pConditions = rModelPart.Conditions();
+        for (typename ConditionsContainerType::iterator it = pConditions.begin(); it != pConditions.end(); ++it)
         {
             (it) -> InitializeNonLinearIteration(CurrentProcessInfo);
         }
+
         KRATOS_CATCH("")
     }
 
@@ -396,26 +401,28 @@ public:
      * @param b RHS Vector
      */
     virtual void FinalizeNonLinIteration(
-        ModelPart& rModelPart,
+        ModelPartType& rModelPart,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
         TSystemVectorType& b
         )
     {
         KRATOS_TRY
-        ElementsArrayType& pElements = rModelPart.Elements();
+
+        ElementsContainerType& pElements = rModelPart.Elements();
         const ProcessInfo& CurrentProcessInfo = rModelPart.GetProcessInfo();
 
-        for (ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
+        for (typename ElementsContainerType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
             (it) -> FinalizeNonLinearIteration(CurrentProcessInfo);
         }
 
-        ConditionsArrayType& pConditions = rModelPart.Conditions();
-        for (ConditionsArrayType::iterator it = pConditions.begin(); it != pConditions.end(); ++it)
+        ConditionsContainerType& pConditions = rModelPart.Conditions();
+        for (typename ConditionsContainerType::iterator it = pConditions.begin(); it != pConditions.end(); ++it)
         {
             (it) -> FinalizeNonLinearIteration(CurrentProcessInfo);
         }
+
         KRATOS_CATCH("")
     }
 
@@ -428,7 +435,7 @@ public:
      * @param b RHS Vector
      */
     virtual void Predict(
-        ModelPart& rModelPart,
+        ModelPartType& rModelPart,
         DofsArrayType& rDofSet,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
@@ -449,7 +456,7 @@ public:
      * @param b RHS Vector
      */
     virtual void Update(
-        ModelPart& rModelPart,
+        ModelPartType& rModelPart,
         DofsArrayType& rDofSet,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
@@ -470,7 +477,7 @@ public:
      * @param b RHS Vector
      */
     virtual void CalculateOutputData(
-        ModelPart& rModelPart,
+        ModelPartType& rModelPart,
         DofsArrayType& rDofSet,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
@@ -504,7 +511,7 @@ public:
     /**
     function to clean up "element" scratch space after each element is built.
      */
-    virtual void CleanMemory(Element& rCurrentElement)
+    virtual void CleanMemory(ElementType& rCurrentElement)
     {
         rCurrentElement.CleanMemory();
     }
@@ -512,7 +519,7 @@ public:
     /**
     function to clean up "condition" scratch space after each condition is built.
      */
-    virtual void CleanMemory(Condition& rCurrentCondition)
+    virtual void CleanMemory(ConditionType& rCurrentCondition)
     {
         rCurrentCondition.CleanMemory();
     }
@@ -535,17 +542,17 @@ public:
      * @param rModelPart The model part of the problem to solve
      * @return 0 all OK, 1 otherwise
      */
-    virtual int Check(const ModelPart& rModelPart) const
+    virtual int Check(const ModelPartType& rModelPart) const
     {
         KRATOS_TRY
 
-        for(ModelPart::ElementsContainerType::const_iterator it = rModelPart.ElementsBegin();
+        for(typename ElementsContainerType::const_iterator it = rModelPart.ElementsBegin();
                 it != rModelPart.ElementsEnd(); ++it)
         {
             it->Check(rModelPart.GetProcessInfo());
         }
 
-        for(ModelPart::ConditionsContainerType::const_iterator it = rModelPart.ConditionsBegin();
+        for(typename ConditionsContainerType::const_iterator it = rModelPart.ConditionsBegin();
                 it != rModelPart.ConditionsEnd(); ++it)
         {
             it->Check(rModelPart.GetProcessInfo());
@@ -566,10 +573,10 @@ public:
      * @param rCurrentProcessInfo The current process info instance
      */
     virtual void CalculateSystemContributions(
-        Element& rElement,
+        ElementType& rElement,
         LocalSystemMatrixType& LHS_Contribution,
         LocalSystemVectorType& RHS_Contribution,
-        Element::EquationIdVectorType& rEquationIdVector,
+        typename ElementType::EquationIdVectorType& rEquationIdVector,
         const ProcessInfo& rCurrentProcessInfo
         )
     {
@@ -584,10 +591,10 @@ public:
      * @param rCurrentProcessInfo The current process info instance
      */
     virtual void CalculateSystemContributions(
-        Condition& rCondition,
+        ConditionType& rCondition,
         LocalSystemMatrixType& LHS_Contribution,
         LocalSystemVectorType& RHS_Contribution,
-        Element::EquationIdVectorType& rEquationIdVector,
+        typename ElementType::EquationIdVectorType& rEquationIdVector,
         const ProcessInfo& rCurrentProcessInfo
         )
     {
@@ -601,9 +608,9 @@ public:
      * @param rCurrentProcessInfo The current process info instance
      */
     virtual void CalculateRHSContribution(
-        Element& rElement,
+        ElementType& rElement,
         LocalSystemVectorType& RHS_Contribution,
-        Element::EquationIdVectorType& rEquationIdVector,
+        typename ElementType::EquationIdVectorType& rEquationIdVector,
         const ProcessInfo& rCurrentProcessInfo
         )
     {
@@ -617,9 +624,9 @@ public:
      * @param rCurrentProcessInfo The current process info instance
      */
     virtual void CalculateRHSContribution(
-        Condition& rCondition,
+        ConditionType& rCondition,
         LocalSystemVectorType& RHS_Contribution,
-        Element::EquationIdVectorType& rEquationIdVector,
+        typename ElementType::EquationIdVectorType& rEquationIdVector,
         const ProcessInfo& rCurrentProcessInfo
         )
     {
@@ -633,9 +640,9 @@ public:
      * @param rCurrentProcessInfo The current process info instance
      */
     virtual void CalculateLHSContribution(
-        Element& rElement,
+        ElementType& rElement,
         LocalSystemMatrixType& LHS_Contribution,
-        Element::EquationIdVectorType& rEquationIdVector,
+        typename ElementType::EquationIdVectorType& rEquationIdVector,
         const ProcessInfo& rCurrentProcessInfo
         )
     {
@@ -649,9 +656,9 @@ public:
      * @param rCurrentProcessInfo The current process info instance
      */
     virtual void CalculateLHSContribution(
-        Condition& rCondition,
+        ConditionType& rCondition,
         LocalSystemMatrixType& LHS_Contribution,
-        Element::EquationIdVectorType& rEquationIdVector,
+        typename ElementType::EquationIdVectorType& rEquationIdVector,
         const ProcessInfo& rCurrentProcessInfo
         )
     {
@@ -664,8 +671,8 @@ public:
      * @param rCurrentProcessInfo The current process info instance
      */
     virtual void EquationId(
-        const Element& rElement,
-        Element::EquationIdVectorType& rEquationId,
+        const ElementType& rElement,
+        typename ElementType::EquationIdVectorType& rEquationId,
         const ProcessInfo& rCurrentProcessInfo
         )
     {
@@ -679,8 +686,8 @@ public:
      * @param rCurrentProcessInfo The current process info instance
      */
     virtual void EquationId(
-        const Condition& rCondition,
-        Element::EquationIdVectorType& rEquationId,
+        const ConditionType& rCondition,
+        typename ElementType::EquationIdVectorType& rEquationId,
         const ProcessInfo& rCurrentProcessInfo
         )
     {
@@ -694,8 +701,8 @@ public:
      * @param rCurrentProcessInfo The current process info instance
      */
     virtual void GetDofList(
-        const Element& rElement,
-        Element::DofsVectorType& rDofList,
+        const ElementType& rElement,
+        ElementType::DofsVectorType& rDofList,
         const ProcessInfo& rCurrentProcessInfo
         )
     {
@@ -709,8 +716,8 @@ public:
      * @param rCurrentProcessInfo The current process info instance
      */
     virtual void GetDofList(
-        const Condition& rCondition,
-        Element::DofsVectorType& rDofList,
+        const ConditionType& rCondition,
+        ElementType::DofsVectorType& rDofList,
         const ProcessInfo& rCurrentProcessInfo
         )
     {

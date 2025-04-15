@@ -1936,7 +1936,7 @@ namespace Kratos
     }
 
 
-    void ModelPartIO::ReadCommunicatorDataBlock(Communicator& rThisCommunicator, NodesContainerType& rThisNodes)
+    void ModelPartIO::ReadCommunicatorDataBlock(CommunicatorType& rThisCommunicator, NodesContainerType& rThisNodes)
     {
         KRATOS_TRY
 
@@ -1978,7 +1978,7 @@ namespace Kratos
         KRATOS_CATCH("")
     }
 
-    void ModelPartIO::ReadCommunicatorLocalNodesBlock(Communicator& rThisCommunicator, NodesContainerType& rThisNodes)
+    void ModelPartIO::ReadCommunicatorLocalNodesBlock(CommunicatorType& rThisCommunicator, NodesContainerType& rThisNodes)
     {
         KRATOS_TRY
 
@@ -2004,8 +2004,8 @@ namespace Kratos
             KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
         }
 
-        Communicator::MeshType* p_local_mesh;
-        Communicator::MeshType* p_interface_mesh;
+        typename CommunicatorType::MeshType* p_local_mesh;
+        typename CommunicatorType::MeshType* p_interface_mesh;
 
         if(interface_id == 0)
         {
@@ -2039,7 +2039,7 @@ namespace Kratos
     }
 
 
-    void ModelPartIO::ReadCommunicatorGhostNodesBlock(Communicator& rThisCommunicator, NodesContainerType& rThisNodes)
+    void ModelPartIO::ReadCommunicatorGhostNodesBlock(CommunicatorType& rThisCommunicator, NodesContainerType& rThisNodes)
     {
         KRATOS_TRY
 
@@ -2066,8 +2066,8 @@ namespace Kratos
             KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
         }
 
-        Communicator::MeshType* p_ghost_mesh;
-        Communicator::MeshType* p_interface_mesh;
+        typename CommunicatorType::MeshType* p_ghost_mesh;
+        typename CommunicatorType::MeshType* p_interface_mesh;
 
         if(interface_id == 0)
         {
@@ -2417,7 +2417,7 @@ namespace Kratos
 
         ReadWord(word); // Reading the name of the sub model part
 
-        ModelPart& r_sub_model_part = rParentModelPart.CreateSubModelPart(word);
+        ModelPart& r_sub_model_part = dynamic_cast<ModelPart&>(rParentModelPart.CreateSubModelPart(word));
 
         while (true)
         {
@@ -3640,7 +3640,6 @@ namespace Kratos
                 *(OutputFiles[i_partition]) << "    " << *id << std::endl;
             }
             *(OutputFiles[i_partition]) << "    End GhostNodes "  << std::endl;
-
         }
 
         WriteInAllFiles(OutputFiles, "End CommunicatorData \n");
@@ -3656,8 +3655,6 @@ namespace Kratos
         WriteInAllFiles(OutputFiles, "    End LocalNodes \n");
 
         PartitionIndicesContainerType local_nodes_indices(NumberOfPartitions);
-
-
     }
 
     void ModelPartIO::WriteInAllFiles(OutputFilesContainerType& OutputFiles, std::string const& ThisWord)
@@ -3785,7 +3782,6 @@ namespace Kratos
             c = 0;
 
         return c;
-
     }
 
     bool ModelPartIO::CheckStatement(std::string const& rStatement, std::string const& rGivenWord)
@@ -3837,7 +3833,4 @@ namespace Kratos
         return ConditionId;
     }
 
-
-
 }  // namespace Kratos.
-

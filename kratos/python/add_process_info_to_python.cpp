@@ -69,14 +69,9 @@ typename TVariableType::Type MyGetValueHelperFunction1( TContainerType& el,
 }
 
 //
-void  AddProcessInfoToPython()
+void AddProcessInfoToPython()
 {
     using namespace boost::python;
-
-    typedef KRATOS_DOUBLE_TYPE DataType;
-
-    typedef Variable<DataType> DoubleVariableType;
-    typedef VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<DataType, 3>>> VariableComponentType;
 
     class_<ProcessInfo, ProcessInfo::Pointer, bases<DataValueContainer, Flags>, boost::noncopyable>("ProcessInfo")
     .def(init<>())
@@ -88,13 +83,30 @@ void  AddProcessInfoToPython()
     .def(self_ns::str(self))
     ;
 
-    class_<ProcessInfoWithDofs, ProcessInfoWithDofs::Pointer, bases<ProcessInfo>, boost::noncopyable>("ProcessInfoWithDofs")
+    typedef Variable<KRATOS_DOUBLE_TYPE> DoubleVariableType;
+    typedef VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3>>> VariableComponentType;
+
+    typedef ProcessInfoWithDofs<Dof<KRATOS_DOUBLE_TYPE> > ProcessInfoWithDoubleDofs;
+    class_<ProcessInfoWithDoubleDofs, typename ProcessInfoWithDoubleDofs::Pointer, bases<ProcessInfo>, boost::noncopyable>("ProcessInfoWithDofs")
     .def(init<>())
-    .def("AddDof", &ProcessInfoWithDofs::AddDof<DoubleVariableType>)
-    .def("AddDof", &ProcessInfoWithDofs::AddDof<VariableComponentType>)
-    .def("FixDof", &ProcessInfoWithDofs::FixDof<DoubleVariableType>)
-    .def("FixDof", &ProcessInfoWithDofs::FixDof<VariableComponentType>)
+    .def("AddDof", &ProcessInfoWithDoubleDofs::AddDof<DoubleVariableType>)
+    .def("AddDof", &ProcessInfoWithDoubleDofs::AddDof<VariableComponentType>)
+    .def("FixDof", &ProcessInfoWithDoubleDofs::FixDof<DoubleVariableType>)
+    .def("FixDof", &ProcessInfoWithDoubleDofs::FixDof<VariableComponentType>)
     ;
+
+    typedef Variable<KRATOS_COMPLEX_TYPE> ComplexVariableType;
+    typedef VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_COMPLEX_TYPE, 3>>> ComplexVariableComponentType;
+
+    typedef ProcessInfoWithDofs<Dof<KRATOS_COMPLEX_TYPE> > ProcessInfoWithComplexDofs;
+    class_<ProcessInfoWithComplexDofs, typename ProcessInfoWithComplexDofs::Pointer, bases<ProcessInfo>, boost::noncopyable>("ProcessInfoWithComplexDofs")
+    .def(init<>())
+    .def("AddDof", &ProcessInfoWithComplexDofs::AddDof<ComplexVariableType>)
+    .def("AddDof", &ProcessInfoWithComplexDofs::AddDof<ComplexVariableComponentType>)
+    .def("FixDof", &ProcessInfoWithComplexDofs::FixDof<ComplexVariableType>)
+    .def("FixDof", &ProcessInfoWithComplexDofs::FixDof<ComplexVariableComponentType>)
+    ;
+
 }
 
 }  // namespace Python.
