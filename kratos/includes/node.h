@@ -1167,6 +1167,8 @@ KRATOS_DEFINE_VARIABLE(WeakPointerVector<Node<3> >, FATHER_NODES)
 #undef  KRATOS_EXPORT_MACRO
 #define KRATOS_EXPORT_MACRO KRATOS_NO_EXPORT
 
+template<> struct DataTypeToString<WeakPointerVector<Node<3> > > { static inline constexpr const char* Get() {return "WeakPointerVector<Node<3>>";} };
+template<> struct DataTypeToString<typename Node<3>::Pointer> { static inline constexpr const char* Get() {return "Node<3>::Pointer";} };
 
 //     namespace Globals
 //     {

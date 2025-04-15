@@ -1320,6 +1320,9 @@ KRATOS_DEFINE_VARIABLE(WeakPointerVector< Condition >, NEIGHBOUR_CONDITIONS)
 #undef  KRATOS_EXPORT_MACRO
 #define KRATOS_EXPORT_MACRO KRATOS_NO_EXPORT
 
+template<> struct DataTypeToString<WeakPointerVector<Condition> > { static inline constexpr const char* Get() {return "WeakPointerVector<Condition>";} };
+template<> struct DataTypeToString<typename Condition::Pointer> { static inline constexpr const char* Get() {return "Condition::Pointer";} };
+
 } // namespace Kratos.
 
 #endif // KRATOS_CONDITION_H_INCLUDED  defined

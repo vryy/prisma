@@ -765,6 +765,16 @@ private:
 
 ///@}
 
+template<> struct DataTypeToString<array_1d<double, 3> > { static inline constexpr const char* Get() {return "array_1d<double, 3>";} };
+template<> struct DataTypeToString<array_1d<double, 4> > { static inline constexpr const char* Get() {return "array_1d<double, 4>";} };
+template<> struct DataTypeToString<array_1d<double, 6> > { static inline constexpr const char* Get() {return "array_1d<double, 6>";} };
+template<> struct DataTypeToString<array_1d<double, 9> > { static inline constexpr const char* Get() {return "array_1d<double, 9>";} };
+template<> struct DataTypeToString<array_1d<std::complex<double>, 3> > { static inline constexpr const char* Get() {return "array_1d<std::complex<double>, 3>";} };
+template<> struct DataTypeToString<array_1d<std::complex<double>, 4> > { static inline constexpr const char* Get() {return "array_1d<std::complex<double>, 4>";} };
+template<> struct DataTypeToString<array_1d<std::complex<double>, 6> > { static inline constexpr const char* Get() {return "array_1d<std::complex<double>, 6>";} };
+template<> struct DataTypeToString<array_1d<std::complex<double>, 9> > { static inline constexpr const char* Get() {return "array_1d<std::complex<double>, 9>";} };
+template<> struct DataTypeToString<boost::numeric::ublas::vector<array_1d<double, 3> > > { static inline constexpr const char* Get() {return "boost::numeric::ublas::vector<array_1d<double, 3>>";} };
+template<> struct DataTypeToString<boost::numeric::ublas::vector<array_1d<std::complex<double>, 3> > > { static inline constexpr const char* Get() {return "boost::numeric::ublas::vector<array_1d<std::complex<double>, 3>>";} };
 
 }  // namespace	Kratos.
 

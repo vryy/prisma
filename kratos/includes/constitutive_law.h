@@ -1525,6 +1525,8 @@ KRATOS_DEFINE_VARIABLE(ConstitutiveLaw::Pointer, CONSTITUTIVE_LAW)
 #undef  KRATOS_EXPORT_MACRO
 #define KRATOS_EXPORT_MACRO KRATOS_NO_EXPORT
 
+template<> struct DataTypeToString<ConstitutiveLaw::Pointer> { static inline constexpr const char* Get() {return "ConstitutiveLaw::Pointer";} };
+
 } /* namespace Kratos.*/
 
 #endif /* KRATOS_CONSTITUTIVE_LAW  defined */

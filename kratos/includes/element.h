@@ -1368,5 +1368,8 @@ KRATOS_DEFINE_VARIABLE(WeakPointerVector< Element >, NEIGHBOUR_ELEMENTS)
 #undef  KRATOS_EXPORT_MACRO
 #define KRATOS_EXPORT_MACRO KRATOS_NO_EXPORT
 
+template<> struct DataTypeToString<WeakPointerVector<Element> > { static inline constexpr const char* Get() {return "WeakPointerVector<Element>";} };
+template<> struct DataTypeToString<typename Element::Pointer> { static inline constexpr const char* Get() {return "Element::Pointer";} };
+
 } // namespace Kratos.
 #endif // KRATOS_ELEMENT_H_INCLUDED  defined

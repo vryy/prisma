@@ -451,14 +451,16 @@ typedef const char* PointerToConstCharType;
 /* template<class TFunction> ApplyToLinearSolver(String Name){ */
 
 // struct to get the string of the data type
-template<typename TDataType> struct DataTypeToString;
-template<> struct DataTypeToString<int> { static inline std::string Get() {return "int";} };
-template<> struct DataTypeToString<bool> { static inline std::string Get() {return "bool";} };
-template<> struct DataTypeToString<double> { static inline std::string Get() {return "double";} };
-template<> struct DataTypeToString<long double> { static inline std::string Get() {return "long double";} };
-template<> struct DataTypeToString<std::complex<float> > { static inline std::string Get() {return "std::complex<float>";} };
-template<> struct DataTypeToString<std::complex<double> > { static inline std::string Get() {return "std::complex<double>";} };
-template<> struct DataTypeToString<std::complex<long double> > { static inline std::string Get() {return "std::complex<long double>";} };
+template<typename TDataType> struct DataTypeToString { static inline constexpr const char* Get() {return typeid(TDataType).name();} };
+template<> struct DataTypeToString<int> { static inline constexpr const char* Get() {return "int";} };
+template<> struct DataTypeToString<unsigned int> { static inline constexpr const char* Get() {return "unsigned int";} };
+template<> struct DataTypeToString<bool> { static inline constexpr const char* Get() {return "bool";} };
+template<> struct DataTypeToString<double> { static inline constexpr const char* Get() {return "double";} };
+template<> struct DataTypeToString<long double> { static inline constexpr const char* Get() {return "long double";} };
+template<> struct DataTypeToString<std::complex<float> > { static inline constexpr const char* Get() {return "std::complex<float>";} };
+template<> struct DataTypeToString<std::complex<double> > { static inline constexpr const char* Get() {return "std::complex<double>";} };
+template<> struct DataTypeToString<std::complex<long double> > { static inline constexpr const char* Get() {return "std::complex<long double>";} };
+template<> struct DataTypeToString<std::string> { static inline constexpr const char* Get() {return "std::string";} };
 
 // get the "real" value type behind data type. For primitive type, value type is the same as data type,
 // but for complex number the value type is the type of the real part of the complex data type

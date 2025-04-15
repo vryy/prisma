@@ -42,6 +42,7 @@
 #include <boost/numeric/ublas/operation_sparse.hpp>
 
 // Project includes
+#include "define.h"
 
 
 namespace Kratos
@@ -124,6 +125,14 @@ namespace Kratos
 
     // declare namespace usage to avoid downstream explosion of compilation errors
     using namespace boost::numeric::ublas;
+
+    // more specialization for DataTypeToString
+    template<> struct DataTypeToString<boost::numeric::ublas::vector<int> > { static inline constexpr const char* Get() {return "boost::numeric::ublas::vector<int>";} };
+    template<> struct DataTypeToString<boost::numeric::ublas::vector<double> > { static inline constexpr const char* Get() {return "boost::numeric::ublas::vector<double>";} };
+    template<> struct DataTypeToString<boost::numeric::ublas::vector<std::complex<double> > > { static inline constexpr const char* Get() {return "boost::numeric::ublas::vector<std::complex<double>>";} };
+    template<> struct DataTypeToString<boost::numeric::ublas::matrix<double> > { static inline constexpr const char* Get() {return "boost::numeric::ublas::matrix<double>";} };
+    template<> struct DataTypeToString<boost::numeric::ublas::matrix<std::complex<double> > > { static inline constexpr const char* Get() {return "boost::numeric::ublas::matrix<std::complex<double>>";} };
+
 
 ///@}
 ///@name  Enum's
