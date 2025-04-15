@@ -150,6 +150,7 @@ KRATOS_CATCH_AND_THROW(std::invalid_argument,MoreInfo,Block) \
 KRATOS_CATCH_AND_THROW(std::domain_error,MoreInfo,Block)     \
 KRATOS_CATCH_AND_THROW(std::logic_error,MoreInfo,Block)      \
 KRATOS_CATCH_AND_THROW(std::runtime_error,MoreInfo,Block)    \
+catch(KratosException& e) { Block throw KratosException(e) << KRATOS_CODE_LOCATION << MoreInfo << std::endl; } \
 catch(std::exception& e) { Block KRATOS_THROW_ERROR(std::runtime_error, e.what(), MoreInfo) }   \
 catch(...) { Block KRATOS_THROW_ERROR(std::runtime_error, "Unknown error", MoreInfo) }          \
 
