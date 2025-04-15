@@ -24,24 +24,16 @@ namespace Kratos {
 
 namespace Python {
 
-ModelPart& Model_CreateModelPart1(Model& rModel, const std::string& rName)
+template<class TModelPartType>
+TModelPartType& Model_CreateModelPart1(Model& rModel, const std::string& rName)
 {
-    return dynamic_cast<ModelPart&>(rModel.CreateModelPart<ModelPart>(rName));
+    return dynamic_cast<TModelPartType&>(rModel.CreateModelPart<TModelPartType>(rName));
 }
 
-ModelPart& Model_CreateModelPart2(Model& rModel, const std::string& rName, unsigned int BufferSize)
+template<class TModelPartType>
+TModelPartType& Model_CreateModelPart2(Model& rModel, const std::string& rName, unsigned int BufferSize)
 {
-    return dynamic_cast<ModelPart&>(rModel.CreateModelPart<ModelPart>(rName, BufferSize));
-}
-
-ComplexModelPart& Model_CreateComplexModelPart1(Model& rModel, const std::string& rName)
-{
-    return dynamic_cast<ComplexModelPart&>(rModel.CreateModelPart<ComplexModelPart>(rName));
-}
-
-ComplexModelPart& Model_CreateComplexModelPart2(Model& rModel, const std::string& rName, unsigned int BufferSize)
-{
-    return dynamic_cast<ComplexModelPart&>(rModel.CreateModelPart<ComplexModelPart>(rName, BufferSize));
+    return dynamic_cast<TModelPartType&>(rModel.CreateModelPart<TModelPartType>(rName, BufferSize));
 }
 
 BaseModelPart& Model_GetModelPart(Model& rModel, const std::string& rFullModelPartName)
@@ -60,10 +52,12 @@ void AddModelToPython()
 
     class_<Model, boost::noncopyable>("Model", init<>())
         .def("Reset", &Model::Reset)
-        .def("CreateModelPart", &Model_CreateModelPart1, return_internal_reference<>())
-        .def("CreateModelPart", &Model_CreateModelPart2, return_internal_reference<>())
-        .def("CreateComplexModelPart", &Model_CreateComplexModelPart1, return_internal_reference<>())
-        .def("CreateComplexModelPart", &Model_CreateComplexModelPart2, return_internal_reference<>())
+        .def("CreateModelPart", &Model_CreateModelPart1<ModelPart>, return_internal_reference<>())
+        .def("CreateModelPart", &Model_CreateModelPart2<ModelPart>, return_internal_reference<>())
+        .def("CreateComplexModelPart", &Model_CreateModelPart1<ComplexModelPart>, return_internal_reference<>())
+        .def("CreateComplexModelPart", &Model_CreateModelPart2<ComplexModelPart>, return_internal_reference<>())
+        .def("CreateGComplexModelPart", &Model_CreateModelPart1<GComplexModelPart>, return_internal_reference<>())
+        .def("CreateGComplexModelPart", &Model_CreateModelPart2<GComplexModelPart>, return_internal_reference<>())
         .def("DeleteModelPart", &Model::DeleteModelPart)
         .def("GetModelPart", &Model_GetModelPart, return_internal_reference<>())
         .def("HasModelPart", &Model::HasModelPart)

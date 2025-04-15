@@ -377,8 +377,13 @@ public:
     typedef Mesh<NodeType, PropertiesType, ElementType, ConditionType> MeshType;
 
     typedef typename DofType::DataType DataType;
+    // the DataType is value kept at a Dof. It can be std::complex or a primitive type
 
     typedef typename DataTypeToValueType<DataType>::value_type ValueType;
+    // the ValueType is always a real type. It is used to store time, table first entry, ...
+
+    typedef typename NodeType::CoordinateType CoordinateType;
+    // the CoordinateType is the value of the nodal coordinates. It can be std::complex.
 
     typedef typename MeshType::IndexType IndexType;
 
@@ -462,7 +467,7 @@ public:
     typedef typename MeshType::ConditionConstantIterator ConditionConstantIterator;
 
     /// Defining a table with DataType argument and result type as table type.
-    typedef Table<DataType, DataType> TableType;
+    typedef Table<ValueType, DataType> TableType;
 
     /// The container of the tables. A vector map of the tables.
     typedef PointerVectorMap<SizeType, TableType> TablesContainerType;
@@ -574,11 +579,11 @@ public:
 
     /** Inserts a node in the current mesh.
      */
-    typename NodeType::Pointer CreateNewNode(int Id, ValueType x, ValueType y, ValueType z, VariablesListType* pNewVariablesList, IndexType ThisIndex = 0);
+    typename NodeType::Pointer CreateNewNode(int Id, CoordinateType x, CoordinateType y, CoordinateType z, VariablesListType* pNewVariablesList, IndexType ThisIndex = 0);
 
-    typename NodeType::Pointer CreateNewNode(IndexType Id, ValueType x, ValueType y, ValueType z, IndexType ThisIndex = 0);
+    typename NodeType::Pointer CreateNewNode(IndexType Id, CoordinateType x, CoordinateType y, CoordinateType z, IndexType ThisIndex = 0);
 
-    typename NodeType::Pointer CreateNewNode(IndexType Id, ValueType x, ValueType y, ValueType z, DataType* pThisData, IndexType ThisIndex = 0);
+    typename NodeType::Pointer CreateNewNode(IndexType Id, CoordinateType x, CoordinateType y, CoordinateType z, DataType* pThisData, IndexType ThisIndex = 0);
 
     typename NodeType::Pointer CreateNewNode(IndexType NodeId, NodeType const& rSourceNode, IndexType ThisIndex = 0);
 
@@ -1542,9 +1547,9 @@ private:
 }; // Class ModelPartImpl
 
 // Officially define the ModelPart
-typedef ModelPartImpl<Node<3, KRATOS_DOUBLE_TYPE, Dof<KRATOS_DOUBLE_TYPE> > > ModelPart;
-typedef ModelPartImpl<Node<3, KRATOS_DOUBLE_TYPE, Dof<KRATOS_COMPLEX_TYPE> > > ComplexModelPart;
-typedef ModelPartImpl<Node<3, KRATOS_COMPLEX_TYPE, Dof<KRATOS_COMPLEX_TYPE> > > GComplexModelPart;
+typedef ModelPartImpl<Node<3, KRATOS_DOUBLE_TYPE, Dof<KRATOS_DOUBLE_TYPE> > > ModelPart;            // this is the typical ModelPart with geometry coordinates as double and Dof as double
+typedef ModelPartImpl<Node<3, KRATOS_DOUBLE_TYPE, Dof<KRATOS_COMPLEX_TYPE> > > ComplexModelPart;    // this is the ModelPart with double geometry coordinates but Dof as complex(double)
+typedef ModelPartImpl<Node<3, KRATOS_COMPLEX_TYPE, Dof<KRATOS_COMPLEX_TYPE> > > GComplexModelPart;  // this ModelPart works with complex geometry coordinates and complex Dof
 
 ///@}
 

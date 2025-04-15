@@ -134,6 +134,9 @@ namespace Kratos
     {
         typedef Vector VectorType;
         typedef Matrix MatrixType;
+        typedef ZeroVector ZeroVectorType;
+        typedef ZeroMatrix ZeroMatrixType;
+        typedef IdentityMatrix IdentityMatrixType;
     };
 
     template<>
@@ -141,6 +144,9 @@ namespace Kratos
     {
         typedef ComplexVector VectorType;
         typedef ComplexMatrix MatrixType;
+        typedef ComplexZeroVector ZeroVectorType;
+        typedef ComplexZeroMatrix ZeroMatrixType;
+        typedef ComplexIdentityMatrix IdentityMatrixType;
     };
 
     // more specialization for DataTypeToString

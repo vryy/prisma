@@ -71,16 +71,20 @@ public:
     typedef TPointType PointType;
 
     /**
-     * Type used for double value.
+     * Type used for coordinate.
      */
     typedef typename BaseType::DataType DataType;
+
+    /**
+     * Type used for real values, like shape function.
+     */
+    typedef typename BaseType::ValueType ValueType;
 
     /** Type used for indexing in geometry class.std::size_t used for indexing
     point or integration point access methods and also all other
     methods which need point or integration point index.
     */
     typedef typename BaseType::IndexType IndexType;
-
 
     /** This typed used to return size or dimension in
     geometry. Dimension, WorkingDimension, PointsNumber and
@@ -156,6 +160,21 @@ public:
      * Type of coordinates array
      */
     typedef typename BaseType::CoordinatesArrayType CoordinatesArrayType;
+
+    /**
+     * Type of coordinates array
+     */
+    typedef typename BaseType::LocalCoordinatesArrayType LocalCoordinatesArrayType;
+
+    /** A first order tensor to hold determinant of jacobian values evaluated at
+    integration points.
+    */
+    typedef typename BaseType::VectorType VectorType;
+
+    /** A second order tensor to hold jacobian values evaluated at
+    integration points.
+    */
+    typedef typename BaseType::MatrixType MatrixType;
 
     ///@}
     ///@name Life Cycle
@@ -373,7 +392,7 @@ public:
     /**
      * Returns whether given local point is inside the Geometry
      */
-    bool IsInside( const CoordinatesArrayType& rPoint ) const override
+    bool IsInside( const LocalCoordinatesArrayType& rPoint ) const override
     {
         if ( fabs( rPoint[0] ) < 1 + 1.0e-8 )
             return true;
@@ -413,7 +432,7 @@ public:
     */
     JacobiansType& Jacobian( JacobiansType& rResult, IntegrationMethod ThisMethod ) const override
     {
-        Matrix jacobian( 2, 1 );
+        MatrixType jacobian( 2, 1 );
         jacobian( 0, 0 ) = ( BaseType::GetPoint( 1 ).X() - BaseType::GetPoint( 0 ).X() ) * 0.5; //on the Gauss points (J is constant at each element)
         jacobian( 1, 0 ) = ( BaseType::GetPoint( 1 ).Y() - BaseType::GetPoint( 0 ).Y() ) * 0.5;
 
@@ -446,9 +465,9 @@ public:
     @see DeterminantOfJacobian
     @see InverseOfJacobian
     */
-    JacobiansType& Jacobian( JacobiansType& rResult, IntegrationMethod ThisMethod, const Matrix& DeltaPosition ) const override
+    JacobiansType& Jacobian( JacobiansType& rResult, IntegrationMethod ThisMethod, const MatrixType& DeltaPosition ) const override
     {
-        Matrix jacobian( 2, 1 );
+        MatrixType jacobian( 2, 1 );
         jacobian( 0, 0 ) = ( (BaseType::GetPoint( 1 ).X() - DeltaPosition(1,0)) - (BaseType::GetPoint( 0 ).X() - DeltaPosition(0,0)) ) * 0.5; //on the Gauss points (J is constant at each element)
         jacobian( 1, 0 ) = ( (BaseType::GetPoint( 1 ).Y() - DeltaPosition(1,1)) - (BaseType::GetPoint( 0 ).Y() - DeltaPosition(0,1)) ) * 0.5;
 
@@ -481,7 +500,7 @@ public:
     @see DeterminantOfJacobian
     @see InverseOfJacobian
     */
-    Matrix& Jacobian( Matrix& rResult, IndexType IntegrationPointIndex, IntegrationMethod ThisMethod ) const override
+    MatrixType& Jacobian( MatrixType& rResult, IndexType IntegrationPointIndex, IntegrationMethod ThisMethod ) const override
     {
         rResult.resize( 2, 1, false );
         //on the Gauss points (J is constant at each element)
@@ -501,7 +520,7 @@ public:
     @see DeterminantOfJacobian
     @see InverseOfJacobian
     */
-    Matrix& Jacobian( Matrix& rResult, const CoordinatesArrayType& rPoint ) const override
+    MatrixType& Jacobian( MatrixType& rResult, const LocalCoordinatesArrayType& rPoint ) const override
     {
         rResult.resize( 2, 1, false );
         //on the Gauss points (J is constant at each element)
@@ -521,7 +540,7 @@ public:
     @see Jacobian
     @see InverseOfJacobian
     */
-    Vector& DeterminantOfJacobian( Vector& rResult, IntegrationMethod ThisMethod ) const override
+    VectorType& DeterminantOfJacobian( VectorType& rResult, IntegrationMethod ThisMethod ) const override
     {
         KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square" , "" );
         return rResult;
@@ -563,7 +582,7 @@ public:
     @see DeterminantOfJacobian
     @see InverseOfJacobian
     */
-    DataType DeterminantOfJacobian( const CoordinatesArrayType& rPoint ) const override
+    DataType DeterminantOfJacobian( const LocalCoordinatesArrayType& rPoint ) const override
     {
         KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square" , "" );
         return 0.0;
@@ -607,7 +626,7 @@ public:
     @see Jacobian
     @see DeterminantOfJacobian
     */
-    Matrix& InverseOfJacobian( Matrix& rResult, IndexType IntegrationPointIndex, IntegrationMethod ThisMethod ) const override
+    MatrixType& InverseOfJacobian( MatrixType& rResult, IndexType IntegrationPointIndex, IntegrationMethod ThisMethod ) const override
     {
         KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square" , "" );
         return rResult;
@@ -624,7 +643,7 @@ public:
     @see DeterminantOfJacobian
     @see InverseOfJacobian
     */
-    Matrix& InverseOfJacobian( Matrix& rResult, const CoordinatesArrayType& rPoint ) const override
+    MatrixType& InverseOfJacobian( MatrixType& rResult, const LocalCoordinatesArrayType& rPoint ) const override
     {
         KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square" , "" );
         return rResult;
@@ -642,7 +661,7 @@ public:
     ///@name Shape Function
     ///@{
 
-    DataType ShapeFunctionValue( IndexType ShapeFunctionIndex, const CoordinatesArrayType& rPoint ) const override
+    DataType ShapeFunctionValue( IndexType ShapeFunctionIndex, const LocalCoordinatesArrayType& rPoint ) const override
     {
         switch ( ShapeFunctionIndex )
         {
@@ -706,7 +725,7 @@ public:
     {
         BaseType::PrintData( rOStream );
         std::cout << std::endl;
-        Matrix jacobian;
+        MatrixType jacobian;
         Jacobian( jacobian, PointType() );
         rOStream << "    Jacobian\t : " << jacobian;
     }
@@ -741,7 +760,7 @@ public:
      * @return the gradients of all shape functions
      * \f$ \frac{\partial N^i}{\partial \xi_j} \f$
      */
-    Matrix& ShapeFunctionsLocalGradients( Matrix& rResult, const CoordinatesArrayType& rPoint ) const override
+    Matrix& ShapeFunctionsLocalGradients( Matrix& rResult, const LocalCoordinatesArrayType& rPoint ) const override
     {
         //setting up result matrix
         rResult.resize( 2, 1 );
@@ -757,7 +776,7 @@ public:
      * @param rResult a third order tensor which contains the second derivatives
      * @param rPoint the given point the second order derivatives are calculated in
      */
-    ShapeFunctionsSecondDerivativesType& ShapeFunctionsSecondDerivatives( ShapeFunctionsSecondDerivativesType& rResult, const CoordinatesArrayType& rPoint ) const override
+    ShapeFunctionsSecondDerivativesType& ShapeFunctionsSecondDerivatives( ShapeFunctionsSecondDerivativesType& rResult, const LocalCoordinatesArrayType& rPoint ) const override
     {
         if ( rResult.size() != this->PointsNumber() )
         {
@@ -782,7 +801,7 @@ public:
      * @param rResult a fourth order tensor which contains the third derivatives
      * @param rPoint the given point the third order derivatives are calculated in
      */
-    ShapeFunctionsThirdDerivativesType& ShapeFunctionsThirdDerivatives( ShapeFunctionsThirdDerivativesType& rResult, const CoordinatesArrayType& rPoint ) const override
+    ShapeFunctionsThirdDerivativesType& ShapeFunctionsThirdDerivatives( ShapeFunctionsThirdDerivativesType& rResult, const LocalCoordinatesArrayType& rPoint ) const override
     {
         if ( rResult.size() != this->PointsNumber() )
         {
@@ -832,7 +851,7 @@ public:
      * shape functions in given point
      * @param rPoint the given point the gradients are calculated in
      */
-    // Matrix& ShapeFunctionsGradients( Matrix& rResult, CoordinatesArrayType& rPoint ) const override
+    // Matrix& ShapeFunctionsGradients( Matrix& rResult, LocalCoordinatesArrayType& rPoint ) const override
     // {
     //     rResult.resize( 2, 1 );
     //     noalias( rResult ) = ZeroMatrix( 2, 1 );
@@ -934,7 +953,7 @@ private:
 
         for ( int it_gp = 0; it_gp < integration_points_number; it_gp++ )
         {
-            DataType e = IntegrationPoints[it_gp].X();
+            ValueType e = IntegrationPoints[it_gp].X();
             N( it_gp, 0 ) = 0.5 * ( 1 - e );
             N( it_gp, 1 ) = 0.5 * ( 1 + e );
         }
@@ -951,7 +970,7 @@ private:
 
         for ( unsigned int it_gp = 0; it_gp < IntegrationPoints.size(); it_gp++ )
         {
-            // DataType e = IntegrationPoints[it_gp].X();
+            // ValueType e = IntegrationPoints[it_gp].X();
             DN_De[it_gp]( 0, 0 ) = -0.5;
             DN_De[it_gp]( 1, 0 ) =  0.5;
         }

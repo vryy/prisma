@@ -576,7 +576,7 @@ namespace Kratos
       Serializer::Register( "Element", Element() );
       Serializer::Register( "Condition", Condition() );
       Serializer::Register( "Properties", Properties() );
-      Serializer::Register( "GeometricalObject", GeometricalObject() );
+      Serializer::Register( "GeometricalObject", GeometricalObject<Node<3> >() );
 
       //Register objects with specific definition ( non essential, must be deleted in future )
       Serializer::Register( "Node3D", Node<3>() );

@@ -455,7 +455,7 @@ void ModelPartImpl<TNodeType>::AddNode(typename ModelPartImpl<TNodeType>::NodeTy
 }
 
 template<class TNodeType>
-typename ModelPartImpl<TNodeType>::NodeType::Pointer ModelPartImpl<TNodeType>::CreateNewNode(int Id, ValueType x, ValueType y, ValueType z, VariablesListType* pNewVariablesList, ModelPartImpl<TNodeType>::IndexType ThisIndex)
+typename ModelPartImpl<TNodeType>::NodeType::Pointer ModelPartImpl<TNodeType>::CreateNewNode(int Id, CoordinateType x, CoordinateType y, CoordinateType z, VariablesListType* pNewVariablesList, ModelPartImpl<TNodeType>::IndexType ThisIndex)
 {
     if (IsSubModelPart())
     {
@@ -484,7 +484,7 @@ typename ModelPartImpl<TNodeType>::NodeType::Pointer ModelPartImpl<TNodeType>::C
 
 template<class TNodeType>
 typename ModelPartImpl<TNodeType>::NodeType::Pointer ModelPartImpl<TNodeType>::CreateNewNode(ModelPartImpl<TNodeType>::IndexType Id,
-        ValueType x, ValueType y, ValueType z, typename ModelPartImpl<TNodeType>::IndexType ThisIndex)
+        CoordinateType x, CoordinateType y, CoordinateType z, typename ModelPartImpl<TNodeType>::IndexType ThisIndex)
 {
     if (IsSubModelPart())
     {
@@ -513,10 +513,9 @@ typename ModelPartImpl<TNodeType>::NodeType::Pointer ModelPartImpl<TNodeType>::C
 
 template<class TNodeType>
 typename ModelPartImpl<TNodeType>::NodeType::Pointer ModelPartImpl<TNodeType>::CreateNewNode(typename ModelPartImpl<TNodeType>::IndexType Id,
-        ValueType x, ValueType y, ValueType z, DataType* pThisData, typename ModelPartImpl<TNodeType>::IndexType ThisIndex)
+        CoordinateType x, CoordinateType y, CoordinateType z, DataType* pThisData, typename ModelPartImpl<TNodeType>::IndexType ThisIndex)
 {
     if (IsSubModelPart())
-
     {
         ModelPartImpl<TNodeType>* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
         KRATOS_ERROR_IF(pParentModelPart == nullptr) << "The parent ModelPart is not the same type as the current ModelPart" << std::endl;

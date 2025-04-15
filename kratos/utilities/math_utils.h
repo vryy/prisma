@@ -77,19 +77,19 @@ public:
     ///@{
 
     /// The matrix type
-    using MatrixType = Matrix;
+    using MatrixType = typename MatrixVectorTypeSelector<TDataType>::MatrixType;
 
     /// The vector type
-    using VectorType = Vector;
+    using VectorType = typename MatrixVectorTypeSelector<TDataType>::VectorType;
 
     /// The size type
-    using SizeType = std::size_t;
+    using SizeType = KRATOS_SIZE_TYPE;
 
     /// The index type
-    using IndexType = std::size_t;
+    using IndexType = KRATOS_INDEX_TYPE;
 
     /// The indirect array type
-    using IndirectArrayType = boost::numeric::ublas::indirect_array<DenseVector<std::size_t>>;
+    using IndirectArrayType = boost::numeric::ublas::indirect_array<DenseVector<SizeType>>;
 
     ///@}
     ///@name Life Cycle
@@ -303,8 +303,8 @@ public:
             if (rInvertedMatrix.size1() != size_2 || rInvertedMatrix.size2() != size_1) {
                 rInvertedMatrix.resize(size_2, size_1, false);
             }
-            const Matrix aux = prod(rInputMatrix, trans(rInputMatrix));
-            Matrix auxInv;
+            const TMatrix1 aux = prod(rInputMatrix, trans(rInputMatrix));
+            TMatrix1 auxInv;
             InvertMatrix(aux, auxInv, rInputMatrixDet, Tolerance);
             rInputMatrixDet = std::sqrt(rInputMatrixDet);
             noalias(rInvertedMatrix) = prod(trans(rInputMatrix), auxInv);
@@ -312,14 +312,13 @@ public:
             if (rInvertedMatrix.size1() != size_2 || rInvertedMatrix.size2() != size_1) {
                 rInvertedMatrix.resize(size_2, size_1, false);
             }
-            const Matrix aux = prod(trans(rInputMatrix), rInputMatrix);
-            Matrix auxInv;
+            const TMatrix1 aux = prod(trans(rInputMatrix), rInputMatrix);
+            TMatrix1 auxInv;
             InvertMatrix(aux, auxInv, rInputMatrixDet, Tolerance);
             rInputMatrixDet = std::sqrt(rInputMatrixDet);
             noalias(rInvertedMatrix) = prod(auxInv, trans(rInputMatrix));
         }
     }
-
 
     /**
      * @brief It inverts matrices of order 2, 3 and 4
@@ -615,7 +614,7 @@ public:
                 TDataType det = 1.0;
                 using namespace boost::numeric::ublas;
                 typedef permutation_matrix<SizeType> pmatrix;
-                Matrix Aux(rA);
+                TMatrixType Aux(rA);
                 pmatrix pm(Aux.size1());
                 bool singular = lu_factorize(Aux,pm);
 
@@ -642,10 +641,10 @@ public:
         if (rA.size1() == rA.size2()) {
             return Det(rA);
         } else if (rA.size1() < rA.size2()) { // Right determinant
-            const Matrix AAT = prod( rA, trans(rA) );
+            const TMatrixType AAT = prod( rA, trans(rA) );
             return std::sqrt(Det(AAT));
         } else { // Left determinant
-            const Matrix ATA = prod( trans(rA), rA );
+            const TMatrixType ATA = prod( trans(rA), rA );
             return std::sqrt(Det(ATA));
         }
     }
@@ -658,8 +657,8 @@ public:
      * @return The resulting norm
      */
     static inline TDataType Dot3(
-        const Vector& a,
-        const Vector& b
+        const VectorType& a,
+        const VectorType& b
         )
     {
         return (a[0]*b[0] + a[1]*b[1] + a[2]*b[2]);
@@ -673,18 +672,17 @@ public:
      * @return The resulting norm
      */
     static inline TDataType Dot(
-        const Vector& rFirstVector,
-        const Vector& rSecondVector
+        const VectorType& rFirstVector,
+        const VectorType& rSecondVector
         )
     {
-        Vector::const_iterator i = rFirstVector.begin();
-        Vector::const_iterator j = rSecondVector.begin();
+        typename VectorType::const_iterator i = rFirstVector.begin();
+        typename VectorType::const_iterator j = rSecondVector.begin();
         TDataType temp = 0.0;
         while(i != rFirstVector.end()) {
             temp += *i++ * *j++;
         }
         return temp;
-        //return std::inner_product(rFirstVector.begin(), rFirstVector.end(), rSecondVector.begin(), 0.0);
     }
 
     /**
@@ -846,6 +844,35 @@ public:
     }
 
     /**
+     * @brief Performs the product of the two input matrices a,b
+     * @param a First input matrix
+     * @param b Second input matrix
+     * @param c The resulting matrix
+     */
+    template< class T1, class T2 , class T3>
+    static inline void Product(T1& c, const T2& a, const T3& b )
+    {
+        if constexpr(std::is_same<T1, T2>::value && std::is_same<T1, T3>::value)
+        {
+            noalias(c) = prod(a, b);
+        }
+        else
+        {
+            for (std::size_t i = 0; i < a.size1(); ++i)
+            {
+                for (std::size_t j = 0; j < b.size2(); ++j)
+                {
+                    c(i, j) = 0.0;
+                    for (std::size_t k = 0; k < a.size2(); ++k)
+                    {
+                        c(i, j) += a(i, k) * b(k, j);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * @brief This computes a orthonormal basis from a given vector (Frisvad method)
      * @param c The input vector
      * @param a First resulting vector
@@ -965,8 +992,8 @@ public:
      * @return Returns A = a.tensorproduct.b
      */
     static inline MatrixType TensorProduct3(
-        const Vector& a,
-        const Vector& b
+        const VectorType& a,
+        const VectorType& b
         )
     {
         MatrixType A(3,3);
@@ -1153,10 +1180,10 @@ public:
      * @param rY The vector to be added
      * @param coeff The proportion to be added
      */
-    static inline void  VecAdd(
-        Vector& rX,
+    static inline void VecAdd(
+        VectorType& rX,
         const TDataType coeff,
-        Vector& rY
+        const VectorType& rY
         )
     {
         KRATOS_TRY
@@ -1348,8 +1375,8 @@ public:
      * @tparam TMatrixType The matrix type considered
      * @tparam TVector The vector returning type
      */
-    template<class TMatrixType, class TVector = Vector>
-    static inline Vector StrainTensorToVector(
+    template<class TMatrixType, class TVectorType = Vector>
+    static inline TVectorType StrainTensorToVector(
         const TMatrixType& rStrainTensor,
         SizeType rSize = 0
         )
@@ -1364,7 +1391,7 @@ public:
             }
         }
 
-        Vector strain_vector(rSize);
+        TVectorType strain_vector(rSize);
 
         if (rSize == 3) {
             strain_vector[0] = rStrainTensor(0,0);
@@ -1403,8 +1430,8 @@ public:
      * @tparam TMatrixType The matrix type considered
      * @tparam TVector The vector returning type
      */
-    template<class TMatrixType, class TVector = Vector>
-    static inline TVector StressTensorToVector(
+    template<class TMatrixType, class TVectorType = Vector>
+    static inline TVectorType StressTensorToVector(
         const TMatrixType& rStressTensor,
         SizeType rSize = 0
         )
@@ -1419,7 +1446,7 @@ public:
             }
         }
 
-        TVector stress_vector(rSize);
+        TVectorType stress_vector(rSize);
 
         if (rSize == 3) {
             stress_vector[0] = rStressTensor(0,0);
@@ -1455,8 +1482,8 @@ public:
      * @tparam TMatrixType The matrix type considered
      * @tparam TVector The vector returning type
      */
-    template<class TMatrixType, class TVector = Vector>
-    static inline TVector SymmetricTensorToVector(
+    template<class TMatrixType, class TVectorType = Vector>
+    static inline TVectorType SymmetricTensorToVector(
         const TMatrixType& rTensor,
         SizeType rSize = 0
         )
@@ -1471,7 +1498,7 @@ public:
             }
         }
 
-        Vector vector(rSize);
+        TVectorType vector(rSize);
 
         if (rSize == 3) {
             vector[0]= rTensor(0,0);

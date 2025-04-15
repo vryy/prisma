@@ -361,4 +361,7 @@ template void Model::RenameModelPart<ModelPart>( const std::string&, const std::
 template BaseModelPart& Model::CreateModelPart<ComplexModelPart>( const std::string&, Model::IndexType );
 template void Model::RenameModelPart<ComplexModelPart>( const std::string&, const std::string& );
 
+template BaseModelPart& Model::CreateModelPart<GComplexModelPart>( const std::string&, Model::IndexType );
+template void Model::RenameModelPart<GComplexModelPart>( const std::string&, const std::string& );
+
 }  // namespace Kratos.

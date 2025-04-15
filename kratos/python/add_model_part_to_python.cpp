@@ -990,6 +990,7 @@ void AddModelPartToPython()
 {
     AddModelPartToPythonImpl<ModelPart>("");
     AddModelPartToPythonImpl<ComplexModelPart>("Complex");
+    AddModelPartToPythonImpl<GComplexModelPart>("GComplex");
 }
 
 } // namespace Python.

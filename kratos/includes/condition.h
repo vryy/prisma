@@ -56,7 +56,7 @@ namespace Kratos
  * the actual problem
  */
 template<typename TNodeType = Node<3> >
-class BaseCondition : public GeometricalObject
+class BaseCondition : public GeometricalObject<TNodeType>
 {
 public:
     ///@name Type Definitions
@@ -66,10 +66,10 @@ public:
     KRATOS_CLASS_POINTER_DEFINITION(BaseCondition);
 
     ///base type: an GeometricalObject that automatically has a unique number
-    typedef GeometricalObject BaseType;
+    typedef GeometricalObject<TNodeType> BaseType;
 
     ///definition of node type (default is: Node<3>)
-    typedef TNodeType NodeType;
+    typedef typename BaseType::NodeType NodeType;
 
     /**
      * Properties are used to store any parameters
@@ -78,14 +78,14 @@ public:
     typedef Properties PropertiesType;
 
     ///definition of the geometry type with given NodeType
-    typedef Geometry<NodeType> GeometryType;
+    typedef typename BaseType::GeometryType GeometryType;
 
     ///definition of nodes container type, redefined from GeometryType
-    typedef typename Geometry<NodeType>::PointsArrayType NodesArrayType;
+    typedef typename GeometryType::PointsArrayType NodesArrayType;
 
-    typedef BaseType::IndexType IndexType;
+    typedef typename BaseType::IndexType IndexType;
 
-    typedef BaseType::SizeType SizeType;
+    typedef typename BaseType::SizeType SizeType;
 
     typedef typename NodeType::DofType DofType;
 
@@ -199,9 +199,8 @@ public:
 
     SizeType WorkingSpaceDimension() const
     {
-        return pGetGeometry()->WorkingSpaceDimension();
+        return this->pGetGeometry()->WorkingSpaceDimension();
     }
-
 
     ///@}
     ///@name Operations
@@ -304,7 +303,7 @@ public:
      */
     virtual IntegrationMethod GetIntegrationMethod() const
     {
-        return pGetGeometry()->GetDefaultIntegrationMethod();
+        return this->pGetGeometry()->GetDefaultIntegrationMethod();
     }
 
     /**
@@ -317,21 +316,21 @@ public:
     /**
      * Getting method to obtain the variable which defines the degrees of freedom
      */
-    virtual void GetValuesVector(Vector& values, int Step = 0) const
+    virtual void GetValuesVector(VectorType& values, int Step = 0) const
     {
     }
 
     /**
      * Getting method to obtain the time derivative of variable which defines the degrees of freedom
      */
-    virtual void GetFirstDerivativesVector(Vector& values, int Step = 0) const
+    virtual void GetFirstDerivativesVector(VectorType& values, int Step = 0) const
     {
     }
 
     /**
      * Getting method to obtain the second time derivative of variable which defines the degrees of freedom
      */
-    virtual void GetSecondDerivativesVector(Vector& values, int Step = 0) const
+    virtual void GetSecondDerivativesVector(VectorType& values, int Step = 0) const
     {
     }
 
@@ -710,7 +709,7 @@ public:
     virtual void AddExplicitContribution(
         const MatrixType& rLHSMatrix,
         const Variable<MatrixType>& rLHSVariable,
-        const Variable<Matrix>& rDestinationVariable,
+        const Variable<MatrixType>& rDestinationVariable,
         const ProcessInfo& rCurrentProcessInfo
         )
     {
@@ -735,14 +734,14 @@ public:
     {
     }
 
-    virtual void Calculate(const Variable<Vector>& rVariable,
-               Vector& Output,
+    virtual void Calculate(const Variable<VectorType>& rVariable,
+               VectorType& Output,
                const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
-    virtual void Calculate(const Variable<Matrix>& rVariable,
-               Matrix& Output,
+    virtual void Calculate(const Variable<MatrixType>& rVariable,
+               MatrixType& Output,
                const ProcessInfo& rCurrentProcessInfo)
     {
     }
@@ -792,15 +791,15 @@ public:
     }
 
     virtual void CalculateOnIntegrationPoints(
-        const Variable<Vector>& rVariable,
-        std::vector<Vector>& rOutput,
+        const Variable<VectorType>& rVariable,
+        std::vector<VectorType>& rOutput,
         const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
     virtual void CalculateOnIntegrationPoints(
-        const Variable<Matrix>& rVariable,
-        std::vector<Matrix>& rOutput,
+        const Variable<MatrixType>& rVariable,
+        std::vector<MatrixType>& rOutput,
         const ProcessInfo& rCurrentProcessInfo)
     {
     }
@@ -861,15 +860,15 @@ public:
     }
 
     virtual void SetValuesOnIntegrationPoints(
-        const Variable<Vector>& rVariable,
-        const std::vector<Vector>& rValues,
+        const Variable<VectorType>& rVariable,
+        const std::vector<VectorType>& rValues,
         const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
     virtual void SetValuesOnIntegrationPoints(
-        const Variable<Matrix>& rVariable,
-        const std::vector<Matrix>& rValues,
+        const Variable<MatrixType>& rVariable,
+        const std::vector<MatrixType>& rValues,
         const ProcessInfo& rCurrentProcessInfo)
     {
     }
@@ -911,15 +910,15 @@ public:
         this->CalculateOnIntegrationPoints(rVariable, rValues, rCurrentProcessInfo);
     }
 
-    void GetValuesOnIntegrationPoints(const Variable<Vector>& rVariable,
-                         std::vector<Vector>& rValues,
+    void GetValuesOnIntegrationPoints(const Variable<VectorType>& rVariable,
+                         std::vector<VectorType>& rValues,
                          const ProcessInfo& rCurrentProcessInfo)
     {
         this->CalculateOnIntegrationPoints(rVariable, rValues, rCurrentProcessInfo);
     }
 
-    void GetValuesOnIntegrationPoints(const Variable<Matrix>& rVariable,
-                         std::vector<Matrix>& rValues,
+    void GetValuesOnIntegrationPoints(const Variable<MatrixType>& rVariable,
+                         std::vector<MatrixType>& rValues,
                          const ProcessInfo& rCurrentProcessInfo)
     {
         this->CalculateOnIntegrationPoints(rVariable, rValues, rCurrentProcessInfo);
@@ -956,10 +955,13 @@ public:
         {
             KRATOS_ERROR << "Condition found with Id 0 or negative";
         }
-        if (this->GetGeometry().Area() < 0)
+        if constexpr (std::is_arithmetic<DataType>::value)
         {
-            KRATOS_ERROR << "error on condition -> " << this->Id()
-                         << ". Area cannot be less than 0";
+            if (this->GetGeometry().Area() < 0)
+            {
+                KRATOS_ERROR << "error on condition -> " << this->Id()
+                             << ". Area cannot be less than 0";
+            }
         }
         return 0;
 
@@ -1045,7 +1047,7 @@ public:
      * Calculate the transposed gradient of the condition's residual w.r.t. design variable.
      */
     virtual void CalculateSensitivityMatrix(const Variable<double>& rDesignVariable,
-                                            Matrix& rOutput,
+                                            MatrixType& rOutput,
                                             const ProcessInfo& rCurrentProcessInfo)
     {
     }
@@ -1054,7 +1056,7 @@ public:
      * Calculate the transposed gradient of the condition's residual w.r.t. design variable.
      */
     virtual void CalculateSensitivityMatrix(const Variable<array_1d<double,3> >& rDesignVariable,
-                                            Matrix& rOutput,
+                                            MatrixType& rOutput,
                                             const ProcessInfo& rCurrentProcessInfo)
     {
     }
@@ -1157,7 +1159,7 @@ public:
     std::string Info() const override
     {
         std::stringstream buffer;
-        buffer << "BaseCondition #" << Id();
+        buffer << "BaseCondition #" << this->Id();
         return buffer.str();
     }
 
@@ -1165,14 +1167,14 @@ public:
 
     void PrintInfo(std::ostream& rOStream) const override
     {
-        rOStream << "BaseCondition #" << Id();
+        rOStream << "BaseCondition #" << this->Id();
     }
 
     /// Print object's data.
 
     void PrintData(std::ostream& rOStream) const override
     {
-        pGetGeometry()->PrintData(rOStream);
+        this->pGetGeometry()->PrintData(rOStream);
     }
 
     ///@}
@@ -1234,14 +1236,14 @@ private:
 
     void save(Serializer& rSerializer) const override
     {
-        KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, GeometricalObject );
+        KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, BaseType);
         rSerializer.save("Data", mData);
         rSerializer.save("Properties", mpProperties);
     }
 
     void load(Serializer& rSerializer) override
     {
-        KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, GeometricalObject );
+        KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, BaseType);
         rSerializer.load("Data", mData);
         rSerializer.load("Properties", mpProperties);
     }

@@ -49,91 +49,78 @@ namespace Kratos
 namespace Python
 {
 template<class TPointType> inline
-void PointSetX(TPointType& ThisPoint, double Value)
+void PointSetX(TPointType& ThisPoint, typename TPointType::DataType Value)
 {
     ThisPoint.X() = Value;
 }
 
 template<class TPointType> inline
-void PointSetY(TPointType& ThisPoint, double Value)
+void PointSetY(TPointType& ThisPoint, typename TPointType::DataType Value)
 {
     ThisPoint.Y() = Value;
 }
 
 template<class TPointType> inline
-void PointSetZ(TPointType& ThisPoint, double Value)
+void PointSetZ(TPointType& ThisPoint, typename TPointType::DataType Value)
 {
     ThisPoint.Z() = Value;
 }
 
 template<class TPointType> inline
-double PointGetX(TPointType& ThisPoint)
+typename TPointType::DataType PointGetX(TPointType& ThisPoint)
 {
     return ThisPoint.X();
 }
 
 template<class TPointType> inline
-double PointGetY(TPointType& ThisPoint)
+typename TPointType::DataType PointGetY(TPointType& ThisPoint)
 {
     return ThisPoint.Y();
 }
 
 template<class TPointType> inline
-double PointGetZ(TPointType& ThisPoint)
+typename TPointType::DataType PointGetZ(TPointType& ThisPoint)
 {
     return ThisPoint.Z();
 }
 
-void  AddPointsToPython()
+template<int TDim, typename TDataType>
+void AddPointsToPythonImpl(const std::string& Name)
 {
-//    /*
-    BoundedVectorPythonInterface<Point<1>, 1>::CreateInterface("Point1D")
-      .def(init<double>())
-      .def(init<vector_expression<vector<double> > >())
-      .add_property("X", PointGetX<Point<1> >, PointSetX<Point<1> >)
-      .def(VectorScalarOperatorPython<Point<1>, double, Point<1> >())
-      .def(VectorVectorOperatorPython<Point<1>, zero_vector<double>, Point<1> >())
-      .def(VectorVectorOperatorPython<Point<1>, unit_vector<double>, Point<1> >())
-      .def(VectorVectorOperatorPython<Point<1>, scalar_vector<double>, Point<1> >())
-      .def(VectorVectorOperatorPython<Point<1>, vector<double>, Point<1> >())
-//      .def(VectorVectorOperatorPython<Point<1>, mapped_vector<double>, Point<1> >())
-//      .def(VectorVectorOperatorPython<Point<1>, compressed_vector<double>, Point<1> >())
-//      .def(VectorVectorOperatorPython<Point<1>, coordinate_vector<double>, Point<1> >())
-       ;
+    typedef Point<TDim, TDataType> PointType;
 
-     BoundedVectorPythonInterface<Point<2>, 2>::CreateInterface("Point2D")
-       .def(init<double>())
-       .def(init<double, double>())
-       .def(init<vector_expression<vector<double> > >())
-       .add_property("X", PointGetX<Point<2> >, PointSetX<Point<2> >)
-       .add_property("Y", PointGetY<Point<2> >, PointSetY<Point<2> >)
-       .def(VectorScalarOperatorPython<Point<2>, double, Point<2> >())
-       .def(VectorVectorOperatorPython<Point<2>, zero_vector<double>, Point<2> >())
-       .def(VectorVectorOperatorPython<Point<2>, unit_vector<double>, Point<2> >())
-       .def(VectorVectorOperatorPython<Point<2>, scalar_vector<double>, Point<2> >())
-       .def(VectorVectorOperatorPython<Point<2>, vector<double>, Point<2> >())
-//       .def(VectorVectorOperatorPython<Point<2>, mapped_vector<double>, Point<2> >())
-//       .def(VectorVectorOperatorPython<Point<2>, compressed_vector<double>, Point<2> >())
-//       .def(VectorVectorOperatorPython<Point<2>, coordinate_vector<double>, Point<2> >())
-        ;
-//    */
-    BoundedVectorPythonInterface<Point<3>, 3>::CreateInterface("Point3D")
-    .def(init<double>())
-    .def(init<double, double>())
-    .def(init<double, double, double>())
-    .def(init<vector_expression<vector<double> > >())
-    .add_property("X", PointGetX<Point<3> >, PointSetX<Point<3> >)
-    .add_property("Y", PointGetY<Point<3> >, PointSetY<Point<3> >)
-    .add_property("Z", PointGetZ<Point<3> >, PointSetZ<Point<3> >)
-    .def(VectorScalarOperatorPython<Point<3>, double, Point<3> >())
-    .def(VectorVectorOperatorPython<Point<3>, zero_vector<double>, Point<3> >())
-    .def(VectorVectorOperatorPython<Point<3>, unit_vector<double>, Point<3> >())
-    .def(VectorVectorOperatorPython<Point<3>, scalar_vector<double>, Point<3> >())
-    .def(VectorVectorOperatorPython<Point<3>, vector<double>, Point<3> >())
-    //.def(VectorVectorOperatorPython<Point<3>, mapped_vector<double>, Point<3> >())
-    //.def(VectorVectorOperatorPython<Point<3>, compressed_vector<double>, Point<3> >())
-    //       .def(VectorVectorOperatorPython<Point<3>, coordinate_vector<double>, Point<3> >())
+    auto p = BoundedVectorPythonInterface<PointType, 3>::CreateInterface(Name.c_str());
+
+    p.def(init<TDataType>())
+    .def(init<TDataType, TDataType>())
+    .def(init<TDataType, TDataType, TDataType>())
+    .def(init<vector_expression<vector<TDataType> > >())
+    .def(VectorScalarOperatorPython<PointType, TDataType, PointType >())
+    .def(VectorVectorOperatorPython<PointType, zero_vector<TDataType>, PointType >())
+    .def(VectorVectorOperatorPython<PointType, unit_vector<TDataType>, PointType >())
+    .def(VectorVectorOperatorPython<PointType, scalar_vector<TDataType>, PointType >())
+    .def(VectorVectorOperatorPython<PointType, vector<TDataType>, PointType >())
+    // .def(VectorVectorOperatorPython<PointType, mapped_vector<TDataType>, PointType >())
+    // .def(VectorVectorOperatorPython<PointType, compressed_vector<TDataType>, PointType >())
+    // .def(VectorVectorOperatorPython<PointType, coordinate_vector<TDataType>, PointType >())
     ;
+
+    if constexpr (TDim > 0)
+        p.add_property("X", PointGetX<PointType>, PointSetX<PointType>);
+    if constexpr (TDim > 1)
+        p.add_property("Y", PointGetY<PointType>, PointSetY<PointType>);
+    if constexpr (TDim > 2)
+        p.add_property("Z", PointGetZ<PointType>, PointSetZ<PointType>);
+}
+
+void AddPointsToPython()
+{
+    AddPointsToPythonImpl<1, KRATOS_DOUBLE_TYPE>("Point1D");
+    AddPointsToPythonImpl<2, KRATOS_DOUBLE_TYPE>("Point2D");
+    AddPointsToPythonImpl<3, KRATOS_DOUBLE_TYPE>("Point3D");
+    AddPointsToPythonImpl<1, KRATOS_COMPLEX_TYPE>("ComplexPoint1D");
+    AddPointsToPythonImpl<2, KRATOS_COMPLEX_TYPE>("ComplexPoint2D");
+    AddPointsToPythonImpl<3, KRATOS_COMPLEX_TYPE>("ComplexPoint3D");
 }
 
 }  // namespace Python.

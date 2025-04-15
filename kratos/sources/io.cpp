@@ -18,9 +18,9 @@ namespace Kratos
 {
 
     /// Local Flags
-    KRATOS_CREATE_LOCAL_FLAG(IO, READ,   1);
-    KRATOS_CREATE_LOCAL_FLAG(IO, WRITE,  2);
-    KRATOS_CREATE_LOCAL_FLAG(IO, APPEND, 3);
-    KRATOS_CREATE_LOCAL_FLAG(IO, IGNORE_VARIABLES_ERROR, 4); // before adding a new flag be aware that some derived classes have some defined.
+    KRATOS_CREATE_LOCAL_FLAG(BaseIO, READ,   1);
+    KRATOS_CREATE_LOCAL_FLAG(BaseIO, WRITE,  2);
+    KRATOS_CREATE_LOCAL_FLAG(BaseIO, APPEND, 3);
+    KRATOS_CREATE_LOCAL_FLAG(BaseIO, IGNORE_VARIABLES_ERROR, 4); // before adding a new flag be aware that some derived classes have some defined.
 
 }  // namespace Kratos.

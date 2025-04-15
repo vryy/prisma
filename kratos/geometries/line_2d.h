@@ -70,9 +70,14 @@ public:
     typedef TPointType PointType;
 
     /**
-     * Type used for double value.
+     * Type used for coordinate.
      */
     typedef typename BaseType::DataType DataType;
+
+    /**
+     * Type used for real values, like shape function.
+     */
+    typedef typename BaseType::ValueType ValueType;
 
     /** Type used for indexing in geometry class.std::size_t used for indexing
     point or integration point access methods and also all other
@@ -141,6 +146,25 @@ public:
      * Type of coordinates array
      */
     typedef typename BaseType::CoordinatesArrayType CoordinatesArrayType;
+
+    /**
+     * Type of coordinates array
+     */
+    typedef typename BaseType::LocalCoordinatesArrayType LocalCoordinatesArrayType;
+
+    /** A first order tensor to hold determinant of jacobian values evaluated at
+    integration points.
+    */
+    typedef typename BaseType::VectorType VectorType;
+
+    /** A second order tensor to hold jacobian values evaluated at
+    integration points.
+    */
+    typedef typename BaseType::MatrixType MatrixType;
+
+    /// Helpful vectors and matrices
+    using typename BaseType::ZeroVectorType;
+    using typename BaseType::ZeroMatrixType;
 
     ///@}
     ///@name Life Cycle
@@ -375,7 +399,7 @@ public:
     */
     JacobiansType& Jacobian(JacobiansType& rResult, IntegrationMethod ThisMethod) const override
     {
-        Matrix jacobian(2,1);
+        MatrixType jacobian(2,1);
         jacobian(0,0)=(BaseType::GetPoint(1).X()-BaseType::GetPoint(0).X())*0.5;    //on the Gauss points (J is constant at each element)
         jacobian(1,0)=(BaseType::GetPoint(1).Y()-BaseType::GetPoint(0).Y())*0.5;
 
@@ -406,9 +430,9 @@ public:
     @see DeterminantOfJacobian
     @see InverseOfJacobian
     */
-    JacobiansType& Jacobian(JacobiansType& rResult, IntegrationMethod ThisMethod, const Matrix & DeltaPosition ) const override
+    JacobiansType& Jacobian(JacobiansType& rResult, IntegrationMethod ThisMethod, const MatrixType & DeltaPosition ) const override
     {
-        Matrix jacobian(2,1);
+        MatrixType jacobian(2,1);
         jacobian(0,0)=(BaseType::GetPoint(1).X() - DeltaPosition(1,0) - BaseType::GetPoint(0).X() - DeltaPosition(0,0))*0.5;    //on the Gauss points (J is constant at each element)
         jacobian(1,0)=(BaseType::GetPoint(1).Y() - DeltaPosition(1,1) - BaseType::GetPoint(0).Y() - DeltaPosition(0,1))*0.5;
 
@@ -439,9 +463,9 @@ public:
     @see DeterminantOfJacobian
     @see InverseOfJacobian
     */
-    Matrix& Jacobian(Matrix& rResult, IndexType IntegrationPointIndex, IntegrationMethod ThisMethod) const override
+    MatrixType& Jacobian(MatrixType& rResult, IndexType IntegrationPointIndex, IntegrationMethod ThisMethod) const override
     {
-        Matrix jacobian(2,1);
+        MatrixType jacobian(2,1);
         jacobian(0,0)=(BaseType::GetPoint(1).X()-BaseType::GetPoint(0).X())*0.5;    //on the Gauss points (J is constant at each element)
         jacobian(1,0)=(BaseType::GetPoint(1).Y()-BaseType::GetPoint(0).Y())*0.5;
         return rResult;
@@ -458,9 +482,9 @@ public:
     @see DeterminantOfJacobian
     @see InverseOfJacobian
     */
-    Matrix& Jacobian(Matrix& rResult, const CoordinatesArrayType& rPoint) const override
+    MatrixType& Jacobian(MatrixType& rResult, const LocalCoordinatesArrayType& rPoint) const override
     {
-        Matrix jacobian(2,1);
+        MatrixType jacobian(2,1);
         jacobian(0,0)=(BaseType::GetPoint(1).X()-BaseType::GetPoint(0).X())*0.5;    //on the Gauss points (J is constant at each element)
         jacobian(1,0)=(BaseType::GetPoint(1).Y()-BaseType::GetPoint(0).Y())*0.5;
         return rResult;
@@ -477,7 +501,7 @@ public:
     @see Jacobian
     @see InverseOfJacobian
     */
-    Vector& DeterminantOfJacobian(Vector& rResult, IntegrationMethod ThisMethod) const override
+    VectorType& DeterminantOfJacobian(VectorType& rResult, IntegrationMethod ThisMethod) const override
     {
         KRATOS_THROW_ERROR(std::logic_error, "Jacobian is not square" , "");
     }
@@ -517,7 +541,7 @@ public:
     @see DeterminantOfJacobian
     @see InverseOfJacobian
     */
-    DataType DeterminantOfJacobian(const CoordinatesArrayType& rPoint) const override
+    DataType DeterminantOfJacobian(const LocalCoordinatesArrayType& rPoint) const override
     {
         KRATOS_THROW_ERROR(std::logic_error, "Jacobian is not square" , "");
     }
@@ -559,7 +583,7 @@ public:
     @see Jacobian
     @see DeterminantOfJacobian
     */
-    Matrix& InverseOfJacobian(Matrix& rResult, IndexType IntegrationPointIndex, IntegrationMethod ThisMethod) const override
+    MatrixType& InverseOfJacobian(MatrixType& rResult, IndexType IntegrationPointIndex, IntegrationMethod ThisMethod) const override
     {
         KRATOS_THROW_ERROR(std::logic_error, "Jacobian is not square" , "");
     }
@@ -575,7 +599,7 @@ public:
     @see DeterminantOfJacobian
     @see InverseOfJacobian
     */
-    Matrix& InverseOfJacobian(Matrix& rResult, const CoordinatesArrayType& rPoint) const override
+    MatrixType& InverseOfJacobian(MatrixType& rResult, const LocalCoordinatesArrayType& rPoint) const override
     {
         KRATOS_THROW_ERROR(std::logic_error, "Jacobian is not square" , "");
     }
@@ -593,21 +617,18 @@ public:
     ///@name Shape Function
     ///@{
 
-    DataType ShapeFunctionValue(IndexType ShapeFunctionIndex,
-                                      const CoordinatesArrayType& rPoint) const override
+    ValueType ShapeFunctionValue(IndexType ShapeFunctionIndex,
+                                 const LocalCoordinatesArrayType& rPoint) const override
     {
         KRATOS_THROW_ERROR(std::logic_error,
                      "This method is not implemented yet!" , *this);
         return 0;
     }
 
-
-
     ShapeFunctionsGradientsType& ShapeFunctionsIntegrationPointsGradients(ShapeFunctionsGradientsType& rResult, IntegrationMethod ThisMethod) const override
     {
         KRATOS_THROW_ERROR(std::logic_error, "Jacobian is not square" , "");
     }
-
 
     ///@}
     ///@name Input and output
@@ -647,7 +668,7 @@ public:
     {
         BaseType::PrintData(rOStream);
         std::cout << std::endl;
-        Matrix jacobian;
+        MatrixType jacobian;
         Jacobian(jacobian, PointType());
         rOStream << "    Jacobian\t : " << jacobian;
     }
@@ -743,7 +764,7 @@ private:
         Matrix N(integration_points_number,2);
         for(int it_gp = 0; it_gp < integration_points_number; it_gp++)
         {
-            DataType e = IntegrationPoints[it_gp].X();
+            ValueType e = IntegrationPoints[it_gp].X();
             N(it_gp,0) = 0.5*(1-e);
             N(it_gp,1) = 0.5*(1+e);
         }
@@ -760,7 +781,7 @@ private:
 
         for(unsigned int it_gp = 0; it_gp < IntegrationPoints.size(); it_gp++)
         {
-            //  DataType e = IntegrationPoints[it_gp].X();
+            //  ValueType e = IntegrationPoints[it_gp].X();
             DN_De[it_gp](0,0) = -0.5;
             DN_De[it_gp](1,0) =  0.5;
         }
@@ -789,6 +810,7 @@ private:
         };
         return shape_functions_values;
     }
+
     static const ShapeFunctionsLocalGradientsContainerType AllShapeFunctionsLocalGradients()
     {
         ShapeFunctionsLocalGradientsContainerType shape_functions_local_gradients = {{
@@ -799,6 +821,7 @@ private:
         };
         return shape_functions_local_gradients;
     }
+
     ///@}
     ///@name Private  Access
     ///@{

@@ -361,7 +361,7 @@ KRATOS_CREATE_VARIABLE(WeakPointerVector<Condition >, NEIGHBOUR_CONDITIONS)
 
 
 //for Structural application:
-KRATOS_CREATE_VARIABLE(WeakPointerVector< GeometricalObject >, NEIGHBOUR_EMBEDDED_FACES)
+KRATOS_CREATE_VARIABLE(WeakPointerVector< GeometricalObject<Node<3> > >, NEIGHBOUR_EMBEDDED_FACES)
 KRATOS_CREATE_VARIABLE(ConvectionDiffusionSettings::Pointer,  CONVECTION_DIFFUSION_SETTINGS)
 KRATOS_CREATE_VARIABLE(RadiationSettings::Pointer,  RADIATION_SETTINGS)
 

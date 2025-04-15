@@ -58,6 +58,7 @@ namespace Kratos
  * @details Derives from IndexedObject, so it has an ID, and from Flags
  * @author Pooyan Dadvand
 */
+template<class TNodeType>
 class GeometricalObject : public IndexedObject, public Flags
 {
 public:
@@ -68,7 +69,7 @@ public:
     KRATOS_CLASS_POINTER_DEFINITION(GeometricalObject);
 
     /// Definition of the node type
-    typedef Node < 3 > NodeType;
+    typedef TNodeType NodeType;
 
     /// The geometry type definition
     typedef Geometry<NodeType> GeometryType;
@@ -94,7 +95,7 @@ public:
     {}
 
     /// Default constructor.
-    GeometricalObject(IndexType NewId, GeometryType::Pointer pGeometry)
+    GeometricalObject(IndexType NewId, typename GeometryType::Pointer pGeometry)
         : IndexedObject(NewId),
           Flags(),
           mpGeometry(pGeometry)
@@ -135,7 +136,7 @@ public:
      * @brief Returns the pointer to the geometry
      * @return The pointer of the geometry
      */
-    GeometryType::Pointer pGetGeometry()
+    typename GeometryType::Pointer pGetGeometry()
     {
         return mpGeometry;
     }
@@ -144,7 +145,7 @@ public:
      * @brief Returns the pointer to the geometry (const version)
      * @return The pointer of the geometry
      */
-    const GeometryType::Pointer pGetGeometry() const
+    const typename GeometryType::Pointer pGetGeometry() const
     {
         return mpGeometry;
     }
@@ -277,7 +278,7 @@ private:
     ///@name Member Variables
     ///@{
 
-    GeometryType::Pointer mpGeometry; /// Pointer to the entity geometry
+    typename GeometryType::Pointer mpGeometry; /// Pointer to the entity geometry
 
     ///@}
     ///@name Private Operators
@@ -340,13 +341,15 @@ private:
 ///@{
 
 /// input stream function
-inline std::istream& operator >> (std::istream& rIStream, GeometricalObject& rThis)
+template<class TNodeType>
+inline std::istream& operator >> (std::istream& rIStream, GeometricalObject<TNodeType>& rThis)
 {
     return rIStream;
 }
 
 /// output stream function
-inline std::ostream& operator << (std::ostream& rOStream, const GeometricalObject& rThis)
+template<class TNodeType>
+inline std::ostream& operator << (std::ostream& rOStream, const GeometricalObject<TNodeType>& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;
@@ -357,7 +360,7 @@ inline std::ostream& operator << (std::ostream& rOStream, const GeometricalObjec
 
 ///@}
 
-template<> struct DataTypeToString<WeakPointerVector<GeometricalObject> > { static inline constexpr const char* Get() {return "WeakPointerVector<GeometricalObject>";} };
+template<> struct DataTypeToString<WeakPointerVector<GeometricalObject<Node<3> > > > { static inline constexpr const char* Get() {return "WeakPointerVector<GeometricalObject<Node<3>>>";} };
 
 }  // namespace Kratos.
 

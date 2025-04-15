@@ -49,7 +49,8 @@ namespace Kratos
 /// An IO class for reading and writing a modelpart
 /** This class reads and writes all modelpart data including the meshes.
 */
-class KRATOS_API(KRATOS_CORE) ModelPartIO : public IO
+template<class TModelPartType = ModelPart>
+class KRATOS_API(KRATOS_CORE) ModelPartIO : public IO<TModelPartType>
 {
 public:
     ///@name Type Definitions
@@ -58,36 +59,56 @@ public:
     /// Pointer definition of ModelPartIO
     KRATOS_CLASS_POINTER_DEFINITION(ModelPartIO);
 
-    typedef IO BaseType;
+    typedef IO<TModelPartType> BaseType;
 
-    typedef BaseType::NodeType NodeType;
+    typedef typename BaseType::NodeType NodeType;
 
-    typedef BaseType::MeshType MeshType;
+    typedef typename BaseType::IndexType IndexType;
 
-    typedef BaseType::NodesContainerType NodesContainerType;
+    typedef typename BaseType::SizeType SizeType;
 
-    typedef BaseType::PropertiesContainerType PropertiesContainerType;
+    typedef typename BaseType::ValueType ValueType;
 
-    typedef BaseType::ElementsContainerType ElementsContainerType;
+    typedef typename BaseType::VectorType VectorType;
 
-    typedef BaseType::ConditionsContainerType ConditionsContainerType;
+    typedef typename BaseType::CoordinateType CoordinateType;
 
-    typedef BaseType::ConnectivitiesContainerType ConnectivitiesContainerType;
+    typedef typename BaseType::DataType DataType;
+
+    typedef typename BaseType::ElementType ElementType;
+
+    typedef typename BaseType::ConditionType ConditionType;
+
+    typedef typename BaseType::MeshType MeshType;
+
+    typedef typename BaseType::ModelPartType ModelPartType;
+
+    typedef typename BaseType::NodesContainerType NodesContainerType;
+
+    typedef typename BaseType::PropertiesContainerType PropertiesContainerType;
+
+    typedef typename BaseType::ElementsContainerType ElementsContainerType;
+
+    typedef typename BaseType::ConditionsContainerType ConditionsContainerType;
+
+    typedef typename BaseType::ConnectivitiesContainerType ConnectivitiesContainerType;
+
+    typedef typename BaseType::GraphType GraphType;
+
+    typedef typename BaseType::PartitionIndicesType PartitionIndicesType;
+
+    typedef typename BaseType::PartitionIndicesContainerType PartitionIndicesContainerType;
 
     typedef std::vector<std::ofstream*> OutputFilesContainerType;
 
-    typedef std::size_t SizeType;
-
-    typedef ModelPart::DataType DataType;
-
-    typedef ModelPart::CommunicatorType CommunicatorType;
+    typedef typename ModelPartType::CommunicatorType CommunicatorType;
 
     ///@}
     ///@name Life Cycle
     ///@{
 
     /// Constructor with  filenames.
-    ModelPartIO(std::string const& Filename, const Flags Options = IO::READ|IO::NOT_IGNORE_VARIABLES_ERROR);
+    ModelPartIO(std::string const& Filename, const Flags Options = BaseType::READ|BaseType::NOT_IGNORE_VARIABLES_ERROR);
 
 
     /// Constructor with filenames.
@@ -114,7 +135,7 @@ public:
 
     bool ReadNodes(NodesContainerType& rThisNodes) override;
 
-    std::size_t ReadNodesNumber() override;
+    SizeType ReadNodesNumber() override;
 
     void WriteNodes(NodesContainerType const& rThisNodes) override;
 
@@ -124,21 +145,21 @@ public:
 
     virtual void WriteProperties(PropertiesContainerType& rThisProperties);
 
-    void ReadElement(NodesContainerType& rThisNodes, PropertiesContainerType& rThisProperties, Element::Pointer& pThisElements) override;
+    void ReadElement(NodesContainerType& rThisNodes, PropertiesContainerType& rThisProperties, typename ElementType::Pointer& pThisElements) override;
 
     void ReadElements(NodesContainerType& rThisNodes, PropertiesContainerType& rThisProperties, ElementsContainerType& rThisElements) override;
 
-    std::size_t  ReadElementsConnectivities(ConnectivitiesContainerType& rElementsConnectivities) override;
+    SizeType ReadElementsConnectivities(ConnectivitiesContainerType& rElementsConnectivities) override;
 
     void WriteElements(ElementsContainerType const& rThisElements) override;
 
     void ReadConditions(NodesContainerType& rThisNodes, PropertiesContainerType& rThisProperties, ConditionsContainerType& rThisConditions) override;
 
-    std::size_t ReadConditionsConnectivities(ConnectivitiesContainerType& rConditionsConnectivities) override;
+    SizeType ReadConditionsConnectivities(ConnectivitiesContainerType& rConditionsConnectivities) override;
 
     virtual void WriteConditions(ConditionsContainerType const& rThisConditions);
 
-    void ReadInitialValues(ModelPart& rThisModelPart) override;
+    void ReadInitialValues(ModelPartType& rThisModelPart) override;
 
     void ReadConditionalScalarVariableData(std::string variable_name, std::vector<SizeType>& rConditionIndices, std::vector<int>& rConditionalDataValues) override;
 
@@ -148,9 +169,9 @@ public:
 
     virtual void WriteMesh(MeshType& rThisMesh);
 
-    void ReadModelPart(ModelPart& rThisModelPart) override;
+    void ReadModelPart(ModelPartType& rThisModelPart) override;
 
-    virtual void WriteModelPart(ModelPart & rThisModelPart);
+    virtual void WriteModelPart(ModelPartType & rThisModelPart);
 
 
     /// Read the input file and create the nodal connectivities graph, stored in CSR format.
@@ -167,7 +188,7 @@ public:
      * to node k (counting from 0).
      * @return Number of nodes.
      */
-    std::size_t ReadNodalGraph(int **NodeIndices, int **NodeConnectivities) override;
+    SizeType ReadNodalGraph(int **NodeIndices, int **NodeConnectivities) override;
 
     void DivideInputToPartitions(SizeType NumberOfPartitions, GraphType const& DomainsColoredGraph,
                                  PartitionIndicesType const& NodesPartitions,
@@ -223,9 +244,9 @@ protected:
     ///@name Protected Operations
     ///@{
 
-    virtual ModelPartIO::SizeType ReorderedNodeId(ModelPartIO::SizeType NodeId);
-    virtual ModelPartIO::SizeType ReorderedElementId(ModelPartIO::SizeType ElementId);
-    virtual ModelPartIO::SizeType ReorderedConditionId(ModelPartIO::SizeType ConditionId);
+    virtual SizeType ReorderedNodeId(SizeType NodeId);
+    virtual SizeType ReorderedElementId(SizeType ElementId);
+    virtual SizeType ReorderedConditionId(SizeType ConditionId);
 
     ///@}
     ///@name Protected  Access
@@ -259,7 +280,6 @@ protected:
     std::fstream mFile;
     Flags mOptions;
 
-
     ///@}
     ///@name Private Operators
     ///@{
@@ -271,61 +291,60 @@ protected:
 
     std::string& ReadBlockName(std::string& rBlockName);
 
-
     void SkipBlock(std::string const& BlockName);
 
     bool CheckEndBlock(std::string const& BlockName, std::string& rWord);
 
-    void ReadModelPartDataBlock(ModelPart& rModelPart);
+    void ReadModelPartDataBlock(ModelPartType& rModelPart);
 
     template<class TablesContainerType>
     void ReadTableBlock(TablesContainerType& rTables);
 
-    void ReadTableBlock(ModelPart::TablesContainerType& rTables);
+    void ReadTableBlock(typename ModelPartType::TablesContainerType& rTables);
 
     void ReadNodesBlock(NodesContainerType& rThisNodes);
 
-    void ReadNodesBlock(ModelPart& rModelPart);
+    void ReadNodesBlock(ModelPartType& rModelPart);
 
-    std::size_t CountNodesInBlock();
+    SizeType CountNodesInBlock();
 
     void ReadPropertiesBlock(PropertiesContainerType& rThisProperties);
 
-    void ReadElementsBlock(ModelPart& rModelPart);
+    void ReadElementsBlock(ModelPartType& rModelPart);
 
     void ReadElementsBlock(NodesContainerType& rThisNodes, PropertiesContainerType& rThisProperties, ElementsContainerType& rThisElements);
 
-    void ReadConditionsBlock(ModelPart& rModelPart);
+    void ReadConditionsBlock(ModelPartType& rModelPart);
 
     void ReadConditionsBlock(NodesContainerType& rThisNodes, PropertiesContainerType& rThisProperties, ConditionsContainerType& rThisConditions);
 
-    void ReadNodalDataBlock(ModelPart& rThisModelPart);
+    void ReadNodalDataBlock(ModelPartType& rThisModelPart);
 
     template<class TVariableType>
-    void ReadNodalDofVariableData(NodesContainerType& rThisNodes, TVariableType& rVariable);
+    void ReadNodalDofVariableData(NodesContainerType& rThisNodes, const TVariableType& rVariable);
 
     void ReadNodalFlags(NodesContainerType& rThisNodes, Flags const& rFlags);
 
     template<class TVariableType>
-    void ReadNodalScalarVariableData(NodesContainerType& rThisNodes, TVariableType& rVariable);
+    void ReadNodalScalarVariableData(NodesContainerType& rThisNodes, const TVariableType& rVariable);
 
     template<class TVariableType, class TDataType>
-    void ReadNodalVectorialVariableData(NodesContainerType& rThisNodes, TVariableType& rVariable, TDataType Dummy);
+    void ReadNodalVectorialVariableData(NodesContainerType& rThisNodes, const TVariableType& rVariable, TDataType Dummy);
 
     void ReadElementalDataBlock(ElementsContainerType& rThisElements);
 
     template<class TVariableType>
-    void ReadElementalScalarVariableData(ElementsContainerType& rThisElements, TVariableType& rVariable);
+    void ReadElementalScalarVariableData(ElementsContainerType& rThisElements, const TVariableType& rVariable);
 
     template<class TVariableType, class TDataType>
-    void ReadElementalVectorialVariableData(ElementsContainerType& rThisElements, TVariableType& rVariable, TDataType Dummy);
+    void ReadElementalVectorialVariableData(ElementsContainerType& rThisElements, const TVariableType& rVariable, TDataType Dummy);
     void ReadConditionalDataBlock(ConditionsContainerType& rThisConditions);
 
     template<class TVariableType>
-    void ReadConditionalScalarVariableData(ConditionsContainerType& rThisConditions, TVariableType& rVariable);
+    void ReadConditionalScalarVariableData(ConditionsContainerType& rThisConditions, const TVariableType& rVariable);
 
     template<class TVariableType, class TDataType>
-    void ReadConditionalVectorialVariableData(ConditionsContainerType& rThisConditions, TVariableType& rVariable, TDataType Dummy);
+    void ReadConditionalVectorialVariableData(ConditionsContainerType& rThisConditions, const TVariableType& rVariable, TDataType Dummy);
 
     template<class TDataType>
     void ReadConditionalScalarVariableDataImpl(std::string variable_name, std::vector<SizeType>& rConditionIndices, std::vector<TDataType>& rConditionalDataValues);
@@ -344,29 +363,29 @@ protected:
 
     void ReadCommunicatorGhostNodesBlock(CommunicatorType& rThisCommunicator, NodesContainerType& rThisNodes);
 
-    void ReadMeshBlock(ModelPart& rModelPart);
+    void ReadMeshBlock(ModelPartType& rModelPart);
 
     void ReadMeshDataBlock(MeshType& rMesh);
 
-    void ReadMeshNodesBlock(ModelPart& rModelPart, MeshType& rMesh);
+    void ReadMeshNodesBlock(ModelPartType& rModelPart, MeshType& rMesh);
 
-    void ReadMeshElementsBlock(ModelPart& rModelPart, MeshType& rMesh);
+    void ReadMeshElementsBlock(ModelPartType& rModelPart, MeshType& rMesh);
 
-    void ReadMeshConditionsBlock(ModelPart& rModelPart, MeshType& rMesh);
+    void ReadMeshConditionsBlock(ModelPartType& rModelPart, MeshType& rMesh);
 
-    void ReadMeshPropertiesBlock(ModelPart& rModelPart, MeshType& rMesh);
+    void ReadMeshPropertiesBlock(ModelPartType& rModelPart, MeshType& rMesh);
 
-    void ReadSubModelPartBlock(ModelPart& rMainModelPart, ModelPart& rParentModelPart);
+    void ReadSubModelPartBlock(ModelPartType& rMainModelPart, ModelPartType& rParentModelPart);
 
-    void ReadSubModelPartTablesBlock(ModelPart& rMainModelPart, ModelPart& rSubModelPart);
+    void ReadSubModelPartTablesBlock(ModelPartType& rMainModelPart, ModelPartType& rSubModelPart);
 
-    void ReadSubModelPartPropertiesBlock(ModelPart& rMainModelPart, ModelPart& rSubModelPart);
+    void ReadSubModelPartPropertiesBlock(ModelPartType& rMainModelPart, ModelPartType& rSubModelPart);
 
-    void ReadSubModelPartNodesBlock(ModelPart& rMainModelPart, ModelPart& rSubModelPart);
+    void ReadSubModelPartNodesBlock(ModelPartType& rMainModelPart, ModelPartType& rSubModelPart);
 
-    void ReadSubModelPartElementsBlock(ModelPart& rMainModelPart, ModelPart& rSubModelPart);
+    void ReadSubModelPartElementsBlock(ModelPartType& rMainModelPart, ModelPartType& rSubModelPart);
 
-    void ReadSubModelPartConditionsBlock(ModelPart& rMainModelPart, ModelPart& rSubModelPart);
+    void ReadSubModelPartConditionsBlock(ModelPartType& rMainModelPart, ModelPartType& rSubModelPart);
 
     void DivideModelPartDataBlock(OutputFilesContainerType& OutputFiles);
 
@@ -404,10 +423,8 @@ protected:
                                   PartitionIndicesContainerType const& EntitiesPartitions,
                                   std::string BlockName);
 
-
     void DivideConditionalDataBlock(OutputFilesContainerType& OutputFiles,
                                     PartitionIndicesContainerType const& ConditionsAllPartitions);
-
 
     void DivideMeshBlock(OutputFilesContainerType& OutputFiles,
                                          PartitionIndicesContainerType const& NodesAllPartitions,
@@ -415,26 +432,24 @@ protected:
                                          PartitionIndicesContainerType const& ConditionsAllPartitions);
 
     void DivideSubModelPartBlock(OutputFilesContainerType& OutputFiles,
-        PartitionIndicesContainerType const& NodesAllPartitions,
-        PartitionIndicesContainerType const& ElementsAllPartitions,
-        PartitionIndicesContainerType const& ConditionsAllPartitions);
+                                 PartitionIndicesContainerType const& NodesAllPartitions,
+                                 PartitionIndicesContainerType const& ElementsAllPartitions,
+                                 PartitionIndicesContainerType const& ConditionsAllPartitions);
 
     void DivideMeshDataBlock(OutputFilesContainerType& OutputFiles);
 
 
     void DivideMeshNodesBlock(OutputFilesContainerType& OutputFiles,
-                                         PartitionIndicesContainerType const& NodesAllPartitions);
+                              PartitionIndicesContainerType const& NodesAllPartitions);
 
 
     void DivideMeshElementsBlock(OutputFilesContainerType& OutputFiles,
-                                         PartitionIndicesContainerType const& ElementsAllPartitions);
+                                 PartitionIndicesContainerType const& ElementsAllPartitions);
 
     void DivideMeshConditionsBlock(OutputFilesContainerType& OutputFiles,
-                                         PartitionIndicesContainerType const& ConditionsAllPartitions);
-
+                                   PartitionIndicesContainerType const& ConditionsAllPartitions);
 
     void WritePartitionIndices(OutputFilesContainerType& OutputFiles, PartitionIndicesType const&  NodesPartitions, PartitionIndicesContainerType const& NodesAllPartitions);
-
 
     void WriteCommunicatorData(OutputFilesContainerType& OutputFiles, SizeType NumberOfPartitions, GraphType const& DomainsColoredGraph,
                                PartitionIndicesType const& NodesPartitions,
@@ -448,12 +463,11 @@ protected:
 
     void WriteInAllFiles(OutputFilesContainerType& OutputFiles, std::string const& ThisWord);
 
-
     template<class TContainerType, class TKeyType>
-    typename TContainerType::iterator FindKey(TContainerType& ThisContainer , TKeyType ThisKey, std::string ComponentName)
+    typename TContainerType::iterator FindKey(TContainerType& ThisContainer, const TKeyType ThisKey, const std::string& ComponentName) const
     {
-        typename TContainerType::iterator i_result;
-        if((i_result = ThisContainer.find(ThisKey)) == ThisContainer.end())
+        auto i_result = ThisContainer.find(ThisKey);
+        if(i_result == ThisContainer.end())
         {
             KRATOS_ERROR << ComponentName << " #" << ThisKey << " is not found."
                          << " [Line " << mNumberOfLines << " ]";
@@ -497,7 +511,7 @@ protected:
     }
 
     template<class TValueType>
-    TValueType& ExtractValue(std::string rWord, TValueType & rValue)
+    TValueType& ExtractValue(const std::string& rWord, TValueType& rValue) const
     {
         std::stringstream value(rWord);
 
@@ -506,17 +520,19 @@ protected:
         return rValue;
     }
 
+    // TODO specialize ExtractValue for complex number, the current form only supports "(x,y)"
+
     ModelPartIO& ReadWord(std::string& Word);
 
     ModelPartIO& ReadBlock(std::string& Block, std::string const& BlockName);
 
     char SkipWhiteSpaces();
 
-    bool IsWhiteSpace(char C);
+    bool IsWhiteSpace(char C) const;
 
     char GetCharacter();
 
-    bool CheckStatement(std::string const& rStatement, std::string const& rGivenWord);
+    bool CheckStatement(std::string const& rStatement, std::string const& rGivenWord) const;
 
     void ResetInput();
 

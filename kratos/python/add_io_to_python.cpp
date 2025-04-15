@@ -48,10 +48,6 @@ namespace Python
 
 typedef ModelPart::DataType DataType;
 
-void (GidIO<>::*pointer_to_io_read_single_properties)(Properties& rThisProperties ) = &IO::ReadProperties;
-
-void (GidIO<>::*pointer_to_io_read_properties)(IO::PropertiesContainerType& rThisProperties ) = &IO::ReadProperties;
-
 void WriteNodeMesh( GidIO<>& dummy, GidIO<>::MeshType& rThisMesh )
 {
     std::cout<<"start printing nodes mesh "<<std::endl;
@@ -70,7 +66,6 @@ void WriteCircleMesh( GidIO<>& dummy, GidIO<>::MeshType& rThisMesh )
     //KRATOS_WATCH("writing circle Mesh"); //should be a KRATOS_LOG not a KRATOS_WATCH
     dummy.WriteCircleMesh( rThisMesh );
 }
-
 
 void WriteMesh( GidIO<>& dummy, GidIO<>::MeshType& rThisMesh )
 {
@@ -106,7 +101,6 @@ void MatrixPrintOnGaussPoints( GidIO<>& dummy, const Variable<Matrix>& rVariable
 {
     dummy.PrintOnGaussPoints( rVariable, r_model_part, SolutionTag );
 }
-
 
 void (GidIO<>::*pointer_to_bool_write_nodal_results)( Variable<bool> const& rVariable,
         GidIO<>::NodesContainerType& rNodes, double SolutionTag,
@@ -155,55 +149,81 @@ void (GidIO<>::*local_axes_write_nodal_results_NH)( Variable<array_1d<DataType, 
 //               ModelPart& r_model_part, double SolutionTag)
 //                 = &GidIO<>::PrintOnGaussPoints;
 
-void ReadInitialValues1(IO& IO, IO::NodesContainerType& rThisNodes, IO::ElementsContainerType& rThisElements, IO::ConditionsContainerType& rThisConditions){ IO.ReadInitialValues(rThisNodes, rThisElements, rThisConditions);}
-void ReadInitialValues2(IO& IO, ModelPart& rThisModelPart){ IO.ReadInitialValues(rThisModelPart);}
+template<class TIOType>
+void ReadInitialValues1(TIOType& IO, typename TIOType::NodesContainerType& rThisNodes,
+        typename TIOType::ElementsContainerType& rThisElements, typename TIOType::ConditionsContainerType& rThisConditions)
+{
+    IO.ReadInitialValues(rThisNodes, rThisElements, rThisConditions);
+}
 
+template<class TIOType>
+void ReadInitialValues2(TIOType& IO, typename TIOType::ModelPartType& rThisModelPart)
+{
+    IO.ReadInitialValues(rThisModelPart);
+}
 
-
-
-void  AddIOToPython()
+template<class TModelPartType>
+void AddModelPartIOToPython(const std::string& Prefix)
 {
     using namespace boost::python;
 
-    class_<IO, IO::Pointer, boost::noncopyable> io_python_interface = class_<IO, IO::Pointer, boost::noncopyable>("IO")
-    .def("ReadNode",&IO::ReadNode)
-    .def("ReadNodes",&IO::ReadNodes)
-    .def("WriteNodes",&IO::WriteNodes)
-    .def("ReadProperties",pointer_to_io_read_single_properties)
-    .def("ReadProperties",pointer_to_io_read_properties)
-    .def("ReadElements",&IO::ReadElements)
-    .def("WriteElements",&IO::WriteElements)
-    .def("ReadConditions",&IO::ReadConditions)
-    .def("ReadInitialValues",&ReadInitialValues1)
-    .def("ReadInitialValues",&ReadInitialValues2)
-    .def("ReadMesh",&IO::ReadMesh)
-    .def("ReadModelPart",&IO::ReadModelPart)
+    typedef IO<TModelPartType> IOType;
+
+    void (IOType::*pointer_to_io_read_single_properties)(Properties& rThisProperties ) = &IOType::ReadProperties;
+
+    void (IOType::*pointer_to_io_read_properties)(typename IOType::PropertiesContainerType& rThisProperties ) = &IOType::ReadProperties;
+
+    auto io_python_interface = class_<IOType, typename IOType::Pointer, bases<BaseIO>, boost::noncopyable>((Prefix+"IO").c_str())
+    .def("ReadNode", &IOType::ReadNode)
+    .def("ReadNodes", &IOType::ReadNodes)
+    .def("WriteNodes", &IOType::WriteNodes)
+    .def("ReadProperties", pointer_to_io_read_single_properties)
+    .def("ReadProperties", pointer_to_io_read_properties)
+    .def("ReadElements", &IOType::ReadElements)
+    .def("WriteElements", &IOType::WriteElements)
+    .def("ReadConditions", &IOType::ReadConditions)
+    .def("ReadInitialValues", &ReadInitialValues1<IOType>)
+    .def("ReadInitialValues", &ReadInitialValues2<IOType>)
+    .def("ReadMesh", &IOType::ReadMesh)
+    .def("ReadModelPart", &IOType::ReadModelPart)
     ;
-    io_python_interface.attr("READ") = IO::READ;
-    io_python_interface.attr("WRITE") =IO::WRITE;
-    io_python_interface.attr("APPEND") = IO::APPEND;
-    io_python_interface.attr("IGNORE_VARIABLES_ERROR" ) = IO::IGNORE_VARIABLES_ERROR;
+    io_python_interface.attr("READ") = IOType::READ;
+    io_python_interface.attr("WRITE") = IOType::WRITE;
+    io_python_interface.attr("APPEND") = IOType::APPEND;
+    io_python_interface.attr("IGNORE_VARIABLES_ERROR" ) = IOType::IGNORE_VARIABLES_ERROR;
 
-
-
-    class_<ModelPartIO, ModelPartIO::Pointer, bases<IO>,  boost::noncopyable>(
-        "ModelPartIO",init<std::string const&>())
+    typedef ModelPartIO<TModelPartType> ModelPartIOType;
+    class_<ModelPartIOType, typename ModelPartIOType::Pointer, bases<IOType>,  boost::noncopyable>(
+        (Prefix+"ModelPartIO").c_str(), init<std::string const&>())
         .def(init<std::string const&, const Flags>())
     ;
 
-
-    class_<ReorderConsecutiveModelPartIO, ReorderConsecutiveModelPartIO::Pointer, bases<ModelPartIO>,  boost::noncopyable>(
-        "ReorderConsecutiveModelPartIO",init<std::string const&>())
+    typedef ReorderConsecutiveModelPartIO<TModelPartType> ReorderConsecutiveModelPartIOType;
+    class_<ReorderConsecutiveModelPartIOType, typename ReorderConsecutiveModelPartIOType::Pointer, bases<ModelPartIOType>, boost::noncopyable>(
+        (Prefix+"ReorderConsecutiveModelPartIO").c_str(), init<std::string const&>())
         .def(init<std::string const&, const Flags>())
     ;
+}
+
+void AddIOToPython()
+{
+    using namespace boost::python;
+
+    class_<BaseIO, BaseIO::Pointer, boost::noncopyable>("BaseIO", init<>())
+    .def(self_ns::str(self));
+
+    AddModelPartIOToPython<ModelPart>("");
+    AddModelPartIOToPython<ComplexModelPart>("Complex");
+    AddModelPartIOToPython<GComplexModelPart>("GComplex");
+
 #ifdef JSON_INCLUDED
-    class_<KratosJsonIO, KratosJsonIO::Pointer, bases<IO>,  boost::noncopyable>(
+    class_<KratosJsonIO, KratosJsonIO::Pointer, bases<BaseIO>, boost::noncopyable>(
          "JsonIO",init<std::string const&>())
         .def(init<std::string const&, const Flags>())
     ;
 #endif
 
-    class_<GidIO<>, GidIO<>::Pointer, bases<IO>, boost::noncopyable>(
+    class_<GidIO<>, GidIO<>::Pointer, bases<BaseIO>, boost::noncopyable>(
         "GidIO",init<std::string const&, GiD_PostMode,
         MultiFileFlag,
         WriteDeformedMeshFlag,
