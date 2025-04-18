@@ -849,12 +849,12 @@ public:
     /** Inserts a list of pointers to Master-Slave constraints
      */
     template<class TIteratorType >
-    void AddMasterSlaveConstraints(TIteratorType constraints_begin,  TIteratorType constraints_end, IndexType ThisIndex = 0)
+    void AddMasterSlaveConstraints(TIteratorType constraints_begin, TIteratorType constraints_end, IndexType ThisIndex = 0)
     {
         KRATOS_TRY
-        ModelPartImpl::MasterSlaveConstraintContainerType  aux;
-        ModelPartImpl::MasterSlaveConstraintContainerType  aux_root;
         ModelPartImpl* root_model_part = &this->GetRootModelPart();
+        ModelPartImpl::MasterSlaveConstraintContainerType aux;
+        ModelPartImpl::MasterSlaveConstraintContainerType aux_root;
 
         for(TIteratorType it = constraints_begin; it!=constraints_end; it++)
         {

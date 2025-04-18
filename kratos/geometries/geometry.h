@@ -1639,7 +1639,7 @@ public:
     */
     virtual MatrixType& InverseOfJacobian( MatrixType& rResult, IndexType IntegrationPointIndex, IntegrationMethod ThisMethod ) const
     {
-        Jacobian(rResult,IntegrationPointIndex, ThisMethod); //this will be overwritten
+        Jacobian(rResult, IntegrationPointIndex, ThisMethod); //this will be overwritten
 
         DataType detJ;
         MatrixType Jinv(this->WorkingSpaceDimension(), this->WorkingSpaceDimension());
@@ -1663,7 +1663,7 @@ public:
     */
     virtual MatrixType& InverseOfJacobian( MatrixType& rResult, const LocalCoordinatesArrayType& rCoordinates ) const
     {
-        Jacobian(rResult,rCoordinates); //this will be overwritten
+        Jacobian(rResult, rCoordinates); //this will be overwritten
 
         DataType detJ;
         MatrixType Jinv(this->WorkingSpaceDimension(), this->WorkingSpaceDimension());

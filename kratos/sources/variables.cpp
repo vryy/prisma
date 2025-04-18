@@ -382,57 +382,5 @@ KRATOS_CREATE_DOUBLE_VARIABLE(ALPHA)
 
 KRATOS_CREATE_DOUBLE_VARIABLE(SEARCH_RADIUS)
 
-//for Vulcan application
-//   Kratos::Variable<double> LAST_AIR( "LAST AIR");
-//   Kratos::Variable<double> PRESSURES( "PRESSURES (N/m2)");
-//   Kratos::Variable<Kratos::array_1d<double, 3> > VELOCITIES( "VELOCITIES (m/s)", Kratos::zero_vector<double>( 3));
-//   Kratos::Variable<double> TEMPERATURES( "TEMPERATURES (C)");
-//   /*const*/
-//   Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<double, 3> > >
-//   VELOCITIES_X( "X-VELOCITIES (m/s)", Kratos::VectorComponentAdaptor<Kratos::array_1d<double, 3> >( VELOCITIES, 0));
-//
-//   /*const*/
-//   Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<double, 3> > >
-//   VELOCITIES_Y( "Y-VELOCITIES (m/s)", Kratos::VectorComponentAdaptor<Kratos::array_1d<double, 3> >( VELOCITIES, 1));
-//
-//   /*const*/
-//   Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<double, 3> > >
-//   VELOCITIES_Z( "Z-VELOCITIES (m/s)", Kratos::VectorComponentAdaptor<Kratos::array_1d<double, 3> >( VELOCITIES, 2));
-//
-//   // for Vulcan application virtual mould properties
-//   KRATOS_CREATE_DOUBLE_VARIABLE( MOULD_DENSITY)
-//   KRATOS_CREATE_DOUBLE_VARIABLE( MOULD_SPECIFIC_HEAT)
-//   KRATOS_CREATE_DOUBLE_VARIABLE( MOULD_THICKNESS)
-//   KRATOS_CREATE_DOUBLE_VARIABLE( MOULD_SFACT)
-//   KRATOS_CREATE_DOUBLE_VARIABLE( MOULD_VFACT)
-//   KRATOS_CREATE_DOUBLE_VARIABLE( MOULD_CONDUCTIVITY)
-//   KRATOS_CREATE_DOUBLE_VARIABLE( MOULD_HTC_ENVIRONMENT)
-//   KRATOS_CREATE_DOUBLE_VARIABLE( MOULD_TEMPERATURE)
-//   KRATOS_CREATE_DOUBLE_VARIABLE( MOULD_INNER_TEMPERATURE)
-//   // for Click2Cast Application
-//   KRATOS_CREATE_VARIABLE(int, NODE_PROPERTY_ID)
-//   KRATOS_CREATE_DOUBLE_VARIABLE( HTC)
-//   KRATOS_CREATE_VARIABLE(int, REF_ID)
-//   KRATOS_CREATE_DOUBLE_VARIABLE(PARTICLE_RADIUS)
-//   KRATOS_CREATE_DOUBLE_VARIABLE(POSETIVE_DISTANCE)
-//   KRATOS_CREATE_DOUBLE_VARIABLE(NAGATIVE_DISTANCE)
-//   KRATOS_CREATE_VARIABLE(bool, IS_ESCAPED)
-//   KRATOS_CREATE_VARIABLE(int, IS_SOLIDIFIED)
-//   Kratos::Variable<double> SOLIDFRACTION( "SOLID FRACTION");
-//   Kratos::Variable<double> SOLIDIF_TIME( "SOLIDIF TIME (s)");
-//   Kratos::Variable<double> SOLIDIF_MODULUS( "SOLIDIF MODULUS (cm)");
-//   Kratos::Variable<double> FILLTIME( "FILLTIME (s)");
-//   KRATOS_CREATE_DOUBLE_VARIABLE(MACRO_POROSITY)
-//   Kratos::Variable<double> SHRINKAGE_POROSITY( "SHRINKAGE_POROSITY (m^3)");
-//   Kratos::Variable<double> MAX_VEL( "MAX VEL (m/s)");
-//   KRATOS_CREATE_VARIABLE(int, IS_GRAVITY_FILLING)
-//   KRATOS_CREATE_DOUBLE_VARIABLE(VOLUME_FRACTION)
-//   KRATOS_CREATE_DOUBLE_VARIABLE(KAPPA)
-//   KRATOS_CREATE_DOUBLE_VARIABLE(EPSILON)
-//   Kratos::Variable<double> SHRINKAGE_POROSITY_US( "SHRINKAGE_POROSITY (in^3)");
-//   Kratos::Variable<double> SOLIDIF_MODULUS_US( "SOLIDIF MODULUS (in)");
-//   Kratos::Variable<double> TEMPERATURES_US( "TEMPERATURES (F)");
-//   KRATOS_CREATE_VARIABLE(double,FRONT_MEETING)
-//   KRATOS_CREATE_DOUBLE_VARIABLE(MOULD_AVERAGE_TEMPERATURE)
 
 }  // namespace Kratos.
