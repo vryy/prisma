@@ -852,9 +852,13 @@ public:
     void AddMasterSlaveConstraints(TIteratorType constraints_begin, TIteratorType constraints_end, IndexType ThisIndex = 0)
     {
         KRATOS_TRY
-        ModelPartImpl* root_model_part = &this->GetRootModelPart();
+
         ModelPartImpl::MasterSlaveConstraintContainerType aux;
         ModelPartImpl::MasterSlaveConstraintContainerType aux_root;
+        ModelPartImpl* root_model_part = dynamic_cast<ModelPartImpl*>(&this->GetRootModelPart());
+
+        if (root_model_part == nullptr)
+            KRATOS_ERROR << "Root ModelPart is undefined";
 
         for(TIteratorType it = constraints_begin; it!=constraints_end; it++)
         {
@@ -887,7 +891,7 @@ public:
 
             current_part->MasterSlaveConstraints().Unique();
 
-            current_part = current_part->GetParentModelPart();
+            current_part = dynamic_cast<ModelPartImpl*>(current_part->GetParentModelPart());
         }
 
         KRATOS_CATCH("")
@@ -1307,6 +1311,39 @@ public:
         return GetMesh(ThisIndex).ConditionsArray();
     }
 
+    template<class TEntityType> struct AddEntity_Helper
+    {
+        static inline void Execute(ModelPartImpl& rModelPart, typename TEntityType::Pointer pNewEntity, IndexType ThisIndex)
+        {
+            KRATOS_ERROR << "You are trying to add an unknown entity " << typeid(TEntityType).name()
+                         << " to the ModelPart " << rModelPart.Name();
+        }
+    };
+
+    template<> struct AddEntity_Helper<ElementType>
+    {
+        static inline void Execute(ModelPartImpl& rModelPart, typename ElementType::Pointer pNewElement, IndexType ThisIndex)
+        {
+            rModelPart.AddElement(pNewElement);
+        }
+    };
+
+    template<> struct AddEntity_Helper<ConditionType>
+    {
+        static inline void Execute(ModelPartImpl& rModelPart, typename ConditionType::Pointer pNewCondition, IndexType ThisIndex)
+        {
+            rModelPart.AddCondition(pNewCondition);
+        }
+    };
+
+    /** Specialization to add element/condition based on type
+     */
+    template<class TEntityType>
+    void AddEntity(typename TEntityType::Pointer pNewEntity, IndexType ThisIndex = 0)
+    {
+        AddEntity_Helper<TEntityType>::Execute(*this, pNewEntity, ThisIndex);
+    }
+
     ///@}
     ///@name Sub model parts
     ///@{
@@ -1550,6 +1587,11 @@ private:
 typedef ModelPartImpl<Node<3, KRATOS_DOUBLE_TYPE, Dof<KRATOS_DOUBLE_TYPE> > > ModelPart;            // this is the typical ModelPart with geometry coordinates as double and Dof as double
 typedef ModelPartImpl<Node<3, KRATOS_DOUBLE_TYPE, Dof<KRATOS_COMPLEX_TYPE> > > ComplexModelPart;    // this is the ModelPart with double geometry coordinates but Dof as complex(double)
 typedef ModelPartImpl<Node<3, KRATOS_COMPLEX_TYPE, Dof<KRATOS_COMPLEX_TYPE> > > GComplexModelPart;  // this ModelPart works with complex geometry coordinates and complex Dof
+
+template<class TModelPartType> struct ModelPartTypeToString { static inline constexpr const char* Get() {return typeid(TModelPartType).name();} };
+template<> struct ModelPartTypeToString<ModelPart> { static inline constexpr const char* Get() {return "ModelPart";} };
+template<> struct ModelPartTypeToString<ComplexModelPart> { static inline constexpr const char* Get() {return "ComplexModelPart";} };
+template<> struct ModelPartTypeToString<GComplexModelPart> { static inline constexpr const char* Get() {return "GComplexModelPart";} };
 
 ///@}
 
