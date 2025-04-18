@@ -127,26 +127,14 @@ namespace Kratos
     using namespace boost::numeric::ublas;
 
     // selector for vector and matrix type
-    template<typename TDataType> struct MatrixVectorTypeSelector;
-
-    template<>
-    struct MatrixVectorTypeSelector<KRATOS_DOUBLE_TYPE>
+    template<typename TDataType>
+    struct MatrixVectorTypeSelector
     {
-        typedef Vector VectorType;
-        typedef Matrix MatrixType;
-        typedef ZeroVector ZeroVectorType;
-        typedef ZeroMatrix ZeroMatrixType;
-        typedef IdentityMatrix IdentityMatrixType;
-    };
-
-    template<>
-    struct MatrixVectorTypeSelector<KRATOS_COMPLEX_TYPE>
-    {
-        typedef ComplexVector VectorType;
-        typedef ComplexMatrix MatrixType;
-        typedef ComplexZeroVector ZeroVectorType;
-        typedef ComplexZeroMatrix ZeroMatrixType;
-        typedef ComplexIdentityMatrix IdentityMatrixType;
+        typedef boost::numeric::ublas::vector<TDataType> VectorType;
+        typedef boost::numeric::ublas::matrix<TDataType> MatrixType;
+        typedef boost::numeric::ublas::zero_vector<TDataType> ZeroVectorType;
+        typedef boost::numeric::ublas::zero_matrix<TDataType> ZeroMatrixType;
+        typedef boost::numeric::ublas::identity_matrix<TDataType> IdentityMatrixType;
     };
 
     // more specialization for DataTypeToString
