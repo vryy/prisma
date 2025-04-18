@@ -293,6 +293,12 @@ catch(...) { Block KRATOS_THROW_ERROR(std::runtime_error, "Unknown error", MoreI
     /*const*/ Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> > >              \
                   component3(#component3, Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> >(name, 2));   \
 
+#ifdef KRATOS_CREATE_3D_VARIABLE_WITH_COMPONENTS
+#undef KRATOS_CREATE_3D_VARIABLE_WITH_COMPONENTS
+#endif
+#define KRATOS_CREATE_3D_VARIABLE_WITH_COMPONENTS(name)                                 \
+     KRATOS_CREATE_3D_VARIABLE_WITH_THIS_COMPONENTS(name, name##_X, name##_Y, name##_Z) \
+
 #ifdef KRATOS_CREATE_3D_COMPLEX_VARIABLE_WITH_THIS_COMPONENTS
 #undef KRATOS_CREATE_3D_COMPLEX_VARIABLE_WITH_THIS_COMPONENTS
 #endif
@@ -308,11 +314,11 @@ catch(...) { Block KRATOS_THROW_ERROR(std::runtime_error, "Unknown error", MoreI
     /*const*/ Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_COMPLEX_TYPE, 3> > >              \
                   component3(#component3, Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_COMPLEX_TYPE, 3> >(name, 2));   \
 
-#ifdef KRATOS_CREATE_3D_VARIABLE_WITH_COMPONENTS
-#undef KRATOS_CREATE_3D_VARIABLE_WITH_COMPONENTS
+#ifdef KRATOS_CREATE_3D_COMPLEX_VARIABLE_WITH_COMPONENTS
+#undef KRATOS_CREATE_3D_COMPLEX_VARIABLE_WITH_COMPONENTS
 #endif
-#define KRATOS_CREATE_3D_VARIABLE_WITH_COMPONENTS(name)                                 \
-     KRATOS_CREATE_3D_VARIABLE_WITH_THIS_COMPONENTS(name, name##_X, name##_Y, name##_Z) \
+#define KRATOS_CREATE_3D_COMPLEX_VARIABLE_WITH_COMPONENTS(name)                                 \
+     KRATOS_CREATE_3D_COMPLEX_VARIABLE_WITH_THIS_COMPONENTS(name, name##_X, name##_Y, name##_Z) \
 
 #ifdef KRATOS_REGISTER_VARIABLE
 #undef KRATOS_REGISTER_VARIABLE
