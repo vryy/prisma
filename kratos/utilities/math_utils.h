@@ -614,7 +614,7 @@ public:
                 TDataType det = 1.0;
                 using namespace boost::numeric::ublas;
                 typedef permutation_matrix<SizeType> pmatrix;
-                TMatrixType Aux(rA);
+                MatrixType Aux(rA);
                 pmatrix pm(Aux.size1());
                 bool singular = lu_factorize(Aux,pm);
 
@@ -1375,7 +1375,7 @@ public:
      * @tparam TMatrixType The matrix type considered
      * @tparam TVector The vector returning type
      */
-    template<class TMatrixType, class TVectorType = Vector>
+    template<class TMatrixType, class TVectorType = VectorType>
     static inline TVectorType StrainTensorToVector(
         const TMatrixType& rStrainTensor,
         SizeType rSize = 0
@@ -1430,7 +1430,7 @@ public:
      * @tparam TMatrixType The matrix type considered
      * @tparam TVector The vector returning type
      */
-    template<class TMatrixType, class TVectorType = Vector>
+    template<class TMatrixType, class TVectorType = VectorType>
     static inline TVectorType StressTensorToVector(
         const TMatrixType& rStressTensor,
         SizeType rSize = 0
@@ -1482,7 +1482,7 @@ public:
      * @tparam TMatrixType The matrix type considered
      * @tparam TVector The vector returning type
      */
-    template<class TMatrixType, class TVectorType = Vector>
+    template<class TMatrixType, class TVectorType = VectorType>
     static inline TVectorType SymmetricTensorToVector(
         const TMatrixType& rTensor,
         SizeType rSize = 0
