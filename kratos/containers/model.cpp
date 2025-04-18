@@ -50,7 +50,7 @@ void Model::CreateRootModelPart(const std::string& ModelPartName, Model::IndexTy
 }
 
 template<class TModelPartType>
-BaseModelPart& Model::CreateModelPart( const std::string& ModelPartName, Model::IndexType NewBufferSize )
+TModelPartType& Model::CreateModelPart( const std::string& ModelPartName, Model::IndexType NewBufferSize )
 {
     KRATOS_TRY
 
@@ -62,17 +62,17 @@ BaseModelPart& Model::CreateModelPart( const std::string& ModelPartName, Model::
     if (delim_pos == std::string::npos) {
         if (mRootModelPartMap.find(root_model_part_name) == mRootModelPartMap.end()) {
             CreateRootModelPart<TModelPartType>(root_model_part_name, NewBufferSize);
-            return *(mRootModelPartMap[root_model_part_name].get());
+            return dynamic_cast<TModelPartType&>(*(mRootModelPartMap[root_model_part_name].get()));
         } else {
             // KRATOS_WARNING("Model") << "Trying to create a root modelpart with name " << ModelPartName << " however a ModelPart with the same name already exists. \nReturning the already existent ModelPart.\n";
             std::cout << "Model" << "Trying to create a root modelpart with name " << ModelPartName << " however a ModelPart with the same name already exists. \nReturning the already existent ModelPart.\n"; // hbui: 29/6/2022 temporary use this because KRATOS_WARNING is not defined
-            return *(mRootModelPartMap[root_model_part_name].get());
+            return dynamic_cast<TModelPartType&>(*(mRootModelPartMap[root_model_part_name].get()));
         }
     } else {
         if (mRootModelPartMap.find(root_model_part_name) == mRootModelPartMap.end()) {
             CreateRootModelPart<TModelPartType>(root_model_part_name, NewBufferSize);
         }
-        return mRootModelPartMap[root_model_part_name]->CreateSubModelPart(ModelPartName.substr(delim_pos + 1));
+        return dynamic_cast<TModelPartType&>(mRootModelPartMap[root_model_part_name]->CreateSubModelPart(ModelPartName.substr(delim_pos + 1)));
     }
 
     KRATOS_CATCH("")
@@ -82,7 +82,7 @@ void Model::DeleteModelPart( const std::string& rModelPartName  )
 {
     KRATOS_TRY
 
-    if(this->HasModelPart(rModelPartName)) {
+    if(this->HasBaseModelPart(rModelPartName)) {
         mRootModelPartMap.erase(rModelPartName); //NOTE: the corresponding variable list should NOT be removed
     } else {
         // KRATOS_WARNING("Model") << "Attempting to delete inexisting modelpart : " << ModelPartName << std::endl;
@@ -92,28 +92,24 @@ void Model::DeleteModelPart( const std::string& rModelPartName  )
     KRATOS_CATCH("")
 }
 
-template<class TModelPartType>
 void Model::RenameModelPart( const std::string& OldName, const std::string& NewName )
 {
     KRATOS_TRY
 
-    KRATOS_ERROR_IF_NOT(this->HasModelPart(OldName)) << "The Old Name is not in model (as a root model part). Required old name was : " << OldName << std::endl;
+    KRATOS_ERROR_IF_NOT(this->HasBaseModelPart(OldName)) << "The Old Name is not in model (as a root model part). Required old name was : " << OldName << std::endl;
 
-    KRATOS_ERROR_IF(this->HasModelPart(NewName)) << "The New Name is already existing in model. Proposed name was : " << NewName << std::endl;
+    KRATOS_ERROR_IF(this->HasBaseModelPart(NewName)) << "The New Name is already existing in model. Proposed name was : " << NewName << std::endl;
 
-    mRootModelPartMap[OldName]->Name() = NewName; //change the name of the existing modelpart
+    mRootModelPartMap[OldName]->Name() = NewName; // change the name of the existing modelpart
 
-    CreateModelPart<TModelPartType>(NewName);
-
-    mRootModelPartMap[NewName].swap(mRootModelPartMap[OldName]);
+    mRootModelPartMap[NewName] = std::move(mRootModelPartMap[OldName]); // transfer the ownership from old to new
 
     mRootModelPartMap.erase(OldName);
 
     KRATOS_CATCH("")
 }
 
-
-BaseModelPart& Model::GetModelPart(const std::string& rFullModelPartName)
+BaseModelPart& Model::GetBaseModelPart(const std::string& rFullModelPartName)
 {
     KRATOS_TRY
 
@@ -162,13 +158,25 @@ BaseModelPart& Model::GetModelPart(const std::string& rFullModelPartName)
         } else {
             KRATOS_ERROR << "root model part " << rFullModelPartName << " not found" << std::endl;
         }
-
     }
 
     KRATOS_CATCH("")
 }
 
-const BaseModelPart& Model::GetModelPart(const std::string& rFullModelPartName) const
+template<class TModelPartType>
+TModelPartType& Model::GetModelPart(const std::string& rFullModelPartName)
+{
+    BaseModelPart& r_model_part = this->GetBaseModelPart(rFullModelPartName);
+
+    TModelPartType* p_model_part = dynamic_cast<TModelPartType*>(&r_model_part);
+
+    if (p_model_part == nullptr)
+        KRATOS_ERROR << "model part of type " << ModelPartTypeToString<TModelPartType>::Get() << " does not exist";
+
+    return *p_model_part;
+}
+
+const BaseModelPart& Model::GetBaseModelPart(const std::string& rFullModelPartName) const
 {
     KRATOS_TRY
 
@@ -215,13 +223,25 @@ const BaseModelPart& Model::GetModelPart(const std::string& rFullModelPartName) 
         } else {
             KRATOS_ERROR << "root model part " << rFullModelPartName << " not found" << std::endl;
         }
-
     }
 
     KRATOS_CATCH("")
 }
 
-bool Model::HasModelPart(const std::string& rFullModelPartName) const
+template<class TModelPartType>
+const TModelPartType& Model::GetModelPart(const std::string& rFullModelPartName) const
+{
+    const BaseModelPart& r_model_part = this->GetBaseModelPart(rFullModelPartName);
+
+    const TModelPartType* p_model_part = dynamic_cast<const TModelPartType*>(&r_model_part);
+
+    if (p_model_part == nullptr)
+        KRATOS_ERROR << "model part of type " << ModelPartTypeToString<TModelPartType>::Get() << " does not exist";
+
+    return *p_model_part;
+}
+
+bool Model::HasBaseModelPart(const std::string& rFullModelPartName) const
 {
     KRATOS_TRY
 
@@ -245,6 +265,25 @@ bool Model::HasModelPart(const std::string& rFullModelPartName) const
     }
 
     KRATOS_CATCH("")
+}
+
+template<class TModelPartType>
+bool Model::HasModelPart(const std::string& rFullModelPartName) const
+{
+    // first check if the name exists
+    bool exist = this->HasBaseModelPart(rFullModelPartName);
+
+    if (!exist)
+        return false;
+
+    const BaseModelPart& r_model_part = this->GetBaseModelPart(rFullModelPartName);
+
+    const TModelPartType* p_model_part = dynamic_cast<const TModelPartType*>(&r_model_part);
+
+    if (p_model_part == nullptr)
+        return false;
+
+    return true;
 }
 
 std::vector<std::string> Model::GetModelPartNames() const
@@ -355,13 +394,16 @@ void Model::load(Serializer& rSerializer)
 }
 
 // template function specialization
-template BaseModelPart& Model::CreateModelPart<ModelPart>( const std::string&, Model::IndexType );
-template void Model::RenameModelPart<ModelPart>( const std::string&, const std::string& );
+template ModelPart& Model::CreateModelPart<ModelPart>( const std::string&, Model::IndexType );
+template ModelPart& Model::GetModelPart<ModelPart>( const std::string& );
+template const ModelPart& Model::GetModelPart<ModelPart>( const std::string& ) const;
 
-template BaseModelPart& Model::CreateModelPart<ComplexModelPart>( const std::string&, Model::IndexType );
-template void Model::RenameModelPart<ComplexModelPart>( const std::string&, const std::string& );
+template ComplexModelPart& Model::CreateModelPart<ComplexModelPart>( const std::string&, Model::IndexType );
+template ComplexModelPart& Model::GetModelPart<ComplexModelPart>( const std::string& );
+template const ComplexModelPart& Model::GetModelPart<ComplexModelPart>( const std::string& ) const;
 
-template BaseModelPart& Model::CreateModelPart<GComplexModelPart>( const std::string&, Model::IndexType );
-template void Model::RenameModelPart<GComplexModelPart>( const std::string&, const std::string& );
+template GComplexModelPart& Model::CreateModelPart<GComplexModelPart>( const std::string&, Model::IndexType );
+template GComplexModelPart& Model::GetModelPart<GComplexModelPart>( const std::string& );
+template const GComplexModelPart& Model::GetModelPart<GComplexModelPart>( const std::string& ) const;
 
 }  // namespace Kratos.

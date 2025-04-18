@@ -105,7 +105,7 @@ public:
      * @param NewBufferSize The size of the buffer of the new model part created
      */
     template<class TModelPartType>
-    BaseModelPart& CreateModelPart( const std::string& ModelPartName, IndexType NewBufferSize=1 );
+    TModelPartType& CreateModelPart( const std::string& ModelPartName, IndexType NewBufferSize=1 );
 
     /**
      * @brief This method deletes a modelpart with a given name
@@ -120,7 +120,6 @@ public:
      * @param OldName The name of the model part to be renamed
      * @param NewName The new name for the model part to be renamed
      */
-    template<class TModelPartType>
     void RenameModelPart( const std::string& OldName, const std::string& NewName );
 
     /**
@@ -129,7 +128,19 @@ public:
      * @param rFullModelPartName The name of the model part to be returned
      * @return Reference to the model part of interest
      */
-    BaseModelPart& GetModelPart(const std::string& rFullModelPartName);
+    BaseModelPart& GetBaseModelPart(const std::string& rFullModelPartName);
+
+    /**
+     * @brief This method returns a model part given a certain name
+     * Unlike the old version of this function. The type must be given in the template argument.
+     * This poses additional step to obtain the needed model part. But user knows what
+     * he should get at the end, right?
+     * @details Iterates over the list of submodelparts of the root model part
+     * @param rFullModelPartName The name of the model part to be returned
+     * @return Reference to the model part of interest
+     */
+    template<class TModelPartType>
+    TModelPartType& GetModelPart(const std::string& rFullModelPartName);
 
     /**
      * @brief This method returns a model part given a certain name
@@ -137,7 +148,19 @@ public:
      * @param rFullModelPartName The name of the model part to be returned
      * @return Reference to the model part of interest
      */
-    const BaseModelPart& GetModelPart(const std::string& rFullModelPartName) const;
+    const BaseModelPart& GetBaseModelPart(const std::string& rFullModelPartName) const;
+
+    /**
+     * @brief This method returns a model part given a certain name
+     * Unlike the old version of this function. The type must be given in the template argument.
+     * This poses additional step to obtain the needed model part. But user knows what
+     * he should get at the end, right?
+     * @details Iterates over the list of submodelparts of the root model part
+     * @param rFullModelPartName The name of the model part to be returned
+     * @return Reference to the model part of interest
+     */
+    template<class TModelPartType>
+    const TModelPartType& GetModelPart(const std::string& rFullModelPartName) const;
 
     /**
      * @brief This method checks if a certain a model part exists given a certain name
@@ -145,6 +168,16 @@ public:
      * @param rFullModelPartName The name of the model part to be checked
      * @return True if the model part exists, false otherwise
      */
+    bool HasBaseModelPart(const std::string& rFullModelPartName) const;
+
+    /**
+     * @brief This method checks if a certain a model part exists given a certain name
+     *  Furthermore, the type of the model part must match the specified type in the template argument
+     * @details Iterates over the list of submodelparts of the root model part
+     * @param rFullModelPartName The name of the model part to be checked
+     * @return True if the model part exists, false otherwise
+     */
+    template<class TModelPartType>
     bool HasModelPart(const std::string& rFullModelPartName) const;
 
     /**

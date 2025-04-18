@@ -38,7 +38,7 @@ TModelPartType& Model_CreateModelPart2(Model& rModel, const std::string& rName, 
 
 BaseModelPart& Model_GetModelPart(Model& rModel, const std::string& rFullModelPartName)
 {
-    return rModel.GetModelPart(rFullModelPartName);
+    return rModel.GetBaseModelPart(rFullModelPartName);
 }
 
 Model& GetDefaultKratosModel()
@@ -60,7 +60,7 @@ void AddModelToPython()
         .def("CreateGComplexModelPart", &Model_CreateModelPart2<GComplexModelPart>, return_internal_reference<>())
         .def("DeleteModelPart", &Model::DeleteModelPart)
         .def("GetModelPart", &Model_GetModelPart, return_internal_reference<>())
-        .def("HasModelPart", &Model::HasModelPart)
+        .def("HasModelPart", &Model::HasBaseModelPart)
         .def("GetModelPartNames", &Model::GetModelPartNames)
         .def("__getitem__", &Model_GetModelPart, return_internal_reference<>())
         .def(self_ns::str(self))
