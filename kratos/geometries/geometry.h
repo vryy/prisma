@@ -129,6 +129,10 @@ public:
      */
     typedef typename PointType::CoordinatesArrayType CoordinatesArrayType;
 
+    /** The data type for physical coordinates, individual coordinate
+     */
+    typedef typename CoordinatesArrayType::value_type CoordinateType;
+
     /** This type used for representing an integration point in
     geometry. This integration point is a point with an
     additional weight component.
@@ -139,6 +143,11 @@ public:
     an integration point
     */
     typedef typename IntegrationPointType::CoordinatesArrayType LocalCoordinatesArrayType;
+
+    /** This type used for representing one component of the local coordinates of
+    an integration point
+    */
+    typedef typename LocalCoordinatesArrayType::value_type LocalCoordinateType;
 
     /** A vector of IntegrationPointType which used to hold
     integration points related to an integration
@@ -197,7 +206,7 @@ public:
 
     /** Type of the normal vector used for normal to edges in geomety.
      */
-    typedef boost::numeric::ublas::vector<DataType> NormalType;
+    typedef boost::numeric::ublas::vector<CoordinateType> NormalType;
 
     typedef typename BaseType::iterator                iterator;
     typedef typename BaseType::const_iterator          const_iterator;
@@ -2252,9 +2261,6 @@ protected:
     ///@name Protected member Variables
     ///@{
 
-    #ifdef ENABLE_BEZIER_GEOMETRY
-    GeometryData const* mpGeometryData;
-    #endif
 
     ///@}
     ///@name Protected Operators
@@ -2265,6 +2271,15 @@ protected:
     ///@name Protected Operations
     ///@{
 
+    /**
+    * @brief updates the pointer to GeometryData of the
+    *        respective geometry.
+    * @param pGeometryData pointer to const GeometryData.
+    */
+    void SetGeometryData(GeometryData const* pGeometryData)
+    {
+        mpGeometryData = pGeometryData;
+    }
 
     ///@}
     ///@name Protected  Access
@@ -2303,9 +2318,7 @@ private:
     ///@name Member Variables
     ///@{
 
-    #if !defined(ENABLE_BEZIER_GEOMETRY)
     GeometryData const* mpGeometryData;
-    #endif
 
     ///@}
     ///@name Serialization
