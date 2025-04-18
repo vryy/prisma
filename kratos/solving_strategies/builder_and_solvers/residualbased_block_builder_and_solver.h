@@ -1081,7 +1081,7 @@ public:
             else
             {
                 dof_numbers[key] = 0;
-                it->second = 0.0;
+                diag_values[key] = 0.0;
             }
         }
 
