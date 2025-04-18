@@ -47,7 +47,7 @@ namespace Kratos
  * @brief This namespace includes several utilities necessaries for the computation of the MPC
  * @author Vicente Mataix Ferrandiz
  */
-template<class TModelPartType>
+template<class TModelPartType = ModelPart>
 class ConstraintUtilities
 {
 public:
