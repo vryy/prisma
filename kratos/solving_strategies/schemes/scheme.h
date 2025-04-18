@@ -80,8 +80,8 @@ public:
 
     typedef typename ModelPartType::ElementType ElementType;
     typedef typename ModelPartType::ConditionType ConditionType;
-    typedef typename ModelPartType::ElementsContainerType ElementsContainerType;
-    typedef typename ModelPartType::ConditionsContainerType ConditionsContainerType;
+    typedef typename ModelPartType::ElementsContainerType ElementsArrayType;
+    typedef typename ModelPartType::ConditionsContainerType ConditionsArrayType;
 
     ///@}
     ///@name Life Cycle
@@ -215,10 +215,10 @@ public:
         #pragma omp parallel
         {
             int k = OpenMPUtils::ThisThread();
-            typename ElementsContainerType::iterator ElemBegin = rModelPart.Elements().begin() + ElementPartition[k];
-            typename ElementsContainerType::iterator ElemEnd = rModelPart.Elements().begin() + ElementPartition[k + 1];
+            typename ElementsArrayType::iterator ElemBegin = rModelPart.Elements().begin() + ElementPartition[k];
+            typename ElementsArrayType::iterator ElemEnd = rModelPart.Elements().begin() + ElementPartition[k + 1];
 
-            for (typename ElementsContainerType::iterator itElem = ElemBegin; itElem != ElemEnd; itElem++)
+            for (typename ElementsArrayType::iterator itElem = ElemBegin; itElem != ElemEnd; itElem++)
             {
                 itElem->Initialize(CurrentProcessInfo); //function to initialize the element
             }
@@ -249,10 +249,10 @@ public:
         #pragma omp parallel
         {
             int k = OpenMPUtils::ThisThread();
-            typename ConditionsContainerType::iterator CondBegin = rModelPart.Conditions().begin() + ConditionPartition[k];
-            typename ConditionsContainerType::iterator CondEnd = rModelPart.Conditions().begin() + ConditionPartition[k + 1];
+            typename ConditionsArrayType::iterator CondBegin = rModelPart.Conditions().begin() + ConditionPartition[k];
+            typename ConditionsArrayType::iterator CondEnd = rModelPart.Conditions().begin() + ConditionPartition[k + 1];
 
-            for (typename ConditionsContainerType::iterator itCond = CondBegin; itCond != CondEnd; itCond++)
+            for (typename ConditionsArrayType::iterator itCond = CondBegin; itCond != CondEnd; itCond++)
             {
                 itCond->Initialize(CurrentProcessInfo); //function to initialize the condition
             }
@@ -283,16 +283,16 @@ public:
         KRATOS_TRY
 
         //initialize solution step for all of the elements
-        ElementsContainerType& pElements = rModelPart.Elements();
+        ElementsArrayType& pElements = rModelPart.Elements();
         const ProcessInfo& CurrentProcessInfo = rModelPart.GetProcessInfo();
 
-        for (typename ElementsContainerType::iterator it = pElements.begin(); it != pElements.end(); ++it)
+        for (typename ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
             (it) -> InitializeSolutionStep(CurrentProcessInfo);
         }
 
-        ConditionsContainerType& pConditions = rModelPart.Conditions();
-        for (typename ConditionsContainerType::iterator it = pConditions.begin(); it != pConditions.end(); ++it)
+        ConditionsArrayType& pConditions = rModelPart.Conditions();
+        for (typename ConditionsArrayType::iterator it = pConditions.begin(); it != pConditions.end(); ++it)
         {
             (it) -> InitializeSolutionStep(CurrentProcessInfo);
         }
@@ -316,7 +316,7 @@ public:
         KRATOS_TRY
 
         // Finalizes solution step for all of the elements, conditions and constraints
-        ElementsContainerType& rElements = rModelPart.Elements();
+        ElementsArrayType& rElements = rModelPart.Elements();
         const ProcessInfo& CurrentProcessInfo = rModelPart.GetProcessInfo();
 
         int NumThreads = OpenMPUtils::GetNumThreads();
@@ -327,16 +327,16 @@ public:
         {
             int k = OpenMPUtils::ThisThread();
 
-            typename ElementsContainerType::iterator ElementsBegin = rElements.begin() + ElementPartition[k];
-            typename ElementsContainerType::iterator ElementsEnd = rElements.begin() + ElementPartition[k + 1];
+            typename ElementsArrayType::iterator ElementsBegin = rElements.begin() + ElementPartition[k];
+            typename ElementsArrayType::iterator ElementsEnd = rElements.begin() + ElementPartition[k + 1];
 
-            for (typename ElementsContainerType::iterator itElem = ElementsBegin; itElem != ElementsEnd; itElem++)
+            for (typename ElementsArrayType::iterator itElem = ElementsBegin; itElem != ElementsEnd; itElem++)
             {
                 itElem->FinalizeSolutionStep(CurrentProcessInfo);
             }
         }
 
-        ConditionsContainerType& rConditions = rModelPart.Conditions();
+        ConditionsArrayType& rConditions = rModelPart.Conditions();
 
         OpenMPUtils::PartitionVector ConditionPartition;
         OpenMPUtils::DivideInPartitions(rConditions.size(), NumThreads, ConditionPartition);
@@ -345,10 +345,10 @@ public:
         {
             int k = OpenMPUtils::ThisThread();
 
-            typename ConditionsContainerType::iterator ConditionsBegin = rConditions.begin() + ConditionPartition[k];
-            typename ConditionsContainerType::iterator ConditionsEnd = rConditions.begin() + ConditionPartition[k + 1];
+            typename ConditionsArrayType::iterator ConditionsBegin = rConditions.begin() + ConditionPartition[k];
+            typename ConditionsArrayType::iterator ConditionsEnd = rConditions.begin() + ConditionPartition[k + 1];
 
-            for (typename ConditionsContainerType::iterator itCond = ConditionsBegin; itCond != ConditionsEnd; itCond++)
+            for (typename ConditionsArrayType::iterator itCond = ConditionsBegin; itCond != ConditionsEnd; itCond++)
             {
                 itCond->FinalizeSolutionStep(CurrentProcessInfo);
             }
@@ -376,16 +376,16 @@ public:
     {
         KRATOS_TRY
 
-        ElementsContainerType& pElements = rModelPart.Elements();
+        ElementsArrayType& pElements = rModelPart.Elements();
         const ProcessInfo& CurrentProcessInfo = rModelPart.GetProcessInfo();
 
-        for (typename ElementsContainerType::iterator it = pElements.begin(); it != pElements.end(); ++it)
+        for (typename ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
             (it) -> InitializeNonLinearIteration(CurrentProcessInfo);
         }
 
-        ConditionsContainerType& pConditions = rModelPart.Conditions();
-        for (typename ConditionsContainerType::iterator it = pConditions.begin(); it != pConditions.end(); ++it)
+        ConditionsArrayType& pConditions = rModelPart.Conditions();
+        for (typename ConditionsArrayType::iterator it = pConditions.begin(); it != pConditions.end(); ++it)
         {
             (it) -> InitializeNonLinearIteration(CurrentProcessInfo);
         }
@@ -409,16 +409,16 @@ public:
     {
         KRATOS_TRY
 
-        ElementsContainerType& pElements = rModelPart.Elements();
+        ElementsArrayType& pElements = rModelPart.Elements();
         const ProcessInfo& CurrentProcessInfo = rModelPart.GetProcessInfo();
 
-        for (typename ElementsContainerType::iterator it = pElements.begin(); it != pElements.end(); ++it)
+        for (typename ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
             (it) -> FinalizeNonLinearIteration(CurrentProcessInfo);
         }
 
-        ConditionsContainerType& pConditions = rModelPart.Conditions();
-        for (typename ConditionsContainerType::iterator it = pConditions.begin(); it != pConditions.end(); ++it)
+        ConditionsArrayType& pConditions = rModelPart.Conditions();
+        for (typename ConditionsArrayType::iterator it = pConditions.begin(); it != pConditions.end(); ++it)
         {
             (it) -> FinalizeNonLinearIteration(CurrentProcessInfo);
         }
@@ -546,13 +546,13 @@ public:
     {
         KRATOS_TRY
 
-        for(typename ElementsContainerType::const_iterator it = rModelPart.ElementsBegin();
+        for(typename ElementsArrayType::const_iterator it = rModelPart.ElementsBegin();
                 it != rModelPart.ElementsEnd(); ++it)
         {
             it->Check(rModelPart.GetProcessInfo());
         }
 
-        for(typename ConditionsContainerType::const_iterator it = rModelPart.ConditionsBegin();
+        for(typename ConditionsArrayType::const_iterator it = rModelPart.ConditionsBegin();
                 it != rModelPart.ConditionsEnd(); ++it)
         {
             it->Check(rModelPart.GetProcessInfo());
