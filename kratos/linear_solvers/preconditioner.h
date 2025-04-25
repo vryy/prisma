@@ -72,7 +72,7 @@ namespace Kratos
      }
      \end{verbatim}
 */
-template<class TSparseSpaceType, class TDenseSpaceType>
+template<class TSparseSpaceType, class TDenseSpaceType, class TModelPartType = ModelPart>
 class Preconditioner
 {
 public:
@@ -91,6 +91,8 @@ public:
     typedef typename TSparseSpaceType::VectorType VectorType;
 
     typedef typename TDenseSpaceType::MatrixType DenseMatrixType;
+
+    typedef TModelPartType ModelPartType;
 
     ///@}
     ///@name Life Cycle
@@ -190,8 +192,8 @@ public:
         SparseMatrixType& rA,
         VectorType& rX,
         VectorType& rB,
-        typename ModelPart::DofsArrayType& rdof_set,
-        ModelPart& r_model_part
+        typename ModelPartType::DofsArrayType& rdof_set,
+        ModelPartType& r_model_part
     )
     {}
 
@@ -380,17 +382,17 @@ private:
 ///@{
 
 /// input stream function
-template<class TSparseSpaceType, class TDenseSpaceType>
+template<class TSparseSpaceType, class TDenseSpaceType, class TModelPartType>
 inline std::istream& operator >> (std::istream& IStream,
-                                  Preconditioner<TSparseSpaceType, TDenseSpaceType>& rThis)
+                                  Preconditioner<TSparseSpaceType, TDenseSpaceType, TModelPartType>& rThis)
 {
     return IStream;
 }
 
 /// output stream function
-template<class TSparseSpaceType, class TDenseSpaceType>
+template<class TSparseSpaceType, class TDenseSpaceType, class TModelPartType>
 inline std::ostream& operator << (std::ostream& OStream,
-                                  const Preconditioner<TSparseSpaceType, TDenseSpaceType>& rThis)
+                                  const Preconditioner<TSparseSpaceType, TDenseSpaceType, TModelPartType>& rThis)
 {
     rThis.PrintInfo(OStream);
     OStream << std::endl;

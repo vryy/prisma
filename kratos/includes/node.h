@@ -1131,7 +1131,6 @@ private:
 ///@name Input and output
 ///@{
 
-
 /// input stream function
 template<std::size_t TDimension, typename TCoordinateType, class TDofType>
 inline std::istream& operator >> (std::istream& rIStream,
@@ -1151,7 +1150,12 @@ inline std::ostream& operator << (std::ostream& rOStream,
 
     return rOStream;
 }
+
 ///@}
+
+typedef Node<3, KRATOS_DOUBLE_TYPE, Dof<KRATOS_DOUBLE_TYPE> > RealNode;
+typedef Node<3, KRATOS_DOUBLE_TYPE, Dof<KRATOS_COMPLEX_TYPE> > ComplexNode;
+typedef Node<3, KRATOS_COMPLEX_TYPE, Dof<KRATOS_COMPLEX_TYPE> > GComplexNode;
 
 //*********************************************************************************
 //*********************************************************************************

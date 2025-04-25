@@ -93,7 +93,6 @@ if( ${KRATOS_PYTHON} MATCHES TRUE)
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_spaces_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_utilities_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_process_info_to_python.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/python/add_parallel_strategies_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_parallel_linear_solvers_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_matrix_market_interface_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_serializer_to_python.cpp

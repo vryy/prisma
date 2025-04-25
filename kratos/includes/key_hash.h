@@ -11,12 +11,12 @@
 //
 
 /* System includes */
+#include <typeinfo>
+#include <typeindex>
 
 /* External includes */
 
 /* Project includes */
-//#include "includes/node.h"
-#include "includes/dof.h"
 
 #ifndef KRATOS_KEY_HASH_H_INCLUDED
 #define KRATOS_KEY_HASH_H_INCLUDED
@@ -38,11 +38,6 @@ namespace Kratos
 
     /// The definition of the hash type
     typedef std::size_t HashType;
-
-    // The node definition
-    //typedef Node<3> NodeType;
-
-    typedef Dof<KRATOS_DOUBLE_TYPE> DofType;
 
 ///@}
 ///@name  Enum's
@@ -311,17 +306,19 @@ namespace Kratos
      * @brief This is a hasher for a dof pointers
      * @details Used for example for the B&S
      */
+    template<typename TDofType>
     struct DofPointerHasher
     {
         /**
          * @brief The () operator
          * @param pDoF The DoF pointer
          */
-        HashType operator()(const typename DofType::Pointer& pDoF) const
+        HashType operator()(const typename TDofType::Pointer& pDoF) const
         {
             HashType seed = 0;
             HashCombine(seed, pDoF->Id());
             HashCombine(seed, (pDoF->GetVariable()).Key());
+            HashCombine(seed, std::type_index(typeid(typename TDofType::DataType)));
             return seed;
         }
     };
@@ -337,9 +334,15 @@ namespace Kratos
          * @param pDoF1 The first DoF pointer
          * @param pDoF2 The second DoF pointer
          */
-        bool operator()(const typename DofType::Pointer& pDoF1, const typename DofType::Pointer& pDoF2) const
+        template<typename TDofType1, typename TDofType2>
+        bool operator()(const typename TDofType1::Pointer& pDoF1, const typename TDofType2::Pointer& pDoF2) const
         {
-            return (((pDoF1->Id() == pDoF2->Id() && (pDoF1->GetVariable()).Key()) == (pDoF2->GetVariable()).Key()));
+            if constexpr (std::is_same<TDofType1, TDofType2>::value)
+            {
+                return (((pDoF1->Id() == pDoF2->Id() && (pDoF1->GetVariable()).Key()) == (pDoF2->GetVariable()).Key()));
+            }
+            else
+                return false;
         }
     };
 

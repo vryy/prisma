@@ -89,39 +89,39 @@ namespace Kratos
 /// Short class definition.
 /** Detail class definition.
 */
-class IndexedObject
+template<typename TIndexType>
+class BaseIndexedObject
 {
 public:
     ///@name Type Definitions
     ///@{
 
-    /// Pointer definition of IndexedObject
-    KRATOS_CLASS_POINTER_DEFINITION(IndexedObject);
+    /// Pointer definition of BaseIndexedObject
+    KRATOS_CLASS_POINTER_DEFINITION(BaseIndexedObject);
 
-    typedef KRATOS_INDEX_TYPE IndexType;
+    typedef TIndexType IndexType;
 
-    typedef KRATOS_SIZE_TYPE result_type;
+    typedef TIndexType result_type;
 
     ///@}
     ///@name Life Cycle
     ///@{
 
     /// Default constructor.
-    IndexedObject(IndexType NewId = 0) : mId(NewId) {}
+    BaseIndexedObject(IndexType NewId = 0) : mId(NewId) {}
 
     /// Destructor.
-    virtual ~IndexedObject() {}
+    virtual ~BaseIndexedObject() {}
 
     /// Copy constructor.
-    IndexedObject(IndexedObject const& rOther) : mId(rOther.mId) {}
-
+    BaseIndexedObject(BaseIndexedObject const& rOther) : mId(rOther.mId) {}
 
     ///@}
     ///@name Operators
     ///@{
 
     /// Assignment operator.
-    IndexedObject& operator=(IndexedObject const& rOther)
+    BaseIndexedObject& operator=(BaseIndexedObject const& rOther)
     {
         mId = rOther.mId;
 
@@ -133,13 +133,6 @@ public:
     {
         return rThisObject.Id();
     }
-
-//       template<class TObjectType>
-// 	IndexType& operator()(TObjectType & rThisObject)
-// 	{
-// 	  return rThisObject.Id();
-// 	}
-
 
     ///@}
     ///@name Operations
@@ -200,7 +193,6 @@ public:
     {
     }
 
-
     ///@}
     ///@name Friends
     ///@{
@@ -257,7 +249,6 @@ private:
 
     IndexType mId;
 
-
     ///@}
     ///@name Private Operators
     ///@{
@@ -275,16 +266,13 @@ private:
 
     virtual void save(Serializer& rSerializer) const
     {
-        rSerializer.save("Id",mId);
+        rSerializer.save("Id", mId);
     }
 
     virtual void load(Serializer& rSerializer)
     {
-        rSerializer.load("Id",mId);
+        rSerializer.load("Id", mId);
     }
-
-
-
 
     ///@}
     ///@name Private  Access
@@ -303,26 +291,31 @@ private:
 
     ///@}
 
-}; // Class IndexedObject
+}; // Class BaseIndexedObject
 
 ///@}
 
 ///@name Type Definitions
 ///@{
 
+typedef BaseIndexedObject<KRATOS_INDEX_TYPE> IndexedObject;
 
 ///@}
 ///@name Input and output
 ///@{
 
-
 /// input stream function
+template<typename TIndexType>
 inline std::istream& operator >> (std::istream& rIStream,
-                                  IndexedObject& rThis);
+                                  BaseIndexedObject<TIndexType>& rThis)
+{
+    return rIStream;
+}
 
 /// output stream function
+template<typename TIndexType>
 inline std::ostream& operator << (std::ostream& rOStream,
-                                  const IndexedObject& rThis)
+                                  const BaseIndexedObject<TIndexType>& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;
@@ -330,11 +323,9 @@ inline std::ostream& operator << (std::ostream& rOStream,
 
     return rOStream;
 }
-///@}
 
+///@}
 
 }  // namespace Kratos.
 
-#endif // KRATOS_INDEXED_OBJECT_H_INCLUDED  defined 
-
-
+#endif // KRATOS_INDEXED_OBJECT_H_INCLUDED  defined

@@ -702,7 +702,7 @@ public:
      */
     virtual void GetDofList(
         const ElementType& rElement,
-        ElementType::DofsVectorType& rDofList,
+        typename ElementType::DofsVectorType& rDofList,
         const ProcessInfo& rCurrentProcessInfo
         )
     {
@@ -717,7 +717,7 @@ public:
      */
     virtual void GetDofList(
         const ConditionType& rCondition,
-        ElementType::DofsVectorType& rDofList,
+        typename ElementType::DofsVectorType& rDofList,
         const ProcessInfo& rCurrentProcessInfo
         )
     {
@@ -830,15 +830,15 @@ private:
 ///@{
 
 /// input stream function
-template<class TSparseSpace, class TDenseSpace>
-inline std::istream& operator >> (std::istream& rIStream, Scheme<TSparseSpace, TDenseSpace>& rThis)
+template<class TSparseSpace, class TDenseSpace, class TModelPartType>
+inline std::istream& operator >> (std::istream& rIStream, Scheme<TSparseSpace, TDenseSpace, TModelPartType>& rThis)
 {
     return rIStream;
 }
 
 /// output stream function
-template<class TSparseSpace, class TDenseSpace>
-inline std::ostream& operator << (std::ostream& rOStream, const Scheme<TSparseSpace, TDenseSpace>& rThis)
+template<class TSparseSpace, class TDenseSpace, class TModelPartType>
+inline std::ostream& operator << (std::ostream& rOStream, const Scheme<TSparseSpace, TDenseSpace, TModelPartType>& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;

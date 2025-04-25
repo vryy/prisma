@@ -66,20 +66,22 @@ namespace Kratos
  */
 template <class TSparseSpace,
           class TDenseSpace,
-          class TLinearSolver
+          class TLinearSolver,
+          class TModelPartType
           >
 class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
-    : public ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation<TSparseSpace, TDenseSpace, TLinearSolver>
+    : public ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation<TSparseSpace, TDenseSpace, TLinearSolver, TModelPartType>
 {
   public:
     ///@name Type Definitions
     ///@{
     KRATOS_CLASS_POINTER_DEFINITION(ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise);
 
-    typedef ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation<TSparseSpace, TDenseSpace, TLinearSolver> BaseType;
+    typedef ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation<TSparseSpace, TDenseSpace, TLinearSolver, TModelPartType> BaseType;
     typedef typename BaseType::IndexType IndexType;
     typedef typename BaseType::SizeType SizeType;
     typedef typename BaseType::DofType DofType;
+    typedef typename BaseType::ModelPartType ModelPartType;
     typedef typename BaseType::TSchemeType TSchemeType;
     typedef typename BaseType::TDataType TDataType;
     typedef typename BaseType::DofsArrayType DofsArrayType;
@@ -90,20 +92,22 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
     typedef typename BaseType::TSystemMatrixPointerType TSystemMatrixPointerType;
     typedef typename BaseType::TSystemVectorPointerType TSystemVectorPointerType;
     typedef typename BaseType::NodeType NodeType;
-    typedef typename BaseType::NodesArrayType NodesArrayType;
-    typedef typename BaseType::ElementsArrayType ElementsArrayType;
-    typedef typename BaseType::ConditionsArrayType ConditionsArrayType;
+    typedef typename BaseType::ElementType ElementType;
+    typedef typename BaseType::ConditionType ConditionType;
+    typedef typename BaseType::NodesContainerType NodesContainerType;
     typedef typename BaseType::ElementsContainerType ElementsContainerType;
-    typedef typename ModelPart::MasterSlaveConstraintContainerType MasterSlaveConstraintContainerType;
-    typedef MasterSlaveConstraint MasterSlaveConstraintType;
+    typedef typename BaseType::ConditionsContainerType ConditionsContainerType;
+    typedef typename ModelPartType::MasterSlaveConstraintContainerType MasterSlaveConstraintContainerType;
+    typedef typename ModelPartType::MasterSlaveConstraintType MasterSlaveConstraintType;
     typedef typename MasterSlaveConstraint::Pointer MasterSlaveConstraintPointerType;
-    typedef Internals::AuxiliaryGlobalMasterSlaveConstraint AuxiliaryGlobalMasterSlaveConstraintType;
-    typedef Internals::GlobalMasterSlaveRelationContainerType GlobalMasterSlaveRelationContainerType;
+    typedef Internals::AuxiliaryGlobalMasterSlaveConstraint<IndexType, TDataType> AuxiliaryGlobalMasterSlaveConstraintType;
+    typedef Internals::GlobalMasterSlaveRelationContainer<IndexType, TDataType> GlobalMasterSlaveRelationContainerType;
     typedef std::vector<IndexType> EquationIdVectorType;
     typedef std::vector<IndexType> VectorIndexType;
     typedef std::vector<typename DofType::Pointer> DofsVectorType;
-    typedef Vector VectorType;
+    typedef typename ModelPartType::VectorType VectorType;
     typedef Internals::ConstraintImposer<TSparseSpace, TDenseSpace, TLinearSolver> ConstraintImposerType;
+    typedef typename MatrixVectorTypeSelector<TDataType>::CompressedMatrixType CompressedMatrixType;
 
     ///@}
     ///@name Life Cycle
@@ -120,7 +124,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
 
     /** Destructor.
      */
-    ~ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise() // override
+    ~ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise() override
     {
     }
 
@@ -133,7 +137,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
     ///@{
 
     void SetUpSystem(
-        ModelPart &rModelPart) // override
+        ModelPartType& rModelPart) override
     {
         BaseType::SetUpSystem(rModelPart);
         if(rModelPart.NumberOfMasterSlaveConstraints() > 0)
@@ -152,9 +156,9 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
      */
     void Build(
         typename TSchemeType::Pointer pScheme,
-        ModelPart &rModelPart,
-        TSystemMatrixType &A,
-        TSystemVectorType &b) // override
+        ModelPartType& rModelPart,
+        TSystemMatrixType& A,
+        TSystemVectorType& b) override
     {
         if(mGlobalMasterSlaveConstraints.size() > 0)
             BuildWithConstraints(pScheme, rModelPart, A, b);
@@ -172,8 +176,8 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
      */
     void BuildRHS(
         typename TSchemeType::Pointer pScheme,
-        ModelPart &rModelPart,
-        TSystemVectorType &b) // override
+        ModelPartType& rModelPart,
+        TSystemVectorType& b) override
     {
         if(mGlobalMasterSlaveConstraints.size() > 0)
             BuildRHSWithConstraints(pScheme, rModelPart, b);
@@ -194,10 +198,10 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
      */
     void BuildAndSolve(
         typename TSchemeType::Pointer pScheme,
-        ModelPart &rModelPart,
-        TSystemMatrixType &A,
-        TSystemVectorType &Dx,
-        TSystemVectorType &b) // override
+        ModelPartType& rModelPart,
+        TSystemMatrixType& A,
+        TSystemVectorType& Dx,
+        TSystemVectorType& b) override
     {
         if(mGlobalMasterSlaveConstraints.size() > 0)
             BuildAndSolveWithConstraints(pScheme, rModelPart, A, Dx, b);
@@ -218,10 +222,10 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
      */
     void BuildRHSAndSolve(
         typename TSchemeType::Pointer pScheme,
-        ModelPart &rModelPart,
-        TSystemMatrixType &A,
-        TSystemVectorType &Dx,
-        TSystemVectorType &b) // override
+        ModelPartType& rModelPart,
+        TSystemMatrixType& A,
+        TSystemVectorType& Dx,
+        TSystemVectorType& b) override
     {
         if(mGlobalMasterSlaveConstraints.size() > 0)
             BuildRHSAndSolveWithConstraints(pScheme, rModelPart, A, Dx, b);
@@ -231,10 +235,10 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
 
 
     void InitializeSolutionStep(
-        ModelPart &rModelPart,
-        TSystemMatrixType &A,
-        TSystemVectorType &Dx,
-        TSystemVectorType &b) // override
+        ModelPartType& rModelPart,
+        TSystemMatrixType& A,
+        TSystemVectorType& Dx,
+        TSystemVectorType& b) override
     {
         KRATOS_TRY
 
@@ -245,12 +249,13 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
 
 
     void FinalizeSolutionStep(
-        ModelPart &rModelPart,
-        TSystemMatrixType &A,
-        TSystemVectorType &Dx,
-        TSystemVectorType &b) // override
+        ModelPartType& rModelPart,
+        TSystemMatrixType& A,
+        TSystemVectorType& Dx,
+        TSystemVectorType& b) override
     {
         KRATOS_TRY
+
         BaseType::FinalizeSolutionStep(rModelPart, A, Dx, b);
 
         // Getting process info
@@ -262,6 +267,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
         {
             (*it)->FinalizeSolutionStep(r_process_info);
         }
+
         KRATOS_CATCH("ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise failed to finalize solution step.")
     }
 
@@ -318,8 +324,8 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
     ///@{
 
     void ConstructMatrixStructure(
-        TSystemMatrixType &A,
-        ModelPart &rModelPart) // override
+        TSystemMatrixType& A,
+        const ModelPartType& rModelPart) const override
     {
         if(mGlobalMasterSlaveConstraints.size() > 0)
             ConstructMatrixStructureWithConstraints(A, rModelPart);
@@ -333,7 +339,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
     */
     virtual void ConstructMatrixStructureWithConstraints(
         TSystemMatrixType& A,
-        ModelPart& rModelPart)
+        const ModelPartType& rModelPart) const
     {
         //filling with zero the matrix (creating the structure)
         Timer::Start("MatrixStructure");
@@ -341,21 +347,20 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
         // To Impose constraints
         ConstraintImposerType constraint_imposer(mGlobalMasterSlaveConstraints);
 
-        ProcessInfo& CurrentProcessInfo = rModelPart.GetProcessInfo();
+        const ProcessInfo& CurrentProcessInfo = rModelPart.GetProcessInfo();
 
-        const std::size_t equation_size = BaseType::mEquationSystemSize;
+        const SizeType equation_size = BaseType::mEquationSystemSize;
 
         std::vector<std::unordered_set<std::size_t> > indices(equation_size);
         for (std::size_t iii = 0; iii < static_cast<int>(equation_size); ++iii) {
             indices[iii].reserve(40);
         }
 
-        Element::EquationIdVectorType ids(3, 0);
+        typename ElementType::EquationIdVectorType ids(3, 0);
 
-        ElementsArrayType& r_elements_array = rModelPart.Elements();
+        const auto& r_elements_array = rModelPart.Elements();
         bool element_is_active;
-        for(typename ElementsArrayType::ptr_iterator it = r_elements_array.ptr_begin();
-                it != r_elements_array.ptr_end(); ++it)
+        for(auto it = r_elements_array.ptr_begin(); it != r_elements_array.ptr_end(); ++it)
         {
             element_is_active = true;
             if( (*it)->IsDefined(ACTIVE) ) {
@@ -366,7 +371,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
                 continue;
 
             (*it)->EquationIdVector(ids, CurrentProcessInfo);
-            constraint_imposer.template ApplyConstraints<Element>(*(*it), ids, CurrentProcessInfo);
+            constraint_imposer.template ApplyConstraints<ElementType>(*(*it), ids, CurrentProcessInfo);
             for (std::size_t i = 0; i < ids.size(); i++) {
                 if (ids[i] < BaseType::mEquationSystemSize)
                 {
@@ -376,10 +381,9 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
             }
         }
 
-        ConditionsArrayType& r_conditions_array = rModelPart.Conditions();
+        const auto& r_conditions_array = rModelPart.Conditions();
         bool condition_is_active;
-        for(typename ConditionsArrayType::ptr_iterator it = r_conditions_array.ptr_begin();
-                it != r_conditions_array.ptr_end(); ++it)
+        for(auto it = r_conditions_array.ptr_begin(); it != r_conditions_array.ptr_end(); ++it)
         {
             condition_is_active = true;
             if( (*it)->IsDefined(ACTIVE) ) {
@@ -390,7 +394,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
                 continue;
 
             (*it)->EquationIdVector(ids, CurrentProcessInfo);
-            constraint_imposer.template ApplyConstraints<Condition>(*(*it), ids, CurrentProcessInfo);
+            constraint_imposer.template ApplyConstraints<ConditionType>(*(*it), ids, CurrentProcessInfo);
             for (std::size_t i = 0; i < ids.size(); i++) {
                 if (ids[i] < BaseType::mEquationSystemSize)
                 {
@@ -400,8 +404,8 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
             }
         }
 
-        Element::EquationIdVectorType aux_ids(3, 0);
-        for(typename MasterSlaveConstraintContainerType::ptr_iterator it = rModelPart.MasterSlaveConstraints().ptr_begin();
+        typename ElementType::EquationIdVectorType aux_ids(3, 0);
+        for(auto it = rModelPart.MasterSlaveConstraints().ptr_begin();
                 it != rModelPart.MasterSlaveConstraints().ptr_end(); ++it)
         {
             bool constraint_is_active = true;
@@ -435,7 +439,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
             nnz += indices[i].size();
         }
 
-        A = boost::numeric::ublas::compressed_matrix<TDataType>(indices.size(), indices.size(), nnz);
+        A = CompressedMatrixType(indices.size(), indices.size(), nnz);
 
         auto* Avalues = A.value_data().begin();
         auto* Arow_indices = A.index1_data().begin();
@@ -468,13 +472,12 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
         Timer::Stop("MatrixStructure");
     }
 
-
     void BuildAndSolveWithConstraints(
         typename TSchemeType::Pointer pScheme,
-        ModelPart &rModelPart,
-        TSystemMatrixType &A,
-        TSystemVectorType &Dx,
-        TSystemVectorType &b)
+        ModelPartType& rModelPart,
+        TSystemMatrixType& A,
+        TSystemVectorType& Dx,
+        TSystemVectorType& b)
     {
         KRATOS_TRY
 
@@ -531,13 +534,12 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
         KRATOS_CATCH("")
     }
 
-
     void BuildRHSAndSolveWithConstraints(
         typename TSchemeType::Pointer pScheme,
-        ModelPart &rModelPart,
-        TSystemMatrixType &A,
-        TSystemVectorType &Dx,
-        TSystemVectorType &b)
+        ModelPartType& rModelPart,
+        TSystemMatrixType& A,
+        TSystemVectorType& Dx,
+        TSystemVectorType& b)
     {
         KRATOS_TRY
 
@@ -594,21 +596,20 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
         KRATOS_CATCH("")
     }
 
-
     /*
     * This function is exactly same as the Build() function in base class except that the function
     * has the call to ApplyConstraints function call once the LHS or RHS are computed by elements and conditions
     */
     void BuildWithConstraints(
         typename TSchemeType::Pointer pScheme,
-        ModelPart &rModelPart,
-        TSystemMatrixType &A,
-        TSystemVectorType &b)
+        ModelPartType& rModelPart,
+        TSystemMatrixType& A,
+        TSystemVectorType& b)
     {
         KRATOS_TRY
 
         if (!pScheme)
-            KRATOS_THROW_ERROR(std::logic_error, "No scheme provided!", "");
+            KRATOS_ERROR << "No scheme provided!";
 
         ConstraintImposerType constraint_imposer(mGlobalMasterSlaveConstraints);
 
@@ -618,9 +619,9 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
         // Getting the array of the conditions
         const int nconditions = static_cast<int>(rModelPart.Conditions().size());
 
-        ProcessInfo &CurrentProcessInfo = rModelPart.GetProcessInfo();
-        const ModelPart::ElementsContainerType::iterator el_begin = rModelPart.ElementsBegin();
-        const ModelPart::ConditionsContainerType::iterator cond_begin = rModelPart.ConditionsBegin();
+        const ProcessInfo& CurrentProcessInfo = rModelPart.GetProcessInfo();
+        const auto el_begin = rModelPart.ElementsBegin();
+        const auto cond_begin = rModelPart.ConditionsBegin();
 
         //contributions to the system
         LocalSystemMatrixType LHS_Contribution = LocalSystemMatrixType(0, 0);
@@ -628,7 +629,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
 
         //vector containing the localization in the system of the different
         //terms
-        Element::EquationIdVectorType EquationId;
+        typename ElementType::EquationIdVectorType EquationId;
 
         // assemble all elements
         double start_build = OpenMPUtils::GetCurrentTime();
@@ -638,7 +639,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
 #pragma omp for schedule(guided, 512) nowait
             for (int k = 0; k < nelements; k++)
             {
-                ModelPart::ElementsContainerType::iterator it = el_begin + k;
+                auto it = el_begin + k;
 
                 //detect if the element is active or not. If the user did not make any choice the element
                 //is active by default
@@ -650,7 +651,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
                 {
                     //calculate elemental contribution
                     pScheme->CalculateSystemContributions(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
-                    constraint_imposer.template ApplyConstraints<Element>(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
+                    constraint_imposer.template ApplyConstraints<ElementType>(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
 
                     //assemble the elemental contribution
 #ifdef USE_LOCKS_IN_ASSEMBLY
@@ -667,7 +668,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
 #pragma omp for schedule(guided, 512)
             for (int k = 0; k < nconditions; k++)
             {
-                ModelPart::ConditionsContainerType::iterator it = cond_begin + k;
+                auto it = cond_begin + k;
 
                 //detect if the element is active or not. If the user did not make any choice the element
                 //is active by default
@@ -679,7 +680,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
                 {
                     //calculate elemental contribution
                     pScheme->CalculateSystemContributions(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
-                    constraint_imposer.template ApplyConstraints<Condition>(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
+                    constraint_imposer.template ApplyConstraints<ConditionType>(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
 
                     //assemble the elemental contribution
 #ifdef USE_LOCKS_IN_ASSEMBLY
@@ -714,13 +715,13 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
     */
     void BuildRHSWithConstraints(
         typename TSchemeType::Pointer pScheme,
-        ModelPart &rModelPart,
-        TSystemVectorType &b)
+        ModelPartType& rModelPart,
+        TSystemVectorType& b)
     {
         KRATOS_TRY
 
         if (!pScheme)
-            KRATOS_THROW_ERROR(std::logic_error, "No scheme provided!", "");
+            KRATOS_ERROR << "No scheme provided!";
 
         ConstraintImposerType constraint_imposer(mGlobalMasterSlaveConstraints);
 
@@ -730,17 +731,17 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
         // Getting the array of the conditions
         const int nconditions = static_cast<int>(rModelPart.Conditions().size());
 
-        ProcessInfo &CurrentProcessInfo = rModelPart.GetProcessInfo();
-        const ModelPart::ElementsContainerType::iterator el_begin = rModelPart.ElementsBegin();
-        const ModelPart::ConditionsContainerType::iterator cond_begin = rModelPart.ConditionsBegin();
+        const ProcessInfo& CurrentProcessInfo = rModelPart.GetProcessInfo();
+        const auto el_begin = rModelPart.ElementsBegin();
+        const auto cond_begin = rModelPart.ConditionsBegin();
 
         //contributions to the system
-        LocalSystemMatrixType LHS_Contribution = LocalSystemMatrixType(0, 0);
-        LocalSystemVectorType RHS_Contribution = LocalSystemVectorType(0);
+        LocalSystemMatrixType LHS_Contribution(0, 0);
+        LocalSystemVectorType RHS_Contribution(0);
 
         //vector containing the localization in the system of the different
         //terms
-        Element::EquationIdVectorType EquationId;
+        typename ElementType::EquationIdVectorType EquationId;
 
         // assemble all elements
         double start_build = OpenMPUtils::GetCurrentTime();
@@ -750,7 +751,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
 #pragma omp for schedule(guided, 512) nowait
             for (int k = 0; k < nelements; k++)
             {
-                ModelPart::ElementsContainerType::iterator it = el_begin + k;
+                auto it = el_begin + k;
 
                 //detect if the element is active or not. If the user did not make any choice the element
                 //is active by default
@@ -762,7 +763,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
                 {
                     //calculate elemental contribution
                     pScheme->CalculateSystemContributions(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
-                    constraint_imposer.template ApplyConstraints<Element>(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
+                    constraint_imposer.template ApplyConstraints<ElementType>(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
 
                     //assemble the elemental contribution
 #ifdef USE_LOCKS_IN_ASSEMBLY
@@ -779,7 +780,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
 #pragma omp for schedule(guided, 512)
             for (int k = 0; k < nconditions; k++)
             {
-                ModelPart::ConditionsContainerType::iterator it = cond_begin + k;
+                auto it = cond_begin + k;
 
                 //detect if the element is active or not. If the user did not make any choice the element
                 //is active by default
@@ -791,7 +792,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
                 {
                     //calculate elemental contribution
                     pScheme->CalculateSystemContributions(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
-                    constraint_imposer.template ApplyConstraints<Condition>(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
+                    constraint_imposer.template ApplyConstraints<ConditionType>(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
 
                     //assemble the elemental contribution
 #ifdef USE_LOCKS_IN_ASSEMBLY
@@ -824,7 +825,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
         TSystemVectorType& b,
-        ModelPart& rModelPart
+        ModelPartType& rModelPart
     )
     {
         BaseType::InternalSystemSolveWithPhysics(A, Dx, b, rModelPart);
@@ -869,14 +870,15 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
      *          these will be used in the ApplyConstraints functions later on.
      * @param   rModelPart The model part of the problem to solve
      */
-    void FormulateGlobalMasterSlaveRelations(ModelPart& rModelPart)
+    void FormulateGlobalMasterSlaveRelations(ModelPartType& rModelPart)
     {
         KRATOS_TRY
+
         const double start_formulate = OpenMPUtils::GetCurrentTime();
         // First delete the existing ones
         mGlobalMasterSlaveConstraints.clear();
 
-        ProcessInfo &r_current_process_info = rModelPart.GetProcessInfo();
+        const ProcessInfo& r_current_process_info = rModelPart.GetProcessInfo();
 
         // prepares the pointerVectorSet (mGlobalMasterSlaveConstraints) to prevent a lot of sorting when calling (AssembleConstraint)
         // will push_back all slave_equation_id without sorting or checking if unique and will call Unique at the end
@@ -934,9 +936,10 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
      * @param   rMasterSlaveConstraint object of the master slave constraint to be assembled.
      * @param   rCurrentProcessInfo current process info.
      */
-    void AssembleConstraint(ModelPart::MasterSlaveConstraintType& rMasterSlaveConstraint, ProcessInfo& rCurrentProcessInfo)
+    void AssembleConstraint(MasterSlaveConstraintType& rMasterSlaveConstraint, const ProcessInfo& rCurrentProcessInfo)
     {
         KRATOS_TRY
+
         int slave_count = 0;
         LocalSystemMatrixType relation_matrix(0,0);
         LocalSystemVectorType constant_vector(0);
@@ -962,10 +965,9 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
             }
             ++slave_count;
         }
+
         KRATOS_CATCH("ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise::AssembleSlaves failed ...");
     }
-
-
 
     /**
      * @brief   this method resets the LHS and RHS values of the AuxilaryGlobalMasterSlaveRelation objects
@@ -978,6 +980,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
         {
             it->Reset();
         }
+
         KRATOS_CATCH("ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise::ResetConstraintRelations failed to reset constraint relations..");
     }
 
@@ -986,14 +989,14 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
      *          of the AuxilaryGlobalMasterSlaveRelation objects. That is the value of Slave as LHS and the T*M+C as RHS value
      * @param   rModelPart The model part of the problem to solve
      */
-    void UpdateConstraintsForBuilding(ModelPart& rModelPart)
+    void UpdateConstraintsForBuilding(ModelPartType& rModelPart)
     {
         KRATOS_TRY
 
         // Reset the constraint equations
         ResetConstraintRelations();
 
-        ProcessInfo &r_current_process_info = rModelPart.GetProcessInfo();
+        const ProcessInfo& r_current_process_info = rModelPart.GetProcessInfo();
 
         for(typename MasterSlaveConstraintContainerType::ptr_iterator it = rModelPart.MasterSlaveConstraints().ptr_begin();
                 it != rModelPart.MasterSlaveConstraints().ptr_end(); ++it)
@@ -1009,6 +1012,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
                 UpdateMasterSlaveConstraint(*(*it), r_current_process_info);
             }
         }
+
         KRATOS_CATCH("ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise::UpdateConstraintsForBuilding failed ..");
     }
 
@@ -1018,9 +1022,10 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
      *          of the individual AuxilaryGlobalMasterSlaveRelation object. That is the value of Slave as LHS and the T*M+C as RHS value
      * @param   rMasterSlaveConstraint The MasterSlaveConstraint which is to be updated
      */
-    void UpdateMasterSlaveConstraint(ModelPart::MasterSlaveConstraintType& rMasterSlaveConstraint, ProcessInfo& rCurrentProcessInfo)
+    void UpdateMasterSlaveConstraint(MasterSlaveConstraintType& rMasterSlaveConstraint, const ProcessInfo& rCurrentProcessInfo)
     {
         KRATOS_TRY
+
         //contributions to the system
         LocalSystemMatrixType relation_matrix(0,0);
         LocalSystemVectorType constant_vector(0);
@@ -1032,8 +1037,8 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
         //calculate constraint's T and b matrices
         rMasterSlaveConstraint.CalculateLocalSystem(relation_matrix, constant_vector, rCurrentProcessInfo);
         // For calculating the constant
-        MasterSlaveConstraintType::DofPointerVectorType slave_dofs_vector;
-        MasterSlaveConstraintType::DofPointerVectorType master_dofs_vector;
+        typename MasterSlaveConstraintType::DofPointerVectorType slave_dofs_vector;
+        typename MasterSlaveConstraintType::DofPointerVectorType master_dofs_vector;
         rMasterSlaveConstraint.GetDofList(slave_dofs_vector, master_dofs_vector, rCurrentProcessInfo);
 
         int slave_index = 0;
@@ -1053,18 +1058,19 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
             }
             ++slave_index;
         }
+
         KRATOS_CATCH("ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise::UpdateMasterSlaveConstraint failed ..");
     }
 
     /**
      * @brief This method reconstructs the slave solution after Solving.
-     * @param rModelPart Reference to the ModelPart containing the problem.
+     * @param rModelPart Reference to the ModelPartType containing the problem.
      * @param A System matrix
      * @param Dx Vector of results (variations on nodal variables)
      * @param b RHS vector (residual)
      */
     void ReconstructSlaveSolutionAfterSolve(
-        ModelPart& rModelPart,
+        ModelPartType& rModelPart,
         TSystemMatrixType& rA,
         TSystemVectorType& rDx,
         TSystemVectorType& rb)
@@ -1098,6 +1104,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
                 rDx[slave_equation_id] = slave_dx_value; // this access is always unique for an object so no need of special care for openmp
             }
         }
+
         KRATOS_CATCH("ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise::ReconstructSlaveSolutionAfterSolve failed ..");
     }
 

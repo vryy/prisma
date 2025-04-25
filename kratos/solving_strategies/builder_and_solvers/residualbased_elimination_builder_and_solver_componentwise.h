@@ -4,8 +4,8 @@
 //   _|\_\_|  \__,_|\__|\___/ ____/
 //                   Multi-Physics
 //
-//  License:		 BSD License
-//					 Kratos default license: kratos/license.txt
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Riccardo Rossi
 //
@@ -92,20 +92,26 @@ as the neighborhood relationships are considered to be known
 template<class TSparseSpace,
          class TDenseSpace ,
          class TLinearSolver,
+         class TModelPartType,
          class TVariableType
          >
 class ResidualBasedEliminationBuilderAndSolverComponentwise
-    : public ResidualBasedEliminationBuilderAndSolver< TSparseSpace,TDenseSpace,TLinearSolver >
+    : public ResidualBasedEliminationBuilderAndSolver< TSparseSpace, TDenseSpace, TLinearSolver, TModelPartType >
 {
 public:
     /**@name Type Definitions */
     /*@{ */
     KRATOS_CLASS_POINTER_DEFINITION( ResidualBasedEliminationBuilderAndSolverComponentwise );
 
+    typedef BuilderAndSolver<TSparseSpace,TDenseSpace, TLinearSolver, TModelPartType> BaseType;
 
-    typedef BuilderAndSolver<TSparseSpace,TDenseSpace, TLinearSolver> BaseType;
+    typedef typename BaseType::ModelPartType ModelPartType;
 
     typedef typename BaseType::TSchemeType TSchemeType;
+
+    typedef typename BaseType::TSparseSpaceType TSparseSpaceType;
+
+    typedef typename BaseType::TLinearSolverType TLinearSolverType;
 
     typedef typename BaseType::TDataType TDataType;
 
@@ -122,12 +128,12 @@ public:
     typedef typename BaseType::TSystemMatrixPointerType TSystemMatrixPointerType;
     typedef typename BaseType::TSystemVectorPointerType TSystemVectorPointerType;
 
+    typedef typename BaseType::ElementType ElementType;
+    typedef typename BaseType::ConditionType ConditionType;
 
-    typedef typename BaseType::NodesArrayType NodesArrayType;
-    typedef typename BaseType::ElementsArrayType ElementsArrayType;
-    typedef typename BaseType::ConditionsArrayType ConditionsArrayType;
-
+    typedef typename BaseType::NodesContainerType NodesContainerType;
     typedef typename BaseType::ElementsContainerType ElementsContainerType;
+    typedef typename BaseType::ConditionsContainerType ConditionsContainerType;
 
     /*@} */
     /**@name Life Cycle
@@ -138,18 +144,18 @@ public:
     */
     ResidualBasedEliminationBuilderAndSolverComponentwise(
         typename TLinearSolver::Pointer pNewLinearSystemSolver,TVariableType const& Var)
-        : ResidualBasedEliminationBuilderAndSolver< TSparseSpace,TDenseSpace,TLinearSolver >(pNewLinearSystemSolver)
+        : BaseType(pNewLinearSystemSolver)
         , rVar(Var)
     {
 
-        /* 			std::cout << "using the standard builder and solver " << std::endl; */
+        /*          std::cout << "using the standard builder and solver " << std::endl; */
 
     }
 
 
     /** Destructor.
     */
-    virtual ~ResidualBasedEliminationBuilderAndSolverComponentwise() {}
+    ~ResidualBasedEliminationBuilderAndSolverComponentwise() override {}
 
 
     /*@} */
@@ -163,9 +169,9 @@ public:
     //**************************************************************************
     void Build(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         TSystemMatrixType& A,
-        TSystemVectorType& b)
+        TSystemVectorType& b) override
     {
         KRATOS_TRY
         if(!pScheme)
@@ -174,12 +180,12 @@ public:
         if(r_model_part.MasterSlaveConstraints().size() != 0) {
             KRATOS_THROW_ERROR(std::logic_error, "This builder and solver does not support constraints!", "");
         }
-        
+
         //getting the elements from the model
-        ElementsArrayType& pElements = r_model_part.Elements();
+        ElementsContainerType& pElements = r_model_part.Elements();
 
         //getting the array of the conditions
-        ConditionsArrayType& ConditionsArray = r_model_part.Conditions();
+        ConditionsContainerType& ConditionsArray = r_model_part.Conditions();
 
         //resetting to zero the vector of reactions
         TSparseSpace::SetToZero( *(BaseType::mpReactionsVector) );
@@ -198,7 +204,7 @@ public:
 
         ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
         // assemble all elements
-        for (typename ElementsArrayType::ptr_iterator it=pElements.ptr_begin(); it!=pElements.ptr_end(); ++it)
+        for (typename ElementsContainerType::ptr_iterator it=pElements.ptr_begin(); it!=pElements.ptr_end(); ++it)
         {
             //calculate elemental contribution
             (*it)->InitializeNonLinearIteration(CurrentProcessInfo);
@@ -220,7 +226,7 @@ public:
         EquationId.resize(0,false);
 
         // assemble all conditions
-        for (typename ConditionsArrayType::ptr_iterator it=ConditionsArray.ptr_begin(); it!=ConditionsArray.ptr_end(); ++it)
+        for (typename ConditionsContainerType::ptr_iterator it=ConditionsArray.ptr_begin(); it!=ConditionsArray.ptr_end(); ++it)
         {
             //calculate elemental contribution
             (*it)->InitializeNonLinearIteration(CurrentProcessInfo);
@@ -253,12 +259,9 @@ public:
         //creating an array of lock variables of the size of the system matrix
         std::vector< omp_lock_t > lock_array(A.size1());
 
-
-
         int A_size = A.size1();
         for(int i = 0; i<A_size; i++)
             omp_init_lock(&lock_array[i]);
-
 
         vector<unsigned int> element_partition;
         CreatePartition(number_of_threads, pElements.size(), element_partition);
@@ -267,7 +270,6 @@ public:
             KRATOS_WATCH( number_of_threads );
             KRATOS_WATCH( element_partition );
         }
-
 
         double start_prod = omp_get_wtime();
 
@@ -282,14 +284,14 @@ public:
             //terms
             Element::EquationIdVectorType EquationId;
             ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
-            typename ElementsArrayType::ptr_iterator it_begin=pElements.ptr_begin()+element_partition[k];
-            typename ElementsArrayType::ptr_iterator it_end=pElements.ptr_begin()+element_partition[k+1];
+            typename ElementsContainerType::ptr_iterator it_begin=pElements.ptr_begin()+element_partition[k];
+            typename ElementsContainerType::ptr_iterator it_end=pElements.ptr_begin()+element_partition[k+1];
 
             unsigned int pos = (r_model_part.Nodes().begin())->GetDofPosition(rVar);
 
 
             // assemble all elements
-            for (typename ElementsArrayType::ptr_iterator it=it_begin; it!=it_end; ++it)
+            for (typename ElementsContainerType::ptr_iterator it=it_begin; it!=it_end; ++it)
             {
 
                 //calculate elemental contribution
@@ -322,13 +324,13 @@ public:
 
             ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
 
-            typename ConditionsArrayType::ptr_iterator it_begin=ConditionsArray.ptr_begin()+condition_partition[k];
-            typename ConditionsArrayType::ptr_iterator it_end=ConditionsArray.ptr_begin()+condition_partition[k+1];
+            typename ConditionsContainerType::ptr_iterator it_begin=ConditionsArray.ptr_begin()+condition_partition[k];
+            typename ConditionsContainerType::ptr_iterator it_end=ConditionsArray.ptr_begin()+condition_partition[k+1];
 
             unsigned int pos = (r_model_part.Nodes().begin())->GetDofPosition(rVar);
 
             // A all elements
-            for (typename ConditionsArrayType::ptr_iterator it=it_begin; it!=it_end; ++it)
+            for (typename ConditionsContainerType::ptr_iterator it=it_begin; it!=it_end; ++it)
             {
 
                 //calculate elemental contribution
@@ -358,22 +360,15 @@ public:
             omp_destroy_lock(&lock_array[i]);
 
 #endif
-
-
-
         KRATOS_CATCH("")
-
     }
-
-
-
 
     //**************************************************************************
     //**************************************************************************
     void SetUpDofSet(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& r_model_part
-    )
+        ModelPartType& r_model_part
+    ) override
     {
         KRATOS_TRY
 
@@ -415,10 +410,10 @@ public:
         TSystemMatrixPointerType& pA,
         TSystemVectorPointerType& pDx,
         TSystemVectorPointerType& pb,
-        ElementsArrayType& rElements,
-        ConditionsArrayType& rConditions,
-        ProcessInfo& CurrentProcessInfo
-    )
+        ElementsContainerType& rElements,
+        ConditionsContainerType& rConditions,
+        const ProcessInfo& CurrentProcessInfo
+    ) override
     {
 #ifndef __SUNPRO_CC
         KRATOS_TRY
@@ -489,9 +484,9 @@ public:
         }
 
         //swapping pointers
-// 				pA.swap(pNewA);
-// 				pDx.swap(pNewDx);
-// 				pb.swap(pNewb);
+//              pA.swap(pNewA);
+//              pDx.swap(pNewDx);
+//              pb.swap(pNewb);
 #ifndef __SUNPRO_CC
         KRATOS_CATCH("")
 #endif
@@ -500,7 +495,7 @@ public:
 
     //**************************************************************************
     //**************************************************************************
-    void Clear()
+    void Clear() override
     {
         this->mDofSet = DofsArrayType();
 
@@ -508,7 +503,7 @@ public:
         {
             TSparseSpace::Clear( (this->mpReactionsVector) );
         }
-// 			*(this->mpReactionsVector) = TSystemVectorType();
+//          *(this->mpReactionsVector) = TSystemVectorType();
 
         if (this->GetEchoLevel()>0)
         {
@@ -579,7 +574,7 @@ protected:
 
                 //filling the first neighbours list
                 indices.push_back(index_i);
-                for( WeakPointerVector< Node<3> >::iterator i =	neighb_nodes.begin();
+                for( WeakPointerVector< Node<3> >::iterator i = neighb_nodes.begin();
                         i != neighb_nodes.end(); i++)
                 {
 
@@ -660,7 +655,7 @@ protected:
 
                     //filling the first neighbours list
                     indices.push_back(index_i);
-                    for( WeakPointerVector< Node<3> >::iterator i =	neighb_nodes.begin();
+                    for( WeakPointerVector< Node<3> >::iterator i = neighb_nodes.begin();
                             i != neighb_nodes.end(); i++)
                     {
 

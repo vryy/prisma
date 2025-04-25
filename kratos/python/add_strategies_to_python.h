@@ -47,9 +47,9 @@ void BuilderAndSolver_ResizeAndInitializeVectors1(TBuilderAndSolverType& rDummy,
     typename TBuilderAndSolverType::TSystemMatrixPointerType& pA,
     typename TBuilderAndSolverType::TSystemVectorPointerType& pDx,
     typename TBuilderAndSolverType::TSystemVectorPointerType& pb,
-    typename TBuilderAndSolverType::ElementsArrayType& rElements,
-    typename TBuilderAndSolverType::ConditionsArrayType& rConditions,
-    ProcessInfo& CurrentProcessInfo)
+    typename TBuilderAndSolverType::ElementsContainerType& rElements,
+    typename TBuilderAndSolverType::ConditionsContainerType& rConditions,
+    const ProcessInfo& CurrentProcessInfo)
 {
     rDummy.ResizeAndInitializeVectors(pA, pDx, pb, rElements, rConditions, CurrentProcessInfo);
 }
@@ -59,12 +59,12 @@ void BuilderAndSolver_ResizeAndInitializeVectors2(TBuilderAndSolverType& rDummy,
     typename TBuilderAndSolverType::TSystemMatrixPointerType& pA,
     typename TBuilderAndSolverType::TSystemVectorPointerType& pDx,
     typename TBuilderAndSolverType::TSystemVectorPointerType& pb,
-    ModelPart& r_model_part)
+    typename TBuilderAndSolverType::ModelPartType& r_model_part)
 {
     rDummy.ResizeAndInitializeVectors(pA, pDx, pb, r_model_part);
 }
 
-void  AddStrategiesToPython();
+void AddStrategiesToPython();
 
 }  // namespace Python.
 

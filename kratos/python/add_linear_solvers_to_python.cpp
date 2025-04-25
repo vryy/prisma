@@ -59,7 +59,7 @@ namespace Python
 {
 
 template<typename TSpaceType, typename TLocalSpaceType>
-void AddLinearSolversToPython_(const std::string& Prefix)
+void AddLinearSolversToPythonImpl(const std::string& Prefix)
 {
     typedef TSpaceType SpaceType;
     typedef typename SpaceType::DataType DataType;
@@ -199,13 +199,13 @@ void AddLinearSolversToPython()
     typedef UblasSpace<DataType, CompressedMatrix, Vector> SpaceType;
     typedef UblasSpace<DataType, Matrix, Vector> LocalSpaceType;
 
-    AddLinearSolversToPython_<SpaceType, LocalSpaceType>("");
+    AddLinearSolversToPythonImpl<SpaceType, LocalSpaceType>("");
 
     typedef KRATOS_COMPLEX_TYPE ComplexType;
     typedef UblasSpace<ComplexType, ComplexCompressedMatrix, ComplexVector> ComplexSpaceType;
     typedef UblasSpace<ComplexType, ComplexMatrix, ComplexVector> LocalComplexSpaceType;
 
-    AddLinearSolversToPython_<ComplexSpaceType, LocalComplexSpaceType>("Complex");
+    AddLinearSolversToPythonImpl<ComplexSpaceType, LocalComplexSpaceType>("Complex");
 }
 
 }  // namespace Python.

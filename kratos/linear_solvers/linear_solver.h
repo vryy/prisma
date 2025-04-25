@@ -98,7 +98,10 @@ namespace Kratos
   right hand sides and their operators.
     - TReordererType which specify type of the Orderer that performs the reordering of matrix to optimize the solution.
 */
-template<class TSparseSpaceType, class TDenseSpaceType, class TReordererType = Reorderer<TSparseSpaceType, TDenseSpaceType> >
+template<class TSparseSpaceType,
+         class TDenseSpaceType,
+         class TReordererType = Reorderer<TSparseSpaceType, TDenseSpaceType>,
+         class TModelPartType = ModelPart>
 class LinearSolver
 {
 public:
@@ -120,9 +123,11 @@ public:
 
     typedef typename TDenseSpaceType::VectorType DenseVectorType;
 
-    typedef KRATOS_INDEX_TYPE IndexType;
+    typedef TModelPartType ModelPartType;
 
-    typedef KRATOS_SIZE_TYPE SizeType;
+    typedef typename ModelPartType::IndexType IndexType;
+
+    typedef typename ModelPartType::SizeType SizeType;
 
     typedef typename TSparseSpaceType::DataType DataType;
 
@@ -144,7 +149,6 @@ public:
     /// Destructor.
     virtual ~LinearSolver() {}
 
-
     ///@}
     ///@name Operators
     ///@{
@@ -156,7 +160,6 @@ public:
         mEchoLevel = Other.mEchoLevel;
         return *this;
     }
-
 
     ///@}
     ///@name Operations
@@ -269,13 +272,10 @@ public:
         SparseMatrixType& rA,
         VectorType& rX,
         VectorType& rB,
-        typename ModelPart::DofsArrayType& rdof_set,
-        ModelPart& r_model_part
+        typename ModelPartType::DofsArrayType& rdof_set,
+        ModelPartType& r_model_part
     )
     {}
-
-
-
 
     ///@}
     ///@name Access
@@ -465,17 +465,17 @@ private:
 ///@{
 
 /// input stream function
-template<class TSparseSpaceType, class TDenseSpaceType, class TReordererType>
+template<class TSparseSpaceType, class TDenseSpaceType, class TReordererType, class TModelPartType>
 inline std::istream& operator >> (std::istream& IStream,
-                                  LinearSolver<TSparseSpaceType, TDenseSpaceType, TReordererType>& rThis)
+                                  LinearSolver<TSparseSpaceType, TDenseSpaceType, TReordererType, TModelPartType>& rThis)
 {
     return IStream;
 }
 
 /// output stream function
-template<class TSparseSpaceType, class TDenseSpaceType, class TReordererType>
+template<class TSparseSpaceType, class TDenseSpaceType, class TReordererType, class TModelPartType>
 inline std::ostream& operator << (std::ostream& rOStream,
-                                  const LinearSolver<TSparseSpaceType, TDenseSpaceType, TReordererType>& rThis)
+                                  const LinearSolver<TSparseSpaceType, TDenseSpaceType, TReordererType, TModelPartType>& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;

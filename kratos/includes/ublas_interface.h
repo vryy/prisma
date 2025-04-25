@@ -135,6 +135,7 @@ namespace Kratos
         typedef boost::numeric::ublas::zero_vector<TDataType> ZeroVectorType;
         typedef boost::numeric::ublas::zero_matrix<TDataType> ZeroMatrixType;
         typedef boost::numeric::ublas::identity_matrix<TDataType> IdentityMatrixType;
+        typedef boost::numeric::ublas::compressed_matrix<TDataType> CompressedMatrixType;
     };
 
     // more specialization for DataTypeToString

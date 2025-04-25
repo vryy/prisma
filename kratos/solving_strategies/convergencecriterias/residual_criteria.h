@@ -76,9 +76,10 @@ Detail class definition.
 
 */
 template<class TSparseSpace,
-         class TDenseSpace
+         class TDenseSpace,
+         class TModelPart
          >
-class ResidualCriteria : public virtual  ConvergenceCriteria< TSparseSpace, TDenseSpace >
+class ResidualCriteria : public virtual  ConvergenceCriteria< TSparseSpace, TDenseSpace, TModelPart >
 {
 public:
     /**@name Type Definitions */
@@ -86,11 +87,15 @@ public:
 
     KRATOS_CLASS_POINTER_DEFINITION( ResidualCriteria );
 
-    typedef ConvergenceCriteria< TSparseSpace, TDenseSpace > BaseType;
+    typedef ConvergenceCriteria< TSparseSpace, TDenseSpace, TModelPart > BaseType;
 
     typedef TSparseSpace SparseSpaceType;
 
     typedef typename BaseType::TDataType TDataType;
+
+    typedef typename BaseType::ValueType ValueType;
+
+    typedef typename BaseType::ModelPartType ModelPartType;
 
     typedef typename BaseType::DofsArrayType DofsArrayType;
 
@@ -106,9 +111,9 @@ public:
     /** Constructor.
     */
     ResidualCriteria(
-        TDataType NewRatioTolerance,
-        TDataType AlwaysConvergedNorm)
-        : ConvergenceCriteria< TSparseSpace, TDenseSpace >()
+        ValueType NewRatioTolerance,
+        ValueType AlwaysConvergedNorm)
+        : BaseType()
     {
         mRatioTolerance       = NewRatioTolerance;
         mAlwaysConvergedNorm  = AlwaysConvergedNorm;
@@ -118,20 +123,19 @@ public:
     /** Copy constructor.
     */
     ResidualCriteria( ResidualCriteria const& rOther )
-      :BaseType(rOther)
-      ,mInitialResidualIsSet(rOther.mInitialResidualIsSet)
-      ,mRatioTolerance(rOther.mRatioTolerance)
-      ,mInitialResidualNorm(rOther.mInitialResidualNorm)
-      ,mCurrentResidualNorm(rOther.mCurrentResidualNorm)
-      ,mAlwaysConvergedNorm(rOther.mAlwaysConvergedNorm)
-      ,mReferenceDispNorm(rOther.mReferenceDispNorm)
+      : BaseType(rOther)
+      , mInitialResidualIsSet(rOther.mInitialResidualIsSet)
+      , mRatioTolerance(rOther.mRatioTolerance)
+      , mInitialResidualNorm(rOther.mInitialResidualNorm)
+      , mCurrentResidualNorm(rOther.mCurrentResidualNorm)
+      , mAlwaysConvergedNorm(rOther.mAlwaysConvergedNorm)
+      , mReferenceDispNorm(rOther.mReferenceDispNorm)
     {
     }
 
     /** Destructor.
     */
-    virtual ~ResidualCriteria() {}
-
+    ~ResidualCriteria() override {}
 
     /*@} */
     /**@name Operators
@@ -140,38 +144,35 @@ public:
 
     /*Criterias that need to be called after getting the solution */
     bool PostCriteria(
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         DofsArrayType& rDofSet,
         const TSystemMatrixType& A,
         const TSystemVectorType& Dx,
         const TSystemVectorType& b
-    )
+    ) override
     {
         if (TSparseSpace::Size(b) != 0) //if we are solving for something
         {
-
             if (mInitialResidualIsSet == false)
             {
-                mInitialResidualNorm = TSparseSpace::TwoNorm(b);
+                mInitialResidualNorm = std::abs(TSparseSpace::TwoNorm(b));
                 mInitialResidualIsSet = true;
             }
 
-            TDataType ratio;
-            mCurrentResidualNorm = TSparseSpace::TwoNorm(b);
+            ValueType ratio;
+            mCurrentResidualNorm = std::abs(TSparseSpace::TwoNorm(b));
 
-            double b_size = TSparseSpace::Size(b);
-
+            ValueType b_size = static_cast<ValueType>(TSparseSpace::Size(b));
 
             if(mInitialResidualNorm == 0.00) ratio = 0.00;
-
             else ratio = mCurrentResidualNorm/mInitialResidualNorm;
 
             if (r_model_part.GetCommunicator().MyPID() == 0)
-          if (this->GetEchoLevel() == 1)
-                std::cout << "RESIDUAL CRITERION :: Ratio = " << ratio  << ";  Norm   = " << mCurrentResidualNorm/b_size << std::endl;
+                if (this->GetEchoLevel() == 1)
+                    std::cout << "RESIDUAL CRITERION :: Ratio = " << ratio  << ";  Norm   = " << mCurrentResidualNorm/b_size << std::endl;
 
-        r_model_part.GetProcessInfo()[CONVERGENCE_RATIO] = ratio;
-        r_model_part.GetProcessInfo()[RESIDUAL_NORM] = mCurrentResidualNorm/b_size;
+            r_model_part.GetProcessInfo()[CONVERGENCE_RATIO] = ratio;
+            r_model_part.GetProcessInfo()[RESIDUAL_NORM] = mCurrentResidualNorm/b_size;
 
             if (
                 ratio <= mRatioTolerance
@@ -180,8 +181,8 @@ public:
             )
             {
                 if (r_model_part.GetCommunicator().MyPID() == 0)
-          if (this->GetEchoLevel() == 1)
-                    std::cout << "Convergence is achieved" << std::endl;
+                    if (this->GetEchoLevel() == 1)
+                        std::cout << "Convergence is achieved" << std::endl;
                 return true;
             }
             else
@@ -195,34 +196,32 @@ public:
         }
     }
 
-
-
-
     void Initialize(
-        ModelPart& r_model_part
-    )
+        ModelPartType& r_model_part
+    ) override
     {
         BaseType::mConvergenceCriteriaIsInitialized = true;
     }
 
     void InitializeSolutionStep(
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         DofsArrayType& rDofSet,
         const TSystemMatrixType& A,
         const TSystemVectorType& Dx,
         const TSystemVectorType& b
-    )
+    ) override
     {
         mInitialResidualIsSet = false;
     }
 
     void FinalizeSolutionStep(
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         DofsArrayType& rDofSet,
         const TSystemMatrixType& A,
         const TSystemVectorType& Dx,
         const TSystemVectorType& b
-    ) {}
+    ) override
+    {}
 
 
 
@@ -298,16 +297,15 @@ private:
 
     bool mInitialResidualIsSet;
 
-    TDataType mRatioTolerance;
+    ValueType mRatioTolerance;
 
-    TDataType mInitialResidualNorm;
+    ValueType mInitialResidualNorm;
 
-    TDataType mCurrentResidualNorm;
+    ValueType mCurrentResidualNorm;
 
-    TDataType mAlwaysConvergedNorm;
+    ValueType mAlwaysConvergedNorm;
 
-    TDataType mReferenceDispNorm;
-
+    ValueType mReferenceDispNorm;
 
     /*@} */
     /**@name Private Operators*/

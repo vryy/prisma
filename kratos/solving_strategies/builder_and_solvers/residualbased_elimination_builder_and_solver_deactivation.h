@@ -198,10 +198,11 @@ Calculation of the reactions involves a cost very similiar to the calculation of
 */
 template<class TSparseSpace,
          class TDenseSpace , //= DenseSpace<double>,
-         class TLinearSolver //= LinearSolver<TSparseSpace,TDenseSpace>
+         class TLinearSolver, //= LinearSolver<TSparseSpace,TDenseSpace>
+         class TModelPartType
          >
 class ResidualBasedEliminationBuilderAndSolverDeactivation
-    : public BuilderAndSolver< TSparseSpace,TDenseSpace,TLinearSolver >
+    : public BuilderAndSolver< TSparseSpace, TDenseSpace, TLinearSolver, TModelPartType >
 {
 public:
     /**@name Type Definitions */
@@ -209,7 +210,9 @@ public:
     //typedef boost::shared_ptr< ResidualBasedEliminationBuilderAndSolverDeactivation<TSparseSpace,TDenseSpace,TLinearSolver> > Pointer;
     KRATOS_CLASS_POINTER_DEFINITION( ResidualBasedEliminationBuilderAndSolverDeactivation );
 
-    typedef BuilderAndSolver<TSparseSpace,TDenseSpace, TLinearSolver> BaseType;
+    typedef BuilderAndSolver<TSparseSpace,TDenseSpace, TLinearSolver, TModelPartType> BaseType;
+
+    typedef typename BaseType::ModelPartType ModelPartType;
 
     typedef typename BaseType::TSchemeType TSchemeType;
 
@@ -218,6 +221,8 @@ public:
     typedef typename BaseType::TLinearSolverType TLinearSolverType;
 
     typedef typename BaseType::TDataType TDataType;
+
+    typedef typename BaseType::ValueType ValueType;
 
     typedef typename BaseType::DofsArrayType DofsArrayType;
 
@@ -232,11 +237,14 @@ public:
     typedef typename BaseType::TSystemMatrixPointerType TSystemMatrixPointerType;
     typedef typename BaseType::TSystemVectorPointerType TSystemVectorPointerType;
 
-    typedef typename BaseType::NodesArrayType NodesArrayType;
-    typedef typename BaseType::ElementsArrayType ElementsArrayType;
-    typedef typename BaseType::ConditionsArrayType ConditionsArrayType;
+    typedef typename BaseType::ElementType ElementType;
+    typedef typename BaseType::ConditionType ConditionType;
 
+    typedef typename BaseType::NodesContainerType NodesContainerType;
     typedef typename BaseType::ElementsContainerType ElementsContainerType;
+    typedef typename BaseType::ConditionsContainerType ConditionsContainerType;
+
+    typedef typename MatrixVectorTypeSelector<TDataType>::ZeroVectorType ZeroVectorType;
 
     /*@} */
     /**@name Life Cycle
@@ -247,7 +255,7 @@ public:
     */
     ResidualBasedEliminationBuilderAndSolverDeactivation(
         typename TLinearSolver::Pointer pNewLinearSystemSolver)
-        : BuilderAndSolver< TSparseSpace,TDenseSpace,TLinearSolver >(pNewLinearSystemSolver)
+        : BaseType(pNewLinearSystemSolver)
     {
         #ifdef ENABLE_LOG
         std::stringstream log_filename;
@@ -258,13 +266,11 @@ public:
         mStepCounter = 0;
     }
 
-
     /** Destructor.
     */
     ~ResidualBasedEliminationBuilderAndSolverDeactivation() override
     {
     }
-
 
     /*@} */
     /**@name Operators
@@ -302,7 +308,7 @@ public:
     //**************************************************************************
     void Build(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         TSystemMatrixType& A,
         TSystemVectorType& b) override
     {
@@ -325,10 +331,10 @@ public:
         }
 
         //getting the elements from the model
-        ElementsArrayType& pElements = r_model_part.Elements();
+        ElementsContainerType& pElements = r_model_part.Elements();
 
         //getting the array of the conditions
-        ConditionsArrayType& ConditionsArray = r_model_part.Conditions();
+        ConditionsContainerType& ConditionsArray = r_model_part.Conditions();
 
         //resetting to zero the vector of reactions
         TSparseSpace::SetToZero( *(BaseType::mpReactionsVector) );
@@ -339,7 +345,7 @@ public:
 
         //vector containing the localization in the system of the different
         //terms
-        Element::EquationIdVectorType EquationId;
+        typename ElementType::EquationIdVectorType EquationId;
 
         //double StartTime = GetTickCount();
 
@@ -347,7 +353,7 @@ public:
         // assemble all elements
 #ifndef _OPENMP
         const ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
-        for (typename ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
+        for (typename ElementsContainerType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
             if( !it->GetValue( IS_INACTIVE ) || it->Is( ACTIVE ) )
             {
@@ -380,7 +386,7 @@ public:
         RHS_Contribution.resize(0, false);
 
         // assemble all conditions
-        for (typename ConditionsArrayType::iterator it = ConditionsArray.begin(); it != ConditionsArray.end(); ++it)
+        for (typename ConditionsContainerType::iterator it = ConditionsArray.begin(); it != ConditionsArray.end(); ++it)
         {
             if( !it->GetValue( IS_INACTIVE ) || it->Is( ACTIVE ) )
             {
@@ -411,7 +417,7 @@ public:
         std::set<std::size_t> ActiveIdSet;
         std::set<std::size_t> InactiveIdSet;
         const ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
-        for (typename ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
+        for (typename ElementsContainerType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
             it->EquationIdVector(EquationId, CurrentProcessInfo);
 
@@ -436,7 +442,7 @@ public:
             }
         }
 
-        for (typename ConditionsArrayType::iterator it = ConditionsArray.begin(); it != ConditionsArray.end(); ++it)
+        for (typename ConditionsContainerType::iterator it = ConditionsArray.begin(); it != ConditionsArray.end(); ++it)
         {
             it->EquationIdVector(EquationId, CurrentProcessInfo);
 
@@ -525,7 +531,7 @@ public:
 
 //        KRATOS_WATCH("in Build: before thread looping for elements");
 
-        double DiagonalSum = 0.0;
+        TDataType DiagonalSum = 0.0;
         unsigned int num_computed_elements = 0;
         unsigned int num_assembled_elements = 0;
 
@@ -540,13 +546,13 @@ public:
 
             //vector containing the localization in the system of the different
             //terms
-            Element::EquationIdVectorType EquationId;
+            typename ElementType::EquationIdVectorType EquationId;
             const ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
-            typename ElementsArrayType::iterator it_begin = pElements.ptr_begin() + element_partition[k];
-            typename ElementsArrayType::iterator it_end = pElements.ptr_begin() + element_partition[k+1];
+            typename ElementsContainerType::iterator it_begin = pElements.ptr_begin() + element_partition[k];
+            typename ElementsContainerType::iterator it_end = pElements.ptr_begin() + element_partition[k+1];
 
             // assemble all elements
-            for (typename ElementsArrayType::iterator it = it_begin; it != it_end; ++it)
+            for (typename ElementsContainerType::iterator it = it_begin; it != it_end; ++it)
             {
                 #ifdef MEASURE_TIME_CUT_CELL
                 if(it->GetValue(CUT_STATUS_var) == -1)
@@ -556,7 +562,12 @@ public:
                 if( !it->GetValue( IS_INACTIVE ) || it->Is( ACTIVE ) )
                 {
                     //calculate elemental contribution
+                    // std::cout << "Element " << it->Id() << " is considerred, type: " << typeid((*it)).name() << std::endl;
                     pScheme->CalculateSystemContributions(*it,LHS_Contribution,RHS_Contribution,EquationId,CurrentProcessInfo);
+                    // std::cout << "Element " << it->Id() << " is computed"
+                    //           << ", type: " << typeid((*it)).name()
+                    //           << ", rhs: " << norm_2(RHS_Contribution)
+                    //           << std::endl;
 
                     #ifdef DETECT_NAN_AT_BUILD
                     double norm_elem_k = norm_frobenius(LHS_Contribution);
@@ -620,7 +631,7 @@ public:
                     pScheme->CleanMemory(*it);
 
                     //compute sum of the diagonal
-                    double LocalDiagonalSum = 0.0;
+                    TDataType LocalDiagonalSum = 0.0;
                     for(unsigned int i = 0; i < EquationId.size(); ++i)
                     {
                         if(EquationId[i] < BaseType::mEquationSystemSize)
@@ -629,6 +640,7 @@ public:
 
                     //update the global diagonal sum
                     DiagonalSum += LocalDiagonalSum;
+
                     //update the number of computed and assembled element
                     num_computed_elements += 1;
                     #ifdef DETECT_NAN_AT_BUILD
@@ -667,17 +679,21 @@ public:
 
             const ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
 
-            typename ConditionsArrayType::iterator it_begin = ConditionsArray.ptr_begin() + condition_partition[k];
-            typename ConditionsArrayType::iterator it_end = ConditionsArray.ptr_begin() + condition_partition[k+1];
+            typename ConditionsContainerType::iterator it_begin = ConditionsArray.ptr_begin() + condition_partition[k];
+            typename ConditionsContainerType::iterator it_end = ConditionsArray.ptr_begin() + condition_partition[k+1];
 
             // assemble all conditions
-            for (typename ConditionsArrayType::iterator it = it_begin; it != it_end; ++it)
+            for (typename ConditionsContainerType::iterator it = it_begin; it != it_end; ++it)
             {
                 if( !it->GetValue( IS_INACTIVE ) || it->Is( ACTIVE ) )
                 {
-//                    std::cout << "Condition " << it->Id() << " is considerred, type: " << typeid((*it)).name() << std::endl;
+                    // std::cout << "Condition " << it->Id() << " is considerred, type: " << typeid((*it)).name() << std::endl;
                     //calculate conditional contribution
                     pScheme->CalculateSystemContributions(*it,LHS_Contribution,RHS_Contribution,EquationId,CurrentProcessInfo);
+                    // std::cout << "Condition " << it->Id() << " is computed"
+                    //           << ", type: " << typeid((*it)).name()
+                    //           << ", rhs: " << norm_2(RHS_Contribution)
+                    //           << std::endl;
 
                     #ifdef DETECT_NAN_AT_BUILD
                     double norm_cond_k = norm_frobenius(LHS_Contribution);
@@ -722,7 +738,7 @@ public:
 //                    pScheme->CleanMemory(*it); //not existing method
 
                     //compute sum of the diagonal
-                    double LocalDiagonalSum = 0.0;
+                    TDataType LocalDiagonalSum = 0.0;
                     for(unsigned int i = 0; i < EquationId.size(); ++i)
                     {
                         if(EquationId[i] < BaseType::mEquationSystemSize)
@@ -731,8 +747,14 @@ public:
 
                     //update the global diagonal sum
                     DiagonalSum += LocalDiagonalSum;
+                    // std::cout << "condition " << it->Id() << " LocalDiagonalSum: " << LocalDiagonalSum
+                    //           << ", EquationId.size(): " << EquationId.size()
+                    //           << ", type: " << typeid(*it).name()
+                    //           << ", LHS_Contribution: " << LHS_Contribution
+                    //           << std::endl;
 //                    std::cout << "Condition " << it->Id() << " rhs: " << RHS_Contribution << std::endl;
 //                    std::cout << "Condition " << it->Id() << " is assembled" << std::endl;
+
                     // update the number of computed and assembled conditions
                     num_computed_conditions += 1;
                     #ifdef DETECT_NAN_AT_BUILD
@@ -755,7 +777,7 @@ public:
         #ifdef MODIFY_INACTIVE_PART_OF_THE_MATRIX
 
         // compute the modification factor: simply average of the diagonal
-        double DiagonalAverage = DiagonalSum / (BaseType::mEquationSystemSize - mFixedLength);
+        TDataType DiagonalAverage = DiagonalSum / (BaseType::mEquationSystemSize - mFixedLength);
         printf("DiagonalSum: %.16e, DiagonalAverage: %.16e\n", DiagonalSum, DiagonalAverage);
 
         // modify the matrix as needed
@@ -768,7 +790,7 @@ public:
         for(unsigned int i = 0; i < mFixedLength; ++i)
         {
             unsigned int j = fixed_offset + i;
-            noalias(row(A, j)) = ZeroVector(BaseType::mEquationSystemSize);
+            noalias(row(A, j)) = ZeroVectorType(BaseType::mEquationSystemSize);
             A(j, j) = DiagonalAverage;
             b(j)    = 0.0;
         }
@@ -896,16 +918,16 @@ public:
     //**************************************************************************
     void BuildLHS(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         TSystemMatrixType& A) override
     {
         KRATOS_TRY
 
         //getting the elements from the model
-        ElementsArrayType& pElements = r_model_part.Elements();
+        ElementsContainerType& pElements = r_model_part.Elements();
 
         //getting the array of the conditions
-        ConditionsArrayType& ConditionsArray = r_model_part.Conditions();
+        ConditionsContainerType& ConditionsArray = r_model_part.Conditions();
 
         //resetting to zero the vector of reactions
         TSparseSpace::SetToZero( *(BaseType::mpReactionsVector) );
@@ -915,12 +937,12 @@ public:
 
         //vector containing the localization in the system of the different
         //terms
-        Element::EquationIdVectorType EquationId;
+        typename ElementType::EquationIdVectorType EquationId;
 
         const ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
 
         // assemble all elements
-        for (typename ElementsArrayType::iterator it=pElements.begin(); it!=pElements.end(); ++it)
+        for (typename ElementsContainerType::iterator it=pElements.begin(); it!=pElements.end(); ++it)
         {
             if( !it->GetValue( IS_INACTIVE ) || it->Is( ACTIVE ) )
             {
@@ -938,7 +960,7 @@ public:
         LHS_Contribution.resize(0,0,false);
 
         // assemble all conditions
-        for (typename ConditionsArrayType::iterator it=ConditionsArray.begin(); it!=ConditionsArray.end(); ++it)
+        for (typename ConditionsContainerType::iterator it=ConditionsArray.begin(); it!=ConditionsArray.end(); ++it)
         {
             if( !it->GetValue( IS_INACTIVE ) || it->Is( ACTIVE ) )
             {
@@ -958,16 +980,16 @@ public:
     //**************************************************************************
     void BuildLHS_CompleteOnFreeRows(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         TSystemMatrixType& A) override
     {
         KRATOS_TRY
 
         //getting the elements from the model
-        ElementsArrayType& pElements = r_model_part.Elements();
+        ElementsContainerType& pElements = r_model_part.Elements();
 
         //getting the array of the conditions
-        ConditionsArrayType& ConditionsArray = r_model_part.Conditions();
+        ConditionsContainerType& ConditionsArray = r_model_part.Conditions();
 
         const ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
 
@@ -979,10 +1001,10 @@ public:
 
         //vector containing the localization in the system of the different
         //terms
-        Element::EquationIdVectorType EquationId;
+        typename ElementType::EquationIdVectorType EquationId;
 
         // assemble all elements
-        for (typename ElementsArrayType::iterator it=pElements.begin(); it!=pElements.end(); ++it)
+        for (typename ElementsContainerType::iterator it=pElements.begin(); it!=pElements.end(); ++it)
         {
             if( !it->GetValue( IS_INACTIVE ) || it->Is( ACTIVE ) )
             {
@@ -999,7 +1021,7 @@ public:
 
         LHS_Contribution.resize(0,0,false);
         // assemble all conditions
-        for (typename ConditionsArrayType::iterator it=ConditionsArray.begin(); it!=ConditionsArray.end(); ++it)
+        for (typename ConditionsContainerType::iterator it=ConditionsArray.begin(); it!=ConditionsArray.end(); ++it)
         {
             if( !it->GetValue( IS_INACTIVE ) || it->Is( ACTIVE ) )
             {
@@ -1029,9 +1051,9 @@ public:
         double solve_time_start = Timer::GetTime();
         Timer::Start("SystemSolve");
 
-        double norm_b;
+        ValueType norm_b;
         if( TSparseSpace::Size(b) != 0)
-            norm_b = TSparseSpace::TwoNorm(b);
+            norm_b = std::abs(TSparseSpace::TwoNorm(b));
         else
             norm_b = 0.00;
 
@@ -1076,7 +1098,7 @@ public:
     //**************************************************************************
     void BuildAndSolve(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
         TSystemVectorType& b) override
@@ -1096,7 +1118,7 @@ public:
         {
             if(dof_iterator->EquationId() < BaseType::mEquationSystemSize)
             {
-                ModelPart::NodeType& node = r_model_part.GetNode(dof_iterator->Id());
+                ModelPartType::NodeType& node = r_model_part.GetNode(dof_iterator->Id());
                 info << (dof_iterator->EquationId() + 1) << " " << dof_iterator->GetVariable().Name() << " "
                      << dof_iterator->Id() << " " << node.X0() << " " << node.Y0() << " " << node.Z0() << std::endl;
             }
@@ -1148,11 +1170,11 @@ public:
         }
 
         #ifdef QUERY_RESIDUAL_NORM
-        double norm_b = TSparseSpace::TwoNorm(b_0);
+        ValueType norm_b = std::abs(TSparseSpace::TwoNorm(b_0));
         TSystemVectorType r(BaseType::mEquationSystemSize);
         TSparseSpace::Mult(A, Dx, r);
         TSparseSpace::UnaliasedAdd(r, -1.0, b_0);
-        double norm_r = TSparseSpace::TwoNorm(r);
+        ValueType norm_r = std::abs(TSparseSpace::TwoNorm(r));
         std::cout << "||r||_2 / ||b||_2: " << norm_r/norm_b << std::endl;
         std::cout << "||r||_2: " << norm_r << std::endl;
         std::cout << "||b||_2: " << norm_b << std::endl;
@@ -1165,7 +1187,7 @@ public:
     //**************************************************************************
     void BuildRHSAndSolve(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
         TSystemVectorType& b) override
@@ -1182,16 +1204,16 @@ public:
     //**************************************************************************
     void BuildRHS(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         TSystemVectorType& b) override
     {
         KRATOS_TRY
 
         //Getting the Elements
-        ElementsArrayType& pElements = r_model_part.Elements();
+        ElementsContainerType& pElements = r_model_part.Elements();
 
         //getting the array of the conditions
-        ConditionsArrayType& ConditionsArray = r_model_part.Conditions();
+        ConditionsContainerType& ConditionsArray = r_model_part.Conditions();
 
         const ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
 
@@ -1204,10 +1226,10 @@ public:
 
         //vector containing the localization in the system of the different
         //terms
-        Element::EquationIdVectorType EquationId;
+        typename ElementType::EquationIdVectorType EquationId;
 
         // assemble all elements
-        for (typename ElementsArrayType::iterator it=pElements.begin(); it!=pElements.end(); ++it)
+        for (typename ElementsContainerType::iterator it=pElements.begin(); it!=pElements.end(); ++it)
         {
             //calculate elemental Right Hand Side Contribution
             pScheme->CalculateRHSContribution(*it,RHS_Contribution,EquationId,CurrentProcessInfo);
@@ -1220,7 +1242,7 @@ public:
         RHS_Contribution.resize(0,false);
 
         // assemble all conditions
-        for (typename ConditionsArrayType::iterator it=ConditionsArray.begin(); it!=ConditionsArray.end(); ++it)
+        for (typename ConditionsContainerType::iterator it=ConditionsArray.begin(); it!=ConditionsArray.end(); ++it)
         {
             //calculate elemental contribution
             pScheme->CalculateRHSContribution(*it,RHS_Contribution,EquationId,CurrentProcessInfo);
@@ -1237,16 +1259,16 @@ public:
     //**************************************************************************
     void BuildRHSreactions(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         TSystemVectorType& b)
     {
         KRATOS_TRY
 
         //Getting the Elements
-        ElementsArrayType& pElements = r_model_part.Elements();
+        ElementsContainerType& pElements = r_model_part.Elements();
 
         //getting the array of the conditions
-        ConditionsArrayType& ConditionsArray = r_model_part.Conditions();
+        ConditionsContainerType& ConditionsArray = r_model_part.Conditions();
 
         const ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
 
@@ -1261,9 +1283,9 @@ public:
         //terms
 
         #ifndef _OPENMP
-            Element::EquationIdVectorType EquationId;
+            typename ElementType::EquationIdVectorType EquationId;
             // assemble all elements
-            for (typename ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
+            for (typename ElementsContainerType::iterator it = pElements.begin(); it != pElements.end(); ++it)
             {
                 if( !it->GetValue( IS_INACTIVE ) || it->Is( ACTIVE ) )
                 {
@@ -1288,12 +1310,12 @@ public:
                 LocalSystemVectorType RHS_Contribution = LocalSystemVectorType(0);
 
                 //vector containing the localization in the system of the different terms
-                Element::EquationIdVectorType EquationId;
+                typename ElementType::EquationIdVectorType EquationId;
                 const ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
-                typename ElementsArrayType::iterator it_begin = pElements.ptr_begin() + element_partition[k];
-                typename ElementsArrayType::iterator it_end = pElements.ptr_begin() + element_partition[k + 1];
+                typename ElementsContainerType::iterator it_begin = pElements.ptr_begin() + element_partition[k];
+                typename ElementsContainerType::iterator it_end = pElements.ptr_begin() + element_partition[k + 1];
 
-                for (typename ElementsArrayType::iterator it = it_begin; it != it_end; ++it)
+                for (typename ElementsContainerType::iterator it = it_begin; it != it_end; ++it)
                 {
                     if( !it->GetValue( IS_INACTIVE ) || it->Is( ACTIVE ) )
                     {
@@ -1316,7 +1338,7 @@ public:
     //**************************************************************************
     void SetUpDofSet(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& r_model_part
+        ModelPartType& r_model_part
     ) override
     {
         KRATOS_TRY
@@ -1326,7 +1348,7 @@ public:
 
         // obtain the dofs from elements
 
-        Element::DofsVectorType DofList;
+        typename ElementType::DofsVectorType DofList;
 
         const ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
 
@@ -1336,21 +1358,21 @@ public:
 
         mAllDofs.clear();
 
-        ElementsArrayType& pElements = r_model_part.Elements();
+        ElementsContainerType& pElements = r_model_part.Elements();
         std::size_t num_active_elements = 0;
-        for (typename ElementsArrayType::iterator it=pElements.begin(); it!=pElements.end(); ++it)
+        for (typename ElementsContainerType::iterator it=pElements.begin(); it!=pElements.end(); ++it)
         {
             // gets list of Dof involved on every element
             pScheme->GetDofList(*it,DofList,CurrentProcessInfo);
 
-            for(typename Element::DofsVectorType::iterator i = DofList.begin() ; i != DofList.end() ; ++i)
+            for(typename ElementType::DofsVectorType::iterator i = DofList.begin() ; i != DofList.end() ; ++i)
                 mAllDofs.push_back(*i);
 
             #ifndef INCLUDE_INACTIVE_ELEMENTS_IN_SETUP_DOFSET
             if( !it->GetValue( IS_INACTIVE ) || it->Is( ACTIVE ) )
             {
             #endif
-                for(typename Element::DofsVectorType::iterator i = DofList.begin() ; i != DofList.end() ; ++i)
+                for(typename ElementType::DofsVectorType::iterator i = DofList.begin() ; i != DofList.end() ; ++i)
                     Doftemp.push_back(*i);
                 ++num_active_elements;
             #ifndef INCLUDE_INACTIVE_ELEMENTS_IN_SETUP_DOFSET
@@ -1361,21 +1383,21 @@ public:
         KRATOS_WATCH(num_active_elements);
 
         // taking in account conditions
-        ConditionsArrayType& pConditions = r_model_part.Conditions();
+        ConditionsContainerType& pConditions = r_model_part.Conditions();
         std::size_t num_active_conditions = 0;
-        for (typename ConditionsArrayType::iterator it=pConditions.begin(); it!=pConditions.end(); ++it)
+        for (typename ConditionsContainerType::iterator it=pConditions.begin(); it!=pConditions.end(); ++it)
         {
             // gets list of Dof involved on every condition
             pScheme->GetDofList(*it,DofList,CurrentProcessInfo);
 
-            for(typename Element::DofsVectorType::iterator i = DofList.begin() ; i != DofList.end() ; ++i)
+            for(typename ElementType::DofsVectorType::iterator i = DofList.begin() ; i != DofList.end() ; ++i)
                 mAllDofs.push_back(*i);
 
             #ifndef INCLUDE_INACTIVE_ELEMENTS_IN_SETUP_DOFSET
             if( !it->GetValue( IS_INACTIVE ) || it->Is( ACTIVE ) )
             {
             #endif
-                for(typename Element::DofsVectorType::iterator i = DofList.begin() ; i != DofList.end() ; ++i)
+                for(typename ElementType::DofsVectorType::iterator i = DofList.begin() ; i != DofList.end() ; ++i)
                     Doftemp.push_back(*i);
                 ++num_active_conditions;
             #ifndef INCLUDE_INACTIVE_ELEMENTS_IN_SETUP_DOFSET
@@ -1417,7 +1439,7 @@ public:
     //**************************************************************************
     #ifdef DOF_ENUMERATION_REVERSE
     void SetUpSystem(
-        ModelPart& r_model_part
+        ModelPartType& r_model_part
     ) override
     {
         // initialize the equation id for every dofs in the system. This is to avoid any untouched dofs when the elements are deactivated.
@@ -1462,7 +1484,7 @@ public:
     //a different enumeration strategy to compare with parallel enumeration strategy
     #ifdef DOF_ENUMERATION_STRAIGHT
     void SetUpSystem(
-        ModelPart& r_model_part
+        ModelPartType& r_model_part
     ) override
     {
         #ifdef ENABLE_LOG
@@ -1518,7 +1540,7 @@ public:
 
     #ifdef DOF_ENUMERATION_FULL_STRAIGHT
     void SetUpSystem(
-        ModelPart& r_model_part
+        ModelPartType& r_model_part
     ) override
     {
         #ifdef ENABLE_LOG
@@ -1578,9 +1600,9 @@ public:
         TSystemMatrixPointerType& pA,
         TSystemVectorPointerType& pDx,
         TSystemVectorPointerType& pb,
-        ElementsArrayType& rElements,
-        ConditionsArrayType& rConditions,
-        ProcessInfo& CurrentProcessInfo
+        ElementsContainerType& rElements,
+        ConditionsContainerType& rConditions,
+        const ProcessInfo& CurrentProcessInfo
     ) override
     {
         KRATOS_TRY
@@ -1647,7 +1669,7 @@ public:
         TSystemMatrixPointerType& pA,
         TSystemVectorPointerType& pDx,
         TSystemVectorPointerType& pb,
-        ModelPart& rModelPart
+        ModelPartType& rModelPart
     ) override
     {
         ResizeAndInitializeVectors(pA, pDx, pb, rModelPart.Elements(), rModelPart.Conditions(), rModelPart.GetProcessInfo());
@@ -1656,7 +1678,7 @@ public:
     //**************************************************************************
     //**************************************************************************
     void InitializeSolutionStep(
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
         TSystemVectorType& b) override
@@ -1668,7 +1690,7 @@ public:
     //**************************************************************************
     //**************************************************************************
     void FinalizeSolutionStep(
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
         TSystemVectorType& b) override
@@ -1681,7 +1703,7 @@ public:
     //**************************************************************************
     void CalculateReactions(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
         TSystemVectorType& b) override
@@ -1719,7 +1741,7 @@ public:
     //**************************************************************************
     void ApplyDirichletConditions(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
         TSystemVectorType& b) override
@@ -1804,14 +1826,14 @@ protected:
     virtual void ConstructMatrixStructure(
         TSystemMatrixType& A,
         ElementsContainerType& rElements,
-        ConditionsArrayType& rConditions,
-        ProcessInfo& CurrentProcessInfo)
+        ConditionsContainerType& rConditions,
+        const ProcessInfo& CurrentProcessInfo)
     {
         std::cout << "Warning: ConstructMatrixStructure is called." << std::endl;
         double start_time = OpenMPUtils::GetCurrentTime();
 
         std::size_t equation_size = A.size1();
-        Element::EquationIdVectorType ids;
+        typename ElementType::EquationIdVectorType ids;
 
         #ifdef ENABLE_SYSTEM_REORDERING
         //build the adjacency matrix of the stiffness matrix and reorder the global equation ids
@@ -1857,7 +1879,7 @@ protected:
             }
         }
 
-        for(typename ConditionsArrayType::iterator i_condition = rConditions.begin(); i_condition != rConditions.end(); ++i_condition)
+        for(typename ConditionsContainerType::iterator i_condition = rConditions.begin(); i_condition != rConditions.end(); ++i_condition)
         {
             (i_condition)->EquationIdVector(ids, CurrentProcessInfo);
             for(std::size_t i = 0; i < ids.size(); ++i)
@@ -1924,7 +1946,7 @@ protected:
     void AssembleLHS(
         TSystemMatrixType& A,
         LocalSystemMatrixType& LHS_Contribution,
-        Element::EquationIdVectorType& EquationId
+        typename ElementType::EquationIdVectorType& EquationId
     )
     {
         unsigned int local_size = LHS_Contribution.size1();
@@ -1950,7 +1972,7 @@ protected:
     void AssembleRHS(
         TSystemVectorType& b,
         LocalSystemVectorType& RHS_Contribution,
-        Element::EquationIdVectorType& EquationId
+        typename ElementType::EquationIdVectorType& EquationId
     )
     {
         unsigned int local_size = RHS_Contribution.size();
@@ -1992,7 +2014,7 @@ protected:
     void AssembleRHSreactions(
         TSystemVectorType& b,
         LocalSystemVectorType& RHS_Contribution,
-        Element::EquationIdVectorType& EquationId
+        typename ElementType::EquationIdVectorType& EquationId
     )
     {
         unsigned int local_size = RHS_Contribution.size();
@@ -2005,10 +2027,18 @@ protected:
                 if ( i_global < BaseType::mEquationSystemSize ) //on "free" DOFs
                 {
                     // ASSEMBLING THE SYSTEM VECTOR
-                    #pragma omp atomic update
-                    // {
+                    if constexpr (std::is_arithmetic<TDataType>::value)
+                    {
+                        #pragma omp atomic update
                         b[i_global] += RHS_Contribution[i_local];
-                    // }
+                    }
+                    else
+                    {
+                        #pragma omp critical
+                        {
+                            b[i_global] += RHS_Contribution[i_local];
+                        }
+                    }
                 }
             }
         }
@@ -2021,23 +2051,38 @@ protected:
                 if ( i_global < BaseType::mEquationSystemSize ) //on "free" DOFs
                 {
                     // ASSEMBLING THE SYSTEM VECTOR
-                    #pragma omp atomic update
-                    // {
+                    if constexpr (std::is_arithmetic<TDataType>::value)
+                    {
+                        #pragma omp atomic update
                         b[i_global] += RHS_Contribution[i_local];
-                    // }
+                    }
+                    else
+                    {
+                        #pragma omp critical
+                        {
+                            b[i_global] += RHS_Contribution[i_local];
+                        }
+                    }
                 }
                 else //on "fixed" DOFs
                 {
                     // Assembling the Vector of REACTIONS
-                    #pragma omp atomic update
-                    // {
+                    if constexpr (std::is_arithmetic<TDataType>::value)
+                    {
+                        #pragma omp atomic update
                         ReactionsVector[i_global-BaseType::mEquationSystemSize] -= RHS_Contribution[i_local];
-                    // }
+                    }
+                    else
+                    {
+                        #pragma omp critical
+                        {
+                            ReactionsVector[i_global-BaseType::mEquationSystemSize] -= RHS_Contribution[i_local];
+                        }
+                    }
                 }
             }
         }
     }
-
 
     /*@} */
     /**@name Protected Operations*/
@@ -2094,7 +2139,7 @@ private:
     void AssembleLHS_CompleteOnFreeRows(
         TSystemMatrixType& A,
         LocalSystemMatrixType& LHS_Contribution,
-        Element::EquationIdVectorType& EquationId
+        typename ElementType::EquationIdVectorType& EquationId
     )
     {
         unsigned int local_size = LHS_Contribution.size1();
@@ -2131,7 +2176,7 @@ private:
         TSystemVectorType& b,
         const LocalSystemMatrixType& LHS_Contribution,
         const LocalSystemVectorType& RHS_Contribution,
-        Element::EquationIdVectorType& EquationId,
+        typename ElementType::EquationIdVectorType& EquationId,
         std::vector< omp_lock_t >& lock_array
     )
     {

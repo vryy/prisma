@@ -3,8 +3,8 @@
 //   _|\_\_|  \__,_|\__|\___/ ____/
 //                   Multi-Physics
 //
-//  License:		 BSD License
-//					 Kratos default license: kratos/license.txt
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Aditya Ghantasala
 //
@@ -27,6 +27,7 @@
 
 namespace Kratos
 {
+
 namespace Internals
 {
 ///@name Internals Globals
@@ -35,21 +36,6 @@ namespace Internals
 ///@}
 ///@name Type Definitions
 ///@{
-
-/// Geometric definitions
-typedef Node<3> NodeType;
-typedef Geometry<NodeType> GeometryType;
-
-/// Matrix and vector definition
-typedef Kratos::Matrix MatrixType;
-typedef Kratos::Vector VectorType;
-
-/// Indexes definition
-typedef IndexedObject::IndexType IndexType;
-typedef std::vector<IndexType> VectorIndexType;
-
-/// Value type definition
-typedef KRATOS_DOUBLE_TYPE DataType;
 
 ///@}
 ///@name  Enum's
@@ -63,7 +49,8 @@ typedef KRATOS_DOUBLE_TYPE DataType;
  * @brief this method checks if any of the nodes of the given rGeometry is marked SLAVE.
  * @param rGeometry The geometry to check for.
  */
-inline bool HasSlaveNode(GeometryType& rGeometry)
+template<class TGeometryType>
+inline bool HasSlaveNode(const TGeometryType& rGeometry)
 {
     for(auto& node : rGeometry)
         if (node.IsDefined(SLAVE))
@@ -79,40 +66,42 @@ inline bool HasSlaveNode(GeometryType& rGeometry)
  * @param   rVector vector to be resized
  * @param   FinalSize the final size of the resized quantities.
  */
-inline void ResizeAndInitializeLocalMatrices(MatrixType& rMatrix, VectorType& rVector,
-                                        IndexType FinalSize)
+template<typename TMatrixType, typename TVectorType, typename TIndexType>
+inline void ResizeAndInitializeLocalMatrices(TMatrixType& rMatrix, TVectorType& rVector, TIndexType FinalSize)
 {
     KRATOS_TRY
+
     // storing the initial matrix and vector and their properties
     if (rMatrix.size1() != rVector.size())
-        KRATOS_THROW_ERROR(std::logic_error, "ResizeAndInitializeLocalMatrices :: Dimension of the matrix and vector passed are not the same !", "");
-    const IndexType initial_sys_size = rMatrix.size1();
-    MatrixType matrix(initial_sys_size, initial_sys_size);
+        KRATOS_ERROR << "ResizeAndInitializeLocalMatrices :: Dimension of the matrix and vector passed are not the same !";
+    const TIndexType initial_sys_size = rMatrix.size1();
+    TMatrixType matrix(initial_sys_size, initial_sys_size);
     noalias(matrix) = rMatrix;
-    VectorType vector(initial_sys_size);
+    TVectorType vector(initial_sys_size);
     noalias(vector) = rVector;
 
     rMatrix.resize(FinalSize, FinalSize, false);
     rVector.resize(FinalSize, false);
     // reassigning the original part of the matrix
-    for (IndexType m = 0; m < initial_sys_size; ++m)
+    for (TIndexType m = 0; m < initial_sys_size; ++m)
     {
-        for (IndexType n = 0; n < initial_sys_size; ++n)
+        for (TIndexType n = 0; n < initial_sys_size; ++n)
         {
             rMatrix(m,n) = matrix(m,n);
         }
         rVector(m) = vector(m);
     }
     // Making the extra part of matrix zero
-    for (IndexType m = initial_sys_size; m < FinalSize; ++m)
+    for (TIndexType m = initial_sys_size; m < FinalSize; ++m)
     {
-        for (IndexType n = 0; n < FinalSize; ++n)
+        for (TIndexType n = 0; n < FinalSize; ++n)
         {
             rMatrix(m, n) = 0.0;
             rMatrix(n, m) = 0.0;
         }
         rVector(m) = 0.0;
     }
+
     KRATOS_CATCH("ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise::ResizeAndInitializeLocalMatrices failed ..");
 }
 
@@ -139,16 +128,18 @@ inline void ResizeAndInitializeLocalMatrices(MatrixType& rMatrix, VectorType& rV
  *
  * @author Aditya Ghantasala
  */
-class AuxiliaryGlobalMasterSlaveConstraint : public IndexedObject
+template<typename TIndexType, typename TDataType>
+class AuxiliaryGlobalMasterSlaveConstraint : public BaseIndexedObject<TIndexType>
 {
 public:
     ///@name Type Definitions
     ///@{
 
-    typedef IndexedObject BaseType;
-    typedef Internals::IndexType IndexType;
-    typedef Internals::MatrixType MatrixType;
-    typedef Internals::VectorType VectorType;
+    typedef BaseIndexedObject<TIndexType> BaseType;
+    typedef typename BaseType::IndexType IndexType;
+    typedef TDataType DataType;
+    typedef typename MatrixVectorTypeSelector<DataType>::MatrixType MatrixType;
+    typedef typename MatrixVectorTypeSelector<DataType>::VectorType VectorType;
     typedef std::vector<IndexType> EquationIdVectorType;
 
     /// Pointer definition of AuxiliaryGlobalMasterSlaveConstraint
@@ -163,7 +154,7 @@ public:
      * @param SlaveEquationId the slave equation id for which this class is being constructed.
      */
     AuxiliaryGlobalMasterSlaveConstraint(IndexType SlaveEquationId = 0)
-    : IndexedObject(SlaveEquationId), mLhsValue(0.0), mRhsValue(0.0)
+    : BaseType(SlaveEquationId), mLhsValue(0.0), mRhsValue(0.0)
     {
     }
 
@@ -193,8 +184,8 @@ public:
     /**
      * @brief Function to get the value of left-hand side or right-hand side
      */
-    const DataType& LHS() const {return mLhsValue;}
-    const DataType& RHS() const {return mRhsValue;}
+    const DataType LHS() const {return mLhsValue;}
+    const DataType RHS() const {return mRhsValue;}
 
     /**
      * @brief Function to set the lefthand side of the constraint (the slave dof value)
@@ -234,7 +225,7 @@ public:
      * @param rResult the elemental equation ID vector
      */
     virtual void EquationIdsVector(IndexType& rSlaveEquationId,
-                                  EquationIdVectorType& rMasterEquationIds)
+                                   EquationIdVectorType& rMasterEquationIds) const
     {
         if (rMasterEquationIds.size() != mMasterEquationIdVector.size())
             rMasterEquationIds.resize(this->NumberOfMasters(), false);
@@ -250,8 +241,8 @@ public:
      * @param rMasterWeightsVector the elemental left hand side matrix
      * @param rConstant the elemental right hand side
      */
-    virtual void CalculateLocalSystem(VectorType &rMasterWeightsVector,
-                                      DataType &rConstant)
+    virtual void CalculateLocalSystem(VectorType& rMasterWeightsVector,
+                                      DataType& rConstant) const
     {
         if (rMasterWeightsVector.size() != this->NumberOfMasters())
             rMasterWeightsVector.resize(this->NumberOfMasters(), false);
@@ -264,7 +255,6 @@ public:
         /// So, we calculate the LHS value and RHS value of the constraint equation (with DOF values) and if they are not
         /// satisfying the constraint, we use the residual as the constant.
         rConstant = mRhsValue - mLhsValue;
-
     }
 
     /**
@@ -284,8 +274,18 @@ public:
     {
         const int index = GetMasterEquationIdPosition(MasterEquationId);
         if (index >= 0) {
-            #pragma omp atomic
-            mMasterWeightsVector[index] += Weight;
+            if constexpr (std::is_arithmetic<DataType>::value)
+            {
+                #pragma omp atomic
+                mMasterWeightsVector[index] += Weight;
+            }
+            else
+            {
+                #pragma omp critical
+                {
+                    mMasterWeightsVector[index] += Weight;
+                }
+            }
         } else {
             mLockObject.SetLock(); // locking for exclusive access to the vectors mMasterEquationIdVector and mMasterWeightsVectors
             mMasterEquationIdVector.push_back(MasterEquationId);
@@ -333,13 +333,13 @@ public:
     }
 
     /// Print information about this object.
-    void PrintInfo(std::ostream& rOStream) const //override
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << Info();
     }
 
     /// Print object's data.
-    void PrintData(std::ostream& rOStream) const //override
+    void PrintData(std::ostream& rOStream) const override
     {
     }
 
@@ -398,10 +398,12 @@ private:
  *
  * @author Aditya Ghantasala
  */
+template<typename TIndexType, typename TDataType>
 struct LocalIndices
 {
-    typedef Internals::IndexType IndexType;
-    typedef Internals::VectorIndexType VectorIndexType;
+    typedef TIndexType IndexType;
+    typedef TDataType DataType;
+    typedef std::vector<IndexType> VectorIndexType;
 
     void Reset()
     {
@@ -426,10 +428,8 @@ struct LocalIndices
 ///@name Type Definitions
 ///@{
 
-/// AuxiliaryGlobalMasterSlaveConstraint definitions
-typedef Internals::AuxiliaryGlobalMasterSlaveConstraint AuxiliaryGlobalMasterSlaveConstraintType;
-typedef PointerVectorSet<AuxiliaryGlobalMasterSlaveConstraint, IndexedObject> GlobalMasterSlaveRelationContainerType;
-// typedef std::unordered_map< IndexType, boost::movelib::unique_ptr< AuxiliaryGlobalMasterSlaveConstraintType > > GlobalMasterSlaveRelationContainerType;
+template<typename TIndexType, typename TDataType>
+using GlobalMasterSlaveRelationContainer = PointerVectorSet<AuxiliaryGlobalMasterSlaveConstraint<TIndexType, TDataType>, BaseIndexedObject<TIndexType> >;
 
 ///@}
 ///@name Internal Classes
@@ -448,13 +448,16 @@ class ConstraintImposer {
 public:
     ///@name Type Definitions
     ///@{
-    typedef Internals::AuxiliaryGlobalMasterSlaveConstraint AuxiliaryGlobalMasterSlaveRelationType;
-    typedef std::vector<Dof<DataType>::Pointer> DofsVectorType;
+    typedef typename TSparseSpace::IndexType IndexType;
+    typedef typename TSparseSpace::DataType DataType;
+    typedef AuxiliaryGlobalMasterSlaveConstraint<IndexType, DataType> AuxiliaryGlobalMasterSlaveRelationType;
+    typedef GlobalMasterSlaveRelationContainer<IndexType, DataType> GlobalMasterSlaveRelationContainerType;
+    typedef std::vector<typename Dof<DataType>::Pointer> DofsVectorType;
     typedef typename TDenseSpace::MatrixType LocalSystemMatrixType;
     typedef typename TDenseSpace::VectorType LocalSystemVectorType;
-    typedef Internals::LocalIndices LocalIndicesType;
-    typedef Kratos::Matrix MatrixType;
-    typedef Kratos::Vector VectorType;
+    typedef LocalIndices<IndexType, DataType> LocalIndicesType;
+    typedef typename TDenseSpace::MatrixType MatrixType;
+    typedef typename TDenseSpace::VectorType VectorType;
     typedef std::vector<IndexType> VectorIndexType;
     typedef std::vector<IndexType> EquationIdVectorType;
 
@@ -462,7 +465,7 @@ public:
     ///@name Life Cycle
     ///@{
 
-    explicit ConstraintImposer(GlobalMasterSlaveRelationContainerType& rGlobalMasterSlaveRelations)
+    explicit ConstraintImposer(const GlobalMasterSlaveRelationContainerType& rGlobalMasterSlaveRelations)
         : mrGlobalMasterSlaveConstraints(rGlobalMasterSlaveRelations)
     {
     }
@@ -471,8 +474,8 @@ public:
     {
     }
 
-    ConstraintImposer( const ConstraintImposer &OtherObject) :
-                mrGlobalMasterSlaveConstraints (OtherObject.mrGlobalMasterSlaveConstraints) // copy constructor
+    ConstraintImposer( const ConstraintImposer &OtherObject)
+        : mrGlobalMasterSlaveConstraints (OtherObject.mrGlobalMasterSlaveConstraints) // copy constructor
     {
     }
 
@@ -492,11 +495,12 @@ public:
      * @param   rCurrentProcessInfo the current process info
      */
     template <typename TContainerType>
-    void ApplyConstraints(TContainerType& rCurrentContainer,
+    void ApplyConstraints(const TContainerType& rCurrentContainer,
                           typename TContainerType::EquationIdVectorType& rEquationIds,
-                          ProcessInfo& rCurrentProcessInfo)
+                          const ProcessInfo& rCurrentProcessInfo)
     {
         KRATOS_TRY
+
         this->Reset();
         // If no slave is found for this container , no need of going on
         if (! Internals::HasSlaveNode(rCurrentContainer.GetGeometry()))
@@ -523,6 +527,7 @@ public:
                 }
             }
         }
+
         KRATOS_CATCH("ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise::ApplyConstraints failed ..");
     }
 
@@ -537,16 +542,18 @@ public:
      * @param   rCurrentProcessInfo the current process info
      */
     template <typename TContainerType>
-    void ApplyConstraints(TContainerType& rCurrentContainer,
+    void ApplyConstraints(const TContainerType& rCurrentContainer,
                           LocalSystemMatrixType& rLHSContribution,
                           LocalSystemVectorType& rRHSContribution,
                           typename TContainerType::EquationIdVectorType& rEquationIds,
-                          ProcessInfo& rCurrentProcessInfo)
+                          const ProcessInfo& rCurrentProcessInfo)
     {
         KRATOS_TRY
+
         // If no slave is found for this container , no need of going on
         if (! Internals::HasSlaveNode(rCurrentContainer.GetGeometry()))
             return;
+
         this->Reset();
         // Saving th original system size
         const IndexType initial_sys_size = rLHSContribution.size1();
@@ -566,17 +573,18 @@ public:
 
         KRATOS_CATCH("ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise:: Applying Multipoint constraints failed ..");
     }
+
     ///@}
+
 private:
     ///@name Static Member Variables
     ///@{
-
 
     ///@}
     ///@name Member Variables
     ///@{
 
-    GlobalMasterSlaveRelationContainerType& mrGlobalMasterSlaveConstraints;
+    const GlobalMasterSlaveRelationContainerType& mrGlobalMasterSlaveConstraints;
     // For Formulating which are the internal, slave indices locally.
     LocalIndicesType mLocalIndices;
     // container's transformation matrix and constant vector
@@ -603,7 +611,8 @@ private:
      * @param   rRHSContribution The rhs vector of the container
      * @param   rEquationIds the list of equation ids (extended with the masters).
      */
-    void ModifyLHSForConstraints(MatrixType &rLHSContribution, VectorType& rRHSContribution, EquationIdVectorType &rEquationIds)
+    template<typename TEquationIdVectorType>
+    void ModifyLHSForConstraints(MatrixType& rLHSContribution, const VectorType& rRHSContribution, const TEquationIdVectorType& rEquationIds)
     {
         mLocalIndices.container_master_weights.reserve(mLocalIndices.master_index_vector.size());
         mLocalIndices.container_master_slaves.reserve(mLocalIndices.master_index_vector.size());
@@ -675,7 +684,8 @@ private:
      * @param   rRHSContribution The rhs vector of the container
      * @param   rEquationIds the list of equation ids (extended with the masters).
      */
-    void ModifyRHSForConstraints(MatrixType &rLHSContribution, VectorType& rRHSContribution, EquationIdVectorType &rEquationIds)
+    template<typename TEquationIdVectorType>
+    void ModifyRHSForConstraints(const MatrixType& rLHSContribution, VectorType& rRHSContribution, const TEquationIdVectorType& rEquationIds)
     {
         IndexType slave_equation_id;
         EquationIdVectorType master_equation_ids;
@@ -722,9 +732,6 @@ private:
         }
     }
 
-
-
-
     /**
      * @brief   Resets the member vectors and matrices to zero and zero size
      */
@@ -742,25 +749,26 @@ private:
      * @param   rEquationIds vector of the equation ids
      * @param   rLocalIndexStructure reference to the structure of LocalIndicesType
      */
-    void CalculateLocalIndices(EquationIdVectorType& rEquationIds, LocalIndicesType& rLocalIndexStructure, IndexType rTotalNumberOfMasters)
+    template<typename TEquationIdVectorType, typename TLocalIndicesType, typename TIndexType>
+    void CalculateLocalIndices(const TEquationIdVectorType& rEquationIds, TLocalIndicesType& rLocalIndexStructure, TIndexType rTotalNumberOfMasters) const
     {
         CalculateLocalSlaveIndices(rEquationIds, rLocalIndexStructure);
         CalculateLocalInternalIndices(rEquationIds, rLocalIndexStructure);
         CalculateLocalMasterIndices(rEquationIds, rLocalIndexStructure, rTotalNumberOfMasters);
     }
 
-
-
     /**
      * @brief   This function calculates the local slave indices of a given element or condition
      * @param   rEquationIds vector of the equation ids
      * @param   rLocalSlaveIndexVector reference to the vector of slave indices
      */
-    void CalculateLocalSlaveIndices(EquationIdVectorType& rEquationIds, LocalIndicesType& rLocalIndexStructure)
+    template<typename TEquationIdVectorType, typename TLocalIndicesType>
+    void CalculateLocalSlaveIndices(const TEquationIdVectorType& rEquationIds, TLocalIndicesType& rLocalIndexStructure) const
     {
         KRATOS_TRY
-        int index = 0;
-        for (auto &eq_id : rEquationIds)
+
+        typename TLocalIndicesType::IndexType index = 0;
+        for (auto& eq_id : rEquationIds)
         {
             auto global_master_slave_constraint = mrGlobalMasterSlaveConstraints.find(eq_id);
             if (global_master_slave_constraint != mrGlobalMasterSlaveConstraints.end())
@@ -768,6 +776,7 @@ private:
 
             index++;
         }
+
         KRATOS_CATCH("ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise::CalculateLocalSlaveIndices failed ..");
     }
 
@@ -776,9 +785,11 @@ private:
      * @param   rEquationIds vector of the equation ids
      * @param   rLocalIndexStructure reference to the vector of slave indices
      */
-    void CalculateLocalInternalIndices(EquationIdVectorType& rEquationIds, LocalIndicesType& rLocalIndexStructure)
+    template<typename TEquationIdVectorType, typename TLocalIndicesType>
+    void CalculateLocalInternalIndices(const TEquationIdVectorType& rEquationIds, TLocalIndicesType& rLocalIndexStructure) const
     {
         KRATOS_TRY
+
         VectorIndexType local_index_vector(rEquationIds.size());
         for (IndexType i = 0; i<rEquationIds.size(); ++i)
             local_index_vector[i] = i;
@@ -799,7 +810,8 @@ private:
      * @param   rLocalIndexStructure reference to the vector of slave indices
      * @param   rTotalNumberOfMasters total number of masters for the given element or condition.
      */
-    void CalculateLocalMasterIndices(EquationIdVectorType& rEquationIds, LocalIndicesType& rLocalIndexStructure, IndexType rTotalNumberOfMasters)
+    template<typename TEquationIdVectorType, typename TLocalIndicesType, typename TIndexType>
+    void CalculateLocalMasterIndices(const TEquationIdVectorType& rEquationIds, TLocalIndicesType& rLocalIndexStructure, TIndexType rTotalNumberOfMasters) const
     {
         // Get number of master indices for this current container
         rLocalIndexStructure.master_index_vector.reserve(rTotalNumberOfMasters + rEquationIds.size() );

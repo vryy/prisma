@@ -62,7 +62,6 @@
 #include "add_strategies_to_python.h"
 #include "add_utilities_to_python.h"
 
-#include "add_parallel_strategies_to_python.h"
 #include "add_parallel_linear_solvers_to_python.h"
 
 #include "add_matrix_market_interface_to_python.h"
@@ -137,7 +136,6 @@ BOOST_PYTHON_MODULE(Kratos)
     AddSerializerToPython();
     AddTableToPython();
     AddGeometriesToPython();
-    AddParallelStrategiesToPython();
     AddParallelLinearSolversToPython();
     AddMatrixMarketInterfaceToPython();
     AddKratosParametersToPython();

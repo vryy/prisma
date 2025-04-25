@@ -197,7 +197,7 @@ public:
                                  TDataType() );
         }
 
-        double total = TDataType();
+        TDataType total = TDataType();
         for(int j = 0; j<number_of_threads; j++)
             total += partial_results[j];
 
@@ -206,12 +206,11 @@ public:
     }
 
     /// ||rX||2
-    static double TwoNorm(VectorType const& rX)
+    static DataType TwoNorm(VectorType const& rX)
     {
-        return sqrt( Dot( rX, rX ) );
+        return std::sqrt( Dot( rX, rX ) );
 //             return norm_2(rX);
     }
-
 
     static void Mult(MatrixType& rA, VectorType& rX, VectorType& rY)
     {
@@ -257,64 +256,55 @@ public:
         }
     }
 
-
     //********************************************************************
     //checks if a multiplication is needed and tries to do otherwise
-    static void InplaceMult(VectorType& rX, const double A)
+    static void InplaceMult(VectorType& rX, const TDataType A)
     {
-
         UblasSpaceType::InplaceMult(rX,A);
-
     }
-
 
     //********************************************************************
     //checks if a multiplication is needed and tries to do otherwise
     //ATTENTION it is assumed no aliasing between rX and rY
     // X = A*y;
-    static void Assign(VectorType& rX, const double A, const VectorType& rY)
+    static void Assign(VectorType& rX, const DataType A, const VectorType& rY)
     {
-
         UblasSpaceType::Assign(rX,A,rY);
-
     }
 
     //********************************************************************
     //checks if a multiplication is needed and tries to do otherwise
     //ATTENTION it is assumed no aliasing between rX and rY
     // X += A*y;
-    static void UnaliasedAdd(VectorType& rX, const double A, const VectorType& rY)
+    static void UnaliasedAdd(VectorType& rX, const DataType A, const VectorType& rY)
     {
         UblasSpaceType::UnaliasedAdd(rX, A, rY);
     }
 
     //********************************************************************
-    static void ScaleAndAdd(const double A, const VectorType& rX, const double B, const VectorType& rY, VectorType& rZ)  // rZ = (A * rX) + (B * rY)
+    static void ScaleAndAdd(const DataType A, const VectorType& rX, const DataType B, const VectorType& rY, VectorType& rZ)  // rZ = (A * rX) + (B * rY)
     {
         Assign(rZ,A,rX); //rZ = A*rX
         UnaliasedAdd(rZ,B,rY); //rZ += B*rY
     }
 
-    static void ScaleAndAdd(const double A,const  VectorType& rX, const double B, VectorType& rY) // rY = (A * rX) + (B * rY)
+    static void ScaleAndAdd(const DataType A,const  VectorType& rX, const DataType B, VectorType& rY) // rY = (A * rX) + (B * rY)
     {
         InplaceMult(rY,B);
         UnaliasedAdd(rY,A,rX);
     }
 
-
     /// rA[i] * rX
     //will be most probably faster in serial as the rows are short
-    static double RowDot(unsigned int i, MatrixType& rA, VectorType& rX)
+    static DataType RowDot(unsigned int i, MatrixType& rA, VectorType& rX)
     {
         return inner_prod(row(rA, i), rX);
     }
-
 
     /// rX = A
     static void Set(VectorType& rX, TDataType A)
     {
         UblasSpaceType::set(rX, A);
-
     }
 
     static void Resize(MatrixType& rA, SizeType m, SizeType n)
@@ -345,7 +335,6 @@ public:
     inline static void ClearData(compressed_matrix<TDataType>& rA)
     {
         UblasSpaceType::ClearData(rA);
-
     }
 
     inline static void ClearData(VectorType& rX)
@@ -389,23 +378,21 @@ public:
     }
 
     //***********************************************************************
-
-    inline static double GetValue(const VectorType& x, std::size_t I)
+    inline static DataType GetValue(const VectorType& x, IndexType I)
     {
         return x[I];
     }
-    //***********************************************************************
 
-    static void GatherValues(const VectorType& x, const std::vector<std::size_t>& IndexArray, double* pValues)
+    //***********************************************************************
+    static void GatherValues(const VectorType& x, const std::vector<IndexType>& IndexArray, DataType* pValues)
     {
         KRATOS_TRY
 
-        for(std::size_t i = 0; i<IndexArray.size(); i++)
+        for(std::size_t i = 0; i < IndexArray.size(); i++)
             pValues[i] = x[IndexArray[i]];
 
         KRATOS_CATCH("")
     }
-
 
     ///@}
     ///@name Access
@@ -416,6 +403,17 @@ public:
     ///@name Inquiry
     ///@{
 
+    /// Print the information about the matrix. Depending on the level, different information will be printed
+    static void PrintMatrixInfo(std::ostream& rOStream, const MatrixType& rA, const int level)
+    {
+        UblasSpaceType::PrintMatrixInfo(rOStream, rA, level);
+    }
+
+    /// Print the information about the vector. Depending on the level, different information will be printed
+    static void PrintVectorInfo(std::ostream& rOStream, const VectorType& rX, const int level)
+    {
+        UblasSpaceType::PrintVectorInfo(rOStream, rX, level);
+    }
 
     ///@}
     ///@name Input and output
@@ -517,18 +515,11 @@ private:
     //y += A*x in parallel
     static void ParallelProductNoAdd( const MatrixType& A, const VectorType& in, VectorType& out)
     {
-//std::cout << "in function ParallelProductNoAdd" << std::endl;
-        typedef  unsigned int size_type;
-        typedef  double value_type;
-
         //create partition
-        std::vector<size_type> partition;
+        std::vector<unsigned int> partition;
         int number_of_threads = omp_get_max_threads();
         OpenMPUtils::CreatePartition(number_of_threads, A.size1(), partition);
         //parallel loop
-//             size_type  processor_row_begin, processor_row_end;
-//             int proc_id = 0;
-
         #pragma omp parallel
         {
             int thread_id = omp_get_thread_num();
@@ -537,7 +528,6 @@ private:
             typename MatrixType::index_array_type::const_iterator index_2_begin = A.index2_data().begin()+*row_iter_begin;
             typename MatrixType::value_array_type::const_iterator value_begin = A.value_data().begin()+*row_iter_begin;
             typename VectorType::iterator output_vec_begin = out.begin()+partition[thread_id];
-
 
             partial_product_no_add(    number_of_rows,
                                        row_iter_begin,
@@ -603,8 +593,6 @@ private:
 
 }; // Class ParallelUblasSpace
 
-
-
 ///@}
 
 ///@name Type Definitions
@@ -615,25 +603,20 @@ private:
 ///@name Input and output
 ///@{
 
+/// output stream function
+template<class TDataType, class TMatrixType, class TVectorType>
+inline std::ostream& operator << (std::ostream& rOStream,
+             const ParallelUblasSpace<TDataType, TMatrixType, TVectorType>& rThis)
+{
+    rThis.PrintInfo(rOStream);
+    rOStream << std::endl;
+    rThis.PrintData(rOStream);
 
-/// input stream function
-//   inline std::istream& operator >> (std::istream& rIStream,
-//                  ParallelUblasSpace& rThis);
+    return rOStream;
+}
 
-//   /// output stream function
-//   inline std::ostream& operator << (std::ostream& rOStream,
-//                  const ParallelUblasSpace& rThis)
-//     {
-//       rThis.PrintInfo(rOStream);
-//       rOStream << std::endl;
-//       rThis.PrintData(rOStream);
-
-//       return rOStream;
-//     }
 ///@}
-
 
 }  // namespace Kratos.
 
 #endif // KRATOS_PARALLEL_UBLAS_SPACE_H_INCLUDED  defined
-

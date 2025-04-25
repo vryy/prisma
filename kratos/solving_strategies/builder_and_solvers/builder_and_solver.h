@@ -57,7 +57,8 @@ namespace Kratos
  */
 template<class TSparseSpace,
          class TDenseSpace, // = DenseSpace<double>,
-         class TLinearSolver //= LinearSolver<TSparseSpace,TDenseSpace>
+         class TLinearSolver, //= LinearSolver<TSparseSpace,TDenseSpace>
+         class TModelPartType
          >
 class BuilderAndSolver
 {
@@ -66,6 +67,7 @@ public:
     ///@{
 
     typedef typename TSparseSpace::DataType TDataType;
+    typedef typename DataTypeToValueType<TDataType>::value_type ValueType;
     typedef typename TSparseSpace::MatrixType TSystemMatrixType;
     typedef typename TSparseSpace::VectorType TSystemVectorType;
 
@@ -75,24 +77,27 @@ public:
     typedef typename TDenseSpace::MatrixType LocalSystemMatrixType;
     typedef typename TDenseSpace::VectorType LocalSystemVectorType;
 
-    typedef Scheme<TSparseSpace, TDenseSpace> TSchemeType;
+    typedef Scheme<TSparseSpace, TDenseSpace, TModelPartType> TSchemeType;
     typedef TLinearSolver TLinearSolverType;
     typedef TSparseSpace TSparseSpaceType;
 
-    typedef ModelPart::DofType DofType;
-    typedef ModelPart::DofsArrayType DofsArrayType;
-
-    //typedef Dof<TDataType> DofType;
-    //typedef PointerVectorSet<DofType, IdentityFunction<DofType> > DofsArrayType;
+    typedef TModelPartType ModelPartType;
+    typedef typename ModelPartType::DofType DofType;
+    typedef typename ModelPartType::DofsArrayType DofsArrayType;
 
     typedef typename DofsArrayType::iterator DofIterator;
     typedef typename DofsArrayType::const_iterator DofConstantIterator;
 
-    typedef ModelPart::NodesContainerType NodesArrayType;
-    typedef ModelPart::ElementsContainerType ElementsArrayType;
-    typedef ModelPart::ConditionsContainerType ConditionsArrayType;
+    typedef typename ModelPartType::NodesContainerType NodesContainerType;
+    typedef typename ModelPartType::ElementsContainerType ElementsContainerType;
+    typedef typename ModelPartType::ConditionsContainerType ConditionsContainerType;
 
-    typedef PointerVectorSet<Element, IndexedObject> ElementsContainerType;
+    typedef typename ModelPartType::IndexType IndexType;
+    typedef typename ModelPartType::SizeType SizeType;
+
+    typedef typename ModelPartType::NodeType NodeType;
+    typedef typename ModelPartType::ElementType ElementType;
+    typedef typename ModelPartType::ConditionType ConditionType;
 
     /// Pointer definition of BuilderAndSolver
     KRATOS_CLASS_POINTER_DEFINITION(BuilderAndSolver);
@@ -100,8 +105,6 @@ public:
     ///@}
     ///@name Life Cycle
     ///@{
-
-
 
     /**
      * @brief Default constructor.
@@ -114,6 +117,11 @@ public:
         mDofSetIsInitialized = false;
 
         mReshapeMatrixFlag = false; //by default the matrix is shaped just once
+
+        if constexpr (!std::is_same<TDataType, typename ModelPartType::DataType>::value)
+        {
+            #pragma error The data type of sparce space and model part is not the same
+        }
     }
 
     /** Destructor.
@@ -121,7 +129,6 @@ public:
     virtual ~BuilderAndSolver()
     {
     }
-
 
     ///@}
     ///@name Operators
@@ -185,7 +192,7 @@ public:
      * @brief This method returns the value mEquationSystemSize
      * @return Size of the system of equations
      */
-    unsigned int GetEquationSystemSize() const
+    SizeType GetEquationSystemSize() const
     {
         return mEquationSystemSize;
     }
@@ -216,7 +223,7 @@ public:
      */
     virtual void BuildLHS(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& rModelPart,
+        ModelPartType& rModelPart,
         TSystemMatrixType& rA
         )
     {
@@ -230,7 +237,7 @@ public:
      */
     virtual void BuildRHS(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& rModelPart,
+        ModelPartType& rModelPart,
         TSystemVectorType& rb
         )
     {
@@ -245,7 +252,7 @@ public:
      */
     virtual void Build(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& rModelPart,
+        ModelPartType& rModelPart,
         TSystemMatrixType& rA,
         TSystemVectorType& rb
         )
@@ -261,7 +268,7 @@ public:
      */
     virtual void BuildLHS_CompleteOnFreeRows(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& rModelPart,
+        ModelPartType& rModelPart,
         TSystemMatrixType& rA
         )
     {
@@ -276,7 +283,7 @@ public:
      */
     virtual void BuildLHS_Complete(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& rModelPart,
+        ModelPartType& rModelPart,
         TSystemMatrixType& rA
         )
     {
@@ -307,7 +314,7 @@ public:
      */
     virtual void BuildAndSolve(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& rModelPart,
+        ModelPartType& rModelPart,
         TSystemMatrixType& rA,
         TSystemVectorType& rDx,
         TSystemVectorType& rb)
@@ -324,7 +331,7 @@ public:
      */
     virtual void BuildRHSAndSolve(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& rModelPart,
+        ModelPartType& rModelPart,
         TSystemMatrixType& rA,
         TSystemVectorType& rDx,
         TSystemVectorType& rb
@@ -343,7 +350,7 @@ public:
      */
     virtual void ApplyDirichletConditions(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& rModelPart,
+        ModelPartType& rModelPart,
         TSystemMatrixType& rA,
         TSystemVectorType& rDx,
         TSystemVectorType& rb
@@ -360,7 +367,7 @@ public:
      */
     virtual void ApplyDirichletConditions_LHS(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& rModelPart,
+        ModelPartType& rModelPart,
         TSystemMatrixType& rA,
         TSystemVectorType& rDx
         )
@@ -376,7 +383,7 @@ public:
      */
     virtual void ApplyDirichletConditions_RHS(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& rModelPart,
+        ModelPartType& rModelPart,
         TSystemVectorType& rDx,
         TSystemVectorType& rb
         )
@@ -391,7 +398,7 @@ public:
      */
     virtual void ApplyRHSConstraints(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& rModelPart,
+        ModelPartType& rModelPart,
         TSystemVectorType& rb
         )
     {
@@ -406,7 +413,7 @@ public:
      */
     virtual void ApplyConstraints(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& rModelPart,
+        ModelPartType& rModelPart,
         TSystemMatrixType& rA,
         TSystemVectorType& rb
         )
@@ -421,7 +428,7 @@ public:
      */
     virtual void SetUpDofSet(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& rModelPart
+        ModelPartType& rModelPart
         )
     {
     }
@@ -446,7 +453,7 @@ public:
      * @brief It organises the dofset in order to speed up the building phase
      * @param rModelPart The model part to compute
      */
-    virtual void SetUpSystem(ModelPart& rModelPart)
+    virtual void SetUpSystem(ModelPartType& rModelPart)
     {
     }
 
@@ -463,7 +470,7 @@ public:
         TSystemMatrixPointerType& pA,
         TSystemVectorPointerType& pDx,
         TSystemVectorPointerType& pb,
-        ModelPart& rModelPart
+        ModelPartType& rModelPart
         )
     {
     }
@@ -482,9 +489,9 @@ public:
         TSystemMatrixPointerType& pA,
         TSystemVectorPointerType& pDx,
         TSystemVectorPointerType& pb,
-        ElementsArrayType& rElements,
-        ConditionsArrayType& rConditions,
-        ProcessInfo& CurrentProcessInfo
+        ElementsContainerType& rElements,
+        ConditionsContainerType& rConditions,
+        const ProcessInfo& CurrentProcessInfo
     )
     {
     }
@@ -500,7 +507,7 @@ public:
         TSystemMatrixPointerType& pA,
         TSystemVectorPointerType& pDx,
         TSystemVectorPointerType& pb,
-        ModelPart& rModelPart
+        ModelPartType& rModelPart
         )
     {
     }
@@ -513,7 +520,7 @@ public:
      * @param rb The RHS vector of the system of equations
      */
     virtual void InitializeSolutionStep(
-        ModelPart& rModelPart,
+        ModelPartType& rModelPart,
         TSystemMatrixType& rA,
         TSystemVectorType& rDx,
         TSystemVectorType& rb
@@ -529,7 +536,7 @@ public:
      * @param rb The RHS vector of the system of equations
      */
     virtual void FinalizeSolutionStep(
-        ModelPart& rModelPart,
+        ModelPartType& rModelPart,
         TSystemMatrixType& rA,
         TSystemVectorType& rDx,
         TSystemVectorType& rb
@@ -547,7 +554,7 @@ public:
      */
     virtual void CalculateReactions(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& rModelPart,
+        ModelPartType& rModelPart,
         TSystemMatrixType& rA,
         TSystemVectorType& rDx,
         TSystemVectorType& rb
@@ -579,11 +586,12 @@ public:
      * @param rModelPart The model part to compute
      * @return 0 all ok
      */
-    virtual int Check(const ModelPart& rModelPart) const
+    virtual int Check(const ModelPartType& rModelPart) const
     {
         KRATOS_TRY
 
         return 0;
+
         KRATOS_CATCH("");
     }
 
@@ -623,7 +631,7 @@ public:
      * @brief This method returns constraint relation (T) matrix
      * @return The constraint relation (T) matrix
      */
-    virtual typename TSparseSpace::MatrixType& GetConstraintRelationMatrix()
+    virtual TSystemMatrixType& GetConstraintRelationMatrix()
     {
         KRATOS_ERROR << "GetConstraintRelationMatrix is not implemented in base BuilderAndSolver" << std::endl;
     }
@@ -632,7 +640,7 @@ public:
      * @brief This method returns constraint constant vector
      * @return The constraint constant vector
      */
-    virtual typename TSparseSpace::VectorType& GetConstraintConstantVector()
+    virtual TSystemVectorType& GetConstraintConstantVector()
     {
         KRATOS_ERROR << "GetConstraintConstantVector is not implemented in base BuilderAndSolver" << std::endl;
     }
@@ -687,7 +695,7 @@ protected:
 
     bool mCalculateReactionsFlag = false; /// Flag taking in account if it is needed or not to calculate the reactions
 
-    unsigned int mEquationSystemSize; /// Number of degrees of freedom of the problem to be solve
+    SizeType mEquationSystemSize; /// Number of degrees of freedom of the problem to be solve
 
     int mEchoLevel = 0;
 
@@ -755,15 +763,15 @@ private:
 ///@{
 
 /// input stream function
-template<class TSparseSpace, class TDenseSpace, class TLinearSolver>
-inline std::istream& operator >> (std::istream& rIStream, BuilderAndSolver<TSparseSpace, TDenseSpace, TLinearSolver>& rThis)
+template<class TSparseSpace, class TDenseSpace, class TLinearSolver, class TModelPartType>
+inline std::istream& operator >> (std::istream& rIStream, BuilderAndSolver<TSparseSpace, TDenseSpace, TLinearSolver, TModelPartType>& rThis)
 {
     return rIStream;
 }
 
 /// output stream function
-template<class TSparseSpace, class TDenseSpace, class TLinearSolver>
-inline std::ostream& operator << (std::ostream& rOStream, const BuilderAndSolver<TSparseSpace, TDenseSpace, TLinearSolver>& rThis)
+template<class TSparseSpace, class TDenseSpace, class TLinearSolver, class TModelPartType>
+inline std::ostream& operator << (std::ostream& rOStream, const BuilderAndSolver<TSparseSpace, TDenseSpace, TLinearSolver, TModelPartType>& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;

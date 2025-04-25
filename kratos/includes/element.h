@@ -1340,9 +1340,11 @@ inline std::ostream & operator <<(std::ostream& rOStream, const BaseElement<TNod
 
 typedef BaseElement<Node<3, KRATOS_DOUBLE_TYPE, Dof<KRATOS_DOUBLE_TYPE> > > Element;
 typedef BaseElement<Node<3, KRATOS_DOUBLE_TYPE, Dof<KRATOS_COMPLEX_TYPE> > > ComplexElement;
+typedef BaseElement<Node<3, KRATOS_COMPLEX_TYPE, Dof<KRATOS_COMPLEX_TYPE> > > GComplexElement;
 
 void KRATOS_API(KRATOS_CORE) AddKratosComponent(std::string const& Name, Element const& ThisComponent);
-// void KRATOS_API(KRATOS_CORE) AddKratosComponent(std::string const& Name, ComplexElement const& ThisComponent);
+void KRATOS_API(KRATOS_CORE) AddKratosComponent(std::string const& Name, ComplexElement const& ThisComponent);
+void KRATOS_API(KRATOS_CORE) AddKratosComponent(std::string const& Name, GComplexElement const& ThisComponent);
 
 /**
  * definition of elemental specific variables

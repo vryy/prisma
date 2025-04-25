@@ -177,6 +177,86 @@ void AddValueContainersToPython(const std::string& Prefix)
     ;
 }
 
+// template<class TComplexType>
+// typename TComplexType::value_type ComplexGetReal(TComplexType& rValue)
+// {
+//     return rValue.real();
+// }
+
+// template<class TComplexType>
+// typename TComplexType::value_type ComplexGetImag(TComplexType& rValue)
+// {
+//     return rValue.imag();
+// }
+
+// template<class TComplexType>
+// void ComplexSetReal(TComplexType& rValue, typename TComplexType::value_type value)
+// {
+//     rValue.real(value);
+// }
+
+// template<class TComplexType>
+// void ComplexSetImag(TComplexType& rValue, typename TComplexType::value_type value)
+// {
+//     rValue.imag(value);
+// }
+
+// struct ComplexWrapper {
+//     std::complex<double> value;
+
+//     ComplexWrapper(double real = 0.0, double imag = 0.0)
+//         : value(real, imag) {}
+
+//     double get_real() const { return value.real(); }
+//     void set_real(double r) { value.real(r); }
+
+//     double get_imag() const { return value.imag(); }
+//     void set_imag(double i) { value.imag(i); }
+
+//     // Operators
+//     ComplexWrapper operator+(const ComplexWrapper& other) const {
+//         return ComplexWrapper(value + other.value);
+//     }
+
+//     ComplexWrapper operator-(const ComplexWrapper& other) const {
+//         return ComplexWrapper(value - other.value);
+//     }
+
+//     ComplexWrapper operator*(const ComplexWrapper& other) const {
+//         return ComplexWrapper(value * other.value);
+//     }
+
+//     ComplexWrapper operator/(const ComplexWrapper& other) const {
+//         return ComplexWrapper(value / other.value);
+//     }
+
+//     // Constructor from std::complex for internal use
+//     ComplexWrapper(const std::complex<double>& v) : value(v) {}
+// };
+
+// void AddComplexNumberToPython()
+// {
+//     class_<std::complex<double> >( "ComplexDouble", init<double, double>() )
+//     .add_property("real", ComplexGetReal<std::complex<double> >, ComplexSetReal<std::complex<double> >)
+//     .add_property("imag", ComplexGetImag<std::complex<double> >, ComplexSetImag<std::complex<double> >)
+//     .def(self + self)
+//     .def(self - self)
+//     .def(self * self)
+//     .def(self / self)
+//     .def( self_ns::str( self ) )
+//     ;
+
+//     // class_<ComplexWrapper>("ComplexDouble", init<double, double>())
+//     // .add_property("real", &ComplexWrapper::get_real, &ComplexWrapper::set_real)
+//     // .add_property("imag", &ComplexWrapper::get_imag, &ComplexWrapper::set_imag)
+//     // .def(self + self)
+//     // .def(self - self)
+//     // .def(self * self)
+//     // .def(self / self)
+//     // // .def( self_ns::str( self ) )
+//     // ;
+// }
+
 void AddContainersToPython()
 {
     class_<VariableData>( "VariableData", no_init )
@@ -218,6 +298,8 @@ void AddContainersToPython()
     class_<Variable<RadiationSettings::Pointer > , bases<VariableData>, boost::noncopyable >("RadiationSettingsVariable", no_init)
     .def( self_ns::str( self ) )
     ;
+
+    // AddComplexNumberToPython();
 
     class_<DataValueContainer, DataValueContainer::Pointer>( "DataValueContainer" )
     .def( "__len__", &DataValueContainer::Size )

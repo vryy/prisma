@@ -22,8 +22,6 @@
 
 
 /* Project includes */
-#include "includes/define.h"
-#include "includes/model_part.h"
 #include "solving_strategies/convergencecriterias/convergence_criteria.h"
 
 namespace Kratos
@@ -76,26 +74,27 @@ Detail class definition.
 
 */
 template<class TSparseSpace,
-         class TDenseSpace
+         class TDenseSpace,
+         class TModelPartType
          >
-class And_Criteria : public ConvergenceCriteria< TSparseSpace, TDenseSpace >
+class And_Criteria : public ConvergenceCriteria< TSparseSpace, TDenseSpace, TModelPartType >
 {
 public:
     /**@name Type Definitions */
     /*@{ */
 
     /** Counted pointer of And_Criteria */
-
-
     KRATOS_CLASS_POINTER_DEFINITION(And_Criteria );
 
-    typedef ConvergenceCriteria< TSparseSpace, TDenseSpace > BaseType;
+    typedef ConvergenceCriteria< TSparseSpace, TDenseSpace, TModelPartType > BaseType;
 
     typedef TSparseSpace SparseSpaceType;
 
     typedef typename BaseType::TDataType TDataType;
 
     typedef typename BaseType::DofsArrayType DofsArrayType;
+
+    typedef typename BaseType::ModelPartType ModelPartType;
 
     typedef typename BaseType::TSystemMatrixType TSystemMatrixType;
 
@@ -111,9 +110,9 @@ public:
     */
     And_Criteria
     (
-        typename ConvergenceCriteria < TSparseSpace, TDenseSpace >::Pointer first_criterion,
-        typename ConvergenceCriteria < TSparseSpace, TDenseSpace >::Pointer second_criterion)
-        :ConvergenceCriteria< TSparseSpace, TDenseSpace >()
+        typename BaseType::Pointer first_criterion,
+        typename BaseType::Pointer second_criterion)
+        : BaseType()
     {
         mpfirst_criterion   =  first_criterion;
         mpsecond_criterion  =  second_criterion;
@@ -122,15 +121,15 @@ public:
     /** Copy constructor.
     */
     And_Criteria(And_Criteria const& rOther)
-      :BaseType(rOther)
-     {
-       mpfirst_criterion   =  rOther.mpfirst_criterion;
-       mpsecond_criterion  =  rOther.mpsecond_criterion;
-     }
+        : BaseType(rOther)
+    {
+        mpfirst_criterion   =  rOther.mpfirst_criterion;
+        mpsecond_criterion  =  rOther.mpsecond_criterion;
+    }
 
     /** Destructor.
     */
-    virtual ~And_Criteria () {}
+    ~And_Criteria () override {}
 
 
     /*@} */
@@ -144,39 +143,37 @@ public:
     1 -> print basic informations
     2 -> print extra informations
      */
-    void SetEchoLevel(int Level)
+    void SetEchoLevel(int Level) override
     {
-      BaseType::SetEchoLevel(Level);
-      mpfirst_criterion->SetEchoLevel(Level);
-      mpsecond_criterion->SetEchoLevel(Level);
+        BaseType::SetEchoLevel(Level);
+        mpfirst_criterion->SetEchoLevel(Level);
+        mpsecond_criterion->SetEchoLevel(Level);
     }
 
 
     /*Criteria that need to be called after getting the solution */
     bool PostCriteria(
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         DofsArrayType& rDofSet,
         const TSystemMatrixType& A,
         const TSystemVectorType& Dx,
         const TSystemVectorType& b
-    )
+    ) override
     {
         bool first_criterion_result  = mpfirst_criterion ->PostCriteria(r_model_part,rDofSet,A,Dx,b);
         bool second_criterion_result = mpsecond_criterion ->PostCriteria(r_model_part,rDofSet,A,Dx,b);
 
         return (first_criterion_result && second_criterion_result);
-
     }
 
-
-    void Initialize(ModelPart& r_model_part)
+    void Initialize(ModelPartType& r_model_part) override
     {
         mpfirst_criterion->Initialize(r_model_part);
         mpsecond_criterion->Initialize(r_model_part);
     }
 
     void InitializeSolutionStep(
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         DofsArrayType& rDofSet,
         const TSystemMatrixType& A,
         const TSystemVectorType& Dx,
@@ -188,19 +185,16 @@ public:
     }
 
     void FinalizeSolutionStep(
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         DofsArrayType& rDofSet,
         const TSystemMatrixType& A,
         const TSystemVectorType& Dx,
         const TSystemVectorType& b
-    )
+    ) override
     {
         mpfirst_criterion->FinalizeSolutionStep(r_model_part,rDofSet,A,Dx,b);
         mpsecond_criterion->FinalizeSolutionStep(r_model_part,rDofSet,A,Dx,b);
     }
-
-
-
 
     /*@} */
     /**@name Operations */
@@ -270,9 +264,9 @@ private:
     /*@} */
     /**@name Member Variables */
     /*@{ */
-    typename ConvergenceCriteria < TSparseSpace, TDenseSpace >::Pointer mpfirst_criterion;
-    typename ConvergenceCriteria < TSparseSpace, TDenseSpace >::Pointer mpsecond_criterion;
 
+    typename BaseType::Pointer mpfirst_criterion;
+    typename BaseType::Pointer mpsecond_criterion;
 
     /*@} */
     /**@name Private Operators*/

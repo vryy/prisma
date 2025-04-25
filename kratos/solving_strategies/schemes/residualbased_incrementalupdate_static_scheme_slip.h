@@ -110,6 +110,8 @@ public:
 
     typedef typename BaseType::ModelPartType ModelPartType;
 
+    typedef typename ModelPartType::NodeType NodeType;
+
     typedef typename BaseType::ElementType ElementType;
 
     typedef typename BaseType::ConditionType ConditionType;
@@ -131,11 +133,12 @@ public:
       */
     ResidualBasedIncrementalUpdateStaticSchemeSlip(unsigned int DomainSize, unsigned int BlockSize)
         : BaseType()
-        , mRotationTool(DomainSize,BlockSize,IS_STRUCTURE,0.0)
+        , mRotationTool(DomainSize, BlockSize, STRUCTURE)
     {}
 
     /// Destructor.
-    virtual ~ResidualBasedIncrementalUpdateStaticSchemeSlip(){}
+    ~ResidualBasedIncrementalUpdateStaticSchemeSlip() override
+    {}
 
     ///@}
     ///@name Operators
@@ -236,7 +239,7 @@ public:
     /// Obtain a condition's local contribution to the RHS and apply slip conditions if needed.
     void CalculateRHSContribution(ConditionType& rCurrentCondition,
                                   LocalSystemVectorType& RHS_Contribution,
-                                  ElementType::EquationIdVectorType& EquationId,
+                                  typename ElementType::EquationIdVectorType& EquationId,
                                   const ProcessInfo& CurrentProcessInfo) override
     {
         KRATOS_TRY;
@@ -325,7 +328,7 @@ private:
     ///@{
 
     /// Rotation tool instance
-    CoordinateTransformationUtils<LocalSystemMatrixType, LocalSystemVectorType, TDataType> mRotationTool;
+    CoordinateTransformationUtils<NodeType> mRotationTool;
 
     ///@}
     ///@name Serialization

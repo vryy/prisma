@@ -1290,9 +1290,11 @@ inline std::ostream & operator <<(std::ostream& rOStream, const BaseCondition<TN
 
 typedef BaseCondition<Node<3, KRATOS_DOUBLE_TYPE, Dof<KRATOS_DOUBLE_TYPE> > > Condition;
 typedef BaseCondition<Node<3, KRATOS_DOUBLE_TYPE, Dof<KRATOS_COMPLEX_TYPE> > > ComplexCondition;
+typedef BaseCondition<Node<3, KRATOS_COMPLEX_TYPE, Dof<KRATOS_COMPLEX_TYPE> > > GComplexCondition;
 
 void KRATOS_API(KRATOS_CORE) AddKratosComponent(std::string const& Name, Condition const& ThisComponent);
-// void KRATOS_API(KRATOS_CORE) AddKratosComponent(std::string const& Name, ComplexCondition const& ThisComponent);
+void KRATOS_API(KRATOS_CORE) AddKratosComponent(std::string const& Name, ComplexCondition const& ThisComponent);
+void KRATOS_API(KRATOS_CORE) AddKratosComponent(std::string const& Name, GComplexCondition const& ThisComponent);
 
 /**
  * definition of condition specific variables

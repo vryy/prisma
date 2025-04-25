@@ -119,7 +119,7 @@ public:
     guess for iterative linear solvers.
     @param rB. Right hand side vector.
     */
-    bool Solve(SparseMatrixType& rA, VectorType& rX, VectorType& rB)
+    bool Solve(SparseMatrixType& rA, VectorType& rX, VectorType& rB) override
     {
         if(this->IsNotConsistent(rA, rX, rB))
             return false;
@@ -139,7 +139,6 @@ public:
         return is_solved;
     }
 
-
     /** Multi solve method for solving a set of linear systems with same coefficient matrix.
     Solves the linear system Ax=b and puts the result on SystemVector& rX.
     rX is also th initial guess for iterative methods.
@@ -148,7 +147,7 @@ public:
     guess for iterative linear solvers.
     @param rB. Right hand side vector.
     */
-    bool Solve(SparseMatrixType& rA, DenseMatrixType& rX, DenseMatrixType& rB)
+    bool Solve(SparseMatrixType& rA, DenseMatrixType& rX, DenseMatrixType& rB) override
     {
 // 	  GetTimeTable()->Start(Info());
 

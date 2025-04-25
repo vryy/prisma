@@ -258,7 +258,7 @@ public:
     /// ||rX||2
     static DataType TwoNorm(VectorType const& rX)
     {
-        return sqrt(Dot(rX, rX));
+        return std::sqrt(Dot(rX, rX));
     }
 
     // Frobenious norm
