@@ -1511,7 +1511,51 @@ void KRATOS_API(KRATOS_CORE) AddKratosComponent(std::string const& Name, GComple
 #undef  KRATOS_EXPORT_MACRO
 #define KRATOS_EXPORT_MACRO KRATOS_API
 
-KRATOS_DEFINE_VARIABLE(ConstitutiveLaw::Pointer, CONSTITUTIVE_LAW)
+#ifdef KRATOS_DEFINE_CONSTITUTIVE_LAW_VARIABLE
+#undef KRATOS_DEFINE_CONSTITUTIVE_LAW_VARIABLE
+#endif
+#define KRATOS_DEFINE_CONSTITUTIVE_LAW_VARIABLE(name)                          \
+    KRATOS_DEFINE_VARIABLE_IMPLEMENTATION(KRATOS_CORE, ConstitutiveLaw::Pointer, name)  \
+    KRATOS_DEFINE_VARIABLE_IMPLEMENTATION(KRATOS_CORE, ComplexConstitutiveLaw::Pointer, COMPLEX##_##name)  \
+    KRATOS_DEFINE_VARIABLE_IMPLEMENTATION(KRATOS_CORE, GComplexConstitutiveLaw::Pointer, GCOMPLEX##_##name)  \
+\
+template<typename T> struct KRATOS_EXPORT_MACRO(KRATOS_CORE) VariableSelector_##name;   \
+template<> struct KRATOS_EXPORT_MACRO(KRATOS_CORE) VariableSelector_##name<ConstitutiveLaw> {static constexpr Variable<ConstitutiveLaw::Pointer>& Get() {return name;}};    \
+template<> struct KRATOS_EXPORT_MACRO(KRATOS_CORE) VariableSelector_##name<ComplexConstitutiveLaw> {static constexpr Variable<ComplexConstitutiveLaw::Pointer>& Get() {return COMPLEX##_##name;}};  \
+template<> struct KRATOS_EXPORT_MACRO(KRATOS_CORE) VariableSelector_##name<GComplexConstitutiveLaw> {static constexpr Variable<GComplexConstitutiveLaw::Pointer>& Get() {return GCOMPLEX##_##name;}};  \
+
+#ifdef KRATOS_DEFINE_APPLICATION_CONSTITUTIVE_LAW_VARIABLE
+#undef KRATOS_DEFINE_APPLICATION_CONSTITUTIVE_LAW_VARIABLE
+#endif
+#define KRATOS_DEFINE_APPLICATION_CONSTITUTIVE_LAW_VARIABLE(application, name) \
+    KRATOS_API(application) extern Variable<ConstitutiveLaw::Pointer> name;            \
+    KRATOS_API(application) extern Variable<ComplexConstitutiveLaw::Pointer> COMPLEX##_##name;            \
+    KRATOS_API(application) extern Variable<GComplexConstitutiveLaw::Pointer> GCOMPLEX##_##name;            \
+\
+template<typename T> struct KRATOS_API(application) VariableSelector_##name;   \
+template<> struct KRATOS_API(application) VariableSelector_##name<ConstitutiveLaw> {static constexpr Variable<ConstitutiveLaw::Pointer>& Get() {return name;}};    \
+template<> struct KRATOS_API(application) VariableSelector_##name<ComplexConstitutiveLaw> {static constexpr Variable<ComplexConstitutiveLaw::Pointer>& Get() {return COMPLEX##_##name;}};  \
+template<> struct KRATOS_API(application) VariableSelector_##name<GComplexConstitutiveLaw> {static constexpr Variable<GComplexConstitutiveLaw::Pointer>& Get() {return GCOMPLEX##_##name;}};  \
+
+#ifdef KRATOS_CREATE_CONSTITUTIVE_LAW_VARIABLE
+#undef KRATOS_CREATE_CONSTITUTIVE_LAW_VARIABLE
+#endif
+#define KRATOS_CREATE_CONSTITUTIVE_LAW_VARIABLE(name)          \
+    /*const*/ Kratos::Variable<ConstitutiveLaw::Pointer> name(#name);  \
+    /*const*/ Kratos::Variable<ComplexConstitutiveLaw::Pointer> COMPLEX##_##name("COMPLEX_" #name);  \
+    /*const*/ Kratos::Variable<GComplexConstitutiveLaw::Pointer> GCOMPLEX##_##name("GCOMPLEX_" #name);  \
+
+#ifdef KRATOS_REGISTER_CONSTITUTIVE_LAW_VARIABLE
+#undef KRATOS_REGISTER_CONSTITUTIVE_LAW_VARIABLE
+#endif
+#define KRATOS_REGISTER_CONSTITUTIVE_LAW_VARIABLE(name)               \
+    KRATOS_REGISTER_VARIABLE_IMPLEMENTATION(name)                          \
+    KRATOS_REGISTER_VARIABLE_IMPLEMENTATION(COMPLEX##_##name)              \
+    KRATOS_REGISTER_VARIABLE_IMPLEMENTATION(GCOMPLEX##_##name)              \
+
+////////////
+
+KRATOS_DEFINE_CONSTITUTIVE_LAW_VARIABLE( CONSTITUTIVE_LAW )
 
 #undef  KRATOS_EXPORT_MACRO
 #define KRATOS_EXPORT_MACRO KRATOS_NO_EXPORT

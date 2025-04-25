@@ -69,6 +69,12 @@ public:
     ///base type: an GeometricalObject that automatically has a unique number
     typedef GeometricalObject<TNodeType> BaseType;
 
+    ///definition of this class of element type
+    typedef BaseElement<TNodeType> ElementType;
+
+    ///definition of this entity type
+    typedef BaseElement<TNodeType> EntityType;
+
     ///definition of node type (default is: Node<3>)
     typedef typename BaseType::NodeType NodeType;
 
@@ -77,6 +83,9 @@ public:
      * related to the constitutive law
      */
     typedef Properties PropertiesType;
+
+    ///definition of the constitutive law
+    typedef ConstitutiveLawImpl<TNodeType> ConstitutiveLawType;
 
     ///definition of the geometry type with given NodeType
     typedef typename BaseType::GeometryType GeometryType;
@@ -92,9 +101,15 @@ public:
 
     typedef typename DofType::DataType DataType;
 
+    typedef typename DataTypeToValueType<DataType>::value_type ValueType;
+
     typedef typename MatrixVectorTypeSelector<DataType>::VectorType VectorType;
 
+    typedef typename MatrixVectorTypeSelector<DataType>::ZeroVectorType ZeroVectorType;
+
     typedef typename MatrixVectorTypeSelector<DataType>::MatrixType MatrixType;
+
+    typedef typename MatrixVectorTypeSelector<DataType>::ZeroMatrixType ZeroMatrixType;
 
     typedef std::vector<IndexType> EquationIdVectorType;
 
@@ -825,8 +840,8 @@ public:
     }
 
     virtual void CalculateOnIntegrationPoints(
-        const Variable<ConstitutiveLaw::Pointer>& rVariable,
-        std::vector<ConstitutiveLaw::Pointer>& rOutput,
+        const Variable<typename ConstitutiveLawType::Pointer>& rVariable,
+        std::vector<typename ConstitutiveLawType::Pointer>& rOutput,
         const ProcessInfo& rCurrentProcessInfo)
     {
     }
@@ -899,8 +914,8 @@ public:
     }
 
     virtual void SetValuesOnIntegrationPoints(
-        const Variable<ConstitutiveLaw::Pointer>& rVariable,
-        const std::vector<ConstitutiveLaw::Pointer>& rValues,
+        const Variable<typename ConstitutiveLawType::Pointer>& rVariable,
+        const std::vector<typename ConstitutiveLawType::Pointer>& rValues,
         const ProcessInfo& rCurrentProcessInfo)
     {
     }
@@ -957,8 +972,8 @@ public:
         this->CalculateOnIntegrationPoints(rVariable, rValues, rCurrentProcessInfo);
     }
 
-    void GetValuesOnIntegrationPoints(const Variable<ConstitutiveLaw::Pointer>& rVariable,
-                         std::vector<ConstitutiveLaw::Pointer>& rValues,
+    void GetValuesOnIntegrationPoints(const Variable<typename ConstitutiveLawType::Pointer>& rVariable,
+                         std::vector<typename ConstitutiveLawType::Pointer>& rValues,
                          const ProcessInfo& rCurrentProcessInfo)
     {
         this->CalculateOnIntegrationPoints(rVariable, rValues, rCurrentProcessInfo);

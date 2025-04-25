@@ -68,6 +68,12 @@ public:
     ///base type: an GeometricalObject that automatically has a unique number
     typedef GeometricalObject<TNodeType> BaseType;
 
+    ///definition of this class of condition type
+    typedef BaseCondition<TNodeType> ConditionType;
+
+    ///definition of this entity type
+    typedef BaseCondition<TNodeType> EntityType;
+
     ///definition of node type (default is: Node<3>)
     typedef typename BaseType::NodeType NodeType;
 

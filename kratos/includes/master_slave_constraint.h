@@ -84,6 +84,9 @@ public:
     /// The definition of the base class
     typedef IndexedObject BaseType;
 
+    ///definition of this entity type
+    typedef BaseMasterSlaveConstraint<TNodeType> EntityType;
+
     /// The index type definition
     typedef std::size_t IndexType;
 

@@ -195,9 +195,31 @@ catch(...) { Block KRATOS_THROW_ERROR(std::runtime_error, "Unknown error", MoreI
     KRATOS_DEFINE_VARIABLE_IMPLEMENTATION(KRATOS_CORE, KRATOS_DOUBLE_TYPE, name)  \
     KRATOS_DEFINE_VARIABLE_IMPLEMENTATION(KRATOS_CORE, KRATOS_COMPLEX_TYPE, COMPLEX##_##name)  \
 \
-template<typename T> struct VariableSelector_##name;   \
-template<> struct VariableSelector_##name<KRATOS_DOUBLE_TYPE> {static constexpr Variable<KRATOS_DOUBLE_TYPE>& Get() {return name;}};    \
-template<> struct VariableSelector_##name<KRATOS_COMPLEX_TYPE> {static constexpr Variable<KRATOS_COMPLEX_TYPE>& Get() {return COMPLEX##_##name;}};  \
+template<typename T> struct KRATOS_EXPORT_MACRO(KRATOS_CORE) VariableSelector_##name;   \
+template<> struct KRATOS_EXPORT_MACRO(KRATOS_CORE) VariableSelector_##name<KRATOS_DOUBLE_TYPE> {static constexpr Variable<KRATOS_DOUBLE_TYPE>& Get() {return name;}};    \
+template<> struct KRATOS_EXPORT_MACRO(KRATOS_CORE) VariableSelector_##name<KRATOS_COMPLEX_TYPE> {static constexpr Variable<KRATOS_COMPLEX_TYPE>& Get() {return COMPLEX##_##name;}};  \
+
+#ifdef KRATOS_DEFINE_VECTOR_VARIABLE
+#undef KRATOS_DEFINE_VECTOR_VARIABLE
+#endif
+#define KRATOS_DEFINE_VECTOR_VARIABLE(name)                          \
+    KRATOS_DEFINE_VARIABLE_IMPLEMENTATION(KRATOS_CORE, Vector, name)  \
+    KRATOS_DEFINE_VARIABLE_IMPLEMENTATION(KRATOS_CORE, ComplexVector, COMPLEX##_##name)  \
+\
+template<typename T> struct KRATOS_EXPORT_MACRO(KRATOS_CORE) VariableSelector_##name;   \
+template<> struct KRATOS_EXPORT_MACRO(KRATOS_CORE) VariableSelector_##name<Vector> {static constexpr Variable<Vector>& Get() {return name;}};    \
+template<> struct KRATOS_EXPORT_MACRO(KRATOS_CORE) VariableSelector_##name<ComplexVector> {static constexpr Variable<ComplexVector>& Get() {return COMPLEX##_##name;}};  \
+
+#ifdef KRATOS_DEFINE_MATRIX_VARIABLE
+#undef KRATOS_DEFINE_MATRIX_VARIABLE
+#endif
+#define KRATOS_DEFINE_MATRIX_VARIABLE(name)                          \
+    KRATOS_DEFINE_VARIABLE_IMPLEMENTATION(KRATOS_CORE, Matrix, name)  \
+    KRATOS_DEFINE_VARIABLE_IMPLEMENTATION(KRATOS_CORE, ComplexMatrix, COMPLEX##_##name)  \
+\
+template<typename T> struct KRATOS_EXPORT_MACRO(KRATOS_CORE) VariableSelector_##name;   \
+template<> struct KRATOS_EXPORT_MACRO(KRATOS_CORE) VariableSelector_##name<Matrix> {static constexpr Variable<Matrix>& Get() {return name;}};    \
+template<> struct KRATOS_EXPORT_MACRO(KRATOS_CORE) VariableSelector_##name<ComplexMatrix> {static constexpr Variable<ComplexMatrix>& Get() {return COMPLEX##_##name;}};  \
 
 #ifdef KRATOS_DEFINE_APPLICATION_VARIABLE
 #undef KRATOS_DEFINE_APPLICATION_VARIABLE
@@ -208,13 +230,35 @@ template<> struct VariableSelector_##name<KRATOS_COMPLEX_TYPE> {static constexpr
 #ifdef KRATOS_DEFINE_APPLICATION_DOUBLE_VARIABLE
 #undef KRATOS_DEFINE_APPLICATION_DOUBLE_VARIABLE
 #endif
-#define KRATOS_DEFINE_APPLICATION_DOUBLE_VARIABLE(application, type, name) \
+#define KRATOS_DEFINE_APPLICATION_DOUBLE_VARIABLE(application, name) \
     KRATOS_API(application) extern Variable<KRATOS_DOUBLE_TYPE> name;            \
     KRATOS_API(application) extern Variable<KRATOS_COMPLEX_TYPE> COMPLEX##_##name;            \
 \
-template<typename T> struct VariableSelector_##name;   \
-template<> struct VariableSelector_##name<KRATOS_DOUBLE_TYPE> {static constexpr Variable<KRATOS_DOUBLE_TYPE>& Get() {return name;}};    \
-template<> struct VariableSelector_##name<KRATOS_COMPLEX_TYPE> {static constexpr Variable<KRATOS_COMPLEX_TYPE>& Get() {return COMPLEX##_##name;}};  \
+template<typename T> struct KRATOS_API(application) VariableSelector_##name;   \
+template<> struct KRATOS_API(application) VariableSelector_##name<KRATOS_DOUBLE_TYPE> {static constexpr Variable<KRATOS_DOUBLE_TYPE>& Get() {return name;}};    \
+template<> struct KRATOS_API(application) VariableSelector_##name<KRATOS_COMPLEX_TYPE> {static constexpr Variable<KRATOS_COMPLEX_TYPE>& Get() {return COMPLEX##_##name;}};  \
+
+#ifdef KRATOS_DEFINE_APPLICATION_VECTOR_VARIABLE
+#undef KRATOS_DEFINE_APPLICATION_VECTOR_VARIABLE
+#endif
+#define KRATOS_DEFINE_APPLICATION_VECTOR_VARIABLE(application, name) \
+    KRATOS_API(application) extern Variable<Vector> name;            \
+    KRATOS_API(application) extern Variable<ComplexVector> COMPLEX##_##name;            \
+\
+template<typename T> struct KRATOS_API(application) VariableSelector_##name;   \
+template<> struct KRATOS_API(application) VariableSelector_##name<Vector> {static constexpr Variable<Vector>& Get() {return name;}};    \
+template<> struct KRATOS_API(application) VariableSelector_##name<ComplexVector> {static constexpr Variable<ComplexVector>& Get() {return COMPLEX##_##name;}};  \
+
+#ifdef KRATOS_DEFINE_APPLICATION_MATRIX_VARIABLE
+#undef KRATOS_DEFINE_APPLICATION_MATRIX_VARIABLE
+#endif
+#define KRATOS_DEFINE_APPLICATION_MATRIX_VARIABLE(application, name) \
+    KRATOS_API(application) extern Variable<Matrix> name;            \
+    KRATOS_API(application) extern Variable<ComplexMatrix> COMPLEX##_##name;            \
+\
+template<typename T> struct KRATOS_API(application) VariableSelector_##name;   \
+template<> struct KRATOS_API(application) VariableSelector_##name<Matrix> {static constexpr Variable<Matrix>& Get() {return name;}};    \
+template<> struct KRATOS_API(application) VariableSelector_##name<ComplexMatrix> {static constexpr Variable<ComplexMatrix>& Get() {return COMPLEX##_##name;}};  \
 
 #ifdef KRATOS_DEFINE_3D_VARIABLE_WITH_COMPONENTS_IMPLEMENTATION
 #undef KRATOS_DEFINE_3D_VARIABLE_WITH_COMPONENTS_IMPLEMENTATION
@@ -229,19 +273,19 @@ template<> struct VariableSelector_##name<KRATOS_COMPLEX_TYPE> {static constexpr
     KRATOS_EXPORT_MACRO(module) extern Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_COMPLEX_TYPE, 3> > > COMPLEX##_##name##_Y;   \
     KRATOS_EXPORT_MACRO(module) extern Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_COMPLEX_TYPE, 3> > > COMPLEX##_##name##_Z;   \
 \
-template<typename T> struct VariableSelector_##name;   \
-template<> struct VariableSelector_##name<KRATOS_DOUBLE_TYPE> {static constexpr Kratos::Variable<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> >& Get() {return name;}};    \
-template<> struct VariableSelector_##name<KRATOS_COMPLEX_TYPE> {static constexpr Kratos::Variable<Kratos::array_1d<KRATOS_COMPLEX_TYPE, 3> >& Get() {return COMPLEX##_##name;}};  \
+template<typename T> struct KRATOS_EXPORT_MACRO(KRATOS_CORE) VariableSelector_##name;   \
+template<> struct KRATOS_EXPORT_MACRO(KRATOS_CORE) VariableSelector_##name<KRATOS_DOUBLE_TYPE> {static constexpr Kratos::Variable<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> >& Get() {return name;}};    \
+template<> struct KRATOS_EXPORT_MACRO(KRATOS_CORE) VariableSelector_##name<KRATOS_COMPLEX_TYPE> {static constexpr Kratos::Variable<Kratos::array_1d<KRATOS_COMPLEX_TYPE, 3> >& Get() {return COMPLEX##_##name;}};  \
 \
-template<typename T> struct VariableComponentSelector_##name##_X;   \
-template<typename T> struct VariableComponentSelector_##name##_Y;   \
-template<typename T> struct VariableComponentSelector_##name##_Z;   \
-template<> struct VariableComponentSelector_##name##_X<KRATOS_DOUBLE_TYPE> {static constexpr Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> > >& Get() {return name##_X;}};    \
-template<> struct VariableComponentSelector_##name##_Y<KRATOS_DOUBLE_TYPE> {static constexpr Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> > >& Get() {return name##_Y;}};    \
-template<> struct VariableComponentSelector_##name##_Z<KRATOS_DOUBLE_TYPE> {static constexpr Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> > >& Get() {return name##_Z;}};    \
-template<> struct VariableComponentSelector_##name##_X<KRATOS_COMPLEX_TYPE> {static constexpr Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_COMPLEX_TYPE, 3> > >& Get() {return COMPLEX##_##name##_X;}};  \
-template<> struct VariableComponentSelector_##name##_Y<KRATOS_COMPLEX_TYPE> {static constexpr Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_COMPLEX_TYPE, 3> > >& Get() {return COMPLEX##_##name##_Y;}};  \
-template<> struct VariableComponentSelector_##name##_Z<KRATOS_COMPLEX_TYPE> {static constexpr Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_COMPLEX_TYPE, 3> > >& Get() {return COMPLEX##_##name##_Z;}};  \
+template<typename T> struct KRATOS_EXPORT_MACRO(KRATOS_CORE) VariableComponentSelector_##name##_X;   \
+template<typename T> struct KRATOS_EXPORT_MACRO(KRATOS_CORE) VariableComponentSelector_##name##_Y;   \
+template<typename T> struct KRATOS_EXPORT_MACRO(KRATOS_CORE) VariableComponentSelector_##name##_Z;   \
+template<> struct KRATOS_EXPORT_MACRO(KRATOS_CORE) VariableComponentSelector_##name##_X<KRATOS_DOUBLE_TYPE> {static constexpr Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> > >& Get() {return name##_X;}};    \
+template<> struct KRATOS_EXPORT_MACRO(KRATOS_CORE) VariableComponentSelector_##name##_Y<KRATOS_DOUBLE_TYPE> {static constexpr Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> > >& Get() {return name##_Y;}};    \
+template<> struct KRATOS_EXPORT_MACRO(KRATOS_CORE) VariableComponentSelector_##name##_Z<KRATOS_DOUBLE_TYPE> {static constexpr Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> > >& Get() {return name##_Z;}};    \
+template<> struct KRATOS_EXPORT_MACRO(KRATOS_CORE) VariableComponentSelector_##name##_X<KRATOS_COMPLEX_TYPE> {static constexpr Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_COMPLEX_TYPE, 3> > >& Get() {return COMPLEX##_##name##_X;}};  \
+template<> struct KRATOS_EXPORT_MACRO(KRATOS_CORE) VariableComponentSelector_##name##_Y<KRATOS_COMPLEX_TYPE> {static constexpr Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_COMPLEX_TYPE, 3> > >& Get() {return COMPLEX##_##name##_Y;}};  \
+template<> struct KRATOS_EXPORT_MACRO(KRATOS_CORE) VariableComponentSelector_##name##_Z<KRATOS_COMPLEX_TYPE> {static constexpr Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_COMPLEX_TYPE, 3> > >& Get() {return COMPLEX##_##name##_Z;}};  \
 
 #ifdef KRATOS_DEFINE_3D_VARIABLE_WITH_COMPONENTS
 #undef KRATOS_DEFINE_3D_VARIABLE_WITH_COMPONENTS
@@ -262,19 +306,19 @@ template<> struct VariableComponentSelector_##name##_Z<KRATOS_COMPLEX_TYPE> {sta
     KRATOS_API(application) extern Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_COMPLEX_TYPE, 3> > > COMPLEX##_##name##_Y; \
     KRATOS_API(application) extern Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_COMPLEX_TYPE, 3> > > COMPLEX##_##name##_Z; \
 \
-template<typename T> struct VariableSelector_##name;   \
-template<> struct VariableSelector_##name<KRATOS_DOUBLE_TYPE> {static constexpr Kratos::Variable<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> >& Get() {return name;}};    \
-template<> struct VariableSelector_##name<KRATOS_COMPLEX_TYPE> {static constexpr Kratos::Variable<Kratos::array_1d<KRATOS_COMPLEX_TYPE, 3> >& Get() {return COMPLEX##_##name;}};  \
+template<typename T> struct KRATOS_API(application) VariableSelector_##name;   \
+template<> struct KRATOS_API(application) VariableSelector_##name<KRATOS_DOUBLE_TYPE> {static constexpr Kratos::Variable<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> >& Get() {return name;}};    \
+template<> struct KRATOS_API(application) VariableSelector_##name<KRATOS_COMPLEX_TYPE> {static constexpr Kratos::Variable<Kratos::array_1d<KRATOS_COMPLEX_TYPE, 3> >& Get() {return COMPLEX##_##name;}};  \
 \
-template<typename T> struct VariableComponentSelector_##name##_X;   \
-template<typename T> struct VariableComponentSelector_##name##_Y;   \
-template<typename T> struct VariableComponentSelector_##name##_Z;   \
-template<> struct VariableComponentSelector_##name##_X<KRATOS_DOUBLE_TYPE> {static constexpr Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> > >& Get() {return name##_X;}};    \
-template<> struct VariableComponentSelector_##name##_Y<KRATOS_DOUBLE_TYPE> {static constexpr Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> > >& Get() {return name##_Y;}};    \
-template<> struct VariableComponentSelector_##name##_Z<KRATOS_DOUBLE_TYPE> {static constexpr Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> > >& Get() {return name##_Z;}};    \
-template<> struct VariableComponentSelector_##name##_X<KRATOS_COMPLEX_TYPE> {static constexpr Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_COMPLEX_TYPE, 3> > >& Get() {return COMPLEX##_##name##_X;}};  \
-template<> struct VariableComponentSelector_##name##_Y<KRATOS_COMPLEX_TYPE> {static constexpr Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_COMPLEX_TYPE, 3> > >& Get() {return COMPLEX##_##name##_Y;}};  \
-template<> struct VariableComponentSelector_##name##_Z<KRATOS_COMPLEX_TYPE> {static constexpr Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_COMPLEX_TYPE, 3> > >& Get() {return COMPLEX##_##name##_Z;}};  \
+template<typename T> struct KRATOS_API(application) VariableComponentSelector_##name##_X;   \
+template<typename T> struct KRATOS_API(application) VariableComponentSelector_##name##_Y;   \
+template<typename T> struct KRATOS_API(application) VariableComponentSelector_##name##_Z;   \
+template<> struct KRATOS_API(application) VariableComponentSelector_##name##_X<KRATOS_DOUBLE_TYPE> {static constexpr Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> > >& Get() {return name##_X;}};    \
+template<> struct KRATOS_API(application) VariableComponentSelector_##name##_Y<KRATOS_DOUBLE_TYPE> {static constexpr Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> > >& Get() {return name##_Y;}};    \
+template<> struct KRATOS_API(application) VariableComponentSelector_##name##_Z<KRATOS_DOUBLE_TYPE> {static constexpr Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> > >& Get() {return name##_Z;}};    \
+template<> struct KRATOS_API(application) VariableComponentSelector_##name##_X<KRATOS_COMPLEX_TYPE> {static constexpr Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_COMPLEX_TYPE, 3> > >& Get() {return COMPLEX##_##name##_X;}};  \
+template<> struct KRATOS_API(application) VariableComponentSelector_##name##_Y<KRATOS_COMPLEX_TYPE> {static constexpr Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_COMPLEX_TYPE, 3> > >& Get() {return COMPLEX##_##name##_Y;}};  \
+template<> struct KRATOS_API(application) VariableComponentSelector_##name##_Z<KRATOS_COMPLEX_TYPE> {static constexpr Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_COMPLEX_TYPE, 3> > >& Get() {return COMPLEX##_##name##_Z;}};  \
 
 #ifdef VARSEL
 #undef VARSEL
@@ -284,7 +328,7 @@ template<> struct VariableComponentSelector_##name##_Z<KRATOS_COMPLEX_TYPE> {sta
 #ifdef VARSELC
 #undef VARSELC
 #endif
-#define VARSELC(DataType, V, C) VariableComponentSelector_##V_##C<DataType>::Get() // macro to select correct variable component based on name and data type and component (X|Y|Z)
+#define VARSELC(DataType, V, C) VariableComponentSelector_##V##_##C<DataType>::Get() // macro to select correct variable component based on name and data type and component (X|Y|Z)
 
 #ifdef KRATOS_CREATE_VARIABLE
 #undef KRATOS_CREATE_VARIABLE
@@ -296,8 +340,22 @@ template<> struct VariableComponentSelector_##name##_Z<KRATOS_COMPLEX_TYPE> {sta
 #undef KRATOS_CREATE_DOUBLE_VARIABLE
 #endif
 #define KRATOS_CREATE_DOUBLE_VARIABLE(name)          \
-    /*const*/ Kratos::Variable<KRATOS_DOUBLE_TYPE > name(#name);  \
-    /*const*/ Kratos::Variable<KRATOS_COMPLEX_TYPE > COMPLEX##_##name("COMPLEX_" #name);  \
+    /*const*/ Kratos::Variable<KRATOS_DOUBLE_TYPE> name(#name);  \
+    /*const*/ Kratos::Variable<KRATOS_COMPLEX_TYPE> COMPLEX##_##name("COMPLEX_" #name);  \
+
+#ifdef KRATOS_CREATE_VECTOR_VARIABLE
+#undef KRATOS_CREATE_VECTOR_VARIABLE
+#endif
+#define KRATOS_CREATE_VECTOR_VARIABLE(name)          \
+    /*const*/ Kratos::Variable<Vector> name(#name);  \
+    /*const*/ Kratos::Variable<ComplexVector> COMPLEX##_##name("COMPLEX_" #name);  \
+
+#ifdef KRATOS_CREATE_MATRIX_VARIABLE
+#undef KRATOS_CREATE_MATRIX_VARIABLE
+#endif
+#define KRATOS_CREATE_MATRIX_VARIABLE(name)          \
+    /*const*/ Kratos::Variable<Matrix> name(#name);  \
+    /*const*/ Kratos::Variable<ComplexMatrix> COMPLEX##_##name("COMPLEX_" #name);  \
 
 #ifdef KRATOS_CREATE_VARIABLE_WITH_ZERO
 #undef KRATOS_CREATE_VARIABLE_WITH_ZERO
@@ -337,32 +395,52 @@ template<> struct VariableComponentSelector_##name##_Z<KRATOS_COMPLEX_TYPE> {sta
 #define KRATOS_CREATE_3D_VARIABLE_WITH_COMPONENTS(name)                                 \
      KRATOS_CREATE_3D_VARIABLE_WITH_THIS_COMPONENTS(name, name##_X, name##_Y, name##_Z) \
 
+#ifdef KRATOS_REGISTER_VARIABLE_IMPLEMENTATION
+#undef KRATOS_REGISTER_VARIABLE_IMPLEMENTATION
+#endif
+#define KRATOS_REGISTER_VARIABLE_IMPLEMENTATION(name)                      \
+    AddKratosComponent(name.Name(), name);                  \
+    KratosComponents<VariableData>::Add(name.Name(), name); \
+
 #ifdef KRATOS_REGISTER_VARIABLE
 #undef KRATOS_REGISTER_VARIABLE
 #endif
 #define KRATOS_REGISTER_VARIABLE(name)                      \
-    AddKratosComponent(name.Name(), name);                  \
-    KratosComponents<VariableData>::Add(name.Name(), name); \
+    KRATOS_REGISTER_VARIABLE_IMPLEMENTATION(name)           \
 
 #ifdef KRATOS_REGISTER_DOUBLE_VARIABLE
 #undef KRATOS_REGISTER_DOUBLE_VARIABLE
 #endif
 #define KRATOS_REGISTER_DOUBLE_VARIABLE(name)               \
-    KRATOS_REGISTER_VARIABLE(name)                          \
-    KRATOS_REGISTER_VARIABLE(COMPLEX##_##name)              \
+    KRATOS_REGISTER_VARIABLE_IMPLEMENTATION(name)                          \
+    KRATOS_REGISTER_VARIABLE_IMPLEMENTATION(COMPLEX##_##name)              \
+
+#ifdef KRATOS_REGISTER_VECTOR_VARIABLE
+#undef KRATOS_REGISTER_VECTOR_VARIABLE
+#endif
+#define KRATOS_REGISTER_VECTOR_VARIABLE(name)               \
+    KRATOS_REGISTER_VARIABLE_IMPLEMENTATION(name)                          \
+    KRATOS_REGISTER_VARIABLE_IMPLEMENTATION(COMPLEX##_##name)              \
+
+#ifdef KRATOS_REGISTER_MATRIX_VARIABLE
+#undef KRATOS_REGISTER_MATRIX_VARIABLE
+#endif
+#define KRATOS_REGISTER_MATRIX_VARIABLE(name)               \
+    KRATOS_REGISTER_VARIABLE_IMPLEMENTATION(name)                          \
+    KRATOS_REGISTER_VARIABLE_IMPLEMENTATION(COMPLEX##_##name)              \
 
 #ifdef KRATOS_REGISTER_3D_VARIABLE_WITH_COMPONENTS
 #undef KRATOS_REGISTER_3D_VARIABLE_WITH_COMPONENTS
 #endif
 #define KRATOS_REGISTER_3D_VARIABLE_WITH_COMPONENTS(name)   \
-    KRATOS_REGISTER_VARIABLE(name)                          \
-    KRATOS_REGISTER_VARIABLE(name##_X)                      \
-    KRATOS_REGISTER_VARIABLE(name##_Y)                      \
-    KRATOS_REGISTER_VARIABLE(name##_Z)                      \
-    KRATOS_REGISTER_VARIABLE(COMPLEX##_##name)                          \
-    KRATOS_REGISTER_VARIABLE(COMPLEX##_##name##_X)                      \
-    KRATOS_REGISTER_VARIABLE(COMPLEX##_##name##_Y)                      \
-    KRATOS_REGISTER_VARIABLE(COMPLEX##_##name##_Z)                      \
+    KRATOS_REGISTER_VARIABLE_IMPLEMENTATION(name)                          \
+    KRATOS_REGISTER_VARIABLE_IMPLEMENTATION(name##_X)                      \
+    KRATOS_REGISTER_VARIABLE_IMPLEMENTATION(name##_Y)                      \
+    KRATOS_REGISTER_VARIABLE_IMPLEMENTATION(name##_Z)                      \
+    KRATOS_REGISTER_VARIABLE_IMPLEMENTATION(COMPLEX##_##name)                          \
+    KRATOS_REGISTER_VARIABLE_IMPLEMENTATION(COMPLEX##_##name##_X)                      \
+    KRATOS_REGISTER_VARIABLE_IMPLEMENTATION(COMPLEX##_##name##_Y)                      \
+    KRATOS_REGISTER_VARIABLE_IMPLEMENTATION(COMPLEX##_##name##_Z)                      \
 
 #define KRATOS_DEPRECATED [[deprecated]]
 #define KRATOS_DEPRECATED_MESSAGE(deprecated_message) [[deprecated(deprecated_message)]]
@@ -428,21 +506,28 @@ template<> struct VariableComponentSelector_##name##_Z<KRATOS_COMPLEX_TYPE> {sta
 #undef KRATOS_REGISTER_ELEMENT
 #endif
 #define KRATOS_REGISTER_ELEMENT(name, reference)        \
-    KratosComponents<Element >::Add(name, reference);   \
+    KratosComponents<Element>::Add(name, reference);    \
     Serializer::Register(name, reference);              \
 
 #ifdef KRATOS_REGISTER_CONDITION
 #undef KRATOS_REGISTER_CONDITION
 #endif
 #define KRATOS_REGISTER_CONDITION(name, reference)      \
-    KratosComponents<Condition >::Add(name, reference); \
+    KratosComponents<Condition>::Add(name, reference);  \
     Serializer::Register(name, reference);              \
 
 #ifdef KRATOS_REGISTER_CONSTRAINT
 #undef KRATOS_REGISTER_CONSTRAINT
 #endif
 #define KRATOS_REGISTER_CONSTRAINT(name, reference)                 \
-    KratosComponents<MasterSlaveConstraint >::Add(name, reference); \
+    KratosComponents<MasterSlaveConstraint>::Add(name, reference);  \
+    Serializer::Register(name, reference);                          \
+
+#ifdef KRATOS_REGISTER_ENTITY
+#undef KRATOS_REGISTER_ENTITY
+#endif
+#define KRATOS_REGISTER_ENTITY(type, name, reference)                 \
+    KratosComponents<type>::Add(name, reference);  \
     Serializer::Register(name, reference);                          \
 
 
