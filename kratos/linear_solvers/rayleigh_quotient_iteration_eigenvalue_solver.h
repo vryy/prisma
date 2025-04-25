@@ -92,9 +92,10 @@ namespace Kratos
   /** Detail class definition.
   */
     template<class TSparseSpaceType, class TDenseSpaceType, class TLinearSolverType,
-    class TPreconditionerType = Preconditioner<TSparseSpaceType, TDenseSpaceType>,
-    class TReordererType = Reorderer<TSparseSpaceType, TDenseSpaceType> >
-    class RayleighQuotientIterationEigenvalueSolver : public IterativeSolver<TSparseSpaceType, TDenseSpaceType, TPreconditionerType, TReordererType>
+             class TModelPartType,
+             class TPreconditionerType = Preconditioner<TSparseSpaceType, TDenseSpaceType, TModelPartType>,
+             class TReordererType = Reorderer<TSparseSpaceType, TDenseSpaceType> >
+    class RayleighQuotientIterationEigenvalueSolver : public IterativeSolver<TSparseSpaceType, TDenseSpaceType, TModelPartType, TPreconditionerType, TReordererType>
     {
       public:
       ///@name Type Definitions
@@ -103,7 +104,7 @@ namespace Kratos
       /// Pointer definition of RayleighQuotientIterationEigenvalueSolver
       KRATOS_CLASS_POINTER_DEFINITION(RayleighQuotientIterationEigenvalueSolver);
 
-      typedef IterativeSolver<TSparseSpaceType, TDenseSpaceType, TPreconditionerType, TReordererType> BaseType;
+      typedef IterativeSolver<TSparseSpaceType, TDenseSpaceType, TModelPartType, TPreconditionerType, TReordererType> BaseType;
 
       typedef typename TSparseSpaceType::MatrixType SparseMatrixType;
 
@@ -113,9 +114,9 @@ namespace Kratos
 
       typedef typename TDenseSpaceType::VectorType DenseVectorType;
 
-      typedef std::size_t SizeType;
+      typedef BaseType::SizeType SizeType;
 
-      typedef std::size_t IndexType;
+      typedef BaseType::IndexType IndexType;
 
       ///@}
       ///@name Life Cycle
@@ -124,7 +125,7 @@ namespace Kratos
       /// Default constructor.
       RayleighQuotientIterationEigenvalueSolver(){}
 
-       RayleighQuotientIterationEigenvalueSolver(double NewMaxTolerance, unsigned int NewMaxIterationsNumber,
+      RayleighQuotientIterationEigenvalueSolver(double NewMaxTolerance, unsigned int NewMaxIterationsNumber,
                    unsigned int NewRequiredEigenvalueNumber, typename TLinearSolverType::Pointer pLinearSolver, double ShiftingConvergence = 0.25)
       : BaseType(NewMaxTolerance, NewMaxIterationsNumber), mRequiredEigenvalueNumber(NewRequiredEigenvalueNumber), mpLinearSolver(pLinearSolver), mShiftingConvergence(ShiftingConvergence){}
 
@@ -137,7 +138,7 @@ namespace Kratos
 
 
       /// Destructor.
-      virtual ~RayleighQuotientIterationEigenvalueSolver(){}
+      ~RayleighQuotientIterationEigenvalueSolver() override {}
 
 
       ///@}
@@ -148,7 +149,7 @@ namespace Kratos
       RayleighQuotientIterationEigenvalueSolver& operator=(const RayleighQuotientIterationEigenvalueSolver& Other)
       {
         BaseType::operator=(Other);
-    return *this;
+        return *this;
       }
 
       ///@}
@@ -158,13 +159,13 @@ namespace Kratos
       static void Initialize(DenseVectorType& R,
          SparseMatrixType& M)
       {
-      for(SizeType i = 0 ; i < R.size() ; i++)
+        for(SizeType i = 0 ; i < R.size() ; i++)
           R[i] = M(i,i);
 
-      if(norm_2(R) == 0.00)
+        if(norm_2(R) == 0.00)
           KRATOS_THROW_ERROR(std::invalid_argument, "Invalid M matrix. The norm2 of its diagonal is Zero", "");
 
-      R /= norm_2(R);
+        R /= norm_2(R);
       }
 
       SizeType SturmSequenceCheck(SparseMatrixType& ShiftedK)
@@ -186,14 +187,12 @@ namespace Kratos
 
       }
 
-
       // The power iteration algorithm
       void Solve(SparseMatrixType& K,
          SparseMatrixType& M,
          DenseVectorType& Eigenvalues,
          DenseMatrixType& Eigenvectors)
       {
-
         using boost::numeric::ublas::trans;
 
         SizeType size = K.size1();
@@ -358,9 +357,6 @@ KRATOS_WATCH(ro);
             Eigenvectors(0,i) = x[i] / beta;
       }
 
-
-
-
       ///@}
       ///@name Access
       ///@{
@@ -376,25 +372,24 @@ KRATOS_WATCH(ro);
       ///@{
 
       /// Turn back information as a string.
-      virtual std::string Info() const
-    {
-      std::stringstream buffer;
-      buffer << "Power iteration eigenvalue solver with " << BaseType::GetPreconditioner()->Info();
-      return  buffer.str();
-    }
+      std::string Info() const override
+      {
+        std::stringstream buffer;
+        buffer << "Power iteration eigenvalue solver with " << BaseType::GetPreconditioner()->Info();
+        return  buffer.str();
+      }
 
       /// Print information about this object.
-      virtual void PrintInfo(std::ostream& rOStream) const
-    {
-      rOStream << Info();
-    }
+      void PrintInfo(std::ostream& rOStream) const override
+      {
+        rOStream << Info();
+      }
 
       /// Print object's data.
-      virtual void PrintData(std::ostream& rOStream) const
-    {
-      BaseType::PrintData(rOStream);
-    }
-
+      void PrintData(std::ostream& rOStream) const override
+      {
+        BaseType::PrintData(rOStream);
+      }
 
       ///@}
       ///@name Friends
@@ -501,7 +496,6 @@ KRATOS_WATCH(ro);
 
 
   ///@}
-
 
 }  // namespace Kratos.
 

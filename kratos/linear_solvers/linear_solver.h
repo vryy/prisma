@@ -62,7 +62,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // Project includes
 #include "includes/define.h"
 #include "reorderer.h"
-#include "includes/model_part.h"
 
 
 namespace Kratos
@@ -100,8 +99,8 @@ namespace Kratos
 */
 template<class TSparseSpaceType,
          class TDenseSpaceType,
-         class TReordererType = Reorderer<TSparseSpaceType, TDenseSpaceType>,
-         class TModelPartType = ModelPart>
+         class TModelPartType,
+         class TReordererType = Reorderer<TSparseSpaceType, TDenseSpaceType> >
 class LinearSolver
 {
 public:
@@ -291,7 +290,7 @@ public:
         return mEchoLevel;
     }
 
-    virtual typename TReordererType::Pointer GetReorderer(void)
+    virtual typename TReordererType::Pointer GetReorderer(void) const
     {
         return mpReorderer;
     }
@@ -465,17 +464,17 @@ private:
 ///@{
 
 /// input stream function
-template<class TSparseSpaceType, class TDenseSpaceType, class TReordererType, class TModelPartType>
+template<class TSparseSpaceType, class TDenseSpaceType, class TModelPartType, class TReordererType>
 inline std::istream& operator >> (std::istream& IStream,
-                                  LinearSolver<TSparseSpaceType, TDenseSpaceType, TReordererType, TModelPartType>& rThis)
+                                  LinearSolver<TSparseSpaceType, TDenseSpaceType, TModelPartType, TReordererType>& rThis)
 {
     return IStream;
 }
 
 /// output stream function
-template<class TSparseSpaceType, class TDenseSpaceType, class TReordererType, class TModelPartType>
+template<class TSparseSpaceType, class TDenseSpaceType, class TModelPartType, class TReordererType>
 inline std::ostream& operator << (std::ostream& rOStream,
-                                  const LinearSolver<TSparseSpaceType, TDenseSpaceType, TReordererType, TModelPartType>& rThis)
+                                  const LinearSolver<TSparseSpaceType, TDenseSpaceType, TModelPartType, TReordererType>& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;

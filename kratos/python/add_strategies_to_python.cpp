@@ -111,7 +111,7 @@ namespace Kratos
             typedef typename LocalSpaceType::DataType DataType;
             typedef typename DataTypeToValueType<DataType>::value_type ValueType;
 
-            typedef LinearSolver< SparseSpaceType, LocalSpaceType, Reorderer<SparseSpaceType, LocalSpaceType>, TModelPartType > LinearSolverType;
+            typedef LinearSolver< SparseSpaceType, LocalSpaceType, TModelPartType, Reorderer<SparseSpaceType, LocalSpaceType> > LinearSolverType;
             typedef SolvingStrategy< SparseSpaceType, LocalSpaceType, LinearSolverType, TModelPartType > BaseSolvingStrategyType;
             typedef Scheme< SparseSpaceType, LocalSpaceType, TModelPartType > BaseSchemeType;
 

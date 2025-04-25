@@ -55,8 +55,8 @@ namespace Kratos
 
 /// ILU0Preconditioner class.
 /**   */
-template<class TSparseSpaceType, class TDenseSpaceType>
-class ILU0Preconditioner : public ILUPreconditioner<TSparseSpaceType, TDenseSpaceType>
+template<class TSparseSpaceType, class TDenseSpaceType, class TModelPartType>
+class ILU0Preconditioner : public ILUPreconditioner<TSparseSpaceType, TDenseSpaceType, TModelPartType>
 {
 public:
     ///@name Type Definitions
@@ -65,7 +65,7 @@ public:
     /// Counted pointer of ILU0Preconditioner
     KRATOS_CLASS_POINTER_DEFINITION(ILU0Preconditioner);
 
-    typedef ILUPreconditioner<TSparseSpaceType, TDenseSpaceType> BaseType;
+    typedef ILUPreconditioner<TSparseSpaceType, TDenseSpaceType, TModelPartType> BaseType;
 
     typedef typename BaseType::DataType DataType;
 
@@ -93,7 +93,7 @@ public:
 
 
     /// Destructor.
-    virtual ~ILU0Preconditioner()
+    ~ILU0Preconditioner() override
     {
         if ( BaseType::L!=NULL) delete[]  BaseType::L;
         if (BaseType::iL!=NULL) delete[] BaseType::iL;
@@ -135,7 +135,7 @@ public:
     @param rX Unknows vector
     @param rB Right side linear system of equations.
     */
-    virtual void Initialize(SparseMatrixType& rA, VectorType& rX, VectorType& rB)
+    void Initialize(SparseMatrixType& rA, VectorType& rX, VectorType& rB) override
     {
         // ILU(0) preconditioner
         // Incomplete LU factorization with same sparcity pattern as original matrix.
@@ -373,9 +373,6 @@ public:
                 KRATOS_THROW_ERROR(std::runtime_error, "Zero in BaseType::U diagonal found!!", "")
             }
     }
-
-
-
 
     ///@}
     ///@name Access

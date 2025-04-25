@@ -49,8 +49,8 @@ namespace Kratos
 /// DiagonalPreconditioner class.
 /** DiagonalPreconditioner for linesr system solvers.
  */
-template<class TSparseSpaceType, class TDenseSpaceType>
-class DiagonalPreconditioner : public Preconditioner<TSparseSpaceType, TDenseSpaceType>
+template<class TSparseSpaceType, class TDenseSpaceType, class TModelPartType>
+class DiagonalPreconditioner : public Preconditioner<TSparseSpaceType, TDenseSpaceType, TModelPartType>
 {
 public:
     ///@name Type Definitions
@@ -59,7 +59,7 @@ public:
     /// Counted pointer of DiagonalPreconditioner
     KRATOS_CLASS_POINTER_DEFINITION(DiagonalPreconditioner);
 
-    typedef  Preconditioner<TSparseSpaceType, TDenseSpaceType> BaseType;
+    typedef  Preconditioner<TSparseSpaceType, TDenseSpaceType, TModelPartType> BaseType;
 
     typedef typename TSparseSpaceType::DataType DataType;
 
@@ -81,8 +81,7 @@ public:
         : BaseType(Other), mDiagonal(Other.mDiagonal), mTemp(Other.mTemp) {}
 
     /// Destructor.
-    virtual ~DiagonalPreconditioner() {}
-
+    ~DiagonalPreconditioner() override {}
 
     ///@}
     ///@name Operators
@@ -97,7 +96,6 @@ public:
         return *this;
     }
 
-
     ///@}
     ///@name Operations
     ///@{
@@ -109,7 +107,7 @@ public:
     @param rX Unknows vector
     @param rB Right side linear system of equations.
     */
-    void Initialize(SparseMatrixType& rA, VectorType& rX, VectorType& rB)
+    void Initialize(SparseMatrixType& rA, VectorType& rX, VectorType& rB) override
     {
         mDiagonal.resize(int(TSparseSpaceType::Size(rX)));
         mTemp.resize(int(TSparseSpaceType::Size(rX)));
@@ -138,12 +136,12 @@ public:
 
     }
 
-    void Initialize(SparseMatrixType& rA, DenseMatrixType& rX, DenseMatrixType& rB)
+    void Initialize(SparseMatrixType& rA, DenseMatrixType& rX, DenseMatrixType& rB) override
     {
         BaseType::Initialize(rA, rX, rB);
     }
 
-    void Mult(SparseMatrixType& rA, VectorType& rX, VectorType& rY)
+    void Mult(SparseMatrixType& rA, VectorType& rX, VectorType& rY) override
     {
         int i;
         #pragma omp parallel for private(i)
@@ -153,7 +151,7 @@ public:
         ApplyLeft(rY);
     }
 
-    void TransposeMult(SparseMatrixType& rA, VectorType& rX, VectorType& rY)
+    void TransposeMult(SparseMatrixType& rA, VectorType& rX, VectorType& rY) override
     {
         int i;
         #pragma omp parallel for private(i)
@@ -163,7 +161,7 @@ public:
         ApplyRight(rY);
     }
 
-    VectorType& ApplyLeft(VectorType& rX)
+    VectorType& ApplyLeft(VectorType& rX) override
     {
         int i;
         #pragma omp parallel for private(i)
@@ -173,7 +171,7 @@ public:
         return rX;
     }
 
-    VectorType& ApplyRight(VectorType& rX)
+    VectorType& ApplyRight(VectorType& rX) override
     {
         int i;
         #pragma omp parallel for private(i)
@@ -189,7 +187,7 @@ public:
     @param rXVector  Unknows of preconditioner suystem
     @param rYVector  Right side of preconditioner system.
     */
-    VectorType& ApplyTransposeLeft(VectorType& rX)
+    VectorType& ApplyTransposeLeft(VectorType& rX) override
     {
         int i;
         #pragma omp parallel for private(i)
@@ -199,7 +197,7 @@ public:
         return rX;
     }
 
-    VectorType& ApplyTransposeRight(VectorType& rX)
+    VectorType& ApplyTransposeRight(VectorType& rX) override
     {
         int i;
         #pragma omp parallel for private(i)
@@ -209,7 +207,7 @@ public:
         return rX;
     }
 
-    VectorType& ApplyInverseRight(VectorType& rX)
+    VectorType& ApplyInverseRight(VectorType& rX) override
     {
 // 	  const DataType zero = DataType();
 
@@ -222,7 +220,7 @@ public:
         return rX;
     }
 
-    VectorType& Finalize(VectorType& rX)
+    VectorType& Finalize(VectorType& rX) override
     {
         int i;
         #pragma omp parallel for private(i)
@@ -231,6 +229,7 @@ public:
 
         return rX;
     }
+
     ///@}
     ///@name Access
     ///@{
@@ -256,7 +255,6 @@ public:
     {
         OStream << "Diagonal preconditioner";
     }
-
 
     ///@}
     ///@name Friends
@@ -314,7 +312,6 @@ private:
     VectorType mDiagonal;
 
     VectorType mTemp;
-
 
     ///@}
     ///@name Private Operators

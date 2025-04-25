@@ -21,7 +21,7 @@ public:
 
     typedef typename TDenseSpaceType::MatrixType DenseMatrixType;
 
-    typedef std::size_t IndexType;
+    typedef typename TSparseSpaceType::IndexType IndexType;
 
     typedef typename TSparseSpaceType::DataType DataType;
 
@@ -543,16 +543,17 @@ public:
 
 
 template<class TSparseSpaceType, class TDenseSpaceType,
+         class TModelPartType,
          class TReordererType = Reorderer<TSparseSpaceType, TDenseSpaceType> >
 class SkylineLUFactorizationSolver
-    : public DirectSolver<TSparseSpaceType, TDenseSpaceType, TReordererType>
+    : public DirectSolver<TSparseSpaceType, TDenseSpaceType, TModelPartType, TReordererType>
 {
 public:
 
     /// Counted pointer of SkylineLUFactorizationSolver
     KRATOS_CLASS_POINTER_DEFINITION(SkylineLUFactorizationSolver);
 
-    typedef LinearSolver<TSparseSpaceType, TDenseSpaceType, TReordererType> BaseType;
+    typedef LinearSolver<TSparseSpaceType, TDenseSpaceType, TModelPartType, TReordererType> BaseType;
 
     typedef typename BaseType::SparseMatrixType SparseMatrixType;
 
@@ -564,8 +565,7 @@ public:
     SkylineLUFactorizationSolver() {}
 
     /// Destructor.
-    virtual ~SkylineLUFactorizationSolver() {}
-
+    ~SkylineLUFactorizationSolver() override {}
 
     /** Normal solve method.
     Solves the linear system Ax=b and puts the result on SystemVector& rX.
@@ -574,7 +574,7 @@ public:
     @param rX. Solution vector.
     @param rB. Right hand side vector.
     */
-    bool Solve(SparseMatrixType& rA, VectorType& rX, VectorType& rB)
+    bool Solve(SparseMatrixType& rA, VectorType& rX, VectorType& rB) override
     {
         if(this->IsNotConsistent(rA, rX, rB))
             return false;
@@ -603,7 +603,7 @@ public:
     @param rX. Solution vector.
     @param rB. Right hand side vector.
     */
-    bool Solve(SparseMatrixType& rA, DenseMatrixType& rX, DenseMatrixType& rB)
+    bool Solve(SparseMatrixType& rA, DenseMatrixType& rX, DenseMatrixType& rB) override
     {
         const std::size_t size1 = TDenseSpaceType::Size1(rX);
         const std::size_t size2 = TDenseSpaceType::Size2(rX);
@@ -643,7 +643,7 @@ public:
     }
 
     /// Print information about this object.
-    void  PrintInfo(std::ostream& rOStream) const
+    void  PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << "LU factorization solver finished.";
     }

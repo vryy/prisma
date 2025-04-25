@@ -22,8 +22,6 @@
 
 // Project includes
 #include "includes/define.h"
-#include "solving_strategies/builder_and_solvers/builder_and_solver.h"
-#include "includes/model_part.h"
 
 
 namespace Kratos
@@ -72,7 +70,7 @@ namespace Kratos
      }
      \end{verbatim}
 */
-template<class TSparseSpaceType, class TDenseSpaceType, class TModelPartType = ModelPart>
+template<class TSparseSpaceType, class TDenseSpaceType, class TModelPartType>
 class Preconditioner
 {
 public:
@@ -229,17 +227,17 @@ public:
     */
     virtual VectorType& ApplyTransposeLeft(VectorType& rX)
     {
-// 	KRATOS_THROW_ERROR(std::logic_error,
-// 		     " virtual TVectorType& ApplyTransposeLeft(TVectorType& rX)",
-// 		     "This preconditioner dosn't have ApplyTransposeLeft defined.", "");
+//  KRATOS_THROW_ERROR(std::logic_error,
+//           " virtual TVectorType& ApplyTransposeLeft(TVectorType& rX)",
+//           "This preconditioner dosn't have ApplyTransposeLeft defined.", "");
         return rX;
     }
 
     virtual VectorType& ApplyTransposeRight(VectorType& rX)
     {
-// 	KRATOS_THROW_ERROR(std::logic_error,
-// 		     " virtual TVectorType& ApplyTransposeRight(TVectorType& rX)",
-// 		     "This preconditioner dosn't have ApplyTransposeRight defined.", "");
+//  KRATOS_THROW_ERROR(std::logic_error,
+//           " virtual TVectorType& ApplyTransposeRight(TVectorType& rX)",
+//           "This preconditioner dosn't have ApplyTransposeRight defined.", "");
         return rX;
     }
 

@@ -59,9 +59,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 // Project includes
-#include "includes/define.h"
 #include "linear_solvers/linear_solver.h"
 #include "linear_solvers/preconditioner.h"
+#include "linear_solvers/reorderer.h"
 
 
 namespace Kratos
@@ -100,10 +100,10 @@ namespace Kratos
     - TReordererType which specify type of the Orderer that performs the reordering of matrix to optimize the solution.
 */
 template<class TSparseSpaceType, class TDenseSpaceType,
-         class TPreconditionerType = Preconditioner<TSparseSpaceType, TDenseSpaceType, ModelPart>,
-         class TReordererType = Reorderer<TSparseSpaceType, TDenseSpaceType>,
-         class TModelPartType = ModelPart >
-class IterativeSolver : public LinearSolver<TSparseSpaceType, TDenseSpaceType, TReordererType, TModelPartType>
+         class TModelPartType,
+         class TPreconditionerType = Preconditioner<TSparseSpaceType, TDenseSpaceType, TModelPartType>,
+         class TReordererType = Reorderer<TSparseSpaceType, TDenseSpaceType> >
+class IterativeSolver : public LinearSolver<TSparseSpaceType, TDenseSpaceType, TModelPartType, TReordererType>
 {
 public:
     ///@name Type Definitions
@@ -112,7 +112,7 @@ public:
     /// Pointer definition of IterativeSolver
     KRATOS_CLASS_POINTER_DEFINITION(IterativeSolver);
 
-    typedef LinearSolver<TSparseSpaceType, TDenseSpaceType, TReordererType, TModelPartType> BaseType;
+    typedef LinearSolver<TSparseSpaceType, TDenseSpaceType, TModelPartType, TReordererType> BaseType;
 
     typedef typename BaseType::ModelPartType ModelPartType;
 

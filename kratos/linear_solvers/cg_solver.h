@@ -51,9 +51,10 @@ namespace Kratos
 /** Detail class definition.
 */
 template<class TSparseSpaceType, class TDenseSpaceType,
-         class TPreconditionerType = Preconditioner<TSparseSpaceType, TDenseSpaceType>,
+         class TModelPartType,
+         class TPreconditionerType = Preconditioner<TSparseSpaceType, TDenseSpaceType, TModelPartType>,
          class TReordererType = Reorderer<TSparseSpaceType, TDenseSpaceType> >
-class CGSolver : public IterativeSolver<TSparseSpaceType, TDenseSpaceType, TPreconditionerType, TReordererType>
+class CGSolver : public IterativeSolver<TSparseSpaceType, TDenseSpaceType, TModelPartType, TPreconditionerType, TReordererType>
 {
 public:
     ///@name Type Definitions
@@ -62,7 +63,7 @@ public:
     /// Pointer definition of CGSolver
     KRATOS_CLASS_POINTER_DEFINITION(CGSolver);
 
-    typedef IterativeSolver<TSparseSpaceType, TDenseSpaceType, TPreconditionerType, TReordererType> BaseType;
+    typedef IterativeSolver<TSparseSpaceType, TDenseSpaceType, TModelPartType, TPreconditionerType, TReordererType> BaseType;
 
     typedef typename BaseType::DataType DataType;
 
@@ -93,7 +94,7 @@ public:
 
 
     /// Destructor.
-    virtual ~CGSolver() {}
+    ~CGSolver() override {}
 
 
     ///@}

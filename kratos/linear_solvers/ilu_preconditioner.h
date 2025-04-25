@@ -43,8 +43,8 @@ namespace Kratos
 
 /// ILUPreconditioner class.
 /**   */
-template<class TSparseSpaceType, class TDenseSpaceType>
-class ILUPreconditioner : public Preconditioner<TSparseSpaceType, TDenseSpaceType>
+template<class TSparseSpaceType, class TDenseSpaceType, class TModelPartType>
+class ILUPreconditioner : public Preconditioner<TSparseSpaceType, TDenseSpaceType, TModelPartType>
 {
 public:
     ///@name Type Definitions
@@ -53,7 +53,7 @@ public:
     /// Counted pointer of ILUPreconditioner
     KRATOS_CLASS_POINTER_DEFINITION(ILUPreconditioner);
 
-    typedef Preconditioner<TSparseSpaceType, TDenseSpaceType> BaseType;
+    typedef Preconditioner<TSparseSpaceType, TDenseSpaceType, TModelPartType> BaseType;
 
     typedef typename TSparseSpaceType::DataType DataType;
 
@@ -84,7 +84,7 @@ public:
 
 
     /// Destructor.
-    virtual ~ILUPreconditioner()
+    ~ILUPreconditioner() override
     {
         if ( L!=NULL) delete[]  L;
         if (iL!=NULL) delete[] iL;
@@ -137,16 +137,14 @@ public:
     ///@name Operations
     ///@{
 
-
-
-    virtual void Mult(SparseMatrixType& rA, VectorType& rX, VectorType& rY)
+    void Mult(SparseMatrixType& rA, VectorType& rX, VectorType& rY) override
     {
         VectorType z = rX;
         TSparseSpaceType::Mult(rA,z, rY);
         ApplyLeft(rY);
     }
 
-    virtual void TransposeMult(SparseMatrixType& rA, VectorType& rX, VectorType& rY)
+    void TransposeMult(SparseMatrixType& rA, VectorType& rX, VectorType& rY) override
     {
         VectorType z = rX;
         ApplyTransposeLeft(z);
@@ -157,7 +155,7 @@ public:
         then multiply temp by U^-1 and store result in rX
         @param rX  Unknows of preconditioner suystem
     */
-    virtual VectorType& ApplyLeft(VectorType& rX)
+    VectorType& ApplyLeft(VectorType& rX) override
     {
         const int size = TSparseSpaceType::Size(rX);
         VectorType temp(size);
@@ -188,7 +186,7 @@ public:
         then multiply temp by L^-T and store result in rX
         @param rX  Unknows of preconditioner suystem
     */
-    virtual VectorType& ApplyTransposeLeft(VectorType& rX)
+    VectorType& ApplyTransposeLeft(VectorType& rX) override
     {
         const int size = TSparseSpaceType::Size(rX);
         VectorType temp(size);
@@ -215,9 +213,6 @@ public:
         }
         return rX;
     }
-
-
-
 
     ///@}
     ///@name Access

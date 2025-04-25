@@ -22,13 +22,14 @@
 namespace Kratos
 {
 
-
 template<class TSparseSpaceType,
          class TDenseSpaceType,
-         class TPreconditionerType = Preconditioner<TSparseSpaceType, TDenseSpaceType>,
+         class TModelPartType,
+         class TPreconditionerType = Preconditioner<TSparseSpaceType, TDenseSpaceType, TModelPartType>,
          class TReordererType = Reorderer<TSparseSpaceType, TDenseSpaceType> >
 class TFQMRSolver : public IterativeSolver<TSparseSpaceType,
     TDenseSpaceType,
+    TModelPartType,
     TPreconditionerType,
     TReordererType>
 {
@@ -37,7 +38,7 @@ public:
     /// Counted pointer of TFQMRSolver
     KRATOS_CLASS_POINTER_DEFINITION(TFQMRSolver);
 
-    typedef IterativeSolver<TSparseSpaceType, TDenseSpaceType, TPreconditionerType, TReordererType > BaseType;
+    typedef IterativeSolver<TSparseSpaceType, TDenseSpaceType, TModelPartType, TPreconditionerType, TReordererType > BaseType;
 
     typedef typename BaseType::DataType DataType;
 
@@ -70,7 +71,7 @@ public:
 
 
     /// Destructor.
-    virtual ~TFQMRSolver() {}
+    ~TFQMRSolver() override {}
 
 
     /** Normal solve method.
@@ -80,7 +81,7 @@ public:
         @param rX. Solution vector. it's also the initial
         guess for iterative linear solvers.
         @param rB. Right hand side vector*/
-    bool Solve(SparseMatrixType& rA, VectorType& rX, VectorType& rB)
+    bool Solve(SparseMatrixType& rA, VectorType& rX, VectorType& rB) override
     {
         if(this->IsNotConsistent(rA, rX, rB))
             return false;
@@ -113,7 +114,7 @@ public:
         @param rX. Solution vector. it's also the initial
         guess for iterative linear solvers.
         @param rB. Right hand side vector*/
-    bool Solve(SparseMatrixType& rA, DenseMatrixType& rX, DenseMatrixType& rB)
+    bool Solve(SparseMatrixType& rA, DenseMatrixType& rX, DenseMatrixType& rB) override
     {
         /*            GetTimeTable()->Start(Info()); */
 
@@ -169,7 +170,6 @@ public:
     }
 
 private:
-
 
     bool IterativeSolve(SparseMatrixType& rA, VectorType& rX, VectorType& rB)
     {
@@ -347,9 +347,6 @@ private:
 
     /// Assignment operator.
     TFQMRSolver& operator=(const TFQMRSolver& Other);
-
-
-
 
 }; // ********** Class TFQMRSolver *****************
 

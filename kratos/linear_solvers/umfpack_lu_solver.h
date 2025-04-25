@@ -19,16 +19,17 @@ namespace Kratos
 
 
 template<class TSparseSpaceType, class TDenseSpaceType,
+         class TModelPartType,
          class TReordererType = Reorderer<TSparseSpaceType, TDenseSpaceType> >
 class UMFpackLUsolver
-    : public DirectSolver<TSparseSpaceType, TDenseSpaceType, TReordererType>
+    : public DirectSolver<TSparseSpaceType, TDenseSpaceType, TModelPartType, TReordererType>
 {
 public:
 
     /// Counted pointer of UMFpackLUsolver
     KRATOS_CLASS_POINTER_DEFINITION(UMFpackLUsolver);
 
-    typedef LinearSolver<TSparseSpaceType, TDenseSpaceType, TReordererType> BaseType;
+    typedef LinearSolver<TSparseSpaceType, TDenseSpaceType, TModelPartType, TReordererType> BaseType;
 
     typedef typename TSparseSpaceType::MatrixType SparseMatrixType;
 
@@ -40,8 +41,7 @@ public:
     UMFpackLUsolver() {}
 
     /// Destructor.
-    virtual ~UMFpackLUsolver() {}
-
+    ~UMFpackLUsolver() override {}
 
     /** Normal solve method.
     Solves the linear system Ax=b and puts the result on SystemVector& rX.
@@ -50,9 +50,10 @@ public:
     @param rX. Solution vector.
     @param rB. Right hand side vector.
     */
-    bool Solve(SparseMatrixType& rA, VectorType& rX, VectorType& rB)
+    bool Solve(SparseMatrixType& rA, VectorType& rX, VectorType& rB) override
     {
         KRATOS_TRY
+
         if(IsNotConsistent(rA, rX, rB))
             return false;
 
@@ -79,9 +80,8 @@ public:
     //{
 
 
-    //	return is_solved;
+    //      return is_solved;
     //}
-
 
     /// Turn back information as a string.
     std::string Info() const override
@@ -89,16 +89,13 @@ public:
         return "UMFpackLUsolver";
     }
 
-
     /// Print information about this object.
-    void  PrintInfo(std::ostream& rOStream) const override
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << "Umfpack LU factorization solver finished.";
     }
 
 private:
-
-
 
     /// Assignment operator.
     UMFpackLUsolver& operator=(const UMFpackLUsolver& Other);

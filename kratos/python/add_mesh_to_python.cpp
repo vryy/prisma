@@ -517,10 +517,10 @@ TDataType ElementCalculateInterface(TEntityType& dummy, const Variable<TDataType
 
 template<class TEntityType>
 boost::python::list GetValuesOnIntegrationPointsConstitutiveLaw( TEntityType& dummy,
-        const Variable<ConstitutiveLaw::Pointer>& rVariable, const ProcessInfo& rCurrentProcessInfo )
+        const Variable<typename TEntityType::ConstitutiveLawType::Pointer>& rVariable, const ProcessInfo& rCurrentProcessInfo )
 {
     boost::python::list values_list;
-    std::vector<ConstitutiveLaw::Pointer> values;
+    std::vector<typename TEntityType::ConstitutiveLawType::Pointer> values;
     dummy.CalculateOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
     for( unsigned int i=0; i<values.size(); i++ )
     {
@@ -531,23 +531,23 @@ boost::python::list GetValuesOnIntegrationPointsConstitutiveLaw( TEntityType& du
 
 template<class TEntityType>
 boost::python::list CalculateOnIntegrationPointsConstitutiveLaw( TEntityType& dummy,
-        const Variable<ConstitutiveLaw::Pointer>& rVariable, const ProcessInfo& rCurrentProcessInfo )
+        const Variable<typename TEntityType::ConstitutiveLawType::Pointer>& rVariable, const ProcessInfo& rCurrentProcessInfo )
 {
     return GetValuesOnIntegrationPointsConstitutiveLaw<TEntityType>(dummy, rVariable, rCurrentProcessInfo);
 }
 
 template<class TEntityType>
-void SetValuesOnIntegrationPointsConstitutiveLaw( TEntityType& dummy, const Variable<ConstitutiveLaw::Pointer>& rVariable, boost::python::list values_list, const ProcessInfo& rCurrentProcessInfo )
+void SetValuesOnIntegrationPointsConstitutiveLaw( TEntityType& dummy, const Variable<typename TEntityType::ConstitutiveLawType::Pointer>& rVariable, boost::python::list values_list, const ProcessInfo& rCurrentProcessInfo )
 {
     typename TEntityType::GeometryType::IntegrationPointsArrayType integration_points =
             dummy.GetGeometry().IntegrationPoints( dummy.GetIntegrationMethod() );
     if (boost::python::len(values_list) != integration_points.size())
         KRATOS_ERROR << "Incompatiable number of integration points and given values";
-    std::vector<ConstitutiveLaw::Pointer> values( integration_points.size() );
+    std::vector<typename TEntityType::ConstitutiveLawType::Pointer> values( integration_points.size() );
     for( unsigned int i=0; i<integration_points.size(); i++ )
     {
-        ConstitutiveLaw::Pointer value_item;
-        boost::python::extract<ConstitutiveLaw::Pointer> x( values_list[i] );
+        typename TEntityType::ConstitutiveLawType::Pointer value_item;
+        boost::python::extract<typename TEntityType::ConstitutiveLawType::Pointer> x( values_list[i] );
         values[i] = x();
     }
     dummy.SetValuesOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
@@ -657,11 +657,11 @@ void AddMeshToPython(const std::string& Prefix)
     .def("SetValue", SetValueHelperFunction< ElementType, Variable< bool > >)
     .def("GetValue", GetValueHelperFunction< ElementType, Variable< bool > >)
 
-    .def("__setitem__", SetValueHelperFunction< ElementType, Variable< ConstitutiveLaw::Pointer > >)
-    .def("__getitem__", GetValueHelperFunction< ElementType, Variable< ConstitutiveLaw::Pointer > >)
-    .def("Has", HasHelperFunction< ElementType, Variable< ConstitutiveLaw::Pointer > >)
-    .def("SetValue", SetValueHelperFunction< ElementType, Variable< ConstitutiveLaw::Pointer > >)
-    .def("GetValue", GetValueHelperFunction< ElementType, Variable< ConstitutiveLaw::Pointer > >)
+    .def("__setitem__", SetValueHelperFunction< ElementType, Variable< typename ElementType::ConstitutiveLawType::Pointer > >)
+    .def("__getitem__", GetValueHelperFunction< ElementType, Variable< typename ElementType::ConstitutiveLawType::Pointer > >)
+    .def("Has", HasHelperFunction< ElementType, Variable< typename ElementType::ConstitutiveLawType::Pointer > >)
+    .def("SetValue", SetValueHelperFunction< ElementType, Variable< typename ElementType::ConstitutiveLawType::Pointer > >)
+    .def("GetValue", GetValueHelperFunction< ElementType, Variable< typename ElementType::ConstitutiveLawType::Pointer > >)
 
     .def("__setitem__", SetValueHelperFunction< ElementType, Variable< std::string > >)
     .def("__getitem__", GetValueHelperFunction< ElementType, Variable< std::string > >)
