@@ -54,24 +54,23 @@ public:
     typedef GeometryData::IntegrationMethod IntegrationMethod;
 
     /**
-     * A Vector of counted pointers to Geometries.
-     * Used for returning edges of the geometry.
+     * A Vector of counted pointers to Geometries. Used for
+     * returning edges of the geometry.
      */
     typedef typename BaseType::GeometriesArrayType GeometriesArrayType;
 
     /**
-     * Redefinition of template parameter TPointType.
-     */
-    typedef TPointType PointType;
-
-    /**
-     * Type used for double value.
+     * Type used for coordinate value.
      */
     typedef typename BaseType::DataType DataType;
 
     /**
-     * Type used for indexing in geometry class.
-     * std::size_t used for indexing
+     * Type used for shape function value.
+     */
+    typedef typename BaseType::ValueType ValueType;
+
+    /**
+     * Type used for indexing in geometry class.std::size_t used for indexing
      * point or integration point access methods and also all other
      * methods which need point or integration point index.
      */
@@ -85,10 +84,15 @@ public:
     typedef typename BaseType::SizeType SizeType;
 
     /**
-     * Array of counted pointers to point.
-     * This type used to hold geometry's points.
+     * Redefinition of template parameter TPointType.
      */
-    typedef  typename BaseType::PointsArrayType PointsArrayType;
+    typedef typename BaseType::PointType PointType;
+
+    /**
+     * Array of counted pointers to point. This type used to hold
+     * geometry's points.
+     */
+    typedef typename BaseType::PointsArrayType PointsArrayType;
 
     /**
      * This type used for representing an integration point in
@@ -116,15 +120,13 @@ public:
      * A third order tensor used as shape functions' values
      * container.
      */
-    typedef typename BaseType::ShapeFunctionsValuesContainerType
-    ShapeFunctionsValuesContainerType;
+    typedef typename BaseType::ShapeFunctionsValuesContainerType ShapeFunctionsValuesContainerType;
 
     /**
      * A fourth order tensor used as shape functions' local
      * gradients container in geometry.
      */
-    typedef typename BaseType::ShapeFunctionsLocalGradientsContainerType
-    ShapeFunctionsLocalGradientsContainerType;
+    typedef typename BaseType::ShapeFunctionsLocalGradientsContainerType ShapeFunctionsLocalGradientsContainerType;
 
     /**
      * A third order tensor to hold jacobian matrices evaluated at
@@ -134,25 +136,32 @@ public:
     typedef typename BaseType::JacobiansType JacobiansType;
 
     /**
-     * A third order tensor to hold shape functions' local
-     * gradients. ShapefunctionsLocalGradients function return this
+     * A third order tensor to hold shape functions' local gradients at all integration points.
+     * ShapefunctionsLocalGradients function return this
      * type as its result.
      */
     typedef typename BaseType::ShapeFunctionsGradientsType ShapeFunctionsGradientsType;
 
     /**
-     * A third order tensor to hold shape functions' local second derivatives.
+     * A third order tensor to hold shape functions' local second derivatives at a point.
      * ShapeFunctionsSecondDerivatives function return this
      * type as its result.
      */
     typedef typename BaseType::ShapeFunctionsSecondDerivativesType ShapeFunctionsSecondDerivativesType;
 
     /**
-    * A fourth order tensor to hold shape functions' local third derivatives.
+    * A fourth order tensor to hold shape functions' local third derivatives at a point.
     * ShapeFunctionsThirdDerivatives function return this
     * type as its result.
     */
     typedef typename BaseType::ShapeFunctionsThirdDerivativesType ShapeFunctionsThirdDerivativesType;
+
+    /**
+     * A third order tensor to hold shape functions' gradients at all integration points.
+     * ShapeFunctionsIntegrationPointsGradients function return this
+     * type as its result.
+     */
+    typedef typename BaseType::ShapeFunctionsIntegrationPointsGradientsType ShapeFunctionsIntegrationPointsGradientsType;
 
     /**
      * Type of the normal vector used for normal to edges in geomety.
@@ -164,6 +173,22 @@ public:
      */
     typedef typename BaseType::CoordinatesArrayType CoordinatesArrayType;
 
+    /** This type used for representing the local coordinates of
+    an integration point
+    */
+    typedef typename BaseType::LocalCoordinatesArrayType LocalCoordinatesArrayType;
+
+    /**
+     * Type of Matrix
+     */
+    typedef typename BaseType::MatrixType MatrixType;
+    typedef typename BaseType::ZeroMatrixType ZeroMatrixType;
+
+    /**
+     * Type of Vector
+     */
+    typedef typename BaseType::VectorType VectorType;
+    typedef typename BaseType::ZeroVectorType ZeroVectorType;
 
     /**
      * Life Cycle
@@ -243,7 +268,7 @@ public:
     /**
      * Destructor. Does nothing!!!
      */
-    virtual ~Quadrilateral2D8() {}
+    ~Quadrilateral2D8() override {}
 
     GeometryData::KratosGeometryFamily GetGeometryFamily() const final
     {
@@ -304,17 +329,16 @@ public:
         return typename BaseType::Pointer( new Quadrilateral2D8( ThisPoints ) );
     }
 
-    Geometry< Point<3> >::Pointer Clone() const override
+    typename Geometry< Point<3, DataType> >::Pointer Clone() const override
     {
-        Geometry< Point<3> >::PointsArrayType NewPoints;
+        typename Geometry< Point<3, DataType> >::PointsArrayType NewPoints;
 
         //making a copy of the nodes TO POINTS (not Nodes!!!)
-
         for ( IndexType i = 0 ; i < this->Points().size() ; i++ )
             NewPoints.push_back( this->Points()[i] );
 
         //creating a geometry with the new points
-       Geometry< Point<3> >::Pointer p_clone( new Quadrilateral2D8< Point<3> >( NewPoints ) );
+        typename Geometry< Point<3, DataType> >::Pointer p_clone( new Quadrilateral2D8< Point<3, DataType> >( NewPoints ) );
 
         p_clone->ClonePoints();
 
@@ -362,7 +386,7 @@ public:
     DataType Length() const override
     {
         DataType length = 0.000;
-        length = sqrt( fabs( Area() ) );
+        length = std::sqrt( std::abs( Area() ) );
         return length;
     }
 
@@ -384,8 +408,7 @@ public:
      */
     DataType Area() const override
     {
-
-        Vector temp;
+        VectorType temp;
         this->DeterminantOfJacobian( temp, msGeometryData.DefaultIntegrationMethod() );
         const IntegrationPointsArrayType& integration_points = this->IntegrationPoints( msGeometryData.DefaultIntegrationMethod() );
         DataType Area = 0.00;
@@ -395,11 +418,7 @@ public:
             Area += temp[i] * integration_points[i].Weight();
         }
 
-        //KRATOS_WATCH(temp)
         return Area;
-
-        //return fabs(DeterminantOfJacobian(PointType())) * 0.5;
-
     }
 
 
@@ -425,449 +444,14 @@ public:
     /**
      * Returns whether given local point is inside the Geometry
      */
-    bool IsInside( const CoordinatesArrayType& rPoint ) const override
+    bool IsInside( const LocalCoordinatesArrayType& rPoint ) const override
     {
-        if ( fabs( rPoint[0] ) < 1 + 1.0e-8 )
-            if ( fabs( rPoint[1] ) < 1 + 1.0e-8 )
+        if ( std::abs( rPoint[0] ) < 1 + 1.0e-8 )
+            if ( std::abs( rPoint[1] ) < 1 + 1.0e-8 )
                 return true;
 
         return false;
     }
-
-    /**
-     * Jacobian
-     */
-//    /**
-//     * TODO: implemented but not yet tested
-//     */
-//    /**
-//     * Jacobians for given  method.
-//     * This method claculates the jacobian matrices in all
-//     * integrations points of given integration method.
-//     *
-//     * @param ThisMethod integration method which jacobians has to
-//     * be calculated in its integration points.
-//     *
-//     * @return JacobiansType a Vector of jacobian
-//     * matrices \f$ J_i \f$ where \f$ i=1,2,...,n \f$ is the integration
-//     * point index of given integration method.
-//     *
-//     * @see DeterminantOfJacobian
-//     * @see InverseOfJacobian
-//     */
-//    virtual JacobiansType& Jacobian( JacobiansType& rResult,
-//                                     IntegrationMethod ThisMethod ) const
-//    {
-//        //getting derivatives of shape functions
-//        ShapeFunctionsGradientsType shape_functions_gradients =
-//            CalculateShapeFunctionsIntegrationPointsLocalGradients( ThisMethod );
-//        //getting values of shape functions
-//        Matrix shape_functions_values =
-//            CalculateShapeFunctionsIntegrationPointsValues( ThisMethod );
-//        //workaround by riccardo...
-
-//        if ( rResult.size() != this->IntegrationPointsNumber( ThisMethod ) )
-//        {
-//            // KLUDGE: While there is a bug in ublas
-//            // vector resize, I have to put this beside resizing!!
-//            JacobiansType temp( this->IntegrationPointsNumber( ThisMethod ) );
-//            rResult.swap( temp );
-//        }
-
-//        //loop over all integration points
-//        for ( unsigned int pnt = 0; pnt < this->IntegrationPointsNumber( ThisMethod ); pnt++ )
-//        {
-//            //defining single jacobian matrix
-//            Matrix jacobian = ZeroMatrix( 2, 2 );
-//            //loop over all nodes
-
-//            for ( unsigned int i = 0; i < this->PointsNumber(); i++ )
-//            {
-//                jacobian( 0, 0 ) += ( this->GetPoint( i ).X() ) * ( shape_functions_gradients[pnt]( i, 0 ) );
-//                jacobian( 0, 1 ) += ( this->GetPoint( i ).X() ) * ( shape_functions_gradients[pnt]( i, 1 ) );
-//                jacobian( 1, 0 ) += ( this->GetPoint( i ).Y() ) * ( shape_functions_gradients[pnt]( i, 0 ) );
-//                jacobian( 1, 1 ) += ( this->GetPoint( i ).Y() ) * ( shape_functions_gradients[pnt]( i, 1 ) );
-//            }
-
-//            rResult[pnt] = jacobian;
-//        }//end of loop over all integration points
-
-//        return rResult;
-//    }
-
-//    /**
-//     * Jacobians for given  method.
-//     * This method claculates the jacobian matrices in all
-//     * integrations points of given integration method.
-//     *
-//     * @param ThisMethod integration method which jacobians has to
-//     * be calculated in its integration points.
-//     *
-//     * @return JacobiansType a Vector of jacobian
-//     * matrices \f$ J_i \f$ where \f$ i=1,2,...,n \f$ is the integration
-//     * point index of given integration method.
-//     *
-//     * @param DeltaPosition Matrix with the nodes position increment which describes
-//     * the configuration where the jacobian has to be calculated.
-//     *
-//     * @see DeterminantOfJacobian
-//     * @see InverseOfJacobian
-//     */
-//    virtual JacobiansType& Jacobian( JacobiansType& rResult,
-//                                     IntegrationMethod ThisMethod,
-//				     Matrix & DeltaPosition ) const
-//    {
-//        //getting derivatives of shape functions
-//        ShapeFunctionsGradientsType shape_functions_gradients =
-//            CalculateShapeFunctionsIntegrationPointsLocalGradients( ThisMethod );
-//        //getting values of shape functions
-//        Matrix shape_functions_values =
-//            CalculateShapeFunctionsIntegrationPointsValues( ThisMethod );
-//        //workaround by riccardo...
-
-//        if ( rResult.size() != this->IntegrationPointsNumber( ThisMethod ) )
-//        {
-//            // KLUDGE: While there is a bug in ublas
-//            // vector resize, I have to put this beside resizing!!
-//            JacobiansType temp( this->IntegrationPointsNumber( ThisMethod ) );
-//            rResult.swap( temp );
-//        }
-
-//        //loop over all integration points
-//        for ( unsigned int pnt = 0; pnt < this->IntegrationPointsNumber( ThisMethod ); pnt++ )
-//        {
-//            //defining single jacobian matrix
-//            Matrix jacobian = ZeroMatrix( 2, 2 );
-//            //loop over all nodes
-
-//            for ( unsigned int i = 0; i < this->PointsNumber(); i++ )
-//            {
-//                jacobian( 0, 0 ) += ( this->GetPoint( i ).X() - DeltaPosition(i,0) ) * ( shape_functions_gradients[pnt]( i, 0 ) );
-//                jacobian( 0, 1 ) += ( this->GetPoint( i ).X() - DeltaPosition(i,0) ) * ( shape_functions_gradients[pnt]( i, 1 ) );
-//                jacobian( 1, 0 ) += ( this->GetPoint( i ).Y() - DeltaPosition(i,1) ) * ( shape_functions_gradients[pnt]( i, 0 ) );
-//                jacobian( 1, 1 ) += ( this->GetPoint( i ).Y() - DeltaPosition(i,1) ) * ( shape_functions_gradients[pnt]( i, 1 ) );
-//            }
-
-//            rResult[pnt] = jacobian;
-//        }//end of loop over all integration points
-
-//        return rResult;
-//    }
-
-//    /**
-//     * TODO: implemented but not yet tested
-//     */
-//    /**
-//     * Jacobian in specific integration point of given integration
-//     * method. This method calculate jacobian matrix in given
-//     * integration point of given integration method.
-//     *
-//     * @param IntegrationPointIndex index of integration point which jacobians has to
-//     * be calculated in it.
-//     *
-//     * @param ThisMethod integration method which jacobians has to
-//     * be calculated in its integration points.
-//     *
-//     * @return Matrix(DataType) Jacobian matrix \f$ J_i \f$ where \f$
-//     * i \f$ is the given integration point index of given
-//     * integration method.
-//     * @see DeterminantOfJacobian
-//     * @see InverseOfJacobian
-//     */
-//    virtual Matrix& Jacobian( Matrix& rResult, IndexType IntegrationPointIndex, IntegrationMethod ThisMethod ) const
-//    {
-//        //setting up size of jacobian matrix
-//        rResult.resize( 2, 2 );
-//        //derivatives of shape functions
-//        ShapeFunctionsGradientsType shape_functions_gradients =
-//            CalculateShapeFunctionsIntegrationPointsLocalGradients( ThisMethod );
-//        Matrix ShapeFunctionsGradientInIntegrationPoint =
-//            shape_functions_gradients( IntegrationPointIndex );
-//        //values of shape functions in integration points
-//        vector<DataType> ShapeFunctionValuesInIntegrationPoint = ZeroVector( 8 );
-//        ShapeFunctionValuesInIntegrationPoint =
-//            row( CalculateShapeFunctionsIntegrationPointsValues(
-//                     ThisMethod ), IntegrationPointIndex );
-
-//        //Elements of jacobian matrix (e.g. J(1,1) = dX1/dXi1)
-//        //loop over all nodes
-
-//        for ( unsigned int i = 0; i < this->PointsNumber(); i++ )
-//        {
-//            rResult( 0, 0 ) +=
-//                ( this->GetPoint( i ).X() ) * ( ShapeFunctionsGradientInIntegrationPoint( i, 0 ) );
-//            rResult( 0, 1 ) +=
-//                ( this->GetPoint( i ).X() ) * ( ShapeFunctionsGradientInIntegrationPoint( i, 1 ) );
-//            rResult( 1, 0 ) +=
-//                ( this->GetPoint( i ).Y() ) * ( ShapeFunctionsGradientInIntegrationPoint( i, 0 ) );
-//            rResult( 1, 1 ) +=
-//                ( this->GetPoint( i ).Y() ) * ( ShapeFunctionsGradientInIntegrationPoint( i, 1 ) );
-//        }
-
-//        return rResult;
-//    }
-
-//    /**
-//     * TODO: implemented but not yet tested
-//     */
-//    /**
-//     * Jacobian in given point.
-//     * This method calculates the jacobian
-//     * matrix in given point.
-//     *
-//     * @param rPoint point which jacobians has to
-//     * be calculated in it.
-//     *
-//     * @return Matrix of DataType which is jacobian matrix \f$ J \f$ in given point.
-//     *
-//     * @see DeterminantOfJacobian
-//     * @see InverseOfJacobian
-//     */
-//    virtual Matrix& Jacobian( Matrix& rResult, const CoordinatesArrayType& rPoint ) const
-//    {
-//        //setting up size of jacobian matrix
-//        rResult.resize( 2, 2 );
-//        //derivatives of shape functions
-//        Matrix shape_functions_gradients;
-//        shape_functions_gradients = ShapeFunctionsLocalGradients(
-//                                        shape_functions_gradients, rPoint );
-//        //Elements of jacobian matrix (e.g. J(1,1) = dX1/dXi1)
-//        //loop over all nodes
-
-//        for ( unsigned int i = 0; i < this->PointsNumber(); i++ )
-//        {
-//            rResult( 0, 0 ) += ( this->GetPoint( i ).X() ) * ( shape_functions_gradients( i, 0 ) );
-//            rResult( 0, 1 ) += ( this->GetPoint( i ).X() ) * ( shape_functions_gradients( i, 1 ) );
-//            rResult( 1, 0 ) += ( this->GetPoint( i ).Y() ) * ( shape_functions_gradients( i, 0 ) );
-//            rResult( 1, 1 ) += ( this->GetPoint( i ).Y() ) * ( shape_functions_gradients( i, 1 ) );
-//        }
-
-//        return rResult;
-//    }
-
-//    /**
-//     * TODO: implemented but not yet tested
-//     */
-//    /**
-//     * Determinant of jacobians for given integration method.
-//     * This method calculate determinant of jacobian in all
-//     * integrations points of given integration method.
-//     *
-//     * @return Vector of DataType which is vector of determinants of
-//     * jacobians \f$ |J|_i \f$ where \f$ i=1,2,...,n \f$ is the
-//     * integration point index of given integration method.
-//     *
-//     * @see Jacobian
-//     * @see InverseOfJacobian
-//     */
-//    virtual Vector& DeterminantOfJacobian( Vector& rResult,
-//                                           IntegrationMethod ThisMethod ) const
-//    {
-//        //workaround by riccardo
-//        if ( rResult.size() != this->IntegrationPointsNumber( ThisMethod ) )
-//        {
-//            // KLUDGE: While there is a bug in ublas
-//            // vector resize, I have to put this beside resizing!!
-//            Vector temp( this->IntegrationPointsNumber( ThisMethod ) );
-//            rResult.swap( temp );
-//        }
-
-//        //for all integration points
-//        for ( unsigned int pnt = 0; pnt < this->IntegrationPointsNumber( ThisMethod ); pnt++ )
-//        {
-//            rResult[pnt] = DeterminantOfJacobian( pnt, ThisMethod );
-//        }
-
-//        return rResult;
-//    }
-
-//    /**
-//     * TODO: implemented but not yet tested
-//     */
-//    /**
-//     * Determinant of jacobian in specific integration point of
-//     * given integration method. This method calculate determinant
-//     * of jacobian in given integration point of given integration
-//     * method.
-//     *
-//     * @param IntegrationPointIndex index of integration point which jacobians has to
-//     * be calculated in it.
-//     *
-//     * @param IntegrationPointIndex index of integration point
-//     * which determinant of jacobians has to be calculated in it.
-//     *
-//     * @return Determinamt of jacobian matrix \f$ |J|_i \f$ where \f$
-//     * i \f$ is the given integration point index of given
-//     * integration method.
-//     *
-//     * @see Jacobian
-//     * @see InverseOfJacobian
-//     */
-//    virtual DataType DeterminantOfJacobian( IndexType IntegrationPointIndex, IntegrationMethod ThisMethod ) const
-//    {
-//        Matrix jacobian = ZeroMatrix( 2, 2 );
-//        jacobian = Jacobian( jacobian, IntegrationPointIndex, ThisMethod );
-//        return(( jacobian( 0, 0 )*jacobian( 1, 1 ) ) - ( jacobian( 0, 1 )*jacobian( 1, 0 ) ) );
-//    }
-
-//    /**
-//     * TODO: implemented but not yet tested
-//     */
-//    /**
-//     * Determinant of jacobian in given point.
-//     * This method calculate determinant of jacobian
-//     * matrix in given point.
-//     *
-//     * @param rPoint point which determinant of jacobians has to
-//     * be calculated in it.
-//     *
-//     * @return Determinamt of jacobian matrix \f$ |J| \f$ in given
-//     * point.
-//     *
-//     * @see DeterminantOfJacobian
-//     * @see InverseOfJacobian
-//     */
-//    virtual DataType DeterminantOfJacobian( const CoordinatesArrayType& rPoint ) const
-//    {
-//        Matrix jacobian = ZeroMatrix( 2, 2 );
-//        jacobian = Jacobian( jacobian, rPoint );
-//        return(( jacobian( 0, 0 )*jacobian( 1, 1 ) ) - ( jacobian( 0, 1 )*jacobian( 1, 0 ) ) );
-//    }
-
-//    /**
-//     * :TODO: implemented but not yet tested
-//     */
-//    /**
-//     * Inverse of jacobians for given integration method. This method
-//     * calculate inverse of jacobians matrices in all integrations points of
-//     * given integration method.
-//     *
-//     * @param ThisMethod integration method which inverse of jacobians has to
-//     * be calculated in its integration points.
-//     *
-//     * @return Inverse of jacobian
-//     * matrices \f$ J^{-1}_i \f$ where \f$ i=1,2,...,n \f$ is the integration
-//     * point index of given integration method.
-//     *
-//     * @see Jacobian
-//     * @see DeterminantOfJacobian
-//     *
-//     * KLUDGE: works only with explicitly generated Matrix object
-//     */
-//    virtual JacobiansType& InverseOfJacobian( JacobiansType& rResult, IntegrationMethod ThisMethod ) const
-//    {
-//        //workaround by riccardo
-//        if ( rResult.size() != this->IntegrationPointsNumber( ThisMethod ) )
-//        {
-//            // KLUDGE: While there is a bug in ublas
-//            // vector resize, I have to put this beside resizing!!
-//            JacobiansType temp( this->IntegrationPointsNumber( ThisMethod ) );
-//            rResult.swap( temp );
-//        }
-
-//        //loop over all integration points
-//        for ( unsigned int pnt = 0; pnt < this->IntegrationPointsNumber( ThisMethod ); pnt++ )
-//        {
-//            Matrix tempMatrix( 2, 2 );
-//            rResult[pnt] = InverseOfJacobian( tempMatrix, pnt, ThisMethod );
-//        }
-
-//        return rResult;
-//    }
-
-//    /**
-//     * :TODO: implemented but not yet tested
-//     */
-//    /**
-//     * Inverse of jacobian in specific integration point of given integration
-//     * method. This method calculate Inverse of jacobian matrix in given
-//     * integration point of given integration method.
-//     *
-//     * @param IntegrationPointIndex index of integration point which
-//     * inverse of jacobians has to
-//     * be calculated in it.
-//     *
-//     * @param ThisMethod integration method which inverse of jacobians has to
-//     * be calculated in its integration points.
-//     *
-//     * @return Inverse of jacobian matrix \f$ J^{-1}_i \f$ where \f$
-//     * i \f$ is the given integration point index of given
-//     * integration method.
-//     *
-//     * @see Jacobian
-//     * @see DeterminantOfJacobian
-//     *
-//     * KLUDGE: works only with explicitly generated Matrix object
-//     */
-//    virtual Matrix& InverseOfJacobian( Matrix& rResult, IndexType IntegrationPointIndex, IntegrationMethod ThisMethod ) const
-//    {
-//        //current jacobian
-//        Matrix tempMatrix = ZeroMatrix( 2, 2 );
-//        tempMatrix = Jacobian( tempMatrix, IntegrationPointIndex, ThisMethod );
-//        //determinant of jacobian
-//        DataType det_j = DeterminantOfJacobian( IntegrationPointIndex, ThisMethod );
-//        //checking for singularity
-
-//        if ( det_j == 0.00 )
-//            KRATOS_THROW_ERROR( std::runtime_error, "Zero determinant of jacobian." , *this );
-
-//        //setting up result matrix
-//        rResult.resize( 2, 2 );
-
-//        //filling matrix
-//        rResult( 0, 0 ) = ( tempMatrix( 1, 1 ) ) / ( det_j );
-
-//        rResult( 1, 0 ) = -( tempMatrix( 1, 0 ) ) / ( det_j );
-
-//        rResult( 0, 1 ) = -( tempMatrix( 0, 1 ) ) / ( det_j );
-
-//        return rResult;
-//    }
-
-//    /**
-//     * :TODO: implemented but not yet tested
-//     */
-//    /**
-//     * Inverse of jacobian in given point.
-//     * This method calculate inverse of jacobian
-//     * matrix in given point.
-//     *
-//     * @param rPoint point which inverse of jacobians has to
-//     * be calculated in it.
-//     *
-//     * @return Inverse of jacobian matrix \f$ J^{-1} \f$ in given point.
-//     *
-//     * @see DeterminantOfJacobian
-//     * @see InverseOfJacobian
-//     *
-//     */
-//    virtual Matrix& InverseOfJacobian( Matrix& rResult, const CoordinatesArrayType& rPoint ) const
-//    {
-//        //current jacobian
-//        Matrix tempMatrix;
-//        tempMatrix.resize( 2, 2, false );
-//        tempMatrix = this->Jacobian( tempMatrix, rPoint );
-//        //deteminant of Jacobian
-//        DataType det_j = DeterminantOfJacobian( rPoint );
-//        //checking for singularity
-
-//        if ( det_j == 0.00 )
-//            KRATOS_THROW_ERROR( std::runtime_error, "Zero determinant of jacobian." , *this );
-
-//        //setting up result matrix
-//        rResult.resize( 2, 2 );
-
-//        //filling matrix
-//        rResult( 0, 0 ) = ( tempMatrix( 1, 1 ) ) / ( det_j );
-
-//        rResult( 1, 0 ) = -( tempMatrix( 1, 0 ) ) / ( det_j );
-
-//        rResult( 0, 1 ) = -( tempMatrix( 0, 1 ) ) / ( det_j );
-
-//        rResult( 1, 1 ) = ( tempMatrix( 0, 0 ) ) / ( det_j );
-
-//        return rResult;
-//    }
 
     /** This method gives you number of all edges of this
     geometry. This method will gives you number of all the edges
@@ -921,7 +505,7 @@ public:
      *
      * @return the value of the shape function at the given point
      */
-    DataType ShapeFunctionValue( IndexType ShapeFunctionIndex, const CoordinatesArrayType& rPoint ) const override
+    ValueType ShapeFunctionValue( IndexType ShapeFunctionIndex, const LocalCoordinatesArrayType& rPoint ) const override
     {
         switch ( ShapeFunctionIndex )
         {
@@ -979,7 +563,8 @@ public:
      * KLUDGE: method call only works with explicit JacobiansType
      * rather than creating JacobiansType within argument list
      */
-    ShapeFunctionsGradientsType& ShapeFunctionsIntegrationPointsGradients( ShapeFunctionsGradientsType& rResult, IntegrationMethod ThisMethod ) const override
+    ShapeFunctionsIntegrationPointsGradientsType& ShapeFunctionsIntegrationPointsGradients(
+        ShapeFunctionsIntegrationPointsGradientsType& rResult, IntegrationMethod ThisMethod ) const override
     {
         const unsigned int integration_points_number =
             msGeometryData.IntegrationPointsNumber( ThisMethod );
@@ -993,7 +578,7 @@ public:
         {
             // KLUDGE: While there is a bug in ublas
             // vector resize, I have to put this beside resizing!!
-            ShapeFunctionsGradientsType temp( integration_points_number );
+            ShapeFunctionsIntegrationPointsGradientsType temp( integration_points_number );
             rResult.swap( temp );
         }
 
@@ -1020,7 +605,7 @@ public:
                         + ( locG[pnt]( i, 1 ) * invJ[pnt]( j, 1 ) );
                 }
             }
-        }//end of loop over integration points
+        } //end of loop over integration points
 
         return rResult;
     }
@@ -1064,8 +649,8 @@ public:
     {
         BaseType::PrintData( rOStream );
         std::cout << std::endl;
-        Matrix jacobian;
-        this->Jacobian( jacobian, PointType() );
+        MatrixType jacobian;
+        this->Jacobian( jacobian, LocalCoordinatesArrayType() );
         rOStream << "    Jacobian in the origin\t : " << jacobian;
     }
 
@@ -1119,7 +704,7 @@ public:
     * @return the gradients of all shape functions
     * \f$ \frac{\partial N^i}{\partial \xi_j} \f$
      */
-    Matrix& ShapeFunctionsLocalGradients( Matrix& rResult, const CoordinatesArrayType& rPoint ) const override
+    Matrix& ShapeFunctionsLocalGradients( Matrix& rResult, const LocalCoordinatesArrayType& rPoint ) const override
     {
         //setting up result matrix
         rResult.resize( 8, 2 );
@@ -1243,7 +828,7 @@ public:
      * @param rResult a third order tensor which contains the second derivatives
      * @param rPoint the given point the second order derivatives are calculated in
      */
-    ShapeFunctionsSecondDerivativesType& ShapeFunctionsSecondDerivatives( ShapeFunctionsSecondDerivativesType& rResult, const CoordinatesArrayType& rPoint ) const override
+    ShapeFunctionsSecondDerivativesType& ShapeFunctionsSecondDerivatives( ShapeFunctionsSecondDerivativesType& rResult, const LocalCoordinatesArrayType& rPoint ) const override
     {
         if ( rResult.size() != this->PointsNumber() )
         {
@@ -1318,7 +903,7 @@ public:
     * @param rResult a fourth order tensor which contains the third derivatives
     * @param rPoint the given point the third order derivatives are calculated in
      */
-    ShapeFunctionsThirdDerivativesType& ShapeFunctionsThirdDerivatives( ShapeFunctionsThirdDerivativesType& rResult, const CoordinatesArrayType& rPoint ) const override
+    ShapeFunctionsThirdDerivativesType& ShapeFunctionsThirdDerivatives( ShapeFunctionsThirdDerivativesType& rResult, const LocalCoordinatesArrayType& rPoint ) const override
     {
 
         if ( rResult.size() != this->PointsNumber() )
@@ -1534,8 +1119,7 @@ private:
      * @return the vector of the gradients of all shape functions in each integration
      * point
      */
-    static ShapeFunctionsGradientsType
-    CalculateShapeFunctionsIntegrationPointsLocalGradients(
+    static ShapeFunctionsGradientsType CalculateShapeFunctionsIntegrationPointsLocalGradients(
         typename BaseType::IntegrationMethod ThisMethod )
     {
         IntegrationPointsContainerType all_integration_points = AllIntegrationPoints();
@@ -1615,9 +1199,6 @@ private:
         return d_shape_f_values;
     }
 
-    /**
-     * :TODO: testing
-     */
     static const IntegrationPointsContainerType AllIntegrationPoints()
     {
         IntegrationPointsContainerType integration_points =
@@ -1639,9 +1220,6 @@ private:
         return integration_points;
     }
 
-    /**
-     * :TODO: testing
-     */
     static const ShapeFunctionsValuesContainerType AllShapeFunctionsValues()
     {
         ShapeFunctionsValuesContainerType shape_functions_values =
@@ -1662,11 +1240,7 @@ private:
         return shape_functions_values;
     }
 
-    /**
-     * :TODO: testing
-     */
-    static const ShapeFunctionsLocalGradientsContainerType
-    AllShapeFunctionsLocalGradients()
+    static const ShapeFunctionsLocalGradientsContainerType AllShapeFunctionsLocalGradients()
     {
         ShapeFunctionsLocalGradientsContainerType shape_functions_local_gradients =
         {
@@ -1695,7 +1269,7 @@ private:
     /**
      * Un accessible methods
      */
-}; // Class Geometry
+}; // Class Quadrilateral2D8
 
 template<class TPointType> const GeometryData
 Quadrilateral2D8<TPointType>::msGeometryData( 2, 2, 2,

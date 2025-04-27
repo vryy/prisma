@@ -70,9 +70,14 @@ public:
     typedef typename BaseType::GeometriesArrayType GeometriesArrayType;
 
     /**
-     * Redefinition of template parameter TPointType.
+     * Type used for coordinate value.
      */
-    typedef TPointType PointType;
+    typedef typename BaseType::DataType DataType;
+
+    /**
+     * Type used for shape function value.
+     */
+    typedef typename BaseType::ValueType ValueType;
 
     /**
      * Type used for indexing in geometry class.std::size_t used for indexing
@@ -82,16 +87,16 @@ public:
     typedef typename BaseType::IndexType IndexType;
 
     /**
-     * Type used for double value.
-     */
-    typedef typename BaseType::DataType DataType;
-
-    /**
      * This typed used to return size or dimension in
      * geometry. Dimension, WorkingDimension, PointsNumber and
      * ... return this type as their results.
      */
     typedef typename BaseType::SizeType SizeType;
+
+    /**
+     * Redefinition of template parameter TPointType.
+     */
+    typedef typename BaseType::PointType PointType;
 
     /**
      * Array of counted pointers to point. This type used to hold
@@ -125,15 +130,13 @@ public:
      * A third order tensor used as shape functions' values
      * container.
      */
-    typedef typename BaseType::ShapeFunctionsValuesContainerType
-    ShapeFunctionsValuesContainerType;
+    typedef typename BaseType::ShapeFunctionsValuesContainerType ShapeFunctionsValuesContainerType;
 
     /**
      * A fourth order tensor used as shape functions' local
      * gradients container in geometry.
      */
-    typedef typename BaseType::ShapeFunctionsLocalGradientsContainerType
-    ShapeFunctionsLocalGradientsContainerType;
+    typedef typename BaseType::ShapeFunctionsLocalGradientsContainerType ShapeFunctionsLocalGradientsContainerType;
 
     /**
      * A third order tensor to hold jacobian matrices evaluated at
@@ -143,11 +146,32 @@ public:
     typedef typename BaseType::JacobiansType JacobiansType;
 
     /**
-     * A third order tensor to hold shape functions' local
-     * gradients. ShapefunctionsLocalGradients function return this
+     * A third order tensor to hold shape functions' local gradients at all integration points.
+     * ShapefunctionsLocalGradients function return this
      * type as its result.
      */
     typedef typename BaseType::ShapeFunctionsGradientsType ShapeFunctionsGradientsType;
+
+    /**
+     * A third order tensor to hold shape functions' local second derivatives at a point.
+     * ShapeFunctionsSecondDerivatives function return this
+     * type as its result.
+     */
+    typedef typename BaseType::ShapeFunctionsSecondDerivativesType ShapeFunctionsSecondDerivativesType;
+
+    /**
+    * A fourth order tensor to hold shape functions' local third derivatives at a point.
+    * ShapeFunctionsThirdDerivatives function return this
+    * type as its result.
+    */
+    typedef typename BaseType::ShapeFunctionsThirdDerivativesType ShapeFunctionsThirdDerivativesType;
+
+    /**
+     * A third order tensor to hold shape functions' gradients at all integration points.
+     * ShapeFunctionsIntegrationPointsGradients function return this
+     * type as its result.
+     */
+    typedef typename BaseType::ShapeFunctionsIntegrationPointsGradientsType ShapeFunctionsIntegrationPointsGradientsType;
 
     /**
      * Type of the normal vector used for normal to edges in geomety.
@@ -159,11 +183,22 @@ public:
      */
     typedef typename BaseType::CoordinatesArrayType CoordinatesArrayType;
 
+    /** This type used for representing the local coordinates of
+    an integration point
+    */
+    typedef typename BaseType::LocalCoordinatesArrayType LocalCoordinatesArrayType;
+
     /**
      * Type of Matrix
      */
-    typedef Matrix MatrixType;
+    typedef typename BaseType::MatrixType MatrixType;
+    typedef typename BaseType::ZeroMatrixType ZeroMatrixType;
 
+    /**
+     * Type of Vector
+     */
+    typedef typename BaseType::VectorType VectorType;
+    typedef typename BaseType::ZeroVectorType ZeroVectorType;
 
     /**
      * Life Cycle
@@ -234,7 +269,7 @@ public:
     }
 
     /// Destructor. Does nothing!!!
-    virtual ~Tetrahedra3D4() {}
+    ~Tetrahedra3D4() override {}
 
     GeometryData::KratosGeometryFamily GetGeometryFamily() const final
     {
@@ -285,7 +320,6 @@ public:
         return *this;
     }
 
-
     /**
      * Operations
      */
@@ -295,15 +329,16 @@ public:
         return typename BaseType::Pointer(new Tetrahedra3D4(ThisPoints));
     }
 
-    Geometry< Point<3> >::Pointer Clone() const override
+    typename Geometry< Point<3, DataType> >::Pointer Clone() const override
     {
-        Geometry< Point<3> >::PointsArrayType NewPoints;
+        typename Geometry< Point<3, DataType> >::PointsArrayType NewPoints;
+
         //making a copy of the nodes TO POINTS (not Nodes!!!)
         for(IndexType i = 0 ; i < this->Points().size() ; i++)
             NewPoints.push_back(this->Points()[i]);
+
         //creating a geometry with the new points
-        Geometry< Point<3> >::Pointer
-        p_clone(new Tetrahedra3D4< Point<3> >(NewPoints));
+        typename Geometry< Point<3, DataType> >::Pointer p_clone(new Tetrahedra3D4< Point<3, DataType> >(NewPoints));
         p_clone->ClonePoints();
 
         return p_clone;
@@ -317,7 +352,6 @@ public:
         std::fill(rResult.begin(), rResult.end(), 1.00 / 4.00);
         return rResult;
     }
-
 
     /**
      * Informations
@@ -403,13 +437,10 @@ public:
         return  detJ*onesixth;
     }
 
-
     DataType DomainSize() const override
     {
-
         return Volume();
     }
-
 
     /**
     * Returns a matrix of the local coordinates of all points
@@ -440,7 +471,7 @@ public:
     /**
      * Returns whether local arbitrary point is inside the Geometry
      */
-    bool IsInside( const CoordinatesArrayType& rPoint ) const override
+    bool IsInside( const LocalCoordinatesArrayType& rPoint ) const override
     {
         if( rPoint[0] >= 0.0-1.0e-8 && rPoint[0] <= 1.0+1.0e-8 )
             if( rPoint[1] >= 0.0-1.0e-8 && rPoint[1] <= 1.0 +1.0e-8)
@@ -576,7 +607,7 @@ public:
      * @return the value of the shape function at the given point
      * TODO: TO BE VERIFIED
      */
-    DataType ShapeFunctionValue( IndexType ShapeFunctionIndex, const CoordinatesArrayType& rPoint) const override
+    ValueType ShapeFunctionValue( IndexType ShapeFunctionIndex, const LocalCoordinatesArrayType& rPoint) const override
     {
         switch( ShapeFunctionIndex )
         {
@@ -603,7 +634,7 @@ public:
      * @return the gradients of all shape functions
      * \f$ \frac{\partial N^i}{\partial \xi_j} \f$
      */
-    Matrix& ShapeFunctionsLocalGradients( Matrix& rResult, const CoordinatesArrayType& rPoint ) const override
+    Matrix& ShapeFunctionsLocalGradients( Matrix& rResult, const LocalCoordinatesArrayType& rPoint ) const override
     {
         if(rResult.size1() != this->PointsNumber() || rResult.size2() != this->LocalSpaceDimension())
             rResult.resize(this->PointsNumber(),this->LocalSpaceDimension(),false);
@@ -628,7 +659,8 @@ public:
      *
      * :TODO: TESTING!!!
      */
-    ShapeFunctionsGradientsType& ShapeFunctionsIntegrationPointsGradients( ShapeFunctionsGradientsType& rResult, IntegrationMethod ThisMethod) const override
+    ShapeFunctionsIntegrationPointsGradientsType& ShapeFunctionsIntegrationPointsGradients(
+        ShapeFunctionsIntegrationPointsGradientsType& rResult, IntegrationMethod ThisMethod) const override
     {
         const unsigned int integration_points_number =
             msGeometryData.IntegrationPointsNumber(ThisMethod);
@@ -671,13 +703,14 @@ public:
         }
 
         for(unsigned int i=0; i<integration_points_number; i++)
-                rResult[i] = DN_DX;
-
+            rResult[i] = DN_DX;
 
         return rResult;
     }
 
-    ShapeFunctionsGradientsType& ShapeFunctionsIntegrationPointsGradients( ShapeFunctionsGradientsType& rResult, Vector& determinants_of_jacobian, IntegrationMethod ThisMethod) const override
+    ShapeFunctionsIntegrationPointsGradientsType& ShapeFunctionsIntegrationPointsGradients(
+        ShapeFunctionsIntegrationPointsGradientsType& rResult, VectorType& determinants_of_jacobian,
+        IntegrationMethod ThisMethod) const override
     {
         const unsigned int integration_points_number =
             msGeometryData.IntegrationPointsNumber(ThisMethod);
@@ -729,46 +762,44 @@ public:
             rResult.resize(integration_points_number,false);
         }
         for(unsigned int i=0; i<integration_points_number; i++)
-                rResult[i] = DN_DX;
-
+            rResult[i] = DN_DX;
 
         return rResult;
     }
 
-
-
-
     /// detect if two tetrahedra are intersected
     bool HasIntersection( const BaseType& rThisGeometry) const override
     {
-
-        array_1d<Plane, 4>  plane;
-        std::vector<BaseType> Intersection;
-
-        //const BaseType& geom_1 = *this;
-        const BaseType& geom_2 = rThisGeometry;
-
-        GetPlanes(plane);
-        Intersection.push_back(geom_2);
-        for (unsigned int i = 0; i < 4; ++i)
+        if constexpr (std::is_arithmetic<DataType>::value)
         {
-            std::vector<BaseType> inside;
-            for (unsigned int j = 0; j < Intersection.size(); ++j)
+            array_1d<Plane, 4> plane;
+            std::vector<BaseType> Intersection;
+
+            //const BaseType& geom_1 = *this;
+            const BaseType& geom_2 = rThisGeometry;
+
+            GetPlanes(plane);
+            Intersection.push_back(geom_2);
+            for (unsigned int i = 0; i < 4; ++i)
             {
-                SplitAndDecompose(Intersection[j], plane[i], inside);
+                std::vector<BaseType> inside;
+                for (unsigned int j = 0; j < Intersection.size(); ++j)
+                {
+                    SplitAndDecompose(Intersection[j], plane[i], inside);
+                }
+                Intersection = inside;
             }
-            Intersection = inside;
+
+            return bool (Intersection.size() > 0);
         }
-
-        return bool (Intersection.size() > 0);
+        else
+            KRATOS_ERROR << "This operation is not supported in complex space";
     }
-
 
     bool HasIntersection(const Point<3, DataType>& rLowPoint, const Point<3, DataType>& rHighPoint) const override
     {
         return false;
     }
-
 
     void SplitAndDecompose(
         const BaseType& tetra, Plane& plane,
@@ -808,7 +839,6 @@ public:
                 zer[zero++] = i;
         }
 
-
         // For a split to occur, one of the c_i must be positive and one must
         // be negative.
         if (negative == 0)
@@ -840,7 +870,6 @@ public:
             }
             inside.push_back(tetra);
         }
-
         else if (positive == 2)
         {
             if (negative == 2)
@@ -878,8 +907,6 @@ public:
                 inside.push_back(tetra);
             }
         }
-
-
         else if (positive == 1)
         {
             if (negative == 3)
@@ -922,7 +949,6 @@ public:
         }
     }
 
-
     void GetPlanes(array_1d<Plane, 4>& plane) const
     {
         const BaseType& geom_1 = *this;
@@ -940,12 +966,15 @@ public:
 
 
         DataType det = inner_prod(edge10, plane[3].mNormal);
-        if (det < 0.00)
+        if constexpr (std::is_arithmetic<DataType>::value)
         {
-            // The normals are inner pointing, reverse their directions.
-            for (int i = 0; i < 4; ++i)
+            if (det < 0.00)
             {
-                plane[i].mNormal = -plane[i].mNormal;
+                // The normals are inner pointing, reverse their directions.
+                for (int i = 0; i < 4; ++i)
+                {
+                    plane[i].mNormal = -plane[i].mNormal;
+                }
             }
         }
 
@@ -953,10 +982,7 @@ public:
         {
             plane[i].mConstant = inner_prod(geom_1[i].Coordinates(), plane[i].mNormal);
         }
-
     }
-
-
 
     /**
      * Input and output
@@ -1000,8 +1026,8 @@ public:
         BaseType::PrintData(rOStream);
         std::cout << std::endl;
         rOStream << "    in Tetrahedra3D4 PrintData\t : " << std::endl;
-        Matrix jacobian(3,3);
-        this->Jacobian(jacobian, PointType());
+        MatrixType jacobian;
+        this->Jacobian( jacobian, LocalCoordinatesArrayType() );
         rOStream << "    Jacobian in the origin\t : " << jacobian;
     }
 
@@ -1054,7 +1080,7 @@ private:
      * \f$ \frac{\partial N^i}{\partial \xi_j} \f$
      */
 
-    static Matrix& CalculateShapeFunctionsLocalGradients( Matrix& rResult, const CoordinatesArrayType& rPoint )
+    static Matrix& CalculateShapeFunctionsLocalGradients( Matrix& rResult, const LocalCoordinatesArrayType& rPoint )
     {
         rResult(0,0) = -1.0;
         rResult(0,1) = -1.0;
@@ -1121,8 +1147,7 @@ private:
      * in each integration point
      *
      */
-    static ShapeFunctionsGradientsType
-    CalculateShapeFunctionsIntegrationPointsLocalGradients(
+    static ShapeFunctionsGradientsType CalculateShapeFunctionsIntegrationPointsLocalGradients(
         typename BaseType::IntegrationMethod ThisMethod)
     {
         IntegrationPointsContainerType all_integration_points =
@@ -1194,11 +1219,7 @@ private:
         return shape_functions_values;
     }
 
-    /**
-     * TODO: TO BE VERIFIED
-     */
-    static const ShapeFunctionsLocalGradientsContainerType
-    AllShapeFunctionsLocalGradients()
+    static const ShapeFunctionsLocalGradientsContainerType AllShapeFunctionsLocalGradients()
     {
         ShapeFunctionsLocalGradientsContainerType shape_functions_local_gradients =
         {
@@ -1230,7 +1251,7 @@ private:
      * Un accessible methods
      */
 
-};// Class Tetrahedra3D4
+}; // Class Tetrahedra3D4
 
 template<class TPointType> const
 GeometryData Tetrahedra3D4<TPointType>::msGeometryData(
@@ -1240,6 +1261,6 @@ GeometryData Tetrahedra3D4<TPointType>::msGeometryData(
     AllShapeFunctionsLocalGradients()
 );
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #endif // KRATOS_TETRAHEDRA_3D_4_H_INCLUDED  defined

@@ -837,7 +837,7 @@ public:
     static inline void UnitCrossProduct(T1& c, const T2& a, const T3& b ){
         CrossProduct(c,a,b);
         const TDataType norm = norm_2(c);
-        KRATOS_DEBUG_ERROR_IF(norm < 1000.0*GetZeroTolerance())
+        KRATOS_DEBUG_ERROR_IF(std::abs(norm) < 1000.0*GetZeroTolerance())
             << "norm is 0 when making the UnitCrossProduct of the vectors "
             << a << " and " << b << std::endl;
         c/=norm;

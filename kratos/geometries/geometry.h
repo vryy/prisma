@@ -188,21 +188,31 @@ public:
     */
     typedef boost::numeric::ublas::vector<MatrixType> JacobiansType;
 
-    /** A third order tensor to hold shape functions'  gradients.
-    ShapefunctionsGradients function return this
+    /** A third order tensor to hold shape functions' local gradients at all integration points.
+    ShapefunctionsLocalGradients function return this
     type as its result.
+    // Remark: it should be called ShapeFunctionsLocalGradientsType but many has used it
+    // down the line to we stick to it
     */
     typedef GeometryData::ShapeFunctionsGradientsType ShapeFunctionsGradientsType;
 
-    /** A third order tensor to hold shape functions' local second derivatives.
-    ShapefunctionsLocalGradients function return this
-    type as its result.
-    */
+    /** A third order tensor to hold shape functions' local second derivatives at a point.
+     * ShapeFunctionsSecondDerivatives function return this
+     * type as its result.
+     */
     typedef GeometryData::ShapeFunctionsSecondDerivativesType ShapeFunctionsSecondDerivativesType;
 
-    /** A fourth order tensor to hold shape functions' local third order derivatives
+    /** A fourth order tensor to hold shape functions' local third order derivatives at a point
+     * ShapeFunctionsThirdDerivatives function return this
+     * type as its result.
      */
     typedef GeometryData::ShapeFunctionsThirdDerivativesType ShapeFunctionsThirdDerivativesType;
+
+    /** A third order tensor to hold shape functions' gradients at all integration points.
+     * ShapeFunctionsIntegrationPointsGradients function return this
+     * type as its result.
+     */
+    typedef boost::numeric::ublas::vector<MatrixType> ShapeFunctionsIntegrationPointsGradientsType;
 
     /** Type of the normal vector used for normal to edges in geomety.
      */
@@ -409,7 +419,7 @@ public:
             *i = typename PointType::Pointer( new PointType( **i ) );
     }
 
-    virtual boost::shared_ptr< Geometry< Point<3, DataType> > > Clone() const
+    virtual typename Geometry< Point<3, DataType> >::Pointer Clone() const
     {
         typename Geometry< Point<3, DataType> >::PointsArrayType NewPoints;
 
@@ -2059,15 +2069,15 @@ public:
         return rResult;
     }
 
-    ShapeFunctionsGradientsType& ShapeFunctionsIntegrationPointsGradients( ShapeFunctionsGradientsType& rResult ) const
+    ShapeFunctionsIntegrationPointsGradientsType& ShapeFunctionsIntegrationPointsGradients(
+            ShapeFunctionsIntegrationPointsGradientsType& rResult ) const
     {
         ShapeFunctionsIntegrationPointsGradients( rResult, mpGeometryData->DefaultIntegrationMethod() );
         return rResult;
     }
 
-    virtual ShapeFunctionsGradientsType& ShapeFunctionsIntegrationPointsGradients(
-        ShapeFunctionsGradientsType& rResult,
-        IntegrationMethod ThisMethod ) const
+    virtual ShapeFunctionsIntegrationPointsGradientsType& ShapeFunctionsIntegrationPointsGradients(
+            ShapeFunctionsIntegrationPointsGradientsType& rResult, IntegrationMethod ThisMethod ) const
     {
         const unsigned int integration_points_number = this->IntegrationPointsNumber( ThisMethod );
 
@@ -2077,30 +2087,26 @@ public:
         if ( rResult.size() != integration_points_number )
             rResult.resize(  this->IntegrationPointsNumber( ThisMethod ), false  );
 
-        if constexpr(std::is_arithmetic<DataType>::value)
-        {
-            //calculating the local gradients
-            const ShapeFunctionsGradientsType& DN_De = ShapeFunctionsLocalGradients( ThisMethod );
+        //calculating the local gradients
+        const ShapeFunctionsGradientsType& DN_De = ShapeFunctionsLocalGradients( ThisMethod );
 
-            //loop over all integration points
-            MatrixType J(this->WorkingSpaceDimension(),this->LocalSpaceDimension()),Jinv(this->WorkingSpaceDimension(),this->LocalSpaceDimension());
-            DataType DetJ;
-            for ( unsigned int pnt = 0; pnt < integration_points_number; pnt++ )
-            {
-                if(rResult[pnt].size1() != this->size() ||  rResult[pnt].size2() != this->LocalSpaceDimension())
-                    rResult[pnt].resize( this->size(), this->LocalSpaceDimension(), false );
-                this->Jacobian(J,pnt, ThisMethod);
-                MathUtils<DataType>::InvertMatrix( J, Jinv, DetJ );
-                noalias(rResult[pnt]) =  prod( DN_De[pnt], Jinv );
-            }
+        //loop over all integration points
+        MatrixType J(this->WorkingSpaceDimension(),this->LocalSpaceDimension()),Jinv(this->WorkingSpaceDimension(),this->LocalSpaceDimension());
+        DataType DetJ;
+        for ( unsigned int pnt = 0; pnt < integration_points_number; pnt++ )
+        {
+            if(rResult[pnt].size1() != this->size() ||  rResult[pnt].size2() != this->LocalSpaceDimension())
+                rResult[pnt].resize( this->size(), this->LocalSpaceDimension(), false );
+            this->Jacobian(J,pnt, ThisMethod);
+            MathUtils<DataType>::InvertMatrix( J, Jinv, DetJ );
+            noalias(rResult[pnt]) =  prod( DN_De[pnt], Jinv );
         }
-        else
-            KRATOS_ERROR << "Shape function local gradients are not defined for complex coordinates";
 
         return rResult;
     }
 
-    virtual ShapeFunctionsGradientsType& ShapeFunctionsIntegrationPointsGradients( ShapeFunctionsGradientsType& rResult,
+    virtual ShapeFunctionsIntegrationPointsGradientsType& ShapeFunctionsIntegrationPointsGradients(
+            ShapeFunctionsIntegrationPointsGradientsType& rResult,
             VectorType& determinants_of_jacobian, IntegrationMethod ThisMethod ) const
     {
         const unsigned int integration_points_number = this->IntegrationPointsNumber( ThisMethod );
@@ -2113,32 +2119,29 @@ public:
         if ( determinants_of_jacobian.size() != integration_points_number )
             determinants_of_jacobian.resize(  this->IntegrationPointsNumber( ThisMethod ), false  );
 
-        if constexpr(std::is_arithmetic<DataType>::value)
-        {
-            //calculating the local gradients
-            const ShapeFunctionsGradientsType& DN_De = ShapeFunctionsLocalGradients( ThisMethod );
+        //calculating the local gradients
+        const ShapeFunctionsGradientsType& DN_De = ShapeFunctionsLocalGradients( ThisMethod );
 
-            //loop over all integration points
-            MatrixType J(this->WorkingSpaceDimension(),this->LocalSpaceDimension());
-            MatrixType Jinv(this->WorkingSpaceDimension(),this->LocalSpaceDimension());
-            DataType DetJ;
-            for ( unsigned int pnt = 0; pnt < integration_points_number; pnt++ )
-            {
-                if(rResult[pnt].size1() != this->size() || rResult[pnt].size2() != this->LocalSpaceDimension())
-                    rResult[pnt].resize( this->size(), this->LocalSpaceDimension(), false );
-                this->Jacobian(J, pnt, ThisMethod);
-                MathUtils<DataType>::InvertMatrix( J, Jinv, DetJ );
-                noalias(rResult[pnt]) =  prod( DN_De[pnt], Jinv );
-                determinants_of_jacobian[pnt] = DetJ;
-            }
+        //loop over all integration points
+        MatrixType J(this->WorkingSpaceDimension(),this->LocalSpaceDimension());
+        MatrixType Jinv(this->WorkingSpaceDimension(),this->LocalSpaceDimension());
+        DataType DetJ;
+        for ( unsigned int pnt = 0; pnt < integration_points_number; pnt++ )
+        {
+            if(rResult[pnt].size1() != this->size() || rResult[pnt].size2() != this->LocalSpaceDimension())
+                rResult[pnt].resize( this->size(), this->LocalSpaceDimension(), false );
+            this->Jacobian(J, pnt, ThisMethod);
+            MathUtils<DataType>::InvertMatrix( J, Jinv, DetJ );
+            noalias(rResult[pnt]) =  prod( DN_De[pnt], Jinv );
+            determinants_of_jacobian[pnt] = DetJ;
         }
-        else
-            KRATOS_ERROR << "Shape function local gradients are not defined for complex coordinates";
 
         return rResult;
     }
 
-    virtual ShapeFunctionsGradientsType& ShapeFunctionsIntegrationPointsGradients( ShapeFunctionsGradientsType& rResult, VectorType& determinants_of_jacobian, IntegrationMethod ThisMethod, Matrix& ShapeFunctionsIntegrationPointsValues ) const
+    virtual ShapeFunctionsIntegrationPointsGradientsType& ShapeFunctionsIntegrationPointsGradients(
+            ShapeFunctionsIntegrationPointsGradientsType& rResult, VectorType& determinants_of_jacobian,
+            IntegrationMethod ThisMethod, Matrix& ShapeFunctionsIntegrationPointsValues ) const
     {
         ShapeFunctionsIntegrationPointsGradients(rResult, determinants_of_jacobian, ThisMethod);
         ShapeFunctionsIntegrationPointsValues = ShapeFunctionsValues(ThisMethod);

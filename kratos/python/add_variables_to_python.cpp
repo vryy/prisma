@@ -24,32 +24,15 @@
 // System includes
 
 // External includes
-#include <boost/python.hpp>
-
 
 // Project includes
-#include "includes/define.h"
+#include "includes/define_python.h"
 #include "includes/ublas_interface.h"
 #include "includes/constitutive_law.h"
 #include "includes/convection_diffusion_settings.h"
 #include "includes/radiation_settings.h"
 #include "includes/variables.h"
 #include "python/add_variables_to_python.h"
-
-#ifdef KRATOS_REGISTER_IN_PYTHON_VARIABLE
-#undef KRATOS_REGISTER_IN_PYTHON_VARIABLE
-#endif
-#define KRATOS_REGISTER_IN_PYTHON_VARIABLE(variable) \
-    scope().attr(#variable) = boost::ref(variable);
-
-#ifdef KRATOS_REGISTER_IN_PYTHON_3D_VARIABLE_WITH_COMPONENTS
-#undef KRATOS_REGISTER_IN_PYTHON_3D_VARIABLE_WITH_COMPONENTS
-#endif
-#define KRATOS_REGISTER_IN_PYTHON_3D_VARIABLE_WITH_COMPONENTS(name) \
-    KRATOS_REGISTER_IN_PYTHON_VARIABLE(name) \
-    KRATOS_REGISTER_IN_PYTHON_VARIABLE(name##_X) \
-    KRATOS_REGISTER_IN_PYTHON_VARIABLE(name##_Y) \
-    KRATOS_REGISTER_IN_PYTHON_VARIABLE(name##_Z)
 
 namespace Kratos
 {

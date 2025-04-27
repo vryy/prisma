@@ -57,102 +57,123 @@ public:
     /// Pointer definition of Line3D2
     KRATOS_CLASS_POINTER_DEFINITION( Line3D2 );
 
-    /** Integration methods implemented in geometry.
-    */
+    /**
+     * Integration methods implemented in geometry.
+     */
     typedef GeometryData::IntegrationMethod IntegrationMethod;
 
-    /** A Vector of counted pointers to Geometries. Used for
-    returning edges of the geometry.
+    /**
+     * A Vector of counted pointers to Geometries. Used for
+     * returning edges of the geometry.
      */
     typedef typename BaseType::GeometriesArrayType GeometriesArrayType;
 
-    /** Redefinition of template parameter TPointType.
-     */
-    typedef TPointType PointType;
-
     /**
-     * Type used for coordinate.
+     * Type used for coordinate value.
      */
     typedef typename BaseType::DataType DataType;
 
     /**
-     * Type used for real values, like shape function.
+     * Type used for shape function value.
      */
     typedef typename BaseType::ValueType ValueType;
 
-    /** Type used for indexing in geometry class.std::size_t used for indexing
-    point or integration point access methods and also all other
-    methods which need point or integration point index.
-    */
+    /**
+     * Type used for indexing in geometry class.std::size_t used for indexing
+     * point or integration point access methods and also all other
+     * methods which need point or integration point index.
+     */
     typedef typename BaseType::IndexType IndexType;
 
-    /** This typed used to return size or dimension in
-    geometry. Dimension, WorkingDimension, PointsNumber and
-    ... return this type as their results.
-    */
+    /**
+     * This typed used to return size or dimension in
+     * geometry. Dimension, WorkingDimension, PointsNumber and
+     * ... return this type as their results.
+     */
     typedef typename BaseType::SizeType SizeType;
 
-    /** Array of counted pointers to point. This type used to hold
-    geometry's points.
-    */
-    typedef  typename BaseType::PointsArrayType PointsArrayType;
+    /**
+     * Redefinition of template parameter TPointType.
+     */
+    typedef typename BaseType::PointType PointType;
 
-    /** This type used for representing an integration point in
-    geometry. This integration point is a point with an
-    additional weight component.
-    */
+    /**
+     * Array of counted pointers to point. This type used to hold
+     * geometry's points.
+     */
+    typedef typename BaseType::PointsArrayType PointsArrayType;
+
+    /**
+     * This type used for representing an integration point in
+     * geometry. This integration point is a point with an
+     * additional weight component.
+     */
     typedef typename BaseType::IntegrationPointType IntegrationPointType;
 
-    /** A Vector of IntegrationPointType which used to hold
-    integration points related to an integration
-    method. IntegrationPoints functions used this type to return
-    their results.
-    */
+    /**
+     * A Vector of IntegrationPointType which used to hold
+     * integration points related to an integration
+     * method. IntegrationPoints functions used this type to return
+     * their results.
+     */
     typedef typename BaseType::IntegrationPointsArrayType IntegrationPointsArrayType;
 
-    /** A Vector of IntegrationPointsArrayType which used to hold
-    integration points related to different integration method
-    implemented in geometry.
-    */
+    /**
+     * A Vector of IntegrationPointsArrayType which used to hold
+     * integration points related to different integration method
+     * implemented in geometry.
+     */
     typedef typename BaseType::IntegrationPointsContainerType IntegrationPointsContainerType;
 
-    /** A third order tensor used as shape functions' values
-    continer.
-    */
+    /**
+     * A third order tensor used as shape functions' values
+     * container.
+     */
     typedef typename BaseType::ShapeFunctionsValuesContainerType ShapeFunctionsValuesContainerType;
 
-    /** A fourth order tensor used as shape functions' local
-    gradients container in geometry.
-    */
+    /**
+     * A fourth order tensor used as shape functions' local
+     * gradients container in geometry.
+     */
     typedef typename BaseType::ShapeFunctionsLocalGradientsContainerType ShapeFunctionsLocalGradientsContainerType;
 
-    /** A third order tensor to hold jacobian matrices evaluated at
-    integration points. Jacobian and InverseOfJacobian functions
-    return this type as their result.
-    */
+    /**
+     * A third order tensor to hold jacobian matrices evaluated at
+     * integration points. Jacobian and InverseOfJacobian functions
+     * return this type as their result.
+     */
     typedef typename BaseType::JacobiansType JacobiansType;
 
-    /** A third order tensor to hold shape functions' local
-    gradients. ShapefunctionsLocalGradients function return this
-    type as its result.
-    */
+    /**
+     * A third order tensor to hold shape functions' local gradients at all integration points.
+     * ShapefunctionsLocalGradients function return this
+     * type as its result.
+     */
     typedef typename BaseType::ShapeFunctionsGradientsType ShapeFunctionsGradientsType;
 
     /**
-     * A third order tensor to hold shape functions' local second derivatives.
+     * A third order tensor to hold shape functions' local second derivatives at a point.
      * ShapeFunctionsSecondDerivatives function return this
      * type as its result.
      */
     typedef typename BaseType::ShapeFunctionsSecondDerivativesType ShapeFunctionsSecondDerivativesType;
 
     /**
-    * A fourth order tensor to hold shape functions' local third derivatives.
+    * A fourth order tensor to hold shape functions' local third derivatives at a point.
     * ShapeFunctionsThirdDerivatives function return this
     * type as its result.
     */
     typedef typename BaseType::ShapeFunctionsThirdDerivativesType ShapeFunctionsThirdDerivativesType;
 
-    /** Type of the normal vector used for normal to edges in geomety.
+    /**
+     * A third order tensor to hold shape functions' gradients at all integration points.
+     * ShapeFunctionsIntegrationPointsGradients function return this
+     * type as its result.
+    */
+    typedef typename BaseType::ShapeFunctionsIntegrationPointsGradientsType ShapeFunctionsIntegrationPointsGradientsType;
+
+    /**
+     * Type of the normal vector used for normal to edges in geomety.
      */
     typedef typename BaseType::NormalType NormalType;
 
@@ -161,24 +182,22 @@ public:
      */
     typedef typename BaseType::CoordinatesArrayType CoordinatesArrayType;
 
-    /**
-     * Type of coordinates array
-     */
+    /** This type used for representing the local coordinates of
+    an integration point
+    */
     typedef typename BaseType::LocalCoordinatesArrayType LocalCoordinatesArrayType;
 
-    /** A first order tensor to hold determinant of jacobian values evaluated at
-    integration points.
-    */
-    typedef typename BaseType::VectorType VectorType;
-
-    /** A second order tensor to hold jacobian values evaluated at
-    integration points.
-    */
+    /**
+     * Type of Matrix
+     */
     typedef typename BaseType::MatrixType MatrixType;
+    typedef typename BaseType::ZeroMatrixType ZeroMatrixType;
 
-    /// Helpful vectors and matrices
-    using typename BaseType::ZeroVectorType;
-    using typename BaseType::ZeroMatrixType;
+    /**
+     * Type of Vector
+     */
+    typedef typename BaseType::VectorType VectorType;
+    typedef typename BaseType::ZeroVectorType ZeroVectorType;
 
     ///@}
     ///@name Life Cycle
@@ -237,7 +256,7 @@ public:
     }
 
     /// Destructor. Do nothing!!!
-    virtual ~Line3D2() {}
+    ~Line3D2() override {}
 
     GeometryData::KratosGeometryFamily GetGeometryFamily() const final
     {
@@ -302,7 +321,6 @@ public:
         typename Geometry< Point<3, DataType> >::PointsArrayType NewPoints;
 
         //making a copy of the nodes TO POINTS (not Nodes!!!)
-
         for ( IndexType i = 0 ; i < BaseType::Points().size() ; i++ )
             NewPoints.push_back( BaseType::Points()[i] );
 
@@ -667,8 +685,8 @@ public:
     ///@name Shape Function
     ///@{
 
-    DataType ShapeFunctionValue( IndexType ShapeFunctionIndex,
-                                 const LocalCoordinatesArrayType& rPoint ) const override
+    ValueType ShapeFunctionValue( IndexType ShapeFunctionIndex,
+                                  const LocalCoordinatesArrayType& rPoint ) const override
     {
         switch ( ShapeFunctionIndex )
         {
@@ -688,7 +706,7 @@ public:
         return 0;
     }
 
-    MatrixType& ShapeFunctionsLocalGradients( MatrixType& rResult, const LocalCoordinatesArrayType& rPoint ) const override
+    Matrix& ShapeFunctionsLocalGradients( Matrix& rResult, const LocalCoordinatesArrayType& rPoint ) const override
     {
         rResult = ZeroMatrix( 2, 1 );
         rResult( 0, 0 ) = -0.5;
@@ -696,7 +714,8 @@ public:
         return( rResult );
     }
 
-    ShapeFunctionsGradientsType& ShapeFunctionsIntegrationPointsGradients( ShapeFunctionsGradientsType& rResult, IntegrationMethod ThisMethod ) const override
+    ShapeFunctionsIntegrationPointsGradientsType& ShapeFunctionsIntegrationPointsGradients(
+        ShapeFunctionsIntegrationPointsGradientsType& rResult, IntegrationMethod ThisMethod ) const override
     {
         KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square" , "" );
     }
@@ -809,7 +828,7 @@ public:
         BaseType::PrintData( rOStream );
         std::cout << std::endl;
         MatrixType jacobian;
-        Jacobian( jacobian, PointType() );
+        this->Jacobian( jacobian, LocalCoordinatesArrayType() );
         rOStream << "    Jacobian\t : " << jacobian;
     }
 
@@ -904,7 +923,7 @@ private:
 
         for ( int it_gp = 0; it_gp < integration_points_number; it_gp++ )
         {
-            DataType e = IntegrationPoints[it_gp].X();
+            ValueType e = IntegrationPoints[it_gp].X();
             N( it_gp, 0 ) = 0.5 * ( 1 - e );
             N( it_gp, 1 ) = 0.5 * ( 1 + e );
         }

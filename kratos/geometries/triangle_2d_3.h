@@ -83,58 +83,57 @@ public:
     typedef GeometryData::IntegrationMethod IntegrationMethod;
 
     /**
-     * A Vector of counted pointers to Geometries.
-     * Used for returning edges of the geometry.
+     * A Vector of counted pointers to Geometries. Used for
+     * returning edges of the geometry.
      */
     typedef typename BaseType::GeometriesArrayType GeometriesArrayType;
 
     /**
-     * Redefinition of template parameter TPointType.
-     */
-    typedef TPointType PointType;
-
-    /**
-     * Type used for double value.
+     * Type used for coordinate value.
      */
     typedef typename BaseType::DataType DataType;
 
     /**
-     * Type used for indexing in geometry class.
-     * std::size_t used for indexing
+     * Type used for shape function value.
+     */
+    typedef typename BaseType::ValueType ValueType;
+
+    /**
+     * Type used for indexing in geometry class.std::size_t used for indexing
      * point or integration point access methods and also all other
      * methods which need point or integration point index.
      */
     typedef typename BaseType::IndexType IndexType;
 
     /**
-     * This type is used to return size or dimension in
+     * This typed used to return size or dimension in
      * geometry. Dimension, WorkingDimension, PointsNumber and
      * ... return this type as their results.
      */
     typedef typename BaseType::SizeType SizeType;
 
     /**
-     * Array of counted pointers to point.
-     * This type used to hold geometry's points.
+     * Redefinition of template parameter TPointType.
      */
-    typedef  typename BaseType::PointsArrayType PointsArrayType;
+    typedef typename BaseType::PointType PointType;
 
     /**
-     * Array of coordinates. Can be Nodes, Points or IntegrationPoints
+     * Array of counted pointers to point. This type used to hold
+     * geometry's points.
      */
-    typedef typename BaseType::CoordinatesArrayType CoordinatesArrayType;
+    typedef typename BaseType::PointsArrayType PointsArrayType;
 
     /**
-     * This type used for representing an integration point in geometry.
-     * This integration point is a point with an additional weight component.
+     * This type used for representing an integration point in
+     * geometry. This integration point is a point with an
+     * additional weight component.
      */
     typedef typename BaseType::IntegrationPointType IntegrationPointType;
 
     /**
      * A Vector of IntegrationPointType which used to hold
      * integration points related to an integration
-     * method.
-     * IntegrationPoints functions used this type to return
+     * method. IntegrationPoints functions used this type to return
      * their results.
      */
     typedef typename BaseType::IntegrationPointsArrayType IntegrationPointsArrayType;
@@ -166,30 +165,59 @@ public:
     typedef typename BaseType::JacobiansType JacobiansType;
 
     /**
-     * A third order tensor to hold shape functions' local
-     * gradients. ShapefunctionsLocalGradients function return this
+     * A third order tensor to hold shape functions' local gradients at all integration points.
+     * ShapefunctionsLocalGradients function return this
      * type as its result.
      */
     typedef typename BaseType::ShapeFunctionsGradientsType ShapeFunctionsGradientsType;
 
     /**
-     * A third order tensor to hold shape functions' local second derivatives.
+     * A third order tensor to hold shape functions' local second derivatives at a point.
      * ShapeFunctionsSecondDerivatives function return this
      * type as its result.
      */
     typedef typename BaseType::ShapeFunctionsSecondDerivativesType ShapeFunctionsSecondDerivativesType;
 
     /**
-    * A fourth order tensor to hold shape functions' local third derivatives.
+    * A fourth order tensor to hold shape functions' local third derivatives at a point.
     * ShapeFunctionsThirdDerivatives function return this
     * type as its result.
     */
     typedef typename BaseType::ShapeFunctionsThirdDerivativesType ShapeFunctionsThirdDerivativesType;
 
     /**
-     * Type of the normal vector used for normal to edges in geometry.
+     * A third order tensor to hold shape functions' gradients at all integration points.
+     * ShapeFunctionsIntegrationPointsGradients function return this
+     * type as its result.
+    */
+    typedef typename BaseType::ShapeFunctionsIntegrationPointsGradientsType ShapeFunctionsIntegrationPointsGradientsType;
+
+    /**
+     * Type of the normal vector used for normal to edges in geomety.
      */
     typedef typename BaseType::NormalType NormalType;
+
+    /**
+     * Type of coordinates array
+     */
+    typedef typename BaseType::CoordinatesArrayType CoordinatesArrayType;
+
+    /** This type used for representing the local coordinates of
+    an integration point
+    */
+    typedef typename BaseType::LocalCoordinatesArrayType LocalCoordinatesArrayType;
+
+    /**
+     * Type of Matrix
+     */
+    typedef typename BaseType::MatrixType MatrixType;
+    typedef typename BaseType::ZeroMatrixType ZeroMatrixType;
+
+    /**
+     * Type of Vector
+     */
+    typedef typename BaseType::VectorType VectorType;
+    typedef typename BaseType::ZeroVectorType ZeroVectorType;
 
     ///@}
     ///@name Life Cycle
@@ -257,7 +285,7 @@ public:
     /**
      * Destructor. Does nothing!!!
      */
-    virtual ~Triangle2D3() {}
+    ~Triangle2D3() override {}
 
     GeometryData::KratosGeometryFamily GetGeometryFamily() const final
     {
@@ -317,17 +345,16 @@ public:
         return typename BaseType::Pointer( new Triangle2D3( ThisPoints ) );
     }
 
-    Geometry< Point<3> >::Pointer Clone() const override
+    typename Geometry< Point<3, DataType> >::Pointer Clone() const override
     {
-        Geometry< Point<3> >::PointsArrayType NewPoints;
+        typename Geometry< Point<3, DataType> >::PointsArrayType NewPoints;
 
         //making a copy of the nodes TO POINTS (not Nodes!!!)
-
         for ( IndexType i = 0 ; i < this->Points().size() ; i++ )
             NewPoints.push_back( this->Points()[i] );
 
         //creating a geometry with the new points
-        Geometry< Point<3> >::Pointer p_clone( new Triangle2D3< Point<3> >( NewPoints ) );
+        typename Geometry< Point<3, DataType> >::Pointer p_clone( new Triangle2D3< Point<3, DataType> >( NewPoints ) );
 
         p_clone->ClonePoints();
 
@@ -386,9 +413,9 @@ public:
      */
     DataType Length() const override
     {
-        //return sqrt(fabs( DeterminantOfJacobian(PointType()))*0.5);
+        //return sqrt(std::abs( DeterminantOfJacobian(PointType()))*0.5);
         DataType length = 0.000;
-        length = 1.1283791670955 * sqrt( fabs( Area() ) );  // (4xA/Pi)^(1/2)
+        length = 1.1283791670955 * sqrt( std::abs( Area() ) );  // (4xA/Pi)^(1/2)
         return length;
     }
 
@@ -430,12 +457,17 @@ public:
     {
         const BaseType& geom_1 = *this;
         const BaseType& geom_2 = rThisGeometry;
-        return NoDivTriTriIsect( static_cast<Point<3, DataType> >(geom_1[0].Coordinates()),
-                                 static_cast<Point<3, DataType> >(geom_1[1].Coordinates()),
-                                 static_cast<Point<3, DataType> >(geom_1[2].Coordinates()),
-                                 static_cast<Point<3, DataType> >(geom_2[0].Coordinates()),
-                                 static_cast<Point<3, DataType> >(geom_2[1].Coordinates()),
-                                 static_cast<Point<3, DataType> >(geom_2[2].Coordinates()) );
+        if constexpr (std::is_same<DataType, ValueType>::value)
+        {
+            return NoDivTriTriIsect( static_cast<Point<3, DataType> >(geom_1[0].Coordinates()),
+                                     static_cast<Point<3, DataType> >(geom_1[1].Coordinates()),
+                                     static_cast<Point<3, DataType> >(geom_1[2].Coordinates()),
+                                     static_cast<Point<3, DataType> >(geom_2[0].Coordinates()),
+                                     static_cast<Point<3, DataType> >(geom_2[1].Coordinates()),
+                                     static_cast<Point<3, DataType> >(geom_2[2].Coordinates()) );
+        }
+        else
+            KRATOS_ERROR << "This operation is not supported in complex space";
     }
 
 
@@ -453,7 +485,6 @@ public:
         boxcenter[1]   = 0.50 * (rLowPoint[1] + rHighPoint[1]);
         boxcenter[2]   = 0.00;
 
-
         boxhalfsize[0] = 0.50 * (rHighPoint[0] - rLowPoint[0]);
         boxhalfsize[1] = 0.50 * (rHighPoint[1] - rLowPoint[1]);
         boxhalfsize[2] = 0.00;
@@ -464,9 +495,14 @@ public:
         for(unsigned int i = 0; i< size; i++ )
             triverts[i] =  geom_1.GetPoint(i);
 
-        bool result = false;
-        result      = TriBoxOverlap(boxcenter, boxhalfsize, triverts);
-        return result;
+        if constexpr (std::is_same<DataType, ValueType>::value)
+        {
+            bool result = false;
+            result      = TriBoxOverlap(boxcenter, boxhalfsize, triverts);
+            return result;
+        }
+        else
+            KRATOS_ERROR << "This operation is not supported in complex space";
     }
 
 
@@ -493,9 +529,9 @@ public:
     /**
      * Returns whether given local point is inside the Geometry
      */
-    bool IsInside( const CoordinatesArrayType& rPoint ) const override
+    bool IsInside( const LocalCoordinatesArrayType& rPoint ) const override
     {
-        const DataType zero = 1E-8;
+        const ValueType zero = 1E-8;
         if( ( rPoint[0] >= (0.0-zero) ) && ( rPoint[0] <= 1.0 + zero ) )
             if( ( rPoint[1] >= 0.0-zero ) && (rPoint[1] <= 1.0 + zero ) )
                 if(((1.0-(rPoint[0] + rPoint[1])) >= 0.0-zero) &&  ((1.0-(rPoint[0] + rPoint[1])) <= 1.0 + zero))
@@ -558,7 +594,6 @@ public:
         NumberNodesInFaces[0]=2;
         NumberNodesInFaces[1]=2;
         NumberNodesInFaces[2]=2;
-
     }
 
     void NodesInFaces (boost::numeric::ublas::matrix<unsigned int>& NodesInFaces) const override
@@ -577,10 +612,7 @@ public:
         NodesInFaces(0,2)=2;//face or other node
         NodesInFaces(1,2)=0;
         NodesInFaces(2,2)=1;
-
     }
-
-
 
     ///@}
     ///@name Shape Function
@@ -598,7 +630,7 @@ public:
      *
      * @return the value of the shape function at the given point
      */
-    DataType ShapeFunctionValue( IndexType ShapeFunctionIndex, const CoordinatesArrayType& rPoint ) const override
+    ValueType ShapeFunctionValue( IndexType ShapeFunctionIndex, const LocalCoordinatesArrayType& rPoint ) const override
     {
         switch ( ShapeFunctionIndex )
         {
@@ -630,7 +662,8 @@ public:
      * @return the gradients of all shape functions with regard to the global coordinates
 
     */
-    ShapeFunctionsGradientsType& ShapeFunctionsIntegrationPointsGradients( ShapeFunctionsGradientsType& rResult, IntegrationMethod ThisMethod ) const override
+    ShapeFunctionsIntegrationPointsGradientsType& ShapeFunctionsIntegrationPointsGradients(
+        ShapeFunctionsIntegrationPointsGradientsType& rResult, IntegrationMethod ThisMethod ) const override
     {
         const unsigned int integration_points_number =
             msGeometryData.IntegrationPointsNumber( ThisMethod );
@@ -670,7 +703,8 @@ public:
         return rResult;
     }
 
-    ShapeFunctionsGradientsType& ShapeFunctionsIntegrationPointsGradients( ShapeFunctionsGradientsType& rResult, Vector& determinants_of_jacobian, IntegrationMethod ThisMethod ) const override
+    ShapeFunctionsIntegrationPointsGradientsType& ShapeFunctionsIntegrationPointsGradients(
+        ShapeFunctionsIntegrationPointsGradientsType& rResult, VectorType& determinants_of_jacobian, IntegrationMethod ThisMethod ) const override
     {
         const unsigned int integration_points_number =
             msGeometryData.IntegrationPointsNumber( ThisMethod );
@@ -715,7 +749,6 @@ public:
 
         return rResult;
     }
-
 
     ///@}
     ///@name Input and output
@@ -763,8 +796,8 @@ public:
         PrintInfo( rOStream );
         BaseType::PrintData( rOStream );
         std::cout << std::endl;
-        Matrix jacobian;
-        this->Jacobian( jacobian, PointType() );
+        MatrixType jacobian;
+        this->Jacobian( jacobian, LocalCoordinatesArrayType() );
         rOStream << "    Jacobian in the origin\t : " << jacobian;
     }
 
@@ -819,7 +852,7 @@ public:
      * @return the gradients of all shape functions
      * \f$ \frac{\partial N^i}{\partial \xi_j} \f$
      */
-    Matrix& ShapeFunctionsLocalGradients( Matrix& rResult, const CoordinatesArrayType& rPoint ) const override
+    Matrix& ShapeFunctionsLocalGradients( Matrix& rResult, const LocalCoordinatesArrayType& rPoint ) const override
     {
         rResult = ZeroMatrix( 3, 2 );
         rResult( 0, 0 ) = -1.0;
@@ -830,8 +863,6 @@ public:
         rResult( 2, 1 ) =  1.0;
         return rResult;
     }
-
-
 
     /**
      * returns the shape function gradients in an arbitrary point,
@@ -860,7 +891,7 @@ public:
      * @param rResult a third order tensor which contains the second derivatives
      * @param rPoint the given point the second order derivatives are calculated in
      */
-    ShapeFunctionsSecondDerivativesType& ShapeFunctionsSecondDerivatives( ShapeFunctionsSecondDerivativesType& rResult, const CoordinatesArrayType& rPoint ) const override
+    ShapeFunctionsSecondDerivativesType& ShapeFunctionsSecondDerivatives( ShapeFunctionsSecondDerivativesType& rResult, const LocalCoordinatesArrayType& rPoint ) const override
     {
         if ( rResult.size() != this->PointsNumber() )
         {
@@ -900,7 +931,7 @@ public:
      * @param rResult a fourth order tensor which contains the third derivatives
      * @param rPoint the given point the third order derivatives are calculated in
      */
-    ShapeFunctionsThirdDerivativesType& ShapeFunctionsThirdDerivatives( ShapeFunctionsThirdDerivativesType& rResult, const CoordinatesArrayType& rPoint ) const override
+    ShapeFunctionsThirdDerivativesType& ShapeFunctionsThirdDerivatives( ShapeFunctionsThirdDerivativesType& rResult, const LocalCoordinatesArrayType& rPoint ) const override
     {
         if ( rResult.size() != this->PointsNumber() )
         {
@@ -1039,8 +1070,7 @@ private:
      * @return the vector of the gradients of all shape functions
      * in each integration point
      */
-    static ShapeFunctionsGradientsType
-    CalculateShapeFunctionsIntegrationPointsLocalGradients(
+    static ShapeFunctionsGradientsType CalculateShapeFunctionsIntegrationPointsLocalGradients(
         typename BaseType::IntegrationMethod ThisMethod )
     {
         IntegrationPointsContainerType all_integration_points =
@@ -1069,9 +1099,6 @@ private:
         return d_shape_f_values;
     }
 
-    /**
-     * TODO: testing
-     */
     static const IntegrationPointsContainerType AllIntegrationPoints()
     {
         IntegrationPointsContainerType integration_points =
@@ -1087,9 +1114,6 @@ private:
         return integration_points;
     }
 
-    /**
-     * TODO: testing
-     */
     static const ShapeFunctionsValuesContainerType AllShapeFunctionsValues()
     {
         ShapeFunctionsValuesContainerType shape_functions_values =
@@ -1105,11 +1129,7 @@ private:
         return shape_functions_values;
     }
 
-    /**
-     * TODO: testing
-     */
-    static const ShapeFunctionsLocalGradientsContainerType
-    AllShapeFunctionsLocalGradients()
+    static const ShapeFunctionsLocalGradientsContainerType AllShapeFunctionsLocalGradients()
     {
         ShapeFunctionsLocalGradientsContainerType shape_functions_local_gradients =
         {
@@ -1123,7 +1143,6 @@ private:
         };
         return shape_functions_local_gradients;
     }
-
 
 //*************************************************************************************
 //*************************************************************************************
@@ -1144,7 +1163,6 @@ private:
     * result    : returns 1 if the triangles intersect, otherwise 0
     *
     */
-
     bool NoDivTriTriIsect( const Point<3,DataType>& V0,
                            const Point<3,DataType>& V1,
                            const Point<3,DataType>& V2,
@@ -1158,14 +1176,13 @@ private:
         DataType du0du1,du0du2,dv0dv1,dv0dv2;
         DataType vp0,vp1,vp2;
         DataType up0,up1,up2;
-        DataType bb,cc,max;
+        ValueType bb,cc,max;
         array_1d<DataType,2> isect1, isect2;
         array_1d<DataType,3> D;
         array_1d<DataType,3> E1,E2;
         array_1d<DataType,3> N1,N2;
 
-
-        const DataType epsilon =  1E-6;
+        const ValueType epsilon =  1E-6;
 
 // compute plane equation of triangle(V0,V1,V2) //
         noalias(E1) = V1-V0;
@@ -1180,9 +1197,9 @@ private:
         du2=inner_prod(N1,U2)+d1;
 
 // coplanarity robustness check //
-        if(fabs(du0)<epsilon) du0=0.0;
-        if(fabs(du1)<epsilon) du1=0.0;
-        if(fabs(du2)<epsilon) du2=0.0;
+        if(std::abs(du0)<epsilon) du0=0.0;
+        if(std::abs(du1)<epsilon) du1=0.0;
+        if(std::abs(du2)<epsilon) du2=0.0;
 
         du0du1=du0*du1;
         du0du2=du0*du2;
@@ -1202,9 +1219,9 @@ private:
         dv1=inner_prod(N2,V1)+d2;
         dv2=inner_prod(N2,V2)+d2;
 
-        if(fabs(dv0)<epsilon) dv0=0.0;
-        if(fabs(dv1)<epsilon) dv1=0.0;
-        if(fabs(dv2)<epsilon) dv2=0.0;
+        if(std::abs(dv0)<epsilon) dv0=0.0;
+        if(std::abs(dv1)<epsilon) dv1=0.0;
+        if(std::abs(dv2)<epsilon) dv2=0.0;
 
         dv0dv1=dv0*dv1;
         dv0dv2=dv0*dv2;
@@ -1216,10 +1233,10 @@ private:
         MathUtils<DataType>::CrossProduct(D, N1, N2);
 
 // compute and index to the largest component of D //
-        max=(DataType)fabs(D[0]);
+        max=std::abs(D[0]);
         index=0;
-        bb=(DataType)fabs(D[1]);
-        cc=(DataType)fabs(D[2]);
+        bb=std::abs(D[1]);
+        cc=std::abs(D[2]);
         if(bb>max)
         {
             max=bb,index=1;
@@ -1275,10 +1292,8 @@ private:
         return true;
     }
 
-
 //*************************************************************************************
 //*************************************************************************************
-
 
 // sort so that a<=b //
     void Sort(DataType& a, DataType& b) const
@@ -1380,9 +1395,9 @@ private:
 
         // first project onto an axis-aligned plane, that maximizes the area //
         // of the triangles, compute indices: i0,i1. //
-        A[0]=fabs(N[0]);
-        A[1]=fabs(N[1]);
-        A[2]=fabs(N[2]);
+        A[0]=std::abs(N[0]);
+        A[1]=std::abs(N[1]);
+        A[2]=std::abs(N[2]);
         if(A[0]>A[1])
         {
             if(A[0]>A[2])
@@ -1430,8 +1445,8 @@ private:
 //*************************************************************************************
 //*************************************************************************************
 
-    bool Edge_Against_Tri_Edges(const short& i0,
-                                const short& i1,
+    bool Edge_Against_Tri_Edges(const short i0,
+                                const short i1,
                                 const Point<3,DataType>& V0,
                                 const Point<3,DataType>& V1,
                                 const Point<3,DataType>&U0,
@@ -1462,20 +1477,20 @@ private:
 //   this edge to edge test is based on Franlin Antonio's gem:
 //   "Faster Line Segment Intersection", in Graphics Gems III,
 //   pp. 199-202
-    bool Edge_Edge_Test(DataType& Ax,
-                        DataType& Ay,
-                        DataType& Bx,
-                        DataType& By,
-                        DataType& Cx,
-                        DataType& Cy,
-                        DataType& e,
-                        DataType& d,
-                        DataType& f,
-                        const short& i0,
-                        const short& i1,
-                        const Point<3,DataType>&V0,
-                        const Point<3,DataType>&U0,
-                        const Point<3,DataType>&U1) const
+    bool Edge_Edge_Test(ValueType& Ax,
+                        ValueType& Ay,
+                        ValueType& Bx,
+                        ValueType& By,
+                        ValueType& Cx,
+                        ValueType& Cy,
+                        ValueType& e,
+                        ValueType& d,
+                        ValueType& f,
+                        const short i0,
+                        const short i1,
+                        const Point<3, DataType>& V0,
+                        const Point<3, DataType>& U0,
+                        const Point<3, DataType>& U1) const
     {
         Bx=U0[i0]-U1[i0];
         By=U0[i1]-U1[i1];
@@ -1484,9 +1499,8 @@ private:
         f=Ay*Bx-Ax*By;
         d=By*Cx-Bx*Cy;
 
-        if(std::fabs(f)<1E-10) f = 0.00;
-        if(std::fabs(d)<1E-10) d = 0.00;
-
+        if(std::abs(f)<1E-10) f = 0.00;
+        if(std::abs(d)<1E-10) d = 0.00;
 
         if((f>0.00 && d>=0.00 && d<=f) || (f<0.00 && d<=0.00 && d>=f))
         {
@@ -1507,13 +1521,12 @@ private:
 //*************************************************************************************
 //*************************************************************************************
 
-
-    bool Point_In_Tri(const short& i0,
-                      const short& i1,
-                      const Point<3,DataType>& V0,
-                      const Point<3,DataType>& U0,
-                      const Point<3,DataType>& U1,
-                      const Point<3,DataType>& U2) const
+    bool Point_In_Tri(const short i0,
+                      const short i1,
+                      const Point<3, DataType>& V0,
+                      const Point<3, DataType>& U0,
+                      const Point<3, DataType>& U1,
+                      const Point<3, DataType>& U2) const
     {
         DataType a,b,c,d0,d1,d2;
         // is T1 completly inside T2? //
@@ -1573,9 +1586,9 @@ private:
 //
 //        /* Bullet 3:  */
 //        /*  test the 9 tests first (this was faster) */
-        fex = fabs(e0[0]);
-        fey = fabs(e0[1]);
-        fez = fabs(e0[2]);
+        fex = std::abs(e0[0]);
+        fey = std::abs(e0[1]);
+        fez = std::abs(e0[2]);
         //AXISTEST_X01(e0[2], e0[1], fez, fey);
         if (AxisTest_X01(e0[2], e0[1], fez, fey, p0, p2, min,max, rad, v0, v2, boxhalfsize)==0) return false;
         //AXISTEST_Y02(e0[2], e0[0], fez, fex);
@@ -1583,11 +1596,9 @@ private:
         //AXISTEST_Z12(e0[1], e0[0], fey, fex);
         //if(AxisTest_Z12(e0[1], e0[0], fey, fex, p1, p2, min, max, rad, v1,v2, boxhalfsize )==0) return false;
 
-
-
-        fex = fabs(e1[0]);
-        fey = fabs(e1[1]);
-        fez = fabs(e1[2]);
+        fex = std::abs(e1[0]);
+        fey = std::abs(e1[1]);
+        fez = std::abs(e1[2]);
         //AXISTEST_X01(e1[2], e1[1], fez, fey);
         if( AxisTest_X01(e1[2], e1[1], fez, fey, p0, p2, min,max, rad, v0, v2, boxhalfsize)==0) return false;
         //AXISTEST_Y02(e1[2], e1[0], fez, fex);
@@ -1595,17 +1606,15 @@ private:
         //AXISTEST_Z0(e1[1], e1[0], fey, fex);
         //if( AxisTest_Z0(e1[1], e1[0], fey, fex, p0,  p1, min, max, rad, v0, v1,boxhalfsize)==0) return false;
 
-
-        fex = fabs(e2[0]);
-        fey = fabs(e2[1]);
-        fez = fabs(e2[2]);
+        fex = std::abs(e2[0]);
+        fey = std::abs(e2[1]);
+        fez = std::abs(e2[2]);
         //AXISTEST_X2(e2[2], e2[1], fez, fey);
         if (AxisTest_X2(e2[2], e2[1], fez, fey, p0, p1, min, max, rad, v0, v1, boxhalfsize )==0) return false;
         //AXISTEST_Y1(e2[2], e2[0], fez, fex);
         if (AxisTest_Y1(e2[2], e2[0], fez, fex, p0, p1, min, max, rad, v0, v1, boxhalfsize )==0) return false;
         //AXISTEST_Z12(e2[1], e2[0], fey, fex);
         //if(AxisTest_Z12(e2[1], e2[0], fey, fex, p1, p2, min, max, rad, v1,v2, boxhalfsize ) ==0) return false;
-
 
         /* Bullet 1: */
         /*  first test overlap in the {x,y,z}-directions */
@@ -1634,8 +1643,6 @@ private:
 
         return true;   /* box and triangle overlaps */
     }
-
-
 
 //*************************************************************************************
 //*************************************************************************************
@@ -1678,6 +1685,7 @@ private:
 
         return false;
     }
+
 //*************************************************************************************
 //*************************************************************************************
 
@@ -1733,6 +1741,7 @@ private:
         if(min>rad || max<-rad) return 0;
         else return 1;
     }
+
 //*************************************************************************************
 //*************************************************************************************
 
@@ -1813,7 +1822,7 @@ private:
 
 
     ///@}
-}; // Class Geometry
+}; // Class Triangle2D3
 
 ///@}
 ///@name Type Definitions
@@ -1836,6 +1845,6 @@ GeometryData Triangle2D3<TPointType>::msGeometryData(
     AllShapeFunctionsLocalGradients()
 );
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #endif // KRATOS_TRIANGLE_2D_3_H_INCLUDED  defined
