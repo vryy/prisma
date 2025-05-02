@@ -106,6 +106,7 @@ public:
 
     typedef typename ModelPartType::DofType TDofType;
     typedef typename ModelPartType::DofsArrayType DofsArrayType;
+    typedef typename ModelPartType::NodeType NodeType;
     typedef typename PointerVectorSet<TDofType, IndexedObject>::iterator DofIterator;
     typedef typename PointerVectorSet<TDofType, IndexedObject>::const_iterator DofConstantIterator;
     /*@} */
@@ -274,18 +275,20 @@ public:
     {
         KRATOS_TRY
 
-        if (GetModelPart().NodesBegin()->SolutionStepsDataHas(DISPLACEMENT_X) == false)
-            KRATOS_ERROR << "It is impossible to move the mesh since the DISPLACEMENT var is not in the model_part. Either use SetMoveMeshFlag(False) or add DISPLACEMENT to the list of variables";
-
-        for (auto i = GetModelPart().NodesBegin(); i != GetModelPart().NodesEnd(); ++i)
+        if constexpr (std::is_same<typename NodeType::CoordinateType, TDataType>::value)
         {
-            (i)->X() = (i)->X0() + i->GetSolutionStepValue(DISPLACEMENT_X);
-            (i)->Y() = (i)->Y0() + i->GetSolutionStepValue(DISPLACEMENT_Y);
-            (i)->Z() = (i)->Z0() + i->GetSolutionStepValue(DISPLACEMENT_Z);
+            for (auto i = GetModelPart().NodesBegin(); i != GetModelPart().NodesEnd(); ++i)
+            {
+                (i)->X() = (i)->X0() + i->GetSolutionStepValue(VARSELC(TDataType, DISPLACEMENT, X));
+                (i)->Y() = (i)->Y0() + i->GetSolutionStepValue(VARSELC(TDataType, DISPLACEMENT, Y));
+                (i)->Z() = (i)->Z0() + i->GetSolutionStepValue(VARSELC(TDataType, DISPLACEMENT, Z));
+            }
         }
-
-    /*   std::cout<<" MESH MOVED "<<std::endl; */
-    /* if( mEchoLevel > 0 ) */
+        else
+        {
+            KRATOS_ERROR << "MoveMesh cannot be performed on " << ModelPartTypeToString<ModelPartType>::Get()
+                         << " due to incompatibility of nodal coordinates and displacement";
+        }
 
         KRATOS_CATCH("")
     }
@@ -322,10 +325,11 @@ public:
         {
             for (auto i = GetModelPart().NodesBegin(); i != GetModelPart().NodesEnd(); ++i)
 
-                if (i->SolutionStepsDataHas(DISPLACEMENT) == false)
+                if (i->SolutionStepsDataHas(VARSEL(TDataType, DISPLACEMENT)) == false)
                 {
                     std::cout << "problem on node with Id " << i->Id() << std::endl;
-                    KRATOS_ERROR << "It is impossible to move the mesh since the DISPLACMENT var is not in the model_part. Either use SetMoveMeshFlag(False) or add DISPLACEMENT to the list of variables";
+                    KRATOS_ERROR << "It is impossible to move the mesh since the " << VARSEL(TDataType, DISPLACEMENT).Name() << " var is not in the model_part."
+                                 << " Either use SetMoveMeshFlag(False) or add " << VARSEL(TDataType, DISPLACEMENT).Name() << " to the list of variables";
                 }
         }
 
