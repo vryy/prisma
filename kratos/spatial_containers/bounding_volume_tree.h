@@ -289,8 +289,8 @@ public:
 private:
     static const double msDirection[][3];
     static const double msDirectionNormalized[][3];
-    const double (*Direction() const)[3] override;
-    const double (*DirectionNormalized() const)[3] override;
+    virtual const double (*Direction() const)[3];
+    virtual const double (*DirectionNormalized() const)[3];
 };
 
 class KRATOS_API(KRATOS_CORE) _8DOP : public kDOP
@@ -303,8 +303,8 @@ public:
 private:
     static const double msDirection[][3];
     static const double msDirectionNormalized[][3];
-    const double (*Direction() const)[3] override;
-    const double (*DirectionNormalized() const)[3] override;
+    virtual const double (*Direction() const)[3];
+    virtual const double (*DirectionNormalized() const)[3];
 };
 
 class KRATOS_API(KRATOS_CORE) _12DOP : public kDOP
@@ -317,8 +317,8 @@ public:
 private:
     static const double msDirection[][3];
     static const double msDirectionNormalized[][3];
-    const double (*Direction() const)[3] override;
-    const double (*DirectionNormalized() const)[3] override;
+    virtual const double (*Direction() const)[3];
+    virtual const double (*DirectionNormalized() const)[3];
 };
 
 class KRATOS_API(KRATOS_CORE) _14DOP : public kDOP
@@ -331,8 +331,8 @@ public:
 private:
     static const double msDirection[][3];
     static const double msDirectionNormalized[][3];
-    const double (*Direction() const)[3] override;
-    const double (*DirectionNormalized() const)[3] override;
+    virtual const double (*Direction() const)[3];
+    virtual const double (*DirectionNormalized() const)[3];
 };
 
 class KRATOS_API(KRATOS_CORE) _18DOP : public kDOP
@@ -345,8 +345,8 @@ public:
 private:
     static const double msDirection[][3];
     static const double msDirectionNormalized[][3];
-    const double (*Direction() const)[3] override;
-    const double (*DirectionNormalized() const)[3] override;
+    virtual const double (*Direction() const)[3];
+    virtual const double (*DirectionNormalized() const)[3];
 };
 
 class KRATOS_API(KRATOS_CORE) _20DOP : public kDOP
@@ -359,8 +359,8 @@ public:
 private:
     static const double msDirection[][3];
     static const double msDirectionNormalized[][3];
-    const double (*Direction() const)[3] override;
-    const double (*DirectionNormalized() const)[3] override;
+    virtual const double (*Direction() const)[3];
+    virtual const double (*DirectionNormalized() const)[3];
 };
 
 class KRATOS_API(KRATOS_CORE) _26DOP : public kDOP
@@ -373,8 +373,8 @@ public:
 private:
     static const double msDirection[][3];
     static const double msDirectionNormalized[][3];
-    const double (*Direction() const)[3] override;
-    const double (*DirectionNormalized() const)[3] override;
+    virtual const double (*Direction() const)[3];
+    virtual const double (*DirectionNormalized() const)[3];
 };
 
 

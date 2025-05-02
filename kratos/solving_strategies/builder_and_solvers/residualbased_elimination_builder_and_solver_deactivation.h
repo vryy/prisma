@@ -535,7 +535,11 @@ public:
         unsigned int num_computed_elements = 0;
         unsigned int num_assembled_elements = 0;
 
-        #pragma omp parallel for reduction(+:DiagonalSum) reduction(+:num_assembled_elements) reduction(+:num_computed_elements)
+        #pragma omp declare reduction( \
+            sum: TDataType: omp_out += omp_in) \
+            initializer(omp_priv = TDataType())
+
+        #pragma omp parallel for reduction(sum:DiagonalSum) reduction(+:num_assembled_elements) reduction(+:num_computed_elements)
         for(int k = 0; k < number_of_threads; ++k)
         {
 //            std::cout << "thread " << k << " is spawned" << std::endl;
@@ -668,7 +672,7 @@ public:
         unsigned int num_computed_conditions = 0;
         unsigned int num_assembled_conditions = 0;
 
-        #pragma omp parallel for reduction(+:DiagonalSum) reduction(+:num_assembled_conditions) reduction(+:num_computed_conditions)
+        #pragma omp parallel for reduction(sum:DiagonalSum) reduction(+:num_assembled_conditions) reduction(+:num_computed_conditions)
         for(int k = 0; k < number_of_threads; ++k)
         {
             //contributions to the system
@@ -778,10 +782,15 @@ public:
 
         // compute the modification factor: simply average of the diagonal
         TDataType DiagonalAverage = DiagonalSum / (BaseType::mEquationSystemSize - mFixedLength);
-        printf("DiagonalSum: %.16e, DiagonalAverage: %.16e\n", DiagonalSum, DiagonalAverage);
+        if constexpr (std::is_arithmetic<TDataType>::value)
+            printf("DiagonalSum: %.16e, DiagonalAverage: %.16e\n", DiagonalSum, DiagonalAverage);
+        else
+            std::cout << "DiagonalSum: " << DiagonalSum
+                      << "DiagonalAverage: " << DiagonalAverage
+                      << std::endl;
 
         // modify the matrix as needed
-        for(std::set<std::size_t>::iterator it = InactiveIdSet.begin(); it != InactiveIdSet.end(); ++it)
+        for(auto it = InactiveIdSet.begin(); it != InactiveIdSet.end(); ++it)
         {
             if(*it < BaseType::mEquationSystemSize)
                 A(*it, *it) = DiagonalAverage;

@@ -1315,28 +1315,21 @@ public:
     {
         static inline void Execute(ModelPartImpl& rModelPart, typename TEntityType::Pointer pNewEntity, IndexType ThisIndex)
         {
-            KRATOS_ERROR << "You are trying to add an unknown entity " << typeid(TEntityType).name()
-                         << " to the ModelPart " << rModelPart.Name();
+            if constexpr (std::is_same<TEntityType, ElementType>::value)
+            {
+                rModelPart.AddElement(pNewEntity);
+            }
+            else if constexpr (std::is_same<TEntityType, ConditionType>::value)
+            {
+                rModelPart.AddCondition(pNewEntity);
+            }
+            else
+                KRATOS_ERROR << "You are trying to add an unknown entity " << typeid(TEntityType).name()
+                             << " to the ModelPart " << rModelPart.Name();
         }
     };
 
-    template<> struct AddEntity_Helper<ElementType>
-    {
-        static inline void Execute(ModelPartImpl& rModelPart, typename ElementType::Pointer pNewElement, IndexType ThisIndex)
-        {
-            rModelPart.AddElement(pNewElement);
-        }
-    };
-
-    template<> struct AddEntity_Helper<ConditionType>
-    {
-        static inline void Execute(ModelPartImpl& rModelPart, typename ConditionType::Pointer pNewCondition, IndexType ThisIndex)
-        {
-            rModelPart.AddCondition(pNewCondition);
-        }
-    };
-
-    /** Specialization to add element/condition based on type
+    /** Auxiliary function to add element/condition based on type
      */
     template<class TEntityType>
     void AddEntity(typename TEntityType::Pointer pNewEntity, IndexType ThisIndex = 0)
