@@ -105,7 +105,12 @@ endif()
 
 if(MSVC)
     target_compile_options(KratosCore PRIVATE $<$<CONFIG:Debug>:/bigobj>)
+    target_compile_options(KratosCore PRIVATE /permissive) # enforce stricter compliant with C++ standard
 endif()
+if((${CMAKE_CXX_COMPILER_ID} MATCHES Clang) OR (${CMAKE_CXX_COMPILER_ID} MATCHES GNU))
+    target_compile_options(KratosCore PRIVATE -pedantic-errors) # enforce strict compliant with C++ standard
+endif()
+
 if(${KRATOS_PYTHON} MATCHES TRUE)
     target_link_libraries(KratosCore PUBLIC ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${PYTHON_LIBRARIES} gidpost )
 else()
