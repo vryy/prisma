@@ -123,7 +123,6 @@ public:
      */
     static void Register()
     {
-
     }
 
     ///@}
@@ -258,7 +257,7 @@ public:
     /// Pointer definition of KratosComponents
     KRATOS_CLASS_POINTER_DEFINITION(KratosComponents);
 
-    typedef std::map<std::string, VariableData* > ComponentsContainerType;
+    typedef std::map<std::string, VariableData*> ComponentsContainerType;
     typedef ComponentsContainerType::value_type ValueType;
 
     ///@}
@@ -342,7 +341,6 @@ public:
      */
     static void Register()
     {
-
     }
 
     ///@}
@@ -470,7 +468,6 @@ template<class TComponentType>
 typename KratosComponents<TComponentType>::ComponentsContainerType KratosComponents<TComponentType>::msComponents;
 #endif
 
-
 ///@name Input and output
 ///@{
 
@@ -485,6 +482,7 @@ inline std::ostream& operator << (std::ostream& rOStream,
 
     return rOStream;
 }
+
 ///@}
 
 void KRATOS_API(KRATOS_CORE) AddKratosComponent(const std::string& rName, const Variable<bool>& rComponent);
@@ -502,11 +500,8 @@ void KRATOS_API(KRATOS_CORE) AddKratosComponent(const std::string& rName, const 
 void KRATOS_API(KRATOS_CORE) AddKratosComponent(const std::string& rName, const Flags& rComponent);
 void KRATOS_API(KRATOS_CORE) AddKratosComponent(const std::string& rName, const Variable<Flags>& rComponent);
 
-template<class TComponentType> void AddKratosComponent(const std::string& rName, const TComponentType& rComponent)
-{
-}
+template<class TComponentType> void AddKratosComponent(const std::string& rName, const TComponentType& rComponent) {}
 
 }  // namespace Kratos.
 
 #endif // KRATOS_KRATOS_COMPONENTS_H_INCLUDED  defined
-

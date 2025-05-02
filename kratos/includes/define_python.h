@@ -37,7 +37,7 @@ std::string PrintObject(const T& rObject)
 #undef KRATOS_REGISTER_IN_PYTHON_FLAG_IMPLEMENTATION
 #endif
 #define KRATOS_REGISTER_IN_PYTHON_FLAG_IMPLEMENTATION(flag) \
- scope().attr(#flag) = boost::ref(flag)      \
+    scope().attr(#flag) = boost::ref(flag)      \
 
 #ifdef KRATOS_REGISTER_IN_PYTHON_FLAG
 #undef KRATOS_REGISTER_IN_PYTHON_FLAG

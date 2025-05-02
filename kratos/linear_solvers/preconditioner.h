@@ -92,6 +92,10 @@ public:
 
     typedef TModelPartType ModelPartType;
 
+    typedef typename ModelPartType::IndexType IndexType;
+
+    typedef typename ModelPartType::SizeType SizeType;
+
     ///@}
     ///@name Life Cycle
     ///@{

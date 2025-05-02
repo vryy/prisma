@@ -1148,7 +1148,6 @@ namespace Kratos
         SizeType node_id;
         SizeType number_of_read_elements = 0;
 
-
         std::string word;
         std::string element_name;
 
@@ -1157,8 +1156,9 @@ namespace Kratos
 
         if(!KratosComponents<ElementType>::Has(element_name))
         {
-            KRATOS_ERROR << "Element " << element_name << " is not registered in Kratos."
-                         << " Please check the spelling of the element name and see if the application which containing it, is registered corectly."
+            KRATOS_ERROR << "Element " << element_name << " is not registered in Kratos,"
+                         << " or is incompatible with " << ModelPartTypeToString<TModelPartType>::Get()
+                         << ". Please check the spelling of the element name and see if the application which containing it, is registered corectly."
                          << " [Line " << mNumberOfLines << " ]";
             return;
         }
@@ -1220,8 +1220,9 @@ namespace Kratos
 
         if(!KratosComponents<ConditionType>::Has(condition_name))
         {
-            KRATOS_ERROR << "Condition " << condition_name << " is not registered in Kratos."
-                         << " Please check the spelling of the condition name and see if the application containing it is registered corectly."
+            KRATOS_ERROR << "Condition " << condition_name << " is not registered in Kratos,"
+                         << " or is incompatible with " << ModelPartTypeToString<TModelPartType>::Get()
+                         << ". Please check the spelling of the condition name and see if the application containing it is registered corectly."
                          << " [Line " << mNumberOfLines << " ]";
             return;
         }
@@ -1733,8 +1734,9 @@ namespace Kratos
         ReadWord(element_name);
         if(!KratosComponents<ElementType>::Has(element_name))
         {
-            KRATOS_ERROR << "Element " << element_name << " is not registered in Kratos."
-                         << " Please check the spelling of the element name and see if the application containing it is registered corectly."
+            KRATOS_ERROR << "Element " << element_name << " is not registered in Kratos,"
+                         << " or is incompatible with " << ModelPartTypeToString<TModelPartType>::Get()
+                         << ". Please check the spelling of the element name and see if the application containing it is registered corectly."
                          << " [Line " << mNumberOfLines << " ]";
             return number_of_connectivities;
         }
@@ -1794,8 +1796,9 @@ namespace Kratos
         ReadWord(condition_name);
         if(!KratosComponents<ConditionType>::Has(condition_name))
         {
-            KRATOS_ERROR << "Condition " << condition_name << " is not registered in Kratos."
-                         << " Please check the spelling of the condition name and see if the application containing it is registered corectly."
+            KRATOS_ERROR << "Condition " << condition_name << " is not registered in Kratos,"
+                         << " or is incompatible with " << ModelPartTypeToString<TModelPartType>::Get()
+                         << ". Please check the spelling of the condition name and see if the application containing it is registered corectly."
                          << " [Line " << mNumberOfLines << " ]";
             return number_of_connectivities;
         }
@@ -1857,8 +1860,9 @@ namespace Kratos
         ReadWord(element_name);
         if(!KratosComponents<ElementType>::Has(element_name))
         {
-            KRATOS_ERROR << "Element " << element_name << " is not registered in Kratos."
-                         << " Please check the spelling of the element name and see if the application containing it is registered corectly."
+            KRATOS_ERROR << "Element " << element_name << " is not registered in Kratos,"
+                         << " or is incompatible with " << ModelPartTypeToString<TModelPartType>::Get()
+                         << ". Please check the spelling of the element name and see if the application containing it is registered corectly."
                          << " [Line " << mNumberOfLines << " ]";
         }
 
@@ -1923,8 +1927,9 @@ namespace Kratos
         ReadWord(condition_name);
         if(!KratosComponents<ConditionType>::Has(condition_name))
         {
-            KRATOS_ERROR << "Condition " << condition_name << " is not registered in Kratos."
-                         << " Please check the spelling of the condition name and see if the application containing it is registered corectly."
+            KRATOS_ERROR << "Condition " << condition_name << " is not registered in Kratos,"
+                         << " or is incompatible with " << ModelPartTypeToString<TModelPartType>::Get()
+                         << ". Please check the spelling of the condition name and see if the application containing it is registered corectly."
                          << " [Line " << mNumberOfLines << " ]";
         }
 
@@ -2732,8 +2737,9 @@ namespace Kratos
         ReadWord(element_name);
         if(!KratosComponents<ElementType>::Has(element_name))
         {
-            KRATOS_ERROR << "Element " << element_name << " is not registered in Kratos."
-                         << " Please check the spelling of the element name and see if the application containing it is registered corectly."
+            KRATOS_ERROR << "Element " << element_name << " is not registered in Kratos,"
+                         << " or is incompatible with " << ModelPartTypeToString<TModelPartType>::Get()
+                         << ". Please check the spelling of the element name and see if the application containing it is registered corectly."
                          << " [Line " << mNumberOfLines << " ]";
             return;
         }
@@ -2805,8 +2811,9 @@ namespace Kratos
         ReadWord(condition_name);
         if(!KratosComponents<ConditionType>::Has(condition_name))
         {
-            KRATOS_ERROR << "Condition " << condition_name << " is not registered in Kratos."
-                         << " Please check the spelling of the condition name and see if the application containing it is registered corectly."
+            KRATOS_ERROR << "Condition " << condition_name << " is not registered in Kratos,"
+                         << " or is incompatible with " << ModelPartTypeToString<TModelPartType>::Get()
+                         << ". Please check the spelling of the condition name and see if the application containing it is registered corectly."
                          << " [Line " << mNumberOfLines << " ]";
             return;
         }
