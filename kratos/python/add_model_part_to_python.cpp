@@ -87,6 +87,12 @@ std::string GetModelPartName(TModelPartType const& rModelPart)
 }
 
 template<class TModelPartType>
+std::string GetModelPartType(TModelPartType const& rModelPart)
+{
+    return ModelPartTypeToString<TModelPartType>::Get();
+}
+
+template<class TModelPartType>
 ProcessInfo& GetProcessInfo(TModelPartType& rModelPart)
 {
     return rModelPart.GetProcessInfo();
@@ -845,6 +851,7 @@ void AddModelPartToPythonImpl(const std::string& Prefix)
     class_<TModelPartType, bases<DataValueContainer, Flags> >((Prefix + "ModelPart").c_str(), init<>())
     .def(init<std::string const&>())
     .add_property("Name", GetModelPartName<TModelPartType>, SetModelPartName<TModelPartType>)
+    .add_property("Type", GetModelPartType<TModelPartType>)
     //  .add_property("ProcessInfo", GetProcessInfo, SetProcessInfo)
     .add_property("ProcessInfo", pointer_to_get_process_info, pointer_to_set_process_info)
     .def("CreateSolutionStep", &TModelPartType::CreateSolutionStep)
@@ -961,6 +968,10 @@ void AddModelPartToPythonImpl(const std::string& Prefix)
     .def("GetCommunicator", ModelPartGetCommunicator<TModelPartType>, return_internal_reference<>())
     .def("Check", &TModelPartType::Check)
     .def("IsSubModelPart", &TModelPartType::IsSubModelPart)
+    .def("GetLastNodeId", &TModelPartType::GetLastNodeId )
+    .def("GetLastElementId", &TModelPartType::GetLastElementId )
+    .def("GetLastConditionId", &TModelPartType::GetLastConditionId )
+    .def("GetLastConstraintId", &TModelPartType::GetLastConstraintId )
 
     .add_property("MasterSlaveConstraints", ModelPartGetMasterSlaveConstraints1<TModelPartType>)
     // .def("GetMasterSlaveConstraint", ModelPartGetMasterSlaveConstraint1<TModelPartType>)

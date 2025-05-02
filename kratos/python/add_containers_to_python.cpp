@@ -287,7 +287,15 @@ void AddContainersToPython()
     .def( self_ns::str( self ) )
     ;
 
-    class_<Variable<ConstitutiveLaw::Pointer>, bases<VariableData>, boost::noncopyable >( "ConstitutuveLawVariable", no_init )
+    class_<Variable<ConstitutiveLaw::Pointer>, bases<VariableData>, boost::noncopyable >( "ConstitutiveLawVariable", no_init )
+    .def( self_ns::str( self ) )
+    ;
+
+    class_<Variable<ComplexConstitutiveLaw::Pointer>, bases<VariableData>, boost::noncopyable >( "ComplexConstitutiveLawVariable", no_init )
+    .def( self_ns::str( self ) )
+    ;
+
+    class_<Variable<GComplexConstitutiveLaw::Pointer>, bases<VariableData>, boost::noncopyable >( "GComplexConstitutiveLawVariable", no_init )
     .def( self_ns::str( self ) )
     ;
 

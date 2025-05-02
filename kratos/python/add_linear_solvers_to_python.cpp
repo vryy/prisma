@@ -112,6 +112,8 @@ void AddLinearSolversToPythonImpl(const std::string& Prefix)
     //****************************************************************************************************
 
     class_<PreconditionerType, typename PreconditionerType::Pointer>((Prefix + "Preconditioner").c_str())
+    .def("AdditionalPhysicalDataIsNeeded", &PreconditionerType::AdditionalPhysicalDataIsNeeded)
+    .def("ProvideAdditionalData", &PreconditionerType::ProvideAdditionalData)
     .def(self_ns::str(self))
     ;
 
@@ -134,11 +136,12 @@ void AddLinearSolversToPythonImpl(const std::string& Prefix)
     //linear solvers
     //****************************************************************************************************
     class_<LinearSolverType, typename LinearSolverType::Pointer>((Prefix + "LinearSolver").c_str())
-    .def("Initialize",&LinearSolverType::Initialize)
-    .def("Solve",pointer_to_solve)
-    .def("Clear",&LinearSolverType::Clear)
+    .def("Initialize", &LinearSolverType::Initialize)
+    .def("Solve", pointer_to_solve)
+    .def("Clear", &LinearSolverType::Clear)
     .def("SetEchoLevel", &LinearSolverType::SetEchoLevel)
-    //.def("",&LinearSolverType::)
+    .def("AdditionalPhysicalDataIsNeeded", &LinearSolverType::AdditionalPhysicalDataIsNeeded)
+    .def("ProvideAdditionalData", &LinearSolverType::ProvideAdditionalData)
     .def(self_ns::str(self))
     ;
 
@@ -150,14 +153,11 @@ void AddLinearSolversToPythonImpl(const std::string& Prefix)
     .def(init<ValueType>())
     .def(init<ValueType, unsigned int>())
     .def(init<ValueType, unsigned int, typename PreconditionerType::Pointer>())
-    //.def("",&LinearSolverType::)
-    .def(self_ns::str(self))
     ;
 
     class_<BICGSTABSolverType, typename BICGSTABSolverType::Pointer, bases<IterativeSolverType> >((Prefix + "BICGSTABSolver").c_str())
     .def(init<ValueType>())
     .def(init<ValueType, unsigned int>())
-    .def(self_ns::str(self))
     .def(init<ValueType, unsigned int, typename PreconditionerType::Pointer>())
     .def("SetTolerance",&BICGSTABSolverType::SetTolerance)
     ;
@@ -165,7 +165,6 @@ void AddLinearSolversToPythonImpl(const std::string& Prefix)
     class_<TFQMRSolverType, typename TFQMRSolverType::Pointer, bases<IterativeSolverType> >((Prefix + "TFQMRSolver").c_str())
     .def(init<ValueType>())
     .def(init<ValueType, unsigned int>())
-    .def(self_ns::str(self))
     .def(init<ValueType, unsigned int, typename PreconditionerType::Pointer>())
     ;
 
@@ -177,17 +176,15 @@ void AddLinearSolversToPythonImpl(const std::string& Prefix)
     .def(init<ValueType, unsigned int, unsigned int, typename LinearSolverType::Pointer>())
     ;
 
-    typedef DirectSolver<SparseSpaceType, LocalSpaceType, ModelPartType, ReordererType > DirectSolverType;
+    typedef DirectSolver<SparseSpaceType, LocalSpaceType, ModelPartType, ReordererType> DirectSolverType;
     typedef SkylineLUFactorizationSolver<SparseSpaceType, LocalSpaceType, ModelPartType, ReordererType> SkylineLUFactorizationSolverType;
 
     class_<DirectSolverType, typename DirectSolverType::Pointer, bases<LinearSolverType> >((Prefix + "DirectSolver").c_str())
     .def( init< >() )
-    .def(self_ns::str(self))
     ;
 
     class_<SkylineLUFactorizationSolverType, typename SkylineLUFactorizationSolverType::Pointer, bases<DirectSolverType> >((Prefix + "SkylineLUFactorizationSolver").c_str())
     .def(init< >())
-    .def(self_ns::str(self))
     ;
 
     class_<DeflatedCGSolverType, typename DeflatedCGSolverType::Pointer, bases<IterativeSolverType> >((Prefix + "DeflatedCGSolver").c_str())
@@ -196,15 +193,12 @@ void AddLinearSolversToPythonImpl(const std::string& Prefix)
     .def(init<ValueType, unsigned int, typename PreconditionerType::Pointer,bool,int>())
     // .def(init<ValueType, unsigned int,  PreconditionerType::Pointer, ModelPart::Pointer>())
     // .def("",&LinearSolverType::)
-    .def(self_ns::str(self))
     ;
 
     class_<MixedUPLinearSolverType, typename MixedUPLinearSolverType::Pointer, bases<IterativeSolverType> >((Prefix + "MixedUPLinearSolver").c_str(), init<typename LinearSolverType::Pointer, typename LinearSolverType::Pointer, ValueType, unsigned int, unsigned int >())
-    .def(self_ns::str(self))
     ;
 
     class_<DeflatedGMRESSolverType, typename DeflatedGMRESSolverType::Pointer, bases<IterativeSolverType> >((Prefix + "DeflatedGMRESSolver").c_str(), init<typename LinearSolverType::Pointer, ValueType, unsigned int, unsigned int, unsigned int >())
-    .def(self_ns::str(self))
     ;
 }
 
