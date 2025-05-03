@@ -4,8 +4,8 @@
 //   _|\_\_|  \__,_|\__|\___/ ____/
 //                   Multi-Physics
 //
-//  License:		 BSD License
-//					 Kratos default license: kratos/license.txt
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Pooyan Dadvand
 //
@@ -60,8 +60,6 @@
 #include "geometries/hexahedra_3d_27.h"
 
 #include "includes/deprecated_variables.h"
-#include "includes/convection_diffusion_settings.h"
-#include "includes/radiation_settings.h"
 
 #include "includes/kratos_flags.h"
 
@@ -336,8 +334,6 @@ namespace Kratos
       KRATOS_REGISTER_VARIABLE( INERTIA )
 
       KRATOS_REGISTER_VARIABLE( NEIGHBOUR_EMBEDDED_FACES )
-      KRATOS_REGISTER_VARIABLE( CONVECTION_DIFFUSION_SETTINGS )
-      KRATOS_REGISTER_VARIABLE( RADIATION_SETTINGS )
 
       //--------------- STRUCTURAL Application -------------------//
 

@@ -25,8 +25,6 @@
 #include "includes/geometrical_object.h"
 
 #include "includes/deprecated_variables.h"
-#include "includes/convection_diffusion_settings.h"
-#include "includes/radiation_settings.h"
 
 namespace Kratos
 {
@@ -362,8 +360,6 @@ KRATOS_CREATE_VARIABLE(WeakPointerVector<Condition >, NEIGHBOUR_CONDITIONS)
 
 //for Structural application:
 KRATOS_CREATE_VARIABLE(WeakPointerVector< GeometricalObject<Node<3> > >, NEIGHBOUR_EMBEDDED_FACES)
-KRATOS_CREATE_VARIABLE(ConvectionDiffusionSettings::Pointer,  CONVECTION_DIFFUSION_SETTINGS)
-KRATOS_CREATE_VARIABLE(RadiationSettings::Pointer,  RADIATION_SETTINGS)
 
 
 KRATOS_CREATE_VARIABLE(PeriodicVariablesContainer, PERIODIC_VARIABLES)

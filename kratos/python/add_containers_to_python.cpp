@@ -40,8 +40,6 @@
 #include "includes/kratos_flags.h"
 #include "includes/variables.h"
 #include "includes/constitutive_law.h"
-#include "includes/convection_diffusion_settings.h"
-#include "includes/radiation_settings.h"
 #include "python/variable_indexing_python.h"
 #include "python/vector_python_interface.h"
 #include "python/vector_scalar_operator_python.h"
@@ -299,14 +297,6 @@ void AddContainersToPython()
     .def( self_ns::str( self ) )
     ;
 
-    class_<Variable<ConvectionDiffusionSettings::Pointer > , bases<VariableData>, boost::noncopyable >("ConvectionDiffusionSettingsVariable", no_init)
-    .def( self_ns::str( self ) )
-    ;
-
-    class_<Variable<RadiationSettings::Pointer > , bases<VariableData>, boost::noncopyable >("RadiationSettingsVariable", no_init)
-    .def( self_ns::str( self ) )
-    ;
-
     // AddComplexNumberToPython();
 
     class_<DataValueContainer, DataValueContainer::Pointer>( "DataValueContainer" )
@@ -324,8 +314,6 @@ void AddContainersToPython()
     .def( VariableIndexingPython<DataValueContainer, Variable<vector<KRATOS_COMPLEX_TYPE> > >() )
     .def( VariableIndexingPython<DataValueContainer, Variable<matrix<KRATOS_COMPLEX_TYPE> > >() )
     .def( VariableIndexingPython<DataValueContainer, VariableComponent<VectorComponentAdaptor<array_1d<KRATOS_COMPLEX_TYPE, 3> > > >() )
-    .def( VariableIndexingPython<DataValueContainer, Variable<ConvectionDiffusionSettings::Pointer > >() )
-    .def( VariableIndexingPython<DataValueContainer, Variable<RadiationSettings::Pointer > >() )
     .def( self_ns::str( self ) )
     ;
 
@@ -378,63 +366,6 @@ void AddContainersToPython()
     KRATOS_REGISTER_IN_PYTHON_FLAG(BLOCKED);
     KRATOS_REGISTER_IN_PYTHON_FLAG(MARKER);
     KRATOS_REGISTER_IN_PYTHON_FLAG(HANGING);
-
-    class_< ConvectionDiffusionSettings, ConvectionDiffusionSettings::Pointer, boost::noncopyable >	("ConvectionDiffusionSettings", init<	>() )
-    .def("SetDensityVariable",&ConvectionDiffusionSettings::SetDensityVariable)
-    .def("SetDiffusionVariable",&ConvectionDiffusionSettings::SetDiffusionVariable)
-    .def("SetUnknownVariable",&ConvectionDiffusionSettings::SetUnknownVariable)
-    .def("SetVolumeSourceVariable",&ConvectionDiffusionSettings::SetVolumeSourceVariable)
-    .def("SetSurfaceSourceVariable",&ConvectionDiffusionSettings::SetSurfaceSourceVariable)
-    .def("SetProjectionVariable",&ConvectionDiffusionSettings::SetProjectionVariable)
-    .def("SetMeshVelocityVariable",&ConvectionDiffusionSettings::SetMeshVelocityVariable)
-    .def("SetConvectionVariable",&ConvectionDiffusionSettings::SetConvectionVariable)
-    .def("SetTransferCoefficientVariable",&ConvectionDiffusionSettings::SetTransferCoefficientVariable)
-    .def("SetSpecificHeatVariable",&ConvectionDiffusionSettings::SetSpecificHeatVariable)
-    .def("SetVelocityVariable",&ConvectionDiffusionSettings::SetVelocityVariable)
-
-    .def("GetDensityVariable",&ConvectionDiffusionSettings::GetDensityVariable, return_internal_reference<>() )
-    .def("GetDiffusionVariable",&ConvectionDiffusionSettings::GetDiffusionVariable, return_internal_reference<>() )
-    .def("GetUnknownVariable",&ConvectionDiffusionSettings::GetUnknownVariable, return_internal_reference<>() )
-    .def("GetVolumeSourceVariable",&ConvectionDiffusionSettings::GetVolumeSourceVariable, return_internal_reference<>() )
-    .def("GetSurfaceSourceVariable",&ConvectionDiffusionSettings::GetSurfaceSourceVariable, return_internal_reference<>() )
-    .def("GetProjectionVariable",&ConvectionDiffusionSettings::GetProjectionVariable, return_internal_reference<>() )
-    .def("GetMeshVelocityVariable",&ConvectionDiffusionSettings::GetMeshVelocityVariable, return_internal_reference<>() )
-    .def("GetConvectionVariable",&ConvectionDiffusionSettings::GetConvectionVariable, return_internal_reference<>() )
-    .def("GetSpecificHeatVariable",&ConvectionDiffusionSettings::GetSpecificHeatVariable, return_internal_reference<>() )
-    .def("GetVelocityVariable",&ConvectionDiffusionSettings::GetVelocityVariable, return_internal_reference<>() )
-    .def("GetTransferCoefficientVariable",&ConvectionDiffusionSettings::GetTransferCoefficientVariable, return_internal_reference<>())
-
-    .def("IsDefinedDensityVariable",&ConvectionDiffusionSettings::IsDefinedDensityVariable)
-    .def("IsDefinedDiffusionVariable",&ConvectionDiffusionSettings::IsDefinedDiffusionVariable)
-    .def("IsDefinedUnknownVariable",&ConvectionDiffusionSettings::IsDefinedUnknownVariable)
-    .def("IsDefinedVolumeSourceVariable",&ConvectionDiffusionSettings::IsDefinedVolumeSourceVariable)
-    .def("IsDefinedSurfaceSourceVariable",&ConvectionDiffusionSettings::IsDefinedSurfaceSourceVariable)
-    .def("IsDefinedProjectionVariable",&ConvectionDiffusionSettings::IsDefinedProjectionVariable)
-    .def("IsDefinedMeshVelocityVariable",&ConvectionDiffusionSettings::IsDefinedMeshVelocityVariable)
-    .def("IsDefinedConvectionVariable",&ConvectionDiffusionSettings::IsDefinedConvectionVariable)
-    .def("IsDefinedSpecificHeatVariable",&ConvectionDiffusionSettings::IsDefinedSpecificHeatVariable)
-    .def("IsDefinedVelocityVariable",&ConvectionDiffusionSettings::IsDefinedVelocityVariable)
-    .def("IsDefinedTransferCoefficientVariable",&ConvectionDiffusionSettings::IsDefinedTransferCoefficientVariable)
-    ;
-
-    class_< RadiationSettings, RadiationSettings::Pointer, boost::noncopyable >	("RadiationSettings", init<	>() )
-    .def("SetDensityVariable",&RadiationSettings::SetDensityVariable)
-    .def("SetDiffusionVariable",&RadiationSettings::SetDiffusionVariable)
-    .def("SetUnknownVariable",&RadiationSettings::SetUnknownVariable)
-    .def("SetVolumeSourceVariable",&RadiationSettings::SetVolumeSourceVariable)
-    .def("SetSurfaceSourceVariable",&RadiationSettings::SetSurfaceSourceVariable)
-    .def("SetProjectionVariable",&RadiationSettings::SetProjectionVariable)
-    .def("SetMeshVelocityVariable",&RadiationSettings::SetMeshVelocityVariable)
-    .def("GetDensityVariable",&RadiationSettings::GetDensityVariable, return_internal_reference<>() )
-    .def("GetDiffusionVariable",&RadiationSettings::GetDiffusionVariable, return_internal_reference<>() )
-    .def("GetUnknownVariable",&RadiationSettings::GetUnknownVariable, return_internal_reference<>() )
-    .def("GetVolumeSourceVariable",&RadiationSettings::GetVolumeSourceVariable, return_internal_reference<>() )
-    .def("GetSurfaceSourceVariable",&RadiationSettings::GetSurfaceSourceVariable, return_internal_reference<>() )
-    //.def("GetSurfaceSourceVariable",&RadiationSettings::GetSurfaceSourceVariable, return_internal_reference<>() )
-    .def("GetProjectionVariable",&RadiationSettings::GetProjectionVariable, return_internal_reference<>() )
-    .def("GetMeshVelocityVariable",&RadiationSettings::GetMeshVelocityVariable, return_internal_reference<>() )
-    ;
-
 }
 
 }  // namespace Python.

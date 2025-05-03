@@ -20,12 +20,10 @@
 // THE USE OF THISSOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-
 // System includes
 
 // External includes
 #include <boost/python.hpp>
-
 
 // Project includes
 #include "includes/define.h"
@@ -33,25 +31,12 @@
 #include "includes/process_info_with_dofs.h"
 #include "python/add_process_info_to_python.h"
 #include "containers/data_value_container.h"
-#include "includes/convection_diffusion_settings.h"
-#include "includes/radiation_settings.h"
+
 namespace Kratos
 {
 
 namespace Python
 {
-//  void SetModelPartName(ModelPart& rModelPart, std::string const& NewName)
-//  {
-//      rModelPart.Name() = NewName;
-//  }
-//  std::string GetModelPartName(ModelPart const& rModelPart)
-//  {
-//      return rModelPart.Name();
-//  }
-//  ProcessInfo& GetProcessInfo(ModelPart& rModelPart )
-//  {     return rModelPart.GetProcessInfo();    }
-//  void SetProcessInfo(ModelPart& rModelPart, ProcessInfo& NewProcessInfo)
-//  {     rModelPart.SetProcessInfo(NewProcessInfo);      }
 
 template< class TContainerType, class TVariableType > void MySetValueHelperFunction1(
     TContainerType& el,

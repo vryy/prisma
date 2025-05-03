@@ -29,8 +29,6 @@
 #include "includes/define_python.h"
 #include "includes/ublas_interface.h"
 #include "includes/constitutive_law.h"
-#include "includes/convection_diffusion_settings.h"
-#include "includes/radiation_settings.h"
 #include "includes/variables.h"
 #include "python/add_variables_to_python.h"
 
@@ -320,17 +318,8 @@ void  AddVariablesToPython()
     KRATOS_REGISTER_IN_PYTHON_VARIABLE( SOUND_VELOCITY )
 
     KRATOS_REGISTER_IN_PYTHON_VARIABLE( SEARCH_RADIUS )
-
-    KRATOS_REGISTER_IN_PYTHON_VARIABLE( CONVECTION_DIFFUSION_SETTINGS )
-    KRATOS_REGISTER_IN_PYTHON_VARIABLE( RADIATION_SETTINGS )
-
-    // KRATOS_REGISTER_IN_PYTHON_VARIABLE(CONVECTION_DIFFUSION_SETTINGS)
-
 }
 
 }  // namespace Python.
 
 } // Namespace Kratos
-
-#undef KRATOS_REGISTER_IN_PYTHON_VARIABLE
-#undef KRATOS_REGISTER_IN_PYTHON_3D_VARIABLE_WITH_COMPONENTS
