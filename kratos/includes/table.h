@@ -48,8 +48,8 @@ namespace Kratos
 ///@}
 ///@name Kratos Classes
 ///@{
-    
-/** 
+
+/**
  * @class Table
  * @ingroup KratosCore
  * @brief This class represents the value of its variable depending to other variable.
@@ -86,6 +86,12 @@ public:
 
     /// Default constructor.
     Table() : mData()
+    {
+    }
+
+    /// Copy constructor.
+    Table(Table const& rOther)
+    : mData(rOther.mData)
     {
     }
 
@@ -227,7 +233,6 @@ public:
                     mData.insert(mData.begin() + i, RecordType(X,Y));
                     break;
                 }
-
     }
 
 
@@ -258,7 +263,7 @@ public:
     {
         mData.push_back(RecordType(X,Y));
     }
-    
+
     /**
      * @brief This method clears database
      */
@@ -445,9 +450,6 @@ private:
     ///@name Un accessible methods
     ///@{
 
-    /// Copy constructor.
-    Table(Table const& rOther);
-
 
     ///@}
 
@@ -468,7 +470,7 @@ public:
     typedef TDataType TResultType;
     typedef TDataType TArgumentType;
 
-    typedef boost::array<result_type, 1>  result_row_type;
+    typedef boost::array<result_type, 1> result_row_type;
 
     typedef std::pair<argument_type, result_row_type> RecordType;
 
@@ -490,7 +492,6 @@ public:
     /// Copy constructor.
     ScalarTable(ScalarTable const& rOther): mData(rOther.mData)
     {
-
     }
 
     /// Matrix constructor. the template parameter must have (i,j) access operator and  size1 methods defined.
@@ -720,7 +721,7 @@ public:
         Result= dy/dx;
         return Result;
     }
-    
+
     /**
      * @brief This method clears database
      */
@@ -728,7 +729,7 @@ public:
     {
         mData.clear();
     }
-    
+
     ///@}
     ///@name Access
     ///@{

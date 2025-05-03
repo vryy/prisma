@@ -5,12 +5,12 @@
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 //
-// 	-	Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-// 	-	Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
-// 		in the documentation and/or other materials provided with the distribution.
-// 	-	All advertising materials mentioning features or use of this software must display the following acknowledgement:
-// 			This product includes Kratos Multi-Physics technology.
-// 	-	Neither the name of the CIMNE nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+//  -   Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+//  -   Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
+//      in the documentation and/or other materials provided with the distribution.
+//  -   All advertising materials mentioning features or use of this software must display the following acknowledgement:
+//          This product includes Kratos Multi-Physics technology.
+//  -   Neither the name of the CIMNE nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
 // THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
@@ -66,6 +66,9 @@ namespace Kratos
 ///@name Type Definitions
 ///@{
 
+template< class T >
+inline MPI_Datatype DataTypeToMpiDataType(const T& Value);
+
 ///@}
 ///@name  Enum's
 ///@{
@@ -82,12 +85,12 @@ namespace Kratos
 
 /** Detail class definition.
  */
-class MPICommunicator : public Communicator
+template<class TNodeType = Node<3> >
+class MPICommunicator : public Communicator<TNodeType>
 {
 public:
     ///@name  Enum's
     ///@{
-
 
     ///@}
     ///@name Type Definitions
@@ -96,42 +99,42 @@ public:
     /// Pointer definition of MPICommunicator
     KRATOS_CLASS_POINTER_DEFINITION(MPICommunicator);
 
-    typedef Communicator BaseType;
+    typedef Communicator<TNodeType> BaseType;
 
-    typedef BaseType::DataType DataType;
+    typedef typename BaseType::DataType DataType;
 
-    typedef BaseType::IndexType IndexType;
+    typedef typename BaseType::IndexType IndexType;
 
-    typedef BaseType::SizeType SizeType;
+    typedef typename BaseType::SizeType SizeType;
 
-    typedef BaseType::NodeType NodeType;
+    typedef typename BaseType::NodeType NodeType;
 
-    typedef BaseType::PropertiesType PropertiesType;
+    typedef typename BaseType::PropertiesType PropertiesType;
 
-    typedef BaseType::ElementType ElementType;
+    typedef typename BaseType::ElementType ElementType;
 
-    typedef BaseType::ConditionType ConditionType;
+    typedef typename BaseType::ConditionType ConditionType;
 
-    typedef BaseType::NeighbourIndicesContainerType NeighbourIndicesContainerType;
+    typedef typename BaseType::NeighbourIndicesContainerType NeighbourIndicesContainerType;
 
-    typedef BaseType::MeshType MeshType;
+    typedef typename BaseType::MeshType MeshType;
 
-    typedef BaseType::MeshesContainerType MeshesContainerType;
+    typedef typename BaseType::MeshesContainerType MeshesContainerType;
 
     /// Nodes container. Which is a vector set of nodes with their Id's as key.
-    typedef MeshType::NodesContainerType NodesContainerType;
+    typedef typename MeshType::NodesContainerType NodesContainerType;
 
     /** Iterator over the nodes. This iterator is an indirect
         iterator over Node::Pointer which turn back a reference to
         node by * operator and not a pointer for more convenient
         usage. */
-    typedef MeshType::NodeIterator NodeIterator;
+    typedef typename MeshType::NodeIterator NodeIterator;
 
     /** Const iterator over the nodes. This iterator is an indirect
         iterator over Node::Pointer which turn back a reference to
         node by * operator and not a pointer for more convenient
         usage. */
-    typedef MeshType::NodeConstantIterator NodeConstantIterator;
+    typedef typename MeshType::NodeConstantIterator NodeConstantIterator;
 
     /** Iterator over the properties. This iterator is an indirect
         iterator over Properties::Pointer which turn back a reference to
@@ -139,19 +142,19 @@ public:
         usage. */
 
     /// Properties container. Which is a vector set of Properties with their Id's as key.
-    typedef MeshType::PropertiesContainerType PropertiesContainerType;
+    typedef typename MeshType::PropertiesContainerType PropertiesContainerType;
 
     /** Iterator over the Properties. This iterator is an indirect
         iterator over Node::Pointer which turn back a reference to
         node by * operator and not a pointer for more convenient
         usage. */
-    typedef MeshType::PropertiesIterator PropertiesIterator;
+    typedef typename MeshType::PropertiesIterator PropertiesIterator;
 
     /** Const iterator over the Properties. This iterator is an indirect
         iterator over Properties::Pointer which turn back a reference to
         Properties by * operator and not a pointer for more convenient
         usage. */
-    typedef MeshType::PropertiesConstantIterator PropertiesConstantIterator;
+    typedef typename MeshType::PropertiesConstantIterator PropertiesConstantIterator;
 
     /** Iterator over the properties. This iterator is an indirect
         iterator over Properties::Pointer which turn back a reference to
@@ -159,46 +162,50 @@ public:
         usage. */
 
     /// Element container. A vector set of Elements with their Id's as key.
-    typedef MeshType::ElementsContainerType ElementsContainerType;
+    typedef typename MeshType::ElementsContainerType ElementsContainerType;
 
     /** Iterator over the Elements. This iterator is an indirect
         iterator over Elements::Pointer which turn back a reference to
         Element by * operator and not a pointer for more convenient
         usage. */
-    typedef MeshType::ElementIterator ElementIterator;
+    typedef typename MeshType::ElementIterator ElementIterator;
 
     /** Const iterator over the Elements. This iterator is an indirect
         iterator over Elements::Pointer which turn back a reference to
         Element by * operator and not a pointer for more convenient
         usage. */
-    typedef MeshType::ElementConstantIterator ElementConstantIterator;
+    typedef typename MeshType::ElementConstantIterator ElementConstantIterator;
 
     /// Condintions container. A vector set of Conditions with their Id's as key.
-    typedef MeshType::ConditionsContainerType ConditionsContainerType;
+    typedef typename MeshType::ConditionsContainerType ConditionsContainerType;
 
     /** Iterator over the Conditions. This iterator is an indirect
        iterator over Conditions::Pointer which turn back a reference to
        Condition by * operator and not a pointer for more convenient
        usage. */
-    typedef MeshType::ConditionIterator ConditionIterator;
+    typedef typename MeshType::ConditionIterator ConditionIterator;
 
     /** Const iterator over the Conditions. This iterator is an indirect
         iterator over Conditions::Pointer which turn back a reference to
         Condition by * operator and not a pointer for more convenient
         usage. */
-    typedef MeshType::ConditionConstantIterator ConditionConstantIterator;
+    typedef typename MeshType::ConditionConstantIterator ConditionConstantIterator;
+
+    /** The type of nodal variables list. */
+    typedef VariablesList<DataType> VariablesListType;
 
     ///@}
     ///@name Life Cycle
     ///@{
 
     /// Default constructor.
-    MPICommunicator(VariablesList* Variables_list) : BaseType(), mpVariables_list(Variables_list), mComm(MPI_COMM_WORLD)
+    MPICommunicator(VariablesListType* Variables_list) : BaseType(), mpVariables_list(Variables_list), mComm(MPI_COMM_WORLD)
     {
+        MyMpiDataType = DataTypeToMpiDataType(DataType());
     }
 
     /// Constructor with communicator
-    MPICommunicator(VariablesList* Variables_list, MPI_Comm Comm) : BaseType(), mpVariables_list(Variables_list), mComm(Comm)
+    MPICommunicator(VariablesListType* Variables_list, MPI_Comm Comm) : BaseType(), mpVariables_list(Variables_list), mComm(Comm)
     {
     }
 
@@ -207,21 +214,19 @@ public:
     {
     }
 
-
     /// Destructor.
     ~MPICommunicator() override
     {
     }
 
-    Communicator::Pointer Create() override
+    typename BaseType::Pointer Create() override
     {
         KRATOS_TRY
 
-        return Communicator::Pointer(new MPICommunicator(mpVariables_list));
+        return typename BaseType::Pointer(new MPICommunicator(mpVariables_list));
 
         KRATOS_CATCH("");
     }
-
 
     ///@}
     ///@name Operators
@@ -246,7 +251,6 @@ public:
         int nproc;
         MPI_Comm_size(mComm, &nproc);
         return nproc;
-
     }
 
     IndexType GetLastNodeId(const MeshType& rMesh) const override
@@ -268,7 +272,6 @@ public:
 
         return static_cast<IndexType>(tmp);
     }
-
 
     IndexType GetLastConditionId(const MeshType& rMesh) const override
     {
@@ -303,18 +306,8 @@ public:
 
     bool SumAll(DataType& rValue) const override
     {
-        if constexpr (std::is_same<DataType, float>::value)
-        {
-            float local_value = rValue;
-            MPI_Allreduce(&local_value, &rValue, 1, MPI_FLOAT, MPI_SUM, mComm);
-        }
-        else if constexpr (std::is_same<DataType, double>::value)
-        {
-            double local_value = rValue;
-            MPI_Allreduce(&local_value, &rValue, 1, MPI_DOUBLE, MPI_SUM, mComm);
-        }
-        else
-            KRATOS_ERROR << "SumAll for this data type is not supported";
+        DataType local_value = rValue;
+        MPI_Allreduce(&local_value, &rValue, 1, MyMpiDataType, MPI_SUM, mComm);
         return true;
     }
 
@@ -327,18 +320,8 @@ public:
 
     bool MinAll(DataType& rValue) const override
     {
-        if constexpr (std::is_same<DataType, float>::value)
-        {
-            float local_value = rValue;
-            MPI_Allreduce(&local_value, &rValue, 1, MPI_FLOAT, MPI_MIN, mComm);
-        }
-        else if constexpr (std::is_same<DataType, double>::value)
-        {
-            double local_value = rValue;
-            MPI_Allreduce(&local_value, &rValue, 1, MPI_DOUBLE, MPI_MIN, mComm);
-        }
-        else
-            KRATOS_ERROR << "MinAll for this data type is not supported";
+        DataType local_value = rValue;
+        MPI_Allreduce(&local_value, &rValue, 1, MyMpiDataType, MPI_MIN, mComm);
         return true;
     }
 
@@ -351,18 +334,9 @@ public:
 
     bool MaxAll(IndexType& rValue) const override
     {
-        if constexpr (std::is_same<IndexType, int>::value)
-        {
-            int local_value = rValue;
-            MPI_Allreduce(&local_value, &rValue, 1, MPI_INT, MPI_MAX, mComm);
-        }
-        else if constexpr (std::is_same<IndexType, unsigned long>::value)
-        {
-            unsigned long local_value = rValue;
-            MPI_Allreduce(&local_value, &rValue, 1, MPI_UNSIGNED_LONG, MPI_MAX, mComm);
-        }
-        else
-            KRATOS_ERROR << "MaxAll for this data type is not supported";
+        IndexType local_value = rValue;
+        MPI_Datatype ThisMPI_DataType = DataTypeToMpiDataType(rValue);
+        MPI_Allreduce(&local_value, &rValue, 1, ThisMPI_DataType, MPI_MAX, mComm);
         return true;
     }
 
@@ -389,13 +363,13 @@ public:
 
         int destination = 0;
 
-        NeighbourIndicesContainerType& neighbours_indices = NeighbourIndices();
+        NeighbourIndicesContainerType& neighbours_indices = this->NeighbourIndices();
 
         for (unsigned int i_color = 0; i_color < neighbours_indices.size(); i_color++)
             if ((destination = neighbours_indices[i_color]) >= 0)
             {
-                ElementsContainerType& r_local_elements = LocalMesh(i_color).Elements();
-                ElementsContainerType& r_ghost_elements = GhostMesh(i_color).Elements();
+                ElementsContainerType& r_local_elements = this->LocalMesh(i_color).Elements();
+                ElementsContainerType& r_ghost_elements = this->GhostMesh(i_color).Elements();
 
                 unsigned int elemental_data_size = sizeof (std::size_t) / sizeof (int);
                 unsigned int local_elements_size = r_local_elements.size();
@@ -407,13 +381,13 @@ public:
                     continue; // nothing to transfer!
 
                 unsigned int position = 0;
-                double* send_buffer = new double[send_buffer_size];
-                double* receive_buffer = new double[receive_buffer_size];
+                std::vector<double> send_buffer(send_buffer_size);
+                std::vector<double> receive_buffer(receive_buffer_size);
 
                 // Filling the send buffer
-                for (ModelPart::ElementIterator i_element = r_local_elements.begin(); i_element != r_local_elements.end(); ++i_element)
+                for (auto i_element = r_local_elements.begin(); i_element != r_local_elements.end(); ++i_element)
                 {
-                    *(std::size_t*) (send_buffer + position) = i_element->Id();
+                    *(std::size_t*) (send_buffer.data() + position) = i_element->Id();
                     position += elemental_data_size;
                 }
 
@@ -422,21 +396,18 @@ public:
                 int send_tag = i_color;
                 int receive_tag = i_color;
 
-                MPI_Sendrecv(send_buffer, send_buffer_size, MPI_INT, destination, send_tag, receive_buffer, receive_buffer_size, MPI_INT, destination, receive_tag,
+                MPI_Sendrecv(send_buffer.data(), send_buffer_size, MPI_INT, destination, send_tag, receive_buffer.data(), receive_buffer_size, MPI_INT, destination, receive_tag,
                              mComm, &status);
 
                 position = 0;
-                for (ModelPart::ElementIterator i_element = r_ghost_elements.begin(); i_element != r_ghost_elements.end(); ++i_element)
+                for (auto i_element = r_ghost_elements.begin(); i_element != r_ghost_elements.end(); ++i_element)
                 {
-                    i_element->SetId(*reinterpret_cast<std::size_t*> (receive_buffer + position));
+                    i_element->SetId(*reinterpret_cast<std::size_t*> (receive_buffer.data() + position));
                     position += elemental_data_size;
                 }
 
                 if (position > receive_buffer_size)
                     std::cout << rank << " Error in estimating receive buffer size...." << std::endl;
-
-                delete [] send_buffer;
-                delete [] receive_buffer;
             }
 
         return true;
@@ -449,13 +420,13 @@ public:
 
         int destination = 0;
 
-        NeighbourIndicesContainerType& neighbours_indices = NeighbourIndices();
+        NeighbourIndicesContainerType& neighbours_indices = this->NeighbourIndices();
 
         for (unsigned int i_color = 0; i_color < neighbours_indices.size(); i_color++)
             if ((destination = neighbours_indices[i_color]) >= 0)
             {
-                NodesContainerType& r_local_nodes = LocalMesh(i_color).Nodes();
-                NodesContainerType& r_ghost_nodes = GhostMesh(i_color).Nodes();
+                NodesContainerType& r_local_nodes = this->LocalMesh(i_color).Nodes();
+                NodesContainerType& r_ghost_nodes = this->GhostMesh(i_color).Nodes();
 
                 // Calculating send and received buffer size
                 // NOTE: This part works ONLY when all nodes have the same variables list size!
@@ -484,13 +455,13 @@ public:
                 }
 
                 unsigned int position = 0;
-                double* send_buffer = new double[send_buffer_size];
-                double* receive_buffer = new double[receive_buffer_size];
+                std::vector<double> send_buffer(send_buffer_size);
+                std::vector<double> receive_buffer(receive_buffer_size);
 
                 // Filling the buffer
-                for (ModelPart::NodeIterator i_node = r_local_nodes.begin(); i_node != r_local_nodes.end(); ++i_node)
+                for (auto i_node = r_local_nodes.begin(); i_node != r_local_nodes.end(); ++i_node)
                 {
-                    std::memcpy(send_buffer + position, i_node->SolutionStepData().Data(), nodal_data_size * sizeof (double));
+                    std::memcpy(send_buffer.data() + position, i_node->SolutionStepData().Data(), nodal_data_size * sizeof (double));
                     position += nodal_data_size;
                 }
 
@@ -504,23 +475,20 @@ public:
                 int receive_tag = i_color;
 
 
-                MPI_Sendrecv(send_buffer, send_buffer_size, MPI_DOUBLE, destination, send_tag, receive_buffer, receive_buffer_size, MPI_DOUBLE, destination, receive_tag,
+                MPI_Sendrecv(send_buffer.data(), send_buffer_size, MPI_DOUBLE, destination, send_tag, receive_buffer.data(), receive_buffer_size, MPI_DOUBLE, destination, receive_tag,
                              mComm, &status);
 
                 // Updating nodes
                 position = 0;
-                for (ModelPart::NodeIterator i_node = GhostMesh(i_color).NodesBegin();
-                        i_node != GhostMesh(i_color).NodesEnd(); i_node++)
+                for (auto i_node = this->GhostMesh(i_color).NodesBegin();
+                        i_node != this->GhostMesh(i_color).NodesEnd(); i_node++)
                 {
-                    std::memcpy(i_node->SolutionStepData().Data(), receive_buffer + position, nodal_data_size * sizeof (double));
+                    std::memcpy(i_node->SolutionStepData().Data(), receive_buffer.data() + position, nodal_data_size * sizeof (double));
                     position += nodal_data_size;
                 }
 
                 if (position > receive_buffer_size)
                     std::cout << rank << " Error in estimating receive buffer size...." << std::endl;
-
-                delete [] send_buffer;
-                delete [] receive_buffer;
             }
 
         return true;
@@ -533,22 +501,22 @@ public:
 
         int destination = 0;
 
-        NeighbourIndicesContainerType& neighbours_indices = NeighbourIndices();
+        NeighbourIndicesContainerType& neighbours_indices = this->NeighbourIndices();
 
         for (unsigned int i_color = 0; i_color < neighbours_indices.size(); i_color++)
             if ((destination = neighbours_indices[i_color]) >= 0)
             {
-                NodesContainerType& r_local_nodes = LocalMesh(i_color).Nodes();
-                NodesContainerType& r_ghost_nodes = GhostMesh(i_color).Nodes();
+                NodesContainerType& r_local_nodes = this->LocalMesh(i_color).Nodes();
+                NodesContainerType& r_ghost_nodes = this->GhostMesh(i_color).Nodes();
 
                 // Calculating send and received buffer size
                 unsigned int send_buffer_size = 0;
                 unsigned int receive_buffer_size = 0;
 
-                for (NodesContainerType::iterator i_node = r_local_nodes.begin(); i_node != r_local_nodes.end(); ++i_node)
+                for (auto i_node = r_local_nodes.begin(); i_node != r_local_nodes.end(); ++i_node)
                     send_buffer_size += i_node->GetDofs().size();
 
-                for (NodesContainerType::iterator i_node = r_ghost_nodes.begin(); i_node != r_ghost_nodes.end(); ++i_node)
+                for (auto i_node = r_ghost_nodes.begin(); i_node != r_ghost_nodes.end(); ++i_node)
                     receive_buffer_size += i_node->GetDofs().size();
 
                 unsigned int position = 0;
@@ -557,8 +525,8 @@ public:
 
 
                 // Filling the buffer
-                for (ModelPart::NodeIterator i_node = r_local_nodes.begin(); i_node != r_local_nodes.end(); ++i_node)
-                    for (ModelPart::NodeType::DofsContainerType::iterator i_dof = i_node->GetDofs().begin(); i_dof != i_node->GetDofs().end(); i_dof++)
+                for (auto i_node = r_local_nodes.begin(); i_node != r_local_nodes.end(); ++i_node)
+                    for (auto i_dof = i_node->GetDofs().begin(); i_dof != i_node->GetDofs().end(); i_dof++)
                     {
                         send_buffer[position++] = i_dof->EquationId();
                     }
@@ -578,9 +546,9 @@ public:
 
                 // Updating nodes
                 position = 0;
-                for (ModelPart::NodeIterator i_node = GhostMesh(i_color).NodesBegin();
-                        i_node != GhostMesh(i_color).NodesEnd(); i_node++)
-                    for (ModelPart::NodeType::DofsContainerType::iterator i_dof = i_node->GetDofs().begin(); i_dof != i_node->GetDofs().end(); i_dof++)
+                for (auto i_node = this->GhostMesh(i_color).NodesBegin();
+                        i_node != this->GhostMesh(i_color).NodesEnd(); i_node++)
+                    for (auto i_dof = i_node->GetDofs().begin(); i_dof != i_node->GetDofs().end(); i_dof++)
                         i_dof->SetEquationId(receive_buffer[position++]);
 
                 if (position > receive_buffer_size)
@@ -599,65 +567,65 @@ public:
         return true;
     }
 
-    bool SynchronizeVariable(Variable<double> const& ThisVariable) override
+    bool SynchronizeVariable(Variable<DataType> const& ThisVariable) override
     {
-        SynchronizeVariable<double,double>(ThisVariable);
+        SynchronizeVariable<DataType, DataType>(ThisVariable);
         return true;
     }
 
-    bool SynchronizeVariable(Variable<array_1d<double, 3 > > const& ThisVariable) override
+    bool SynchronizeVariable(Variable<array_1d<DataType, 3 > > const& ThisVariable) override
     {
-        SynchronizeVariable<array_1d<double, 3 >,double >(ThisVariable);
+        SynchronizeVariable<array_1d<DataType, 3 >, DataType >(ThisVariable);
         return true;
     }
 
     bool SynchronizeVariable(Variable<Vector> const& ThisVariable) override
     {
-        SynchronizeVariable<Vector,double>(ThisVariable);
+        SynchronizeVariable<Vector, DataType>(ThisVariable);
         return true;
     }
 
     bool SynchronizeVariable(Variable<Matrix> const& ThisVariable) override
     {
-        SynchronizeVariable<Matrix,double>(ThisVariable);
+        SynchronizeVariable<Matrix, DataType>(ThisVariable);
         return true;
     }
 
     // This function is for test and will be changed. Pooyan.
-    bool SynchronizeCurrentDataToMin(Variable<double> const& ThisVariable) override
+    bool SynchronizeCurrentDataToMin(Variable<DataType> const& ThisVariable) override
     {
-        SynchronizeMinThisVariable<double,double>(ThisVariable);
+        SynchronizeMinThisVariable<DataType, DataType>(ThisVariable);
         return true;
 
     }
 
     bool AssembleCurrentData(Variable<int> const& ThisVariable) override
     {
-        AssembleThisVariable<int,int>(ThisVariable);
+        AssembleThisVariable<int, int>(ThisVariable);
         return true;
     }
 
-    bool AssembleCurrentData(Variable<double> const& ThisVariable) override
+    bool AssembleCurrentData(Variable<DataType> const& ThisVariable) override
     {
-        AssembleThisVariable<double,double>(ThisVariable);
+        AssembleThisVariable<DataType, DataType>(ThisVariable);
         return true;
     }
 
-    bool AssembleCurrentData(Variable<array_1d<double, 3 > > const& ThisVariable) override
+    bool AssembleCurrentData(Variable<array_1d<DataType, 3 > > const& ThisVariable) override
     {
-        AssembleThisVariable<array_1d<double,3>,double>(ThisVariable);
+        AssembleThisVariable<array_1d<DataType,3>, DataType>(ThisVariable);
         return true;
     }
 
     bool AssembleCurrentData(Variable<Vector> const& ThisVariable) override
     {
-        AssembleThisVariable<Vector,double>(ThisVariable);
+        AssembleThisVariable<Vector, DataType>(ThisVariable);
         return true;
     }
 
     bool AssembleCurrentData(Variable<Matrix> const& ThisVariable) override
     {
-        AssembleThisVariable<Matrix,double>(ThisVariable);
+        AssembleThisVariable<Matrix, DataType>(ThisVariable);
         return true;
     }
 
@@ -667,33 +635,33 @@ public:
         return true;
     }
 
-    bool AssembleNonHistoricalData(Variable<double> const& ThisVariable) override
+    bool AssembleNonHistoricalData(Variable<DataType> const& ThisVariable) override
     {
-        AssembleThisNonHistoricalVariable<double,double>(ThisVariable);
+        AssembleThisNonHistoricalVariable<DataType, DataType>(ThisVariable);
         return true;
     }
 
-    bool AssembleNonHistoricalData(Variable<array_1d<double, 3 > > const& ThisVariable) override
+    bool AssembleNonHistoricalData(Variable<array_1d<DataType, 3 > > const& ThisVariable) override
     {
-        AssembleThisNonHistoricalVariable<array_1d<double,3>,double>(ThisVariable);
+        AssembleThisNonHistoricalVariable<array_1d<DataType,3>, DataType>(ThisVariable);
         return true;
     }
 
-    bool AssembleNonHistoricalData(Variable<vector<array_1d<double,3> > > const& ThisVariable) override
+    bool AssembleNonHistoricalData(Variable<vector<array_1d<DataType,3> > > const& ThisVariable) override
     {
-        AssembleThisNonHistoricalVariable<vector<array_1d<double,3> >,double>(ThisVariable);
+        AssembleThisNonHistoricalVariable<vector<array_1d<DataType,3> >, DataType>(ThisVariable);
         return true;
     }
 
     bool AssembleNonHistoricalData(Variable<Vector> const& ThisVariable) override
     {
-        AssembleThisNonHistoricalVariable<Vector,double>(ThisVariable);
+        AssembleThisNonHistoricalVariable<Vector, DataType>(ThisVariable);
         return true;
     }
 
     bool AssembleNonHistoricalData(Variable<Matrix> const& ThisVariable) override
     {
-        AssembleThisNonHistoricalVariable<Matrix,double>(ThisVariable);
+        AssembleThisNonHistoricalVariable<Matrix, DataType>(ThisVariable);
         return true;
     }
 
@@ -705,33 +673,33 @@ public:
         return true;
     }
 
-    bool SynchronizeElementalNonHistoricalVariable(Variable<double> const& ThisVariable) override
+    bool SynchronizeElementalNonHistoricalVariable(Variable<DataType> const& ThisVariable) override
     {
-        SynchronizeElementalNonHistoricalVariable<double,double>(ThisVariable);
+        SynchronizeElementalNonHistoricalVariable<DataType, DataType>(ThisVariable);
         return true;
     }
 
-    bool SynchronizeElementalNonHistoricalVariable(Variable<array_1d<double, 3 > > const& ThisVariable) override
+    bool SynchronizeElementalNonHistoricalVariable(Variable<array_1d<DataType, 3 > > const& ThisVariable) override
     {
-        SynchronizeElementalNonHistoricalVariable<array_1d<double,3>,double>(ThisVariable);
+        SynchronizeElementalNonHistoricalVariable<array_1d<DataType,3>, DataType>(ThisVariable);
         return true;
     }
 
-    bool SynchronizeElementalNonHistoricalVariable(Variable<vector<array_1d<double,3> > > const& ThisVariable) override
+    bool SynchronizeElementalNonHistoricalVariable(Variable<vector<array_1d<DataType,3> > > const& ThisVariable) override
     {
-        SynchronizeElementalNonHistoricalVariable<vector<array_1d<double,3> >,double>(ThisVariable);
+        SynchronizeElementalNonHistoricalVariable<vector<array_1d<DataType,3> >, DataType>(ThisVariable);
         return true;
     }
 
     bool SynchronizeElementalNonHistoricalVariable(Variable<Vector> const& ThisVariable) override
     {
-        SynchronizeElementalNonHistoricalVariable<Vector,double>(ThisVariable);
+        SynchronizeElementalNonHistoricalVariable<Vector, DataType>(ThisVariable);
         return true;
     }
 
     bool SynchronizeElementalNonHistoricalVariable(Variable<Matrix> const& ThisVariable) override
     {
-        SynchronizeElementalNonHistoricalVariable<Matrix,double>(ThisVariable);
+        SynchronizeElementalNonHistoricalVariable<Matrix, DataType>(ThisVariable);
         return true;
     }
 
@@ -744,7 +712,7 @@ public:
      **/
     bool TransferObjects(std::vector<NodesContainerType>& SendObjects, std::vector<NodesContainerType>& RecvObjects) override
     {
-        Kratos::Serializer particleSerializer;
+        Serializer particleSerializer;
         AsyncSendAndReceiveObjects<NodesContainerType>(SendObjects,RecvObjects,particleSerializer);
         return true;
     }
@@ -756,7 +724,7 @@ public:
     **/
     bool TransferObjects(std::vector<ElementsContainerType>& SendObjects, std::vector<ElementsContainerType>& RecvObjects) override
     {
-        Kratos::Serializer particleSerializer;
+        Serializer particleSerializer;
         AsyncSendAndReceiveObjects<ElementsContainerType>(SendObjects,RecvObjects,particleSerializer);
         return true;
     }
@@ -768,7 +736,7 @@ public:
     **/
     bool TransferObjects(std::vector<ConditionsContainerType>& SendObjects, std::vector<ConditionsContainerType>& RecvObjects) override
     {
-        Kratos::Serializer particleSerializer;
+        Serializer particleSerializer;
         AsyncSendAndReceiveObjects<ConditionsContainerType>(SendObjects,RecvObjects,particleSerializer);
         return true;
     }
@@ -778,7 +746,7 @@ public:
      * @param SendObjects: list of objects to be send.      SendObjects[i] -> Objects to   process i
      * @param RecvObjects: list of objects to be received.  RecvObjects[i] -> objects from process i
      **/
-    bool TransferObjects(std::vector<NodesContainerType>& SendObjects, std::vector<NodesContainerType>& RecvObjects,Kratos::Serializer& particleSerializer) override
+    bool TransferObjects(std::vector<NodesContainerType>& SendObjects, std::vector<NodesContainerType>& RecvObjects, Serializer& particleSerializer) override
     {
         AsyncSendAndReceiveObjects<NodesContainerType>(SendObjects,RecvObjects,particleSerializer);
         return true;
@@ -789,7 +757,7 @@ public:
     * @param SendObjects: list of objects to be send.      SendObjects[i] -> Objects to   process i
     * @param RecvObjects: list of objects to be received.  RecvObjects[i] -> objects from process i
     **/
-    bool TransferObjects(std::vector<ElementsContainerType>& SendObjects, std::vector<ElementsContainerType>& RecvObjects,Kratos::Serializer& particleSerializer) override
+    bool TransferObjects(std::vector<ElementsContainerType>& SendObjects, std::vector<ElementsContainerType>& RecvObjects, Serializer& particleSerializer) override
     {
         AsyncSendAndReceiveObjects<ElementsContainerType>(SendObjects,RecvObjects,particleSerializer);
         return true;
@@ -800,7 +768,7 @@ public:
     * @param SendObjects: list of objects to be send.      SendObjects[i] -> Objects to   process i
     * @param RecvObjects: list of objects to be received.  RecvObjects[i] -> objects from process i
     **/
-    bool TransferObjects(std::vector<ConditionsContainerType>& SendObjects, std::vector<ConditionsContainerType>& RecvObjects,Kratos::Serializer& particleSerializer) override
+    bool TransferObjects(std::vector<ConditionsContainerType>& SendObjects, std::vector<ConditionsContainerType>& RecvObjects, Serializer& particleSerializer) override
     {
         AsyncSendAndReceiveObjects<ConditionsContainerType>(SendObjects,RecvObjects,particleSerializer);
         return true;
@@ -823,34 +791,30 @@ public:
     ///@{
 
     /// Turn back information as a string.
-
     std::string Info() const override
     {
         return "MPICommunicator";
     }
 
     /// Print information about this object.
-
     void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << Info();
     }
 
     /// Print object's data.
-
     void PrintData(std::ostream& rOStream) const override
     {
-        for (IndexType i = 0; i < mLocalMeshes.size(); i++)
+        for (IndexType i = 0; i < this->LocalMeshes().size(); i++)
         {
             rOStream << "    Local Mesh " << i << " : " << std::endl;
-            LocalMesh(i).PrintData(rOStream);
+            this->LocalMesh(i).PrintData(rOStream);
             rOStream << "    Ghost Mesh " << i << " : " << std::endl;
-            GhostMesh(i).PrintData(rOStream);
+            this->GhostMesh(i).PrintData(rOStream);
             rOStream << "    Interface Mesh " << i << " : " << std::endl;
-            InterfaceMesh(i).PrintData(rOStream);
+            this->InterfaceMesh(i).PrintData(rOStream);
         }
     }
-
 
     ///@}
     ///@name Friends
@@ -907,7 +871,10 @@ private:
 
     MPI_Comm mComm;
 
-    VariablesList* mpVariables_list;
+    VariablesListType* mpVariables_list;
+
+    /** The struct representing MPI data type. For some stupid reason, this variable cannot be marked constexpr */
+    MPI_Datatype MyMpiDataType;
 
     ///@}
     ///@name Private Operators
@@ -920,7 +887,7 @@ private:
 
     void PrintNodesId()
     {
-        NeighbourIndicesContainerType& neighbours_indices = NeighbourIndices();
+        NeighbourIndicesContainerType& neighbours_indices = this->NeighbourIndices();
 
         int nproc;
         MPI_Comm_size(mComm, &nproc);
@@ -932,20 +899,18 @@ private:
         {
             if (proc_id == rank)
             {
-
                 for (int i_color = 0; i_color < static_cast<int>(neighbours_indices.size()); i_color++)
                 {
                     if ((neighbours_indices[i_color]) >= 0)
                     {
-                        NodesContainerType& r_local_nodes = LocalMesh(i_color).Nodes();
-                        NodesContainerType& r_ghost_nodes = GhostMesh(i_color).Nodes();
+                        NodesContainerType& r_local_nodes = this->LocalMesh(i_color).Nodes();
+                        NodesContainerType& r_ghost_nodes = this->GhostMesh(i_color).Nodes();
                         std::string tag = "Local nodes in rank ";
                         PrintNodesId(r_local_nodes, tag, i_color);
                         tag = "Ghost nodes in rank ";
                         PrintNodesId(r_ghost_nodes, tag, i_color);
                         tag = "Interface nodes in rank ";
-                        PrintNodesId(InterfaceMesh(i_color).Nodes(), tag, i_color);
-
+                        PrintNodesId(this->InterfaceMesh(i_color).Nodes(), tag, i_color);
                     }
                 }
             }
@@ -954,14 +919,13 @@ private:
     }
 
     template<class TNodesArrayType>
-    void PrintNodesId(TNodesArrayType& rNodes, std::string Tag, int color)
+    void PrintNodesId(TNodesArrayType& rNodes, std::string Tag, int color) const
     {
         int rank;
         MPI_Comm_rank(mComm, &rank);
         std::cout << Tag << rank << " with color " << color << ":";
-        for (typename TNodesArrayType::iterator i_node = rNodes.begin(); i_node != rNodes.end(); i_node++)
+        for (auto i_node = rNodes.begin(); i_node != rNodes.end(); i_node++)
             std::cout << i_node->Id() << ", ";
-
         std::cout << std::endl;
     }
 
@@ -969,26 +933,25 @@ private:
     bool AssembleThisVariable(Variable<TDataType> const& ThisVariable)
     {
         // PrintNodesId();
-        /*	KRATOS_WATCH("AssembleThisVariable")
+        /*  KRATOS_WATCH("AssembleThisVariable")
                 KRATOS_WATCH(ThisVariable)*/
         int rank;
         MPI_Comm_rank(mComm, &rank);
 
         int destination = 0;
 
-        NeighbourIndicesContainerType& neighbours_indices = NeighbourIndices();
+        NeighbourIndicesContainerType& neighbours_indices = this->NeighbourIndices();
         std::vector<TSendType*> receive_buffer(neighbours_indices.size());
         std::vector<int> receive_buffer_size(neighbours_indices.size());
 
         TSendType Value = TSendType();
-        MPI_Datatype ThisMPI_Datatype = GetMPIDatatype(Value);
 
         //first of all gather everything to the owner node
         for (unsigned int i_color = 0; i_color < neighbours_indices.size(); i_color++)
             if ((destination = neighbours_indices[i_color]) >= 0)
             {
-                NodesContainerType& r_local_nodes = InterfaceMesh(i_color).Nodes();
-                NodesContainerType& r_ghost_nodes = InterfaceMesh(i_color).Nodes();
+                NodesContainerType& r_local_nodes = this->InterfaceMesh(i_color).Nodes();
+                NodesContainerType& r_ghost_nodes = this->InterfaceMesh(i_color).Nodes();
 
                 // Calculating send and received buffer size
                 // NOTE: This part can be optimized getting the offset from variables list and using pointers.
@@ -1006,7 +969,7 @@ private:
                 receive_buffer[i_color] = new TSendType[receive_buffer_size[i_color]];
 
                 // Filling the buffer
-                for (ModelPart::NodeIterator i_node = r_local_nodes.begin(); i_node != r_local_nodes.end(); ++i_node)
+                for (auto i_node = r_local_nodes.begin(); i_node != r_local_nodes.end(); ++i_node)
                 {
                     *(TDataType*) (send_buffer + position) = i_node->FastGetSolutionStepValue(ThisVariable);
                     position += nodal_data_size;
@@ -1020,8 +983,8 @@ private:
                 int send_tag = i_color;
                 int receive_tag = i_color;
 
-                MPI_Sendrecv(send_buffer, send_buffer_size, ThisMPI_Datatype, destination, send_tag,
-                             receive_buffer[i_color], receive_buffer_size[i_color], ThisMPI_Datatype, destination, receive_tag,
+                MPI_Sendrecv(send_buffer, send_buffer_size, MyMpiDataType, destination, send_tag,
+                             receive_buffer[i_color], receive_buffer_size[i_color], MyMpiDataType, destination, receive_tag,
                              mComm, &status);
 
                 delete [] send_buffer;
@@ -1033,9 +996,9 @@ private:
                 // Updating nodes
                 int position = 0;
                 unsigned int nodal_data_size = sizeof (TDataType) / sizeof (TSendType);
-                NodesContainerType& r_ghost_nodes = InterfaceMesh(i_color).Nodes();
+                NodesContainerType& r_ghost_nodes = this->InterfaceMesh(i_color).Nodes();
 
-                for (ModelPart::NodeIterator i_node = r_ghost_nodes.begin(); i_node != r_ghost_nodes.end(); ++i_node)
+                for (auto i_node = r_ghost_nodes.begin(); i_node != r_ghost_nodes.end(); ++i_node)
                 {
                     i_node->FastGetSolutionStepValue(ThisVariable) += *reinterpret_cast<TDataType*> (receive_buffer[i_color] + position);
                     position += nodal_data_size;
@@ -1049,12 +1012,8 @@ private:
 
         //MPI_Barrier(mComm);
 
-
         //SynchronizeNodalSolutionStepsData();
         SynchronizeVariable<TDataType,TSendType>(ThisVariable);
-
-
-
 
         return true;
     }
@@ -1064,26 +1023,25 @@ private:
     bool SynchronizeMinThisVariable(Variable<TDataType> const& ThisVariable)
     {
         // PrintNodesId();
-        /*	KRATOS_WATCH("AssembleThisVariable")
+        /*  KRATOS_WATCH("AssembleThisVariable")
                 KRATOS_WATCH(ThisVariable)*/
         int rank;
         MPI_Comm_rank(mComm, &rank);
 
         int destination = 0;
 
-        NeighbourIndicesContainerType& neighbours_indices = NeighbourIndices();
+        NeighbourIndicesContainerType& neighbours_indices = this->NeighbourIndices();
         std::vector<TSendType*> receive_buffer(neighbours_indices.size());
         std::vector<int> receive_buffer_size(neighbours_indices.size());
 
         TSendType Value = TSendType();
-        MPI_Datatype ThisMPI_Datatype = GetMPIDatatype(Value);
 
         //first of all gather everything to the owner node
         for (unsigned int i_color = 0; i_color < neighbours_indices.size(); i_color++)
             if ((destination = neighbours_indices[i_color]) >= 0)
             {
-                NodesContainerType& r_local_nodes = InterfaceMesh(i_color).Nodes();
-                NodesContainerType& r_ghost_nodes = InterfaceMesh(i_color).Nodes();
+                NodesContainerType& r_local_nodes = this->InterfaceMesh(i_color).Nodes();
+                NodesContainerType& r_ghost_nodes = this->InterfaceMesh(i_color).Nodes();
 
                 // Calculating send and received buffer size
                 // NOTE: This part can be optimized getting the offset from variables list and using pointers.
@@ -1101,7 +1059,7 @@ private:
                 receive_buffer[i_color] = new TSendType[receive_buffer_size[i_color]];
 
                 // Filling the buffer
-                for (ModelPart::NodeIterator i_node = r_local_nodes.begin(); i_node != r_local_nodes.end(); ++i_node)
+                for (auto i_node = r_local_nodes.begin(); i_node != r_local_nodes.end(); ++i_node)
                 {
                     *(TDataType*) (send_buffer + position) = i_node->FastGetSolutionStepValue(ThisVariable);
                     position += nodal_data_size;
@@ -1115,8 +1073,8 @@ private:
                 int send_tag = i_color;
                 int receive_tag = i_color;
 
-                MPI_Sendrecv(send_buffer, send_buffer_size, ThisMPI_Datatype, destination, send_tag,
-                             receive_buffer[i_color], receive_buffer_size[i_color], ThisMPI_Datatype, destination, receive_tag,
+                MPI_Sendrecv(send_buffer, send_buffer_size, MyMpiDataType, destination, send_tag,
+                             receive_buffer[i_color], receive_buffer_size[i_color], MyMpiDataType, destination, receive_tag,
                              mComm, &status);
 
                 delete [] send_buffer;
@@ -1128,9 +1086,9 @@ private:
                 // Updating nodes
                 int position = 0;
                 unsigned int nodal_data_size = sizeof (TDataType) / sizeof (TSendType);
-                NodesContainerType& r_ghost_nodes = InterfaceMesh(i_color).Nodes();
+                NodesContainerType& r_ghost_nodes = this->InterfaceMesh(i_color).Nodes();
 
-                for (ModelPart::NodeIterator i_node = r_ghost_nodes.begin(); i_node != r_ghost_nodes.end(); ++i_node)
+                for (auto i_node = r_ghost_nodes.begin(); i_node != r_ghost_nodes.end(); ++i_node)
                 {
                     TDataType& data = i_node->FastGetSolutionStepValue(ThisVariable);
                     data = std::min(data, *reinterpret_cast<TDataType*> (receive_buffer[i_color] + position));
@@ -1149,9 +1107,6 @@ private:
         //SynchronizeNodalSolutionStepsData();
         SynchronizeVariable<TDataType,TSendType>(ThisVariable);
 
-
-
-
         return true;
     }
 
@@ -1163,16 +1118,15 @@ private:
 
         int destination = 0;
 
-        NeighbourIndicesContainerType& neighbours_indices = NeighbourIndices();
+        NeighbourIndicesContainerType& neighbours_indices = this->NeighbourIndices();
 
         TSendType Value = TSendType();
-        MPI_Datatype ThisMPI_Datatype = GetMPIDatatype(Value);
 
         for (unsigned int i_color = 0; i_color < neighbours_indices.size(); i_color++)
             if ((destination = neighbours_indices[i_color]) >= 0)
             {
-                NodesContainerType& r_local_nodes = LocalMesh(i_color).Nodes();
-                NodesContainerType& r_ghost_nodes = GhostMesh(i_color).Nodes();
+                NodesContainerType& r_local_nodes = this->LocalMesh(i_color).Nodes();
+                NodesContainerType& r_ghost_nodes = this->GhostMesh(i_color).Nodes();
 
                 unsigned int nodal_data_size = sizeof (TDataType) / sizeof (TSendType);
                 unsigned int local_nodes_size = r_local_nodes.size();
@@ -1188,7 +1142,7 @@ private:
                 TSendType* receive_buffer = new TSendType[receive_buffer_size];
 
                 // Filling the send buffer
-                for (ModelPart::NodeIterator i_node = r_local_nodes.begin(); i_node != r_local_nodes.end(); ++i_node)
+                for (auto i_node = r_local_nodes.begin(); i_node != r_local_nodes.end(); ++i_node)
                 {
                     *(TDataType*) (send_buffer + position) = i_node->FastGetSolutionStepValue(ThisVariable);
                     position += nodal_data_size;
@@ -1199,11 +1153,11 @@ private:
                 int send_tag = i_color;
                 int receive_tag = i_color;
 
-                MPI_Sendrecv(send_buffer, send_buffer_size, ThisMPI_Datatype, destination, send_tag, receive_buffer, receive_buffer_size, ThisMPI_Datatype, destination, receive_tag,
+                MPI_Sendrecv(send_buffer, send_buffer_size, MyMpiDataType, destination, send_tag, receive_buffer, receive_buffer_size, MyMpiDataType, destination, receive_tag,
                              mComm, &status);
 
                 position = 0;
-                for (ModelPart::NodeIterator i_node = r_ghost_nodes.begin(); i_node != r_ghost_nodes.end(); ++i_node)
+                for (auto i_node = r_ghost_nodes.begin(); i_node != r_ghost_nodes.end(); ++i_node)
                 {
                     i_node->FastGetSolutionStepValue(ThisVariable) = *reinterpret_cast<TDataType*> (receive_buffer + position);
                     position += nodal_data_size;
@@ -1220,31 +1174,29 @@ private:
     }
 
 
-
     template< class TDataType, class TSendType >
     bool AssembleThisNonHistoricalVariable(Variable<TDataType> const& ThisVariable)
     {
         // PrintNodesId();
-        /*	KRATOS_WATCH("AssembleThisVariable")
+        /*  KRATOS_WATCH("AssembleThisVariable")
                 KRATOS_WATCH(ThisVariable)*/
         int rank;
         MPI_Comm_rank(mComm, &rank);
 
         int destination = 0;
 
-        NeighbourIndicesContainerType& neighbours_indices = NeighbourIndices();
+        NeighbourIndicesContainerType& neighbours_indices = this->NeighbourIndices();
         std::vector<TSendType*> receive_buffer(neighbours_indices.size());
         std::vector<int> receive_buffer_size(neighbours_indices.size());
 
         TSendType Value = TSendType();
-        MPI_Datatype ThisMPI_Datatype = GetMPIDatatype(Value);
 
         //first of all gather everything to the owner node
         for (unsigned int i_color = 0; i_color < neighbours_indices.size(); i_color++)
             if ((destination = neighbours_indices[i_color]) >= 0)
             {
-                NodesContainerType& r_local_nodes = InterfaceMesh(i_color).Nodes();
-                NodesContainerType& r_ghost_nodes = InterfaceMesh(i_color).Nodes();
+                NodesContainerType& r_local_nodes = this->InterfaceMesh(i_color).Nodes();
+                NodesContainerType& r_ghost_nodes = this->InterfaceMesh(i_color).Nodes();
 
                 // Calculating send and received buffer size
                 // NOTE: This part can be optimized getting the offset from variables list and using pointers.
@@ -1262,7 +1214,7 @@ private:
                 receive_buffer[i_color] = new TSendType[receive_buffer_size[i_color]];
 
                 // Filling the buffer
-                for (ModelPart::NodeIterator i_node = r_local_nodes.begin(); i_node != r_local_nodes.end(); ++i_node)
+                for (auto i_node = r_local_nodes.begin(); i_node != r_local_nodes.end(); ++i_node)
                 {
                     *(TDataType*) (send_buffer + position) = i_node->GetValue(ThisVariable);
                     position += nodal_data_size;
@@ -1276,8 +1228,8 @@ private:
                 int send_tag = i_color;
                 int receive_tag = i_color;
 
-                MPI_Sendrecv(send_buffer, send_buffer_size, ThisMPI_Datatype, destination, send_tag,
-                             receive_buffer[i_color], receive_buffer_size[i_color], ThisMPI_Datatype, destination, receive_tag,
+                MPI_Sendrecv(send_buffer, send_buffer_size, MyMpiDataType, destination, send_tag,
+                             receive_buffer[i_color], receive_buffer_size[i_color], MyMpiDataType, destination, receive_tag,
                              mComm, &status);
 
                 delete [] send_buffer;
@@ -1289,9 +1241,9 @@ private:
                 // Updating nodes
                 int position = 0;
                 unsigned int nodal_data_size = sizeof (TDataType) / sizeof (TSendType);
-                NodesContainerType& r_ghost_nodes = InterfaceMesh(i_color).Nodes();
+                NodesContainerType& r_ghost_nodes = this->InterfaceMesh(i_color).Nodes();
 
-                for (ModelPart::NodeIterator i_node = r_ghost_nodes.begin(); i_node != r_ghost_nodes.end(); ++i_node)
+                for (auto i_node = r_ghost_nodes.begin(); i_node != r_ghost_nodes.end(); ++i_node)
                 {
                     i_node->GetValue(ThisVariable) += *reinterpret_cast<TDataType*> (receive_buffer[i_color] + position);
                     position += nodal_data_size;
@@ -1305,9 +1257,6 @@ private:
 
         SynchronizeNonHistoricalVariable<TDataType,TSendType>(ThisVariable);
 
-
-
-
         return true;
     }
 
@@ -1319,16 +1268,15 @@ private:
 
         int destination = 0;
 
-        NeighbourIndicesContainerType& neighbours_indices = NeighbourIndices();
+        NeighbourIndicesContainerType& neighbours_indices = this->NeighbourIndices();
 
         TSendType Value = TSendType();
-        MPI_Datatype ThisMPI_Datatype = GetMPIDatatype(Value);
 
         for (unsigned int i_color = 0; i_color < neighbours_indices.size(); i_color++)
             if ((destination = neighbours_indices[i_color]) >= 0)
             {
-                NodesContainerType& r_local_nodes = LocalMesh(i_color).Nodes();
-                NodesContainerType& r_ghost_nodes = GhostMesh(i_color).Nodes();
+                NodesContainerType& r_local_nodes = this->LocalMesh(i_color).Nodes();
+                NodesContainerType& r_ghost_nodes = this->GhostMesh(i_color).Nodes();
 
                 unsigned int nodal_data_size = sizeof (TDataType) / sizeof (TSendType);
                 unsigned int local_nodes_size = r_local_nodes.size();
@@ -1344,7 +1292,7 @@ private:
                 TSendType* receive_buffer = new TSendType[receive_buffer_size];
 
                 // Filling the send buffer
-                for (ModelPart::NodeIterator i_node = r_local_nodes.begin(); i_node != r_local_nodes.end(); ++i_node)
+                for (auto i_node = r_local_nodes.begin(); i_node != r_local_nodes.end(); ++i_node)
                 {
                     *(TDataType*) (send_buffer + position) = i_node->GetValue(ThisVariable);
                     position += nodal_data_size;
@@ -1355,11 +1303,11 @@ private:
                 int send_tag = i_color;
                 int receive_tag = i_color;
 
-                MPI_Sendrecv(send_buffer, send_buffer_size, ThisMPI_Datatype, destination, send_tag, receive_buffer, receive_buffer_size, ThisMPI_Datatype, destination, receive_tag,
+                MPI_Sendrecv(send_buffer, send_buffer_size, MyMpiDataType, destination, send_tag, receive_buffer, receive_buffer_size, MyMpiDataType, destination, receive_tag,
                              mComm, &status);
 
                 position = 0;
-                for (ModelPart::NodeIterator i_node = r_ghost_nodes.begin(); i_node != r_ghost_nodes.end(); ++i_node)
+                for (auto i_node = r_ghost_nodes.begin(); i_node != r_ghost_nodes.end(); ++i_node)
                 {
                     i_node->GetValue(ThisVariable) = *reinterpret_cast<TDataType*> (receive_buffer + position);
                     position += nodal_data_size;
@@ -1383,17 +1331,15 @@ private:
 
         int destination = 0;
 
-        NeighbourIndicesContainerType& neighbours_indices = NeighbourIndices();
+        NeighbourIndicesContainerType& neighbours_indices = this->NeighbourIndices();
 
         TSendType Value = TSendType();
-        MPI_Datatype ThisMPI_Datatype = GetMPIDatatype(Value);
 
         for (unsigned int i_color = 0; i_color < neighbours_indices.size(); i_color++)
             if ((destination = neighbours_indices[i_color]) >= 0)
             {
-
-                ElementsContainerType& r_local_elements = LocalMesh(i_color).Elements();
-                ElementsContainerType& r_ghost_elements = GhostMesh(i_color).Elements();
+                ElementsContainerType& r_local_elements = this->LocalMesh(i_color).Elements();
+                ElementsContainerType& r_ghost_elements = this->GhostMesh(i_color).Elements();
 
                 unsigned int elemental_data_size = sizeof (TDataType) / sizeof (TSendType);
                 unsigned int local_elements_size = r_local_elements.size();
@@ -1405,13 +1351,13 @@ private:
                     continue; // nothing to transfer!
 
                 unsigned int position = 0;
-                double* send_buffer = new double[send_buffer_size];
-                double* receive_buffer = new double[receive_buffer_size];
+                std::vector<DataType> send_buffer(send_buffer_size);
+                std::vector<DataType> receive_buffer(receive_buffer_size);
 
                 // Filling the send buffer
-                for (ModelPart::ElementIterator i_element = r_local_elements.begin(); i_element != r_local_elements.end(); ++i_element)
+                for (auto i_element = r_local_elements.begin(); i_element != r_local_elements.end(); ++i_element)
                 {
-                    *(TDataType*) (send_buffer + position) = i_element->GetValue(ThisVariable);
+                    *(TDataType*) (send_buffer.data() + position) = i_element->GetValue(ThisVariable);
                     position += elemental_data_size;
                 }
 
@@ -1420,28 +1366,25 @@ private:
                 int send_tag = i_color;
                 int receive_tag = i_color;
 
-                MPI_Sendrecv(send_buffer, send_buffer_size, ThisMPI_Datatype, destination, send_tag, receive_buffer, receive_buffer_size, ThisMPI_Datatype, destination, receive_tag,
+                MPI_Sendrecv(send_buffer.data(), send_buffer_size, MyMpiDataType, destination, send_tag, receive_buffer.data(), receive_buffer_size, MyMpiDataType, destination, receive_tag,
                              mComm, &status);
 
                 position = 0;
-                for (ModelPart::ElementIterator i_element = r_ghost_elements.begin(); i_element != r_ghost_elements.end(); ++i_element)
+                for (auto i_element = r_ghost_elements.begin(); i_element != r_ghost_elements.end(); ++i_element)
                 {
-                    i_element->GetValue(ThisVariable) = *reinterpret_cast<TDataType*> (receive_buffer + position);
+                    i_element->GetValue(ThisVariable) = *reinterpret_cast<TDataType*> (receive_buffer.data() + position);
                     position += elemental_data_size;
                 }
 
                 if (position > receive_buffer_size)
                     std::cout << rank << " Error in estimating receive buffer size...." << std::endl;
-
-                delete [] send_buffer;
-                delete [] receive_buffer;
             }
 
         return true;
     }
 
     template<class TObjectType>
-    bool AsyncSendAndReceiveObjects(std::vector<TObjectType>& SendObjects, std::vector<TObjectType>& RecvObjects, Kratos::Serializer& externParticleSerializer)
+    bool AsyncSendAndReceiveObjects(std::vector<TObjectType>& SendObjects, std::vector<TObjectType>& RecvObjects, Serializer& externParticleSerializer)
     {
         int mpi_rank;
         int mpi_size;
@@ -1449,8 +1392,8 @@ private:
         MPI_Comm_rank(mComm, &mpi_rank);
         MPI_Comm_size(mComm, &mpi_size);
 
-        int * msgSendSize = new int[mpi_size];
-        int * msgRecvSize = new int[mpi_size];
+        std::vector<int> msgSendSize(mpi_size);
+        std::vector<int> msgRecvSize(mpi_size);
 
         char ** message = new char * [mpi_size];
         char ** mpi_send_buffer = new char * [mpi_size];
@@ -1465,7 +1408,7 @@ private:
         {
             if(mpi_rank != i)
             {
-                Kratos::Serializer particleSerializer;
+                Serializer particleSerializer;
 
                 particleSerializer.save("VariableList",mpVariables_list);
                 particleSerializer.save("ObjectList",SendObjects[i].GetContainer());
@@ -1476,11 +1419,11 @@ private:
 
                 msgSendSize[i] = sizeof(char) * (stream_str.size()+1);
                 mpi_send_buffer[i] = (char *)malloc(msgSendSize[i]);
-                memcpy(mpi_send_buffer[i],cstr,msgSendSize[i]);
+                memcpy(mpi_send_buffer[i], cstr, msgSendSize[i]);
             }
         }
 
-        MPI_Alltoall(msgSendSize,1,MPI_INT,msgRecvSize,1,MPI_INT,mComm);
+        MPI_Alltoall(msgSendSize.data(), 1, MPI_INT, msgRecvSize.data(), 1, MPI_INT, mComm);
 
         int NumberOfCommunicationEvents      = 0;
         int NumberOfCommunicationEventsIndex = 0;
@@ -1491,8 +1434,8 @@ private:
             if(j != mpi_rank && msgSendSize[j]) NumberOfCommunicationEvents++;
         }
 
-        MPI_Request * reqs = new MPI_Request[NumberOfCommunicationEvents];
-        MPI_Status * stats = new MPI_Status[NumberOfCommunicationEvents];
+        std::vector<MPI_Request> reqs(NumberOfCommunicationEvents);
+        std::vector<MPI_Status> stats(NumberOfCommunicationEvents);
 
         //Set up all receive and send events
         for(int i = 0; i < mpi_size; i++)
@@ -1501,17 +1444,17 @@ private:
             {
                 message[i] = (char *)malloc(sizeof(char) * msgRecvSize[i]);
 
-                MPI_Irecv(message[i],msgRecvSize[i],MPI_CHAR,i,0,mComm,&reqs[NumberOfCommunicationEventsIndex++]);
+                MPI_Irecv(message[i], msgRecvSize[i], MPI_CHAR, i, 0, mComm, &reqs[NumberOfCommunicationEventsIndex++]);
             }
 
             if(i != mpi_rank && msgSendSize[i])
             {
-                MPI_Isend(mpi_send_buffer[i],msgSendSize[i],MPI_CHAR,i,0,mComm,&reqs[NumberOfCommunicationEventsIndex++]);
+                MPI_Isend(mpi_send_buffer[i], msgSendSize[i], MPI_CHAR, i, 0, mComm, &reqs[NumberOfCommunicationEventsIndex++]);
             }
         }
 
         //wait untill all communications finish
-        int err = MPI_Waitall(NumberOfCommunicationEvents, reqs, stats);
+        int err = MPI_Waitall(NumberOfCommunicationEvents, reqs.data(), stats.data());
 
         if(err != MPI_SUCCESS)
             KRATOS_ERROR << "Error in mpi_communicator";
@@ -1522,21 +1465,21 @@ private:
         {
             if (i != mpi_rank && msgRecvSize[i])
             {
-                Kratos::Serializer particleSerializer;
+                Serializer particleSerializer;
                 std::stringstream * serializer_buffer;
 
                 serializer_buffer = (std::stringstream *)particleSerializer.pGetBuffer();
                 serializer_buffer->write(message[i], msgRecvSize[i]);
 
-                VariablesList* tmp_mpVariables_list = NULL;
+                VariablesListType* tmp_mpVariables_list = nullptr;
 
-                particleSerializer.load("VariableList",tmp_mpVariables_list);
+                particleSerializer.load("VariableList", tmp_mpVariables_list);
 
-                if(tmp_mpVariables_list != NULL)
-                  delete tmp_mpVariables_list;
+                if(tmp_mpVariables_list != nullptr)
+                    delete tmp_mpVariables_list;
                 tmp_mpVariables_list = mpVariables_list;
 
-                particleSerializer.load("ObjectList",RecvObjects[i].GetContainer());
+                particleSerializer.load("ObjectList", RecvObjects[i].GetContainer());
             }
 
             MPI_Barrier(mComm);
@@ -1552,35 +1495,25 @@ private:
                 free(mpi_send_buffer[i]);
         }
 
-        delete [] reqs;
-        delete [] stats;
-
         delete [] message;
         delete [] mpi_send_buffer;
-
-        delete [] msgSendSize;
-        delete [] msgRecvSize;
 
         return true;
     }
 
-    template< class T >
-    inline MPI_Datatype GetMPIDatatype(const T& Value);
-
-
     //       friend class boost::serialization::access;
 
     //       template<class TArchive>
-    // 	  void serialize(TArchive & ThisArchive, const unsigned int ThisVersion)
-    // 	  {
-    // /* 	      ThisArchive & mName & mBufferSize & mCurrentIndex; */
-    // 	  }
+    //    void serialize(TArchive & ThisArchive, const unsigned int ThisVersion)
+    //    {
+    // /*         ThisArchive & mName & mBufferSize & mCurrentIndex; */
+    //    }
 
     //       void RemoveSolutionStepData(IndexType SolutionStepIndex, MeshType& ThisMesh)
-    // 	{
-    // 	  for(NodeIterator i_node = ThisMesh.NodesBegin() ; i_node != ThisMesh.NodesEnd() ; ++i_node)
-    // 	    i_node->RemoveSolutionStepNodalData(SolutionStepIndex);
-    // 	}
+    //  {
+    //    for(NodeIterator i_node = ThisMesh.NodesBegin() ; i_node != ThisMesh.NodesEnd() ; ++i_node)
+    //      i_node->RemoveSolutionStepNodalData(SolutionStepIndex);
+    //  }
 
     ///@}
     ///@name Private  Access
@@ -1614,17 +1547,10 @@ private:
 
 ///@}
 
-template<>
-inline MPI_Datatype MPICommunicator::GetMPIDatatype<int>(const int& Value)
-{
-    return MPI_INT;
-}
-
-template<>
-inline MPI_Datatype MPICommunicator::GetMPIDatatype<double>(const double& Value)
-{
-    return MPI_DOUBLE;
-}
+template<> inline MPI_Datatype DataTypeToMpiDataType<int>(const int& Value) { return MPI_INT; }
+template<> inline MPI_Datatype DataTypeToMpiDataType<unsigned long>(const unsigned long& Value) { return MPI_UNSIGNED_LONG; }
+template<> inline MPI_Datatype DataTypeToMpiDataType<float>(const float& Value) { return MPI_FLOAT; }
+template<> inline MPI_Datatype DataTypeToMpiDataType<double>(const double& Value) { return MPI_DOUBLE; }
 
 } // namespace Kratos.
 

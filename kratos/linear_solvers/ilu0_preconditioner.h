@@ -55,8 +55,8 @@ namespace Kratos
 
 /// ILU0Preconditioner class.
 /**   */
-template<class TSparseSpaceType, class TDenseSpaceType>
-class ILU0Preconditioner : public ILUPreconditioner<TSparseSpaceType, TDenseSpaceType>
+template<class TSparseSpaceType, class TDenseSpaceType, class TModelPartType>
+class ILU0Preconditioner : public ILUPreconditioner<TSparseSpaceType, TDenseSpaceType, TModelPartType>
 {
 public:
     ///@name Type Definitions
@@ -65,7 +65,7 @@ public:
     /// Counted pointer of ILU0Preconditioner
     KRATOS_CLASS_POINTER_DEFINITION(ILU0Preconditioner);
 
-    typedef ILUPreconditioner<TSparseSpaceType, TDenseSpaceType> BaseType;
+    typedef ILUPreconditioner<TSparseSpaceType, TDenseSpaceType, TModelPartType> BaseType;
 
     typedef typename BaseType::DataType DataType;
 
@@ -75,6 +75,7 @@ public:
 
     typedef typename BaseType::DenseMatrixType DenseMatrixType;
 
+    static constexpr auto zero = DataType();
 
     ///@}
     ///@name Life Cycle
@@ -93,7 +94,7 @@ public:
 
 
     /// Destructor.
-    virtual ~ILU0Preconditioner()
+    ~ILU0Preconditioner() override
     {
         if ( BaseType::L!=NULL) delete[]  BaseType::L;
         if (BaseType::iL!=NULL) delete[] BaseType::iL;
@@ -135,7 +136,7 @@ public:
     @param rX Unknows vector
     @param rB Right side linear system of equations.
     */
-    virtual void Initialize(SparseMatrixType& rA, VectorType& rX, VectorType& rB)
+    void Initialize(SparseMatrixType& rA, VectorType& rX, VectorType& rB) override
     {
         // ILU(0) preconditioner
         // Incomplete LU factorization with same sparcity pattern as original matrix.
@@ -237,7 +238,7 @@ public:
                 {
                     // This row does not have a diagonal entry. Make it and put a zero.
                     BaseType::jU[fillU]=i;
-                    BaseType::U[fillU]=0.00;
+                    BaseType::U[fillU]=zero;
                     fillU++;
                     diagFound=true;
                 }
@@ -366,16 +367,11 @@ public:
         /*              } */
         /*      } */
 
-
-
-        for (i=0; i<n; i++) if (BaseType::U[BaseType::iU[i]]==0.00)
-            {
-                KRATOS_THROW_ERROR(std::runtime_error, "Zero in BaseType::U diagonal found!!", "")
-            }
+        for (i=0; i<n; i++) if (BaseType::U[BaseType::iU[i]]==zero)
+        {
+            KRATOS_ERROR << "Zero in BaseType::U diagonal found!!";
+        }
     }
-
-
-
 
     ///@}
     ///@name Access

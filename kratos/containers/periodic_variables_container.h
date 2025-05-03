@@ -385,7 +385,8 @@ inline std::ostream & operator <<(std::ostream& rOStream,
 
 ///@} addtogroup block
 
+template<> struct DataTypeToString<PeriodicVariablesContainer> { static inline constexpr const char* Get() {return "PeriodicVariablesContainer";} };
+
 } // namespace Kratos.
 
-#endif	/* KRATOS_PERIODIC_VARIABLES_CONTAINER_H */
-
+#endif /* KRATOS_PERIODIC_VARIABLES_CONTAINER_H */

@@ -46,17 +46,19 @@ namespace Kratos
  * and uses "standard" linear solvers for the different blocks as well as a GMRES for the outer part
 */
 template<class TSparseSpaceType, class TDenseSpaceType,
-         class TPreconditionerType = Preconditioner<TSparseSpaceType, TDenseSpaceType>,
+         class TModelPartType,
+         class TPreconditionerType = Preconditioner<TSparseSpaceType, TDenseSpaceType, TModelPartType>,
          class TReordererType = Reorderer<TSparseSpaceType, TDenseSpaceType> >
 class DeflatedGMRESSolver :
-    public IterativeSolver<TSparseSpaceType, TDenseSpaceType,TPreconditionerType, TReordererType>
+    public IterativeSolver<TSparseSpaceType, TDenseSpaceType, TModelPartType, TPreconditionerType, TReordererType>
 {
 public:
     ///@name Type Definitions
     ///@{
     /// Pointer definition of DeflatedGMRESSolver
     KRATOS_CLASS_POINTER_DEFINITION (DeflatedGMRESSolver);
-    typedef IterativeSolver<TSparseSpaceType, TDenseSpaceType, TPreconditionerType, TReordererType> BaseType;
+    typedef IterativeSolver<TSparseSpaceType, TDenseSpaceType, TModelPartType, TPreconditionerType, TReordererType> BaseType;
+    typedef LinearSolver<TSparseSpaceType, TDenseSpaceType, TModelPartType, TReordererType> LinearSolverType;
     typedef typename BaseType::SparseMatrixType SparseMatrixType;
     typedef typename BaseType::VectorType VectorType;
     typedef typename BaseType::DenseMatrixType DenseMatrixType;
@@ -65,13 +67,16 @@ public:
     typedef typename BaseType::IndexType IndexType;
     typedef typename BaseType::DataType DataType;
     typedef typename BaseType::ValueType ValueType;
+    typedef typename BaseType::ModelPartType ModelPartType;
     typedef DeflationUtils<SparseMatrixType, VectorType> DeflationUtilsType;
+
+    static constexpr auto zero = DataType();
 
     ///@}
     ///@name Life Cycle
     ///@{
     /// Default constructor.
-    DeflatedGMRESSolver (typename LinearSolver<TSparseSpaceType, TDenseSpaceType, TReordererType>::Pointer pred_solver,
+    DeflatedGMRESSolver (typename LinearSolverType::Pointer pred_solver,
                          ValueType NewMaxTolerance,
                          unsigned int NewMaxIterationsNumber,
                          unsigned int m, unsigned int max_reduced_size
@@ -99,7 +104,8 @@ public:
     }
 
     /// Destructor.
-    virtual ~DeflatedGMRESSolver() {}
+    ~DeflatedGMRESSolver() override {}
+
     ///@}
 
     ///@name Operators
@@ -110,9 +116,11 @@ public:
     {
         return *this;
     }
+
     ///@}
     ///@name Operations
     ///@{
+
     /** This function is designed to be called as few times as possible. It creates the data structures
      * that only depend on the connectivity of the matrix (and not on its coefficients)
      * so that the memory can be allocated once and expensive operations can be done only when strictly
@@ -121,7 +129,7 @@ public:
     @param rX. Solution vector. it's also the initial guess for iterative linear solvers.
     @param rB. Right hand side vector.
     */
-    virtual void Initialize (SparseMatrixType& rA, VectorType& rX, VectorType& rB)
+    void Initialize (SparseMatrixType& rA, VectorType& rX, VectorType& rB) override
     {
         if (mBlocksAreAllocated == true)
         {
@@ -132,6 +140,7 @@ public:
           std::cout << "linear solver intialization is deferred to the moment at which blocks are available" << std::endl;
         }
     }
+
     /** This function is designed to be called every time the coefficients change in the system
      * that is, normally at the beginning of each solve.
      * For example if we are implementing a direct solver, this is the place to do the factorization
@@ -140,7 +149,7 @@ public:
     @param rX. Solution vector. it's also the initial guess for iterative linear solvers.
     @param rB. Right hand side vector.
     */
-    virtual void InitializeSolutionStep (SparseMatrixType& rA, VectorType& rX, VectorType& rB)
+    void InitializeSolutionStep (SparseMatrixType& rA, VectorType& rX, VectorType& rB) override
     {
         //copy to local matrices
         if (mBlocksAreAllocated == false)
@@ -164,7 +173,7 @@ public:
     @param rX. Solution vector. it's also the initial guess for iterative linear solvers.
     @param rB. Right hand side vector.
     */
-    virtual void PerformSolutionStep (SparseMatrixType& rA, VectorType& rX, VectorType& rB)
+    void PerformSolutionStep (SparseMatrixType& rA, VectorType& rX, VectorType& rB) override
     {
         unsigned int m = mm;
         unsigned int max_iter = BaseType::GetMaxIterationsNumber();
@@ -178,16 +187,15 @@ public:
     @param rX. Solution vector. it's also the initial guess for iterative linear solvers.
     @param rB. Right hand side vector.
     */
-    virtual void FinalizeSolutionStep (SparseMatrixType& rA, VectorType& rX, VectorType& rB)
+    void FinalizeSolutionStep (SparseMatrixType& rA, VectorType& rX, VectorType& rB) override
     {
-
     }
 
     /** This function is designed to clean up all internal data in the solver.
      * Clear is designed to leave the solver object as if newly created.
      * After a clear a new Initialize is needed
      */
-    virtual void Clear()
+    void Clear() override
     {
         mK.clear();
         mG.clear();
@@ -210,7 +218,7 @@ public:
     guess for iterative linear solvers.
      @param rB. Right hand side vector.
     */
-    virtual bool Solve(SparseMatrixType& rA, VectorType& rX, VectorType& rB)
+    bool Solve(SparseMatrixType& rA, VectorType& rX, VectorType& rB) override
     {
         if (mis_initialized == false)
             this->Initialize (rA,rX,rB);
@@ -232,7 +240,7 @@ public:
     guess for iterative linear solvers.
      @param rB. Right hand side vector.
     */
-    virtual bool Solve (SparseMatrixType& rA, DenseMatrixType& rX, DenseMatrixType& rB)
+    bool Solve (SparseMatrixType& rA, DenseMatrixType& rX, DenseMatrixType& rB) override
     {
         return false;
     }
@@ -250,7 +258,7 @@ public:
      * which require knowledge on the spatial position of the nodes associated to a given dof.
      * This function tells if the solver requires such data
      */
-    virtual bool AdditionalPhysicalDataIsNeeded()
+    bool AdditionalPhysicalDataIsNeeded() override
     {
         return true;
     }
@@ -265,19 +273,19 @@ public:
         SparseMatrixType& rA,
         VectorType& rX,
         VectorType& rB,
-        typename ModelPart::DofsArrayType& rdof_set,
-        ModelPart& r_model_part
-    )
+        typename ModelPartType::DofsArrayType& rdof_set,
+        ModelPartType& r_model_part
+    ) override
     {
         //count pressure dofs
         unsigned int n_pressure_dofs = 0;
         unsigned int tot_active_dofs = 0;
-        for (ModelPart::DofsArrayType::iterator it = rdof_set.begin(); it!=rdof_set.end(); it++)
+        for (auto it = rdof_set.begin(); it!=rdof_set.end(); it++)
         {
           if (it->EquationId() < rA.size1())
           {
               tot_active_dofs += 1;
-              if (it->GetVariable().Key() == PRESSURE)
+              if (it->GetVariable().Key() == VARSEL(DataType, PRESSURE))
               n_pressure_dofs += 1;
           }
         }
@@ -300,11 +308,11 @@ public:
         unsigned int pressure_counter = 0;
         unsigned int other_counter = 0;
         unsigned int global_pos = 0;
-        for (ModelPart::DofsArrayType::iterator it = rdof_set.begin(); it!=rdof_set.end(); it++)
+        for (auto it = rdof_set.begin(); it!=rdof_set.end(); it++)
         {
             if (it->EquationId() < rA.size1())
             {
-                if (it->GetVariable().Key() == PRESSURE)
+                if (it->GetVariable().Key() == VARSEL(DataType, PRESSURE))
                 {
                     mpressure_indices[pressure_counter] = global_pos;
                     mglobal_to_local_indexing[global_pos] = pressure_counter;
@@ -554,9 +562,9 @@ private:
     ///@name Member Variables
     ///@{
     /// A counted pointer to the reorderer object.
-    //typename LinearSolver<TSparseSpaceType, TDenseSpaceType, TReordererType>::Pointer mpsolver_UU_block;
-    //typename LinearSolver<TSparseSpaceType, TDenseSpaceType, TReordererType>::Pointer mpsolver_PP_block;
-    typename LinearSolver<TSparseSpaceType, TDenseSpaceType, TReordererType>::Pointer mPred_solver;
+    //typename LinearSolverType::Pointer mpsolver_UU_block;
+    //typename LinearSolverType::Pointer mpsolver_PP_block;
+    typename LinearSolverType::Pointer mPred_solver;
 
     unsigned int mm;
     unsigned int mmax_reduced_size;
@@ -580,21 +588,22 @@ private:
     ///@}
     ///@name Private Operators
     ///@{
+
     inline void GeneratePlaneRotation (const DataType dx, const DataType dy, DataType& cs, DataType& sn)
     {
-        if (dy == 0.0)
+        if (dy == zero)
         {
             cs = 1.0;
             sn = 0.0;
         }
-        else if (dx == 0.0)
+        else if (dx == zero)
         {
             cs = 0.0;
             sn = 1.0;
         }
         else
         {
-            const DataType rnorm = 1.0/sqrt (dx*dx + dy*dy);
+            const DataType rnorm = 1/sqrt(dx*dx + dy*dy);
             cs = std::abs (dx) * rnorm;
             sn = cs * dy / dx;
         }
@@ -635,8 +644,8 @@ private:
         const unsigned int dim = A.size1();
         if (m == 0)
             KRATOS_THROW_ERROR (std::logic_error,"the dimension of the GMRES krylov space can not be set to zero. Please change the value of m","")
-            if (m > max_iter)
-                m = max_iter;
+        if (m > max_iter)
+            m = max_iter;
     //KRATOS_WATCH("Krylov space size")
     //KRATOS_WATCH(m)
         VectorType s (m+1), sn (m+1), w (dim), r (dim), y (m+1);
@@ -685,7 +694,6 @@ private:
     //KRATOS_WATCH(r)
 #endif
 
-
         const ValueType rel_tol = tol*normb;
         ValueType beta = std::abs(TSparseSpaceType::TwoNorm (r));
         if (beta <= rel_tol)   //finalize!
@@ -724,7 +732,7 @@ private:
                 if (std::abs(normw) == 0)
                     TSparseSpaceType::Copy (V[i+1], w); //V[i+1] = w;
                 else
-                    TSparseSpaceType::Assign (V[i+1], 1.0/normw, w); //V[i+1] = w / normw;
+                    TSparseSpaceType::Assign (V[i+1], 1/normw, w); //V[i+1] = w / normw;
                 for (unsigned int k = 0; k < i; k++)
                     ApplyPlaneRotation (H (k,i), H (k+1,i), cs (k), sn (k) );
                 GeneratePlaneRotation (H (i,i), H (i+1,i), cs (i), sn (i) );
@@ -764,7 +772,6 @@ private:
         err = 1;
         return err;
     }
-
 
     void CheckDeflatedMatrix(SparseMatrixType& S_deflated)
     {
@@ -916,8 +923,6 @@ private:
         return sqrt (norm);
     }
 
-
-
     /// Helper function for Sytem matrix functions
     void SortCols (
         std::vector<unsigned int>& ColList,
@@ -941,7 +946,6 @@ private:
         }
     }
 
-
     ///@}
     ///@name Private Operations
     ///@{
@@ -956,6 +960,7 @@ private:
     ///@{
     ///@}
 }; // Class DeflatedGMRESSolver
+
 ///@}
 ///@name Type Definitions
 ///@{
@@ -964,4 +969,5 @@ private:
 ///@{
 ///@}
 }  // namespace Kratos.
+
 #endif // KRATOS_DEFLATED_GMRES_SOLVER_H_INCLUDED  defined

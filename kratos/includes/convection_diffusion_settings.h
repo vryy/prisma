@@ -535,6 +535,8 @@ KRATOS_DEFINE_VARIABLE(ConvectionDiffusionSettings::Pointer, CONVECTION_DIFFUSIO
 #undef  KRATOS_EXPORT_MACRO
 #define KRATOS_EXPORT_MACRO KRATOS_NO_EXPORT
 
+template<> struct DataTypeToString<ConvectionDiffusionSettings::Pointer> { static inline constexpr const char* Get() {return "ConvectionDiffusionSettings::Pointer";} };
+
 }  // namespace Kratos.
 
 #endif // KRATOS_CONVECTION_DIFFUSION_SETTINGS_INCLUDED  defined

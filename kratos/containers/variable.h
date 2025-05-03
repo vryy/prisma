@@ -259,7 +259,7 @@ public:
     std::string Info() const override
     {
         std::stringstream buffer;
-        buffer << Name() << " variable";
+        buffer << Name() << " " << DataTypeToString<TDataType>::Get() << " variable";
         return buffer.str();
     }
 

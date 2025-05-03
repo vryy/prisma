@@ -117,9 +117,10 @@ Detail class definition.
 
 */
 template<class TSparseSpace,
-         class TDenseSpace //= DenseSpace<double>
+         class TDenseSpace, //= DenseSpace<double>
+         class TModelPartType = ModelPart
          >
-class ResidualBasedIncrementalUpdateStaticScheme : public Scheme<TSparseSpace,TDenseSpace>
+class ResidualBasedIncrementalUpdateStaticScheme : public Scheme<TSparseSpace, TDenseSpace, TModelPartType>
 {
 
 public:
@@ -128,11 +129,17 @@ public:
 
     KRATOS_CLASS_POINTER_DEFINITION( ResidualBasedIncrementalUpdateStaticScheme);
 
-    typedef Scheme<TSparseSpace,TDenseSpace> BaseType;
+    typedef Scheme<TSparseSpace, TDenseSpace, TModelPartType> BaseType;
 
     typedef typename BaseType::TDataType TDataType;
 
     typedef typename BaseType::DofsArrayType DofsArrayType;
+
+    typedef typename BaseType::ModelPartType ModelPartType;
+
+    typedef typename BaseType::ElementType ElementType;
+
+    typedef typename BaseType::ConditionType ConditionType;
 
     typedef typename BaseType::TSystemMatrixType TSystemMatrixType;
 
@@ -149,13 +156,12 @@ public:
     /** Constructor.
     */
     ResidualBasedIncrementalUpdateStaticScheme()
-        : Scheme<TSparseSpace,TDenseSpace>()
+        : BaseType()
     {}
 
     /** Destructor.
     */
     ~ResidualBasedIncrementalUpdateStaticScheme() override {}
-
 
     /*@} */
     /**@name Operators
@@ -167,7 +173,7 @@ public:
     */
     //***************************************************************************
     void Update(
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         DofsArrayType& rDofSet,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
@@ -226,16 +232,16 @@ public:
     of the system
     */
     void CalculateSystemContributions(
-        Element& rCurrentElement,
+        ElementType& rCurrentElement,
         LocalSystemMatrixType& LHS_Contribution,
         LocalSystemVectorType& RHS_Contribution,
-        Element::EquationIdVectorType& EquationId,
+        typename ElementType::EquationIdVectorType& EquationId,
         const ProcessInfo& CurrentProcessInfo ) override
     {
         KRATOS_TRY
 
-        rCurrentElement.CalculateLocalSystem(LHS_Contribution,RHS_Contribution,CurrentProcessInfo);
-        rCurrentElement.EquationIdVector(EquationId,CurrentProcessInfo);
+        rCurrentElement.CalculateLocalSystem(LHS_Contribution, RHS_Contribution, CurrentProcessInfo);
+        rCurrentElement.EquationIdVector(EquationId, CurrentProcessInfo);
 
         KRATOS_CATCH("")
     }
@@ -244,15 +250,15 @@ public:
     //***************************************************************************
     //***************************************************************************
     void CalculateRHSContribution(
-        Element& rCurrentElement,
+        ElementType& rCurrentElement,
         LocalSystemVectorType& RHS_Contribution,
-        Element::EquationIdVectorType& EquationId,
+        typename ElementType::EquationIdVectorType& EquationId,
         const ProcessInfo& CurrentProcessInfo ) override
     {
         KRATOS_TRY
 
-        rCurrentElement.CalculateRightHandSide(RHS_Contribution,CurrentProcessInfo);
-        rCurrentElement.EquationIdVector(EquationId,CurrentProcessInfo);
+        rCurrentElement.CalculateRightHandSide(RHS_Contribution, CurrentProcessInfo);
+        rCurrentElement.EquationIdVector(EquationId, CurrentProcessInfo);
 
         KRATOS_CATCH("")
     }
@@ -260,15 +266,15 @@ public:
     //***************************************************************************
     //***************************************************************************
     void CalculateLHSContribution(
-        Element& rCurrentElement,
+        ElementType& rCurrentElement,
         LocalSystemMatrixType& LHS_Contribution,
-        Element::EquationIdVectorType& EquationId,
+        typename ElementType::EquationIdVectorType& EquationId,
         const ProcessInfo& CurrentProcessInfo ) override
     {
         KRATOS_TRY
 
-        rCurrentElement.CalculateLeftHandSide(LHS_Contribution,CurrentProcessInfo);
-        rCurrentElement.EquationIdVector(EquationId,CurrentProcessInfo);
+        rCurrentElement.CalculateLeftHandSide(LHS_Contribution, CurrentProcessInfo);
+        rCurrentElement.EquationIdVector(EquationId, CurrentProcessInfo);
 
         KRATOS_CATCH("")
     }
@@ -278,44 +284,44 @@ public:
     the "condition" objects
     */
     void CalculateSystemContributions(
-        Condition& rCurrentCondition,
+        ConditionType& rCurrentCondition,
         LocalSystemMatrixType& LHS_Contribution,
         LocalSystemVectorType& RHS_Contribution,
-        Element::EquationIdVectorType& EquationId,
+        typename ElementType::EquationIdVectorType& EquationId,
         const ProcessInfo& CurrentProcessInfo ) override
     {
         KRATOS_TRY
 
-        rCurrentCondition.CalculateLocalSystem(LHS_Contribution,RHS_Contribution,CurrentProcessInfo);
-        rCurrentCondition.EquationIdVector(EquationId,CurrentProcessInfo);
+        rCurrentCondition.CalculateLocalSystem(LHS_Contribution, RHS_Contribution, CurrentProcessInfo);
+        rCurrentCondition.EquationIdVector(EquationId, CurrentProcessInfo);
 
         KRATOS_CATCH("")
     }
 
     void CalculateLHSContribution(
-        Condition& rCurrentCondition,
+        ConditionType& rCurrentCondition,
         LocalSystemMatrixType& LHS_Contribution,
-        Element::EquationIdVectorType& EquationId,
+        typename ElementType::EquationIdVectorType& EquationId,
         const ProcessInfo& CurrentProcessInfo) override
     {
         KRATOS_TRY
 
-        rCurrentCondition.CalculateLeftHandSide(LHS_Contribution,CurrentProcessInfo);
-        rCurrentCondition.EquationIdVector(EquationId,CurrentProcessInfo);
+        rCurrentCondition.CalculateLeftHandSide(LHS_Contribution, CurrentProcessInfo);
+        rCurrentCondition.EquationIdVector(EquationId, CurrentProcessInfo);
 
         KRATOS_CATCH("")
     }
 
     void CalculateRHSContribution(
-        Condition& rCurrentCondition,
+        ConditionType& rCurrentCondition,
         LocalSystemVectorType& RHS_Contribution,
-        Element::EquationIdVectorType& EquationId,
+        typename ElementType::EquationIdVectorType& EquationId,
         const ProcessInfo& CurrentProcessInfo) override
     {
         KRATOS_TRY
 
-        rCurrentCondition.CalculateRightHandSide(RHS_Contribution,CurrentProcessInfo);
-        rCurrentCondition.EquationIdVector(EquationId,CurrentProcessInfo);
+        rCurrentCondition.CalculateRightHandSide(RHS_Contribution, CurrentProcessInfo);
+        rCurrentCondition.EquationIdVector(EquationId, CurrentProcessInfo);
 
         KRATOS_CATCH("")
     }

@@ -98,17 +98,18 @@ struct Array1DModifier
     }
 };
 
-template<class TDataType>
-void VariablesList_AddVariable(VariablesList& rDummy, Variable<TDataType> const& rThisVariable)
+template<class TVariablesListType, typename TDataType>
+void VariablesList_AddVariable(TVariablesListType& rDummy, Variable<TDataType> const& rThisVariable)
 {
     rDummy.Add(rThisVariable);
 }
 
-void  AddContainersToPython()
+template<typename TDataType>
+void AddValueContainersToPython(const std::string& Prefix)
 {
-    typedef KRATOS_DOUBLE_TYPE DataType;
+    typedef TDataType DataType;
 
-    BoundedVectorPythonInterface<array_1d<DataType, 3>, 3>::CreateInterface( "Array3" )
+    BoundedVectorPythonInterface<array_1d<DataType, 3>, 3>::CreateInterface( Prefix + "Array3" )
     .def( init<vector_expression<array_1d<DataType, 3> > >() )
     .def( VectorScalarOperatorPython<array_1d<DataType, 3>, DataType, array_1d<DataType, 3> >() )
     .def( VectorVectorOperatorPython<array_1d<DataType, 3>, zero_vector<DataType>, array_1d<DataType, 3> >() )
@@ -117,7 +118,7 @@ void  AddContainersToPython()
     .def( VectorVectorOperatorPython<array_1d<DataType, 3>, mapped_vector<DataType>, array_1d<DataType, 3> >() )
     ;
 
-    BoundedVectorPythonInterface<array_1d<DataType, 2>, 2>::CreateInterface( "Array2" )
+    BoundedVectorPythonInterface<array_1d<DataType, 2>, 2>::CreateInterface( Prefix + "Array2" )
     .def( init<vector_expression<array_1d<DataType, 2> > >() )
     .def( VectorScalarOperatorPython<array_1d<DataType, 2>, DataType, array_1d<DataType, 2> >() )
     .def( VectorVectorOperatorPython<array_1d<DataType, 2>, zero_vector<DataType>, array_1d<DataType, 2> >() )
@@ -126,6 +127,138 @@ void  AddContainersToPython()
     .def( VectorVectorOperatorPython<array_1d<DataType, 2>, mapped_vector<DataType>, array_1d<DataType, 2> >() )
     ;
 
+    class_<Variable<typename MatrixVectorTypeSelector<DataType>::VectorType>, bases<VariableData>, boost::noncopyable >( (Prefix + "VectorVariable").c_str(), no_init )
+    .def( self_ns::str( self ) )
+    ;
+
+    class_<Variable<array_1d<DataType, 3> >, bases<VariableData>, boost::noncopyable >( (Prefix + "Array1DVariable3").c_str(), no_init )
+    .def( self_ns::str( self ) )
+    ;
+
+    class_<Variable<array_1d<DataType, 6> >, bases<VariableData>, boost::noncopyable >( (Prefix + "Array1DVariable6").c_str(), no_init )
+    .def( self_ns::str( self ) )
+    ;
+
+    class_<Variable<typename MatrixVectorTypeSelector<DataType>::MatrixType>, bases<VariableData>, boost::noncopyable >( (Prefix + "MatrixVariable").c_str(), no_init )
+    .def( self_ns::str( self ) )
+    ;
+
+    class_<VariableComponent<VectorComponentAdaptor<vector<DataType> > >, bases<VariableData>, boost::noncopyable >( (Prefix + "VectorComponentVariable").c_str(), no_init )
+    .def( self_ns::str( self ) )
+    ;
+
+    class_<VariableComponent<VectorComponentAdaptor<array_1d<DataType, 3> > >, bases<VariableData>, boost::noncopyable >( (Prefix + "Array1DComponentVariable").c_str(), no_init )
+    .def( self_ns::str( self ) )
+    ;
+
+    typedef VariablesListDataValueContainer<DataType> VariablesListDataValueContainerType;
+    class_<VariablesListDataValueContainerType, typename VariablesListDataValueContainerType::Pointer>( (Prefix + "VariablesListDataValueContainer").c_str() )
+    .def( "__len__", &VariablesListDataValueContainerType::Size )
+    .def( VariableIndexingPython<VariablesListDataValueContainerType, Variable<std::string> >() )
+    .def( VariableIndexingPython<VariablesListDataValueContainerType, Variable<bool> >() )
+    .def( VariableIndexingPython<VariablesListDataValueContainerType, Variable<int> >() )
+    .def( VariableIndexingPython<VariablesListDataValueContainerType, Variable<DataType> >() )
+    .def( VariableIndexingPython<VariablesListDataValueContainerType, Variable<array_1d<DataType, 3> > >() )
+    .def( VariableIndexingPython<VariablesListDataValueContainerType, Variable<vector<DataType> > >() )
+    .def( VariableIndexingPython<VariablesListDataValueContainerType, Variable<matrix<DataType> > >() )
+    .def( VariableIndexingPython<VariablesListDataValueContainerType, VariableComponent<VectorComponentAdaptor<array_1d<DataType, 3> > > >() )
+    .def( self_ns::str( self ) )
+    ;
+
+    typedef VariablesList<DataType> VariablesListType;
+    class_<VariablesListType, typename VariablesListType::Pointer, boost::noncopyable>( (Prefix + "VariablesList").c_str(), init<>() )
+    .def("Add", VariablesList_AddVariable<VariablesListType, bool>)
+    .def("Add", VariablesList_AddVariable<VariablesListType, int>)
+    .def("Add", VariablesList_AddVariable<VariablesListType, DataType>)
+    .def("Add", VariablesList_AddVariable<VariablesListType, array_1d<DataType, 3 > >)
+    .def("Add", VariablesList_AddVariable<VariablesListType, typename MatrixVectorTypeSelector<DataType>::VectorType>)
+    .def("Add", VariablesList_AddVariable<VariablesListType, typename MatrixVectorTypeSelector<DataType>::MatrixType>)
+    .def( self_ns::str( self ) )
+    ;
+}
+
+// template<class TComplexType>
+// typename TComplexType::value_type ComplexGetReal(TComplexType& rValue)
+// {
+//     return rValue.real();
+// }
+
+// template<class TComplexType>
+// typename TComplexType::value_type ComplexGetImag(TComplexType& rValue)
+// {
+//     return rValue.imag();
+// }
+
+// template<class TComplexType>
+// void ComplexSetReal(TComplexType& rValue, typename TComplexType::value_type value)
+// {
+//     rValue.real(value);
+// }
+
+// template<class TComplexType>
+// void ComplexSetImag(TComplexType& rValue, typename TComplexType::value_type value)
+// {
+//     rValue.imag(value);
+// }
+
+// struct ComplexWrapper {
+//     std::complex<double> value;
+
+//     ComplexWrapper(double real = 0.0, double imag = 0.0)
+//         : value(real, imag) {}
+
+//     double get_real() const { return value.real(); }
+//     void set_real(double r) { value.real(r); }
+
+//     double get_imag() const { return value.imag(); }
+//     void set_imag(double i) { value.imag(i); }
+
+//     // Operators
+//     ComplexWrapper operator+(const ComplexWrapper& other) const {
+//         return ComplexWrapper(value + other.value);
+//     }
+
+//     ComplexWrapper operator-(const ComplexWrapper& other) const {
+//         return ComplexWrapper(value - other.value);
+//     }
+
+//     ComplexWrapper operator*(const ComplexWrapper& other) const {
+//         return ComplexWrapper(value * other.value);
+//     }
+
+//     ComplexWrapper operator/(const ComplexWrapper& other) const {
+//         return ComplexWrapper(value / other.value);
+//     }
+
+//     // Constructor from std::complex for internal use
+//     ComplexWrapper(const std::complex<double>& v) : value(v) {}
+// };
+
+// void AddComplexNumberToPython()
+// {
+//     class_<std::complex<double> >( "ComplexDouble", init<double, double>() )
+//     .add_property("real", ComplexGetReal<std::complex<double> >, ComplexSetReal<std::complex<double> >)
+//     .add_property("imag", ComplexGetImag<std::complex<double> >, ComplexSetImag<std::complex<double> >)
+//     .def(self + self)
+//     .def(self - self)
+//     .def(self * self)
+//     .def(self / self)
+//     .def( self_ns::str( self ) )
+//     ;
+
+//     // class_<ComplexWrapper>("ComplexDouble", init<double, double>())
+//     // .add_property("real", &ComplexWrapper::get_real, &ComplexWrapper::set_real)
+//     // .add_property("imag", &ComplexWrapper::get_imag, &ComplexWrapper::set_imag)
+//     // .def(self + self)
+//     // .def(self - self)
+//     // .def(self * self)
+//     // .def(self / self)
+//     // // .def( self_ns::str( self ) )
+//     // ;
+// }
+
+void AddContainersToPython()
+{
     class_<VariableData>( "VariableData", no_init )
     .def( self_ns::str( self ) )
     ;
@@ -142,31 +275,27 @@ void  AddContainersToPython()
     .def( self_ns::str( self ) )
     ;
 
+    class_<Variable<KRATOS_DOUBLE_TYPE>, bases<VariableData>, boost::noncopyable >( "DoubleVariable", no_init )
+    .def( self_ns::str( self ) )
+    ;
+
+    class_<Variable<KRATOS_COMPLEX_TYPE>, bases<VariableData>, boost::noncopyable >( "ComplexVariable", no_init )
+    .def( self_ns::str( self ) )
+    ;
+
     class_<Variable<vector<int> >, bases<VariableData>, boost::noncopyable >( "IntegerVectorVariable", no_init )
     .def( self_ns::str( self ) )
     ;
 
-    class_<Variable<DataType>, bases<VariableData>, boost::noncopyable >( "DoubleVariable", no_init )
+    class_<Variable<ConstitutiveLaw::Pointer>, bases<VariableData>, boost::noncopyable >( "ConstitutiveLawVariable", no_init )
     .def( self_ns::str( self ) )
     ;
 
-    class_<Variable<vector<DataType> >, bases<VariableData>, boost::noncopyable >( "VectorVariable", no_init )
+    class_<Variable<ComplexConstitutiveLaw::Pointer>, bases<VariableData>, boost::noncopyable >( "ComplexConstitutiveLawVariable", no_init )
     .def( self_ns::str( self ) )
     ;
 
-    class_<Variable<array_1d<DataType, 3> >, bases<VariableData>, boost::noncopyable >( "Array1DVariable3", no_init )
-    .def( self_ns::str( self ) )
-    ;
-
-    class_<Variable<array_1d<DataType, 6> >, bases<VariableData>, boost::noncopyable >( "Array1DVariable6", no_init )
-    .def( self_ns::str( self ) )
-    ;
-
-    class_<Variable<matrix<DataType> >, bases<VariableData>, boost::noncopyable >( "MatrixVariable", no_init )
-    .def( self_ns::str( self ) )
-    ;
-
-    class_<Variable<ConstitutiveLaw::Pointer>, bases<VariableData>, boost::noncopyable >( "ConstitutuveLawVariable", no_init )
+    class_<Variable<GComplexConstitutiveLaw::Pointer>, bases<VariableData>, boost::noncopyable >( "GComplexConstitutiveLawVariable", no_init )
     .def( self_ns::str( self ) )
     ;
 
@@ -177,51 +306,31 @@ void  AddContainersToPython()
     class_<Variable<RadiationSettings::Pointer > , bases<VariableData>, boost::noncopyable >("RadiationSettingsVariable", no_init)
     .def( self_ns::str( self ) )
     ;
-    class_<VariableComponent<VectorComponentAdaptor<vector<DataType> > >, bases<VariableData>, boost::noncopyable >( "VectorComponentVariable", no_init )
-    .def( self_ns::str( self ) )
-    ;
 
-    class_<VariableComponent<VectorComponentAdaptor<array_1d<DataType, 3> > >, bases<VariableData>, boost::noncopyable >( "Array1DComponentVariable", no_init )
-    .def( self_ns::str( self ) )
-    ;
+    // AddComplexNumberToPython();
 
     class_<DataValueContainer, DataValueContainer::Pointer>( "DataValueContainer" )
     .def( "__len__", &DataValueContainer::Size )
     .def( VariableIndexingPython<DataValueContainer, Variable<std::string> >() )
     .def( VariableIndexingPython<DataValueContainer, Variable<bool> >() )
     .def( VariableIndexingPython<DataValueContainer, Variable<int> >() )
-    .def( VariableIndexingPython<DataValueContainer, Variable<DataType> >() )
-    .def( VariableIndexingPython<DataValueContainer, Variable<array_1d<DataType, 3> > >() )
-    .def( VariableIndexingPython<DataValueContainer, Variable<vector<DataType> > >() )
-    .def( VariableIndexingPython<DataValueContainer, Variable<matrix<DataType> > >() )
+    .def( VariableIndexingPython<DataValueContainer, Variable<KRATOS_DOUBLE_TYPE> >() )
+    .def( VariableIndexingPython<DataValueContainer, Variable<array_1d<KRATOS_DOUBLE_TYPE, 3> > >() )
+    .def( VariableIndexingPython<DataValueContainer, Variable<vector<KRATOS_DOUBLE_TYPE> > >() )
+    .def( VariableIndexingPython<DataValueContainer, Variable<matrix<KRATOS_DOUBLE_TYPE> > >() )
+    .def( VariableIndexingPython<DataValueContainer, VariableComponent<VectorComponentAdaptor<array_1d<KRATOS_DOUBLE_TYPE, 3> > > >() )
+    .def( VariableIndexingPython<DataValueContainer, Variable<KRATOS_COMPLEX_TYPE> >() )
+    .def( VariableIndexingPython<DataValueContainer, Variable<array_1d<KRATOS_COMPLEX_TYPE, 3> > >() )
+    .def( VariableIndexingPython<DataValueContainer, Variable<vector<KRATOS_COMPLEX_TYPE> > >() )
+    .def( VariableIndexingPython<DataValueContainer, Variable<matrix<KRATOS_COMPLEX_TYPE> > >() )
+    .def( VariableIndexingPython<DataValueContainer, VariableComponent<VectorComponentAdaptor<array_1d<KRATOS_COMPLEX_TYPE, 3> > > >() )
     .def( VariableIndexingPython<DataValueContainer, Variable<ConvectionDiffusionSettings::Pointer > >() )
     .def( VariableIndexingPython<DataValueContainer, Variable<RadiationSettings::Pointer > >() )
-    .def( VariableIndexingPython<DataValueContainer, VariableComponent<VectorComponentAdaptor<array_1d<DataType, 3> > > >() )
     .def( self_ns::str( self ) )
     ;
 
-    class_<VariablesListDataValueContainer, VariablesListDataValueContainer::Pointer>( "VariablesListDataValueContainer" )
-    .def( "__len__", &VariablesListDataValueContainer::Size )
-    .def( VariableIndexingPython<VariablesListDataValueContainer, Variable<std::string> >() )
-    .def( VariableIndexingPython<VariablesListDataValueContainer, Variable<bool> >() )
-    .def( VariableIndexingPython<VariablesListDataValueContainer, Variable<int> >() )
-    .def( VariableIndexingPython<VariablesListDataValueContainer, Variable<DataType> >() )
-    .def( VariableIndexingPython<VariablesListDataValueContainer, Variable<array_1d<DataType, 3> > >() )
-    .def( VariableIndexingPython<VariablesListDataValueContainer, Variable<vector<DataType> > >() )
-    .def( VariableIndexingPython<VariablesListDataValueContainer, Variable<matrix<DataType> > >() )
-    .def( VariableIndexingPython<VariablesListDataValueContainer, VariableComponent<VectorComponentAdaptor<array_1d<DataType, 3> > > >() )
-    .def( self_ns::str( self ) )
-    ;
-
-    class_<VariablesList, VariablesList::Pointer, boost::noncopyable>( "VariablesList", init<>() )
-    .def("Add", VariablesList_AddVariable<bool>)
-    .def("Add", VariablesList_AddVariable<int>)
-    .def("Add", VariablesList_AddVariable<DataType>)
-    .def("Add", VariablesList_AddVariable<array_1d<DataType, 3 > >)
-    .def("Add", VariablesList_AddVariable<Vector>)
-    .def("Add", VariablesList_AddVariable<Matrix>)
-    .def( self_ns::str( self ) )
-    ;
+    AddValueContainersToPython<KRATOS_DOUBLE_TYPE>("");
+    AddValueContainersToPython<KRATOS_COMPLEX_TYPE>("Complex");
 
     class_<Flags, Flags::Pointer>("Flags",init<>())
     .def(init<Flags>())
@@ -238,7 +347,6 @@ void  AddContainersToPython()
     .def("__and__", FlagsOr) // this is not an error, the and and or are considered both as add. Pooyan.
     .def( self_ns::str( self ) )
     ;
-
 
     KRATOS_REGISTER_IN_PYTHON_FLAG(STRUCTURE);
     KRATOS_REGISTER_IN_PYTHON_FLAG(INTERFACE);
@@ -283,7 +391,6 @@ void  AddContainersToPython()
     .def("SetTransferCoefficientVariable",&ConvectionDiffusionSettings::SetTransferCoefficientVariable)
     .def("SetSpecificHeatVariable",&ConvectionDiffusionSettings::SetSpecificHeatVariable)
     .def("SetVelocityVariable",&ConvectionDiffusionSettings::SetVelocityVariable)
-
 
     .def("GetDensityVariable",&ConvectionDiffusionSettings::GetDensityVariable, return_internal_reference<>() )
     .def("GetDiffusionVariable",&ConvectionDiffusionSettings::GetDiffusionVariable, return_internal_reference<>() )

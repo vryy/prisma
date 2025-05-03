@@ -1,3 +1,4 @@
+
 //
 //   Project Name:        Kratos
 //   Last Modified by:    $Author: Nelson Lafontaine $
@@ -98,7 +99,7 @@ public:
         DataType b0  = inner_prod(diff,  edge0);
         DataType b1  = inner_prod(diff,  edge1);
         DataType c   = inner_prod(diff,  diff);
-        DataType det = std::fabs(a00*a11 - a01*a01);
+        DataType det = std::abs(a00*a11 - a01*a01);
         DataType s = a01*b1 - a11*b0;
         DataType t = a01*b0 - a00*b1;
         DataType sqrDistance = 0.00;

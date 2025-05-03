@@ -117,8 +117,12 @@ template class KRATOS_API(KRATOS_CORE) KratosComponents<Variable<std::string> >;
 template class KRATOS_API(KRATOS_CORE) KratosComponents<VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > >;
 template class KRATOS_API(KRATOS_CORE) KratosComponents<Variable<Flags> >;
 template class KRATOS_API(KRATOS_CORE) KratosComponents<Flags>;
-template class KRATOS_API(KRATOS_CORE) KratosComponents<Element >;
-template class KRATOS_API(KRATOS_CORE) KratosComponents<Condition >;
+template class KRATOS_API(KRATOS_CORE) KratosComponents<Element>;
+template class KRATOS_API(KRATOS_CORE) KratosComponents<ComplexElement>;
+template class KRATOS_API(KRATOS_CORE) KratosComponents<GComplexElement>;
+template class KRATOS_API(KRATOS_CORE) KratosComponents<Condition>;
+template class KRATOS_API(KRATOS_CORE) KratosComponents<ComplexCondition>;
+template class KRATOS_API(KRATOS_CORE) KratosComponents<GComplexCondition>;
 
 // Specialize array of compenents for VariableData
 KratosComponents<VariableData>::ComponentsContainerType KratosComponents<VariableData>::msComponents;

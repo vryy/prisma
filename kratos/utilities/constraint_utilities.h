@@ -4,8 +4,8 @@
 //   _|\_\_|  \__,_|\__|\___/ ____/
 //                   Multi-Physics
 //
-//  License:		 BSD License
-//					 Kratos default license: kratos/license.txt
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Vicente Mataix Ferrandiz
 //                   Klaus B Sautter
@@ -47,22 +47,26 @@ namespace Kratos
  * @brief This namespace includes several utilities necessaries for the computation of the MPC
  * @author Vicente Mataix Ferrandiz
  */
+template<class TModelPartType = ModelPart>
 class ConstraintUtilities
 {
 public:
-    typedef KRATOS_DOUBLE_TYPE DataType;
+
+    typedef typename TModelPartType::DataType DataType;
+
+    typedef typename TModelPartType::MasterSlaveConstraintType MasterSlaveConstraintType;
 
     /**
      * @brief This method resets the values of the slave dofs
      * @param rModelPart The model of the problem to solve
      */
-    static void KRATOS_API(KRATOS_CORE) ResetSlaveDofs(ModelPart& rModelPart);
+    static void KRATOS_API(KRATOS_CORE) ResetSlaveDofs(TModelPartType& rModelPart);
 
     /**
      * @brief This method resets the values of the slave dofs
      * @param rModelPart The model of the problem to solve
      */
-    static void KRATOS_API(KRATOS_CORE) ApplyConstraints(ModelPart& rModelPart);
+    static void KRATOS_API(KRATOS_CORE) ApplyConstraints(TModelPartType& rModelPart);
 
     /**
      * @brief This method precomputes the contribution of the explicit MPC over nodal residual forces
@@ -71,7 +75,7 @@ public:
      * @param rResidualDofVariableNames The name name of the corresponding residual variables
      */
     static void KRATOS_API(KRATOS_CORE) PreComputeExplicitConstraintConstribution(
-        ModelPart& rModelPart,
+        TModelPartType& rModelPart,
         const std::vector<std::string>& rDofVariableNames,
         const std::vector<std::string>& rResidualDofVariableNames
         );
@@ -86,11 +90,11 @@ public:
      * @param InertiaVariableName The inertia variable to be considered
      */
     static void KRATOS_API(KRATOS_CORE) PreComputeExplicitConstraintMassAndInertia(
-        ModelPart& rModelPart,
-        const std::string DofDisplacementVariableName = "DISPLACEMENT",
-        const std::string MassVariableName = "NODAL_MASS",
-        const std::string DofRotationVariableName = "ROTATION",
-        const std::string InertiaVariableName = "NODAL_INERTIA_TENSOR"
+        TModelPartType& rModelPart,
+        const std::string& DofDisplacementVariableName = "DISPLACEMENT",
+        const std::string& MassVariableName = "NODAL_MASS",
+        const std::string& DofRotationVariableName = "ROTATION",
+        const std::string& InertiaVariableName = "NODAL_INERTIA_TENSOR"
         );
 
     /**
@@ -103,19 +107,19 @@ public:
      * @param r_relation_matrix the relation matrix of size(1, number_of_master_nodes)
      * @param r_constant_vector the constant vector of size 1
      */
-    template<typename TNodePointerType, typename TVariableType, typename TMatrixType, typename TVectorType>
-    static MasterSlaveConstraint::Pointer CreateLinearConstraint(ModelPart& rModelPart,
+    template<typename TVariableType>
+    static typename MasterSlaveConstraintType::Pointer CreateLinearConstraint(TModelPartType& rModelPart,
         const std::string& r_constraint_name,
-        const std::size_t& r_constraint_id,
-        TNodePointerType pSlaveNode,
-        std::vector<TNodePointerType> pMasterNodes,
+        const typename TModelPartType::IndexType& r_constraint_id,
+        typename TModelPartType::NodeType::Pointer pSlaveNode,
+        std::vector<typename TModelPartType::NodeType::Pointer> pMasterNodes,
         const TVariableType& rVariable,
-        const TMatrixType& r_relation_matrix,
-        const TVectorType& r_constant_vector)
+        const typename TModelPartType::MatrixType& r_relation_matrix,
+        const typename TModelPartType::VectorType& r_constant_vector)
     {
         pSlaveNode->Set(SLAVE);
 
-        typedef typename TNodePointerType::element_type::DofType DofType;
+        typedef typename TModelPartType::DofType DofType;
 
         std::vector<typename DofType::Pointer> slave_dofs(1);
         slave_dofs[0] = pSlaveNode->pGetDof(rVariable);
@@ -137,19 +141,19 @@ public:
      * @param r_relation_matrix the relation matrix of size(1, number_of_master_nodes)
      * @param r_constant_vector the constant vector of size 1
      */
-    template<typename TNodePointerType, typename TVariableType, typename TMatrixType, typename TVectorType>
-    static MasterSlaveConstraint::Pointer CreateLinearConstraintNoUnique(ModelPart& rModelPart,
+    template<typename TVariableType>
+    static typename MasterSlaveConstraintType::Pointer CreateLinearConstraintNoUnique(TModelPartType& rModelPart,
         const std::string& r_constraint_name,
-        const std::size_t& r_constraint_id,
-        TNodePointerType pSlaveNode,
-        std::vector<TNodePointerType> pMasterNodes,
+        const typename TModelPartType::IndexType& r_constraint_id,
+        typename TModelPartType::NodeType::Pointer pSlaveNode,
+        std::vector<typename TModelPartType::NodeType::Pointer> pMasterNodes,
         const TVariableType& rVariable,
-        const TMatrixType& r_relation_matrix,
-        const TVectorType& r_constant_vector)
+        const typename TModelPartType::MatrixType& r_relation_matrix,
+        const typename TModelPartType::VectorType& r_constant_vector)
     {
         pSlaveNode->Set(SLAVE);
 
-        typedef typename TNodePointerType::element_type::DofType DofType;
+        typedef typename TModelPartType::DofType DofType;
 
         std::vector<typename DofType::Pointer> slave_dofs(1);
         slave_dofs[0] = pSlaveNode->pGetDof(rVariable);
@@ -164,9 +168,9 @@ public:
     /**
      * Print the values associated with the constraint
      */
-    static void PrintConstraint(const MasterSlaveConstraint& rConstraint)
+    static void PrintConstraint(const MasterSlaveConstraintType& rConstraint)
     {
-        typedef MasterSlaveConstraint::DofPointerVectorType DofPointerVectorType;
+        typedef typename MasterSlaveConstraintType::DofPointerVectorType DofPointerVectorType;
 
         const DofPointerVectorType& slave_dofs = rConstraint.GetSlaveDofsVector();
         const DofPointerVectorType& master_dofs = rConstraint.GetMasterDofsVector();
@@ -181,5 +185,7 @@ public:
     }
 
 }; // namespace ConstraintUtilities
+
 }  // namespace Kratos
+
 #endif /* KRATOS_CONSTRAINT_UTILITIES defined */

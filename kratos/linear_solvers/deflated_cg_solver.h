@@ -54,9 +54,10 @@ namespace Kratos
 /** Detail class definition.
  */
 template<class TSparseSpaceType, class TDenseSpaceType,
-         class TPreconditionerType = Preconditioner<TSparseSpaceType, TDenseSpaceType>,
+         class TModelPartType,
+         class TPreconditionerType = Preconditioner<TSparseSpaceType, TDenseSpaceType, TModelPartType>,
          class TReordererType = Reorderer<TSparseSpaceType, TDenseSpaceType> >
-class DeflatedCGSolver : public IterativeSolver<TSparseSpaceType, TDenseSpaceType, TPreconditionerType, TReordererType>
+class DeflatedCGSolver : public IterativeSolver<TSparseSpaceType, TDenseSpaceType, TModelPartType, TPreconditionerType, TReordererType>
 {
 public:
     ///@name Type Definitions
@@ -65,7 +66,7 @@ public:
     /// Pointer definition of DeflatedCGSolver
     KRATOS_CLASS_POINTER_DEFINITION(DeflatedCGSolver);
 
-    typedef IterativeSolver<TSparseSpaceType, TDenseSpaceType, TPreconditionerType, TReordererType> BaseType;
+    typedef IterativeSolver<TSparseSpaceType, TDenseSpaceType, TModelPartType, TPreconditionerType, TReordererType> BaseType;
 
     //      typedef LinearSolver<TSparseSpaceType, TDenseSpaceType, TReordererType> LinearSolverType;
 
@@ -116,18 +117,14 @@ public:
     }
 
     /// Copy constructor.
-
     DeflatedCGSolver(const DeflatedCGSolver& Other) : BaseType(Other)
     {
     }
 
-
     /// Destructor.
-
-    virtual ~DeflatedCGSolver()
+    ~DeflatedCGSolver() override
     {
     }
-
 
     ///@}
     ///@name Operators
@@ -153,7 +150,7 @@ public:
         guess for iterative linear solvers.
         @param rB. Right hand side vector.
      */
-    bool Solve(SparseMatrixType& rA, SparseVectorType& rX, SparseVectorType& rB)
+    bool Solve(SparseMatrixType& rA, SparseVectorType& rX, SparseVectorType& rB) override
     {
 //         KRATOS_WATCH("entered in solver")
         if (this->IsNotConsistent(rA, rX, rB))
@@ -182,9 +179,8 @@ public:
         guess for iterative linear solvers.
         @param rB. Right hand side vector.
      */
-    bool Solve(SparseMatrixType& rA, DenseMatrixType& rX, DenseMatrixType& rB)
+    bool Solve(SparseMatrixType& rA, DenseMatrixType& rX, DenseMatrixType& rB) override
     {
-
         std::cout << "************ DeflatedCGSolver::Solve(SparseMatrixType&, DenseMatrixType&, DenseMatrixType&) not defined! ************" << std::endl;
 
         return false;
@@ -264,6 +260,7 @@ private:
     ///@}
     ///@name Member Variables
     ///@{
+
     int mmax_reduced_size;
     bool massume_constant_structure;
     std::vector<int> mw;
@@ -430,9 +427,6 @@ private:
 
         return BaseType::IsConverged();
     }
-
-
-
 
     ///@}
     ///@name Private  Access

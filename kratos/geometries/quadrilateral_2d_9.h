@@ -63,46 +63,45 @@ public:
     typedef GeometryData::IntegrationMethod IntegrationMethod;
 
     /**
-     * A Vector of counted pointers to Geometries.
-     * Used for returning edges of the geometry.
+     * A Vector of counted pointers to Geometries. Used for
+     * returning edges of the geometry.
      */
     typedef typename BaseType::GeometriesArrayType GeometriesArrayType;
 
     /**
-     * Redefinition of template parameter TPointType.
-     */
-    typedef TPointType PointType;
-
-    /**
-     * Array of coordinates. Can be Nodes, Points or IntegrationPoints
-     */
-    typedef typename BaseType::CoordinatesArrayType CoordinatesArrayType;
-
-    /**
-     * Type used for double value.
+     * Type used for coordinate value.
      */
     typedef typename BaseType::DataType DataType;
 
     /**
-     * Type used for indexing in geometry class.
-     * std::size_t used for indexing
+     * Type used for shape function value.
+     */
+    typedef typename BaseType::ValueType ValueType;
+
+    /**
+     * Type used for indexing in geometry class.std::size_t used for indexing
      * point or integration point access methods and also all other
      * methods which need point or integration point index.
      */
     typedef typename BaseType::IndexType IndexType;
 
     /**
-     * This type is used to return size or dimension in
+     * This typed used to return size or dimension in
      * geometry. Dimension, WorkingDimension, PointsNumber and
      * ... return this type as their results.
      */
     typedef typename BaseType::SizeType SizeType;
 
     /**
-     * Array of counted pointers to point.
-     * This type is used to hold geometry's points.
+     * Redefinition of template parameter TPointType.
      */
-    typedef  typename BaseType::PointsArrayType PointsArrayType;
+    typedef typename BaseType::PointType PointType;
+
+    /**
+     * Array of counted pointers to point. This type used to hold
+     * geometry's points.
+     */
+    typedef typename BaseType::PointsArrayType PointsArrayType;
 
     /**
      * This type used for representing an integration point in
@@ -130,15 +129,13 @@ public:
      * A third order tensor used as shape functions' values
      * container.
      */
-    typedef typename BaseType::ShapeFunctionsValuesContainerType
-    ShapeFunctionsValuesContainerType;
+    typedef typename BaseType::ShapeFunctionsValuesContainerType ShapeFunctionsValuesContainerType;
 
     /**
      * A fourth order tensor used as shape functions' local
      * gradients container in geometry.
      */
-    typedef typename BaseType::ShapeFunctionsLocalGradientsContainerType
-    ShapeFunctionsLocalGradientsContainerType;
+    typedef typename BaseType::ShapeFunctionsLocalGradientsContainerType ShapeFunctionsLocalGradientsContainerType;
 
     /**
      * A third order tensor to hold jacobian matrices evaluated at
@@ -148,31 +145,52 @@ public:
     typedef typename BaseType::JacobiansType JacobiansType;
 
     /**
-     * A third order tensor to hold shape functions' local
-     * gradients. ShapefunctionsLocalGradients function return this
+     * A third order tensor to hold shape functions' local gradients at all integration points.
+     * ShapefunctionsLocalGradients function return this
      * type as its result.
-    */
+     */
     typedef typename BaseType::ShapeFunctionsGradientsType ShapeFunctionsGradientsType;
 
     /**
-     * A third order tensor to hold shape functions' local second derivatives.
+     * A third order tensor to hold shape functions' local second derivatives at a point.
      * ShapeFunctionsSecondDerivatives function return this
      * type as its result.
      */
     typedef typename BaseType::ShapeFunctionsSecondDerivativesType ShapeFunctionsSecondDerivativesType;
 
     /**
-    * A fourth order tensor to hold shape functions' local third derivatives.
+    * A fourth order tensor to hold shape functions' local third derivatives at a point.
     * ShapeFunctionsThirdDerivatives function return this
     * type as its result.
     */
     typedef typename BaseType::ShapeFunctionsThirdDerivativesType ShapeFunctionsThirdDerivativesType;
 
-
     /**
      * Type of the normal vector used for normal to edges in geomety.
      */
     typedef typename BaseType::NormalType NormalType;
+
+    /**
+     * Type of coordinates array
+     */
+    typedef typename BaseType::CoordinatesArrayType CoordinatesArrayType;
+
+    /** This type used for representing the local coordinates of
+    an integration point
+    */
+    typedef typename BaseType::LocalCoordinatesArrayType LocalCoordinatesArrayType;
+
+    /**
+     * Type of Matrix
+     */
+    typedef typename BaseType::MatrixType MatrixType;
+    typedef typename BaseType::ZeroMatrixType ZeroMatrixType;
+
+    /**
+     * Type of Vector
+     */
+    typedef typename BaseType::VectorType VectorType;
+    typedef typename BaseType::ZeroVectorType ZeroVectorType;
 
     /**
      * Life Cycle
@@ -261,7 +279,7 @@ public:
     /**
      * Destructor. Does nothing
      */
-    virtual ~Quadrilateral2D9() {}
+    ~Quadrilateral2D9() override {}
 
     GeometryData::KratosGeometryFamily GetGeometryFamily() const final
     {
@@ -322,17 +340,16 @@ public:
         return typename BaseType::Pointer( new Quadrilateral2D9( ThisPoints ) );
     }
 
-    Geometry< Point<3> >::Pointer Clone() const override
+    typename Geometry< Point<3, DataType> >::Pointer Clone() const override
     {
-        Geometry< Point<3> >::PointsArrayType NewPoints;
-        //making a copy of the nodes TO POINTS (not Nodes!!!)
+        typename Geometry< Point<3, DataType> >::PointsArrayType NewPoints;
 
+        //making a copy of the nodes TO POINTS (not Nodes!!!)
         for ( IndexType i = 0 ; i < this->Points().size() ; i++ )
             NewPoints.push_back( this->Points()[i] );
 
         //creating a geometry with the new points
-        Geometry< Point<3> >::Pointer
-        p_clone( new Quadrilateral2D9< Point<3> >( NewPoints ) );
+        typename Geometry< Point<3, DataType> >::Pointer p_clone( new Quadrilateral2D9< Point<3, DataType> >( NewPoints ) );
 
         p_clone->ClonePoints();
 
@@ -379,7 +396,7 @@ public:
     DataType Length() const override
     {
         DataType length = 0.000;
-        length = sqrt( fabs( Area() ) );
+        length = std::sqrt( std::abs( Area() ) );
         return length;
     }
 
@@ -400,8 +417,7 @@ public:
      */
     DataType Area() const override
     {
-
-        Vector temp;
+        VectorType temp;
         this->DeterminantOfJacobian( temp, msGeometryData.DefaultIntegrationMethod() );
         const IntegrationPointsArrayType& integration_points = this->IntegrationPoints( msGeometryData.DefaultIntegrationMethod() );
         DataType Area = 0.00;
@@ -411,10 +427,7 @@ public:
             Area += temp[i] * integration_points[i].Weight();
         }
 
-        //KRATOS_WATCH(temp)
         return Area;
-
-        //return fabs(DeterminantOfJacobian(PointType())) * 0.5;
     }
 
     /**
@@ -440,10 +453,10 @@ public:
     /**
      * Returns whether given local point is inside the Geometry
      */
-    bool IsInside( const CoordinatesArrayType& rPoint ) const override
+    bool IsInside( const LocalCoordinatesArrayType& rPoint ) const override
     {
-        if ( fabs( rPoint[0] ) < 1 + 1.0e-8 )
-            if ( fabs( rPoint[1] ) < 1 + 1.0e-8 )
+        if ( std::abs( rPoint[0] ) < 1 + 1.0e-8 )
+            if ( std::abs( rPoint[1] ) < 1 + 1.0e-8 )
                 return true;
 
         return false;
@@ -501,14 +514,14 @@ public:
      *
      * @return the value of the shape function at the given point
      */
-    DataType ShapeFunctionValue( IndexType ShapeFunctionIndex, const CoordinatesArrayType& rPoint ) const override
+    ValueType ShapeFunctionValue( IndexType ShapeFunctionIndex, const LocalCoordinatesArrayType& rPoint ) const override
     {
-        DataType fx1 = 0.5 * ( rPoint[0] - 1 ) * rPoint[0];
-        DataType fx2 = 0.5 * ( rPoint[0] + 1 ) * rPoint[0];
-        DataType fx3 = 1 - rPoint[0] * rPoint[0];
-        DataType fy1 = 0.5 * ( rPoint[1] - 1 ) * rPoint[1];
-        DataType fy2 = 0.5 * ( rPoint[1] + 1 ) * rPoint[1];
-        DataType fy3 = 1 - rPoint[1] * rPoint[1];
+        ValueType fx1 = 0.5 * ( rPoint[0] - 1 ) * rPoint[0];
+        ValueType fx2 = 0.5 * ( rPoint[0] + 1 ) * rPoint[0];
+        ValueType fx3 = 1 - rPoint[0] * rPoint[0];
+        ValueType fy1 = 0.5 * ( rPoint[1] - 1 ) * rPoint[1];
+        ValueType fy2 = 0.5 * ( rPoint[1] + 1 ) * rPoint[1];
+        ValueType fy3 = 1 - rPoint[1] * rPoint[1];
 
         switch ( ShapeFunctionIndex )
         {
@@ -538,11 +551,9 @@ public:
         return 0;
     }
 
-
     /**
      * Input and Output
      */
-
 
     /**
      * Turn back information as a string.
@@ -579,8 +590,8 @@ public:
     {
         BaseType::PrintData( rOStream );
         std::cout << std::endl;
-        Matrix jacobian;
-        this->Jacobian( jacobian, PointType() );
+        MatrixType jacobian;
+        this->Jacobian( jacobian, LocalCoordinatesArrayType() );
         rOStream << "    Jacobian in the origin\t : " << jacobian;
     }
 
@@ -634,21 +645,21 @@ public:
      * @return the gradients of all shape functions
      * \f$ \frac{\partial N^i}{\partial \xi_j} \f$
      */
-    Matrix& ShapeFunctionsLocalGradients( Matrix& rResult, const CoordinatesArrayType& rPoint ) const override
+    Matrix& ShapeFunctionsLocalGradients( Matrix& rResult, const LocalCoordinatesArrayType& rPoint ) const override
     {
-        DataType fx1 = 0.5 * ( rPoint[0] - 1 ) * rPoint[0];
-        DataType fx2 = 0.5 * ( rPoint[0] + 1 ) * rPoint[0];
-        DataType fx3 = 1 - rPoint[0] * rPoint[0];
-        DataType fy1 = 0.5 * ( rPoint[1] - 1 ) * rPoint[1];
-        DataType fy2 = 0.5 * ( rPoint[1] + 1 ) * rPoint[1];
-        DataType fy3 = 1 - rPoint[1] * rPoint[1];
+        ValueType fx1 = 0.5 * ( rPoint[0] - 1 ) * rPoint[0];
+        ValueType fx2 = 0.5 * ( rPoint[0] + 1 ) * rPoint[0];
+        ValueType fx3 = 1 - rPoint[0] * rPoint[0];
+        ValueType fy1 = 0.5 * ( rPoint[1] - 1 ) * rPoint[1];
+        ValueType fy2 = 0.5 * ( rPoint[1] + 1 ) * rPoint[1];
+        ValueType fy3 = 1 - rPoint[1] * rPoint[1];
 
-        DataType gx1 = 0.5 * ( 2 * rPoint[0] - 1 );
-        DataType gx2 = 0.5 * ( 2 * rPoint[0] + 1 );
-        DataType gx3 = -2.0 * rPoint[0];
-        DataType gy1 = 0.5 * ( 2 * rPoint[1] - 1 );
-        DataType gy2 = 0.5 * ( 2 * rPoint[1] + 1 );
-        DataType gy3 = -2.0 * rPoint[1];
+        ValueType gx1 = 0.5 * ( 2 * rPoint[0] - 1 );
+        ValueType gx2 = 0.5 * ( 2 * rPoint[0] + 1 );
+        ValueType gx3 = -2.0 * rPoint[0];
+        ValueType gy1 = 0.5 * ( 2 * rPoint[1] - 1 );
+        ValueType gy2 = 0.5 * ( 2 * rPoint[1] + 1 );
+        ValueType gy3 = -2.0 * rPoint[1];
 
         rResult.resize( 9, 2, false );
         noalias( rResult ) = ZeroMatrix( 9, 2 );
@@ -714,19 +725,19 @@ public:
      */
     // Matrix& ShapeFunctionsGradients( Matrix& rResult, PointType& rPoint ) const override
     // {
-    //     DataType fx1 = 0.5 * ( rPoint.X() - 1 ) * rPoint.X();
-    //     DataType fx2 = 0.5 * ( rPoint.X() + 1 ) * rPoint.X();
-    //     DataType fx3 = 1 - rPoint.X() * rPoint.X();
-    //     DataType fy1 = 0.5 * ( rPoint.Y() - 1 ) * rPoint.Y();
-    //     DataType fy2 = 0.5 * ( rPoint.Y() + 1 ) * rPoint.Y();
-    //     DataType fy3 = 1 - rPoint.Y() * rPoint.Y();
+    //     ValueType fx1 = 0.5 * ( rPoint.X() - 1 ) * rPoint.X();
+    //     ValueType fx2 = 0.5 * ( rPoint.X() + 1 ) * rPoint.X();
+    //     ValueType fx3 = 1 - rPoint.X() * rPoint.X();
+    //     ValueType fy1 = 0.5 * ( rPoint.Y() - 1 ) * rPoint.Y();
+    //     ValueType fy2 = 0.5 * ( rPoint.Y() + 1 ) * rPoint.Y();
+    //     ValueType fy3 = 1 - rPoint.Y() * rPoint.Y();
 
-    //     DataType gx1 = 0.5 * ( 2 * rPoint.X() - 1 );
-    //     DataType gx2 = 0.5 * ( 2 * rPoint.X() + 1 );
-    //     DataType gx3 = -2.0 * rPoint.X();
-    //     DataType gy1 = 0.5 * ( 2 * rPoint.Y() - 1 );
-    //     DataType gy2 = 0.5 * ( 2 * rPoint.Y() + 1 );
-    //     DataType gy3 = -2.0 * rPoint.Y();
+    //     ValueType gx1 = 0.5 * ( 2 * rPoint.X() - 1 );
+    //     ValueType gx2 = 0.5 * ( 2 * rPoint.X() + 1 );
+    //     ValueType gx3 = -2.0 * rPoint.X();
+    //     ValueType gy1 = 0.5 * ( 2 * rPoint.Y() - 1 );
+    //     ValueType gy2 = 0.5 * ( 2 * rPoint.Y() + 1 );
+    //     ValueType gy3 = -2.0 * rPoint.Y();
 
     //     rResult.resize( 9, 2, false );
     //     noalias( rResult ) = ZeroMatrix( 9, 2 );
@@ -758,7 +769,7 @@ public:
      * @param rResult a third order tensor which contains the second derivatives
      * @param rPoint the given point the second order derivatives are calculated in
      */
-    ShapeFunctionsSecondDerivativesType& ShapeFunctionsSecondDerivatives( ShapeFunctionsSecondDerivativesType& rResult, const CoordinatesArrayType& rPoint ) const override
+    ShapeFunctionsSecondDerivativesType& ShapeFunctionsSecondDerivatives( ShapeFunctionsSecondDerivativesType& rResult, const LocalCoordinatesArrayType& rPoint ) const override
     {
         if ( rResult.size() != this->PointsNumber() )
         {
@@ -773,26 +784,26 @@ public:
             noalias( rResult[i] ) = ZeroMatrix( 2, 2 );
         }
 
-        DataType fx1 = 0.5 * ( rPoint[0] - 1 ) * rPoint[0];
-        DataType fx2 = 0.5 * ( rPoint[0] + 1 ) * rPoint[0];
-        DataType fx3 = 1 - rPoint[0] * rPoint[0];
-        DataType fy1 = 0.5 * ( rPoint[1] - 1 ) * rPoint[1];
-        DataType fy2 = 0.5 * ( rPoint[1] + 1 ) * rPoint[1];
-        DataType fy3 = 1 - rPoint[1] * rPoint[1];
+        ValueType fx1 = 0.5 * ( rPoint[0] - 1 ) * rPoint[0];
+        ValueType fx2 = 0.5 * ( rPoint[0] + 1 ) * rPoint[0];
+        ValueType fx3 = 1 - rPoint[0] * rPoint[0];
+        ValueType fy1 = 0.5 * ( rPoint[1] - 1 ) * rPoint[1];
+        ValueType fy2 = 0.5 * ( rPoint[1] + 1 ) * rPoint[1];
+        ValueType fy3 = 1 - rPoint[1] * rPoint[1];
 
-        DataType gx1 = 0.5 * ( 2 * rPoint[0] - 1 );
-        DataType gx2 = 0.5 * ( 2 * rPoint[0] + 1 );
-        DataType gx3 = -2.0 * rPoint[0];
-        DataType gy1 = 0.5 * ( 2 * rPoint[1] - 1 );
-        DataType gy2 = 0.5 * ( 2 * rPoint[1] + 1 );
-        DataType gy3 = -2.0 * rPoint[1];
+        ValueType gx1 = 0.5 * ( 2 * rPoint[0] - 1 );
+        ValueType gx2 = 0.5 * ( 2 * rPoint[0] + 1 );
+        ValueType gx3 = -2.0 * rPoint[0];
+        ValueType gy1 = 0.5 * ( 2 * rPoint[1] - 1 );
+        ValueType gy2 = 0.5 * ( 2 * rPoint[1] + 1 );
+        ValueType gy3 = -2.0 * rPoint[1];
 
-        DataType hx1 = 1.0;
-        DataType hx2 = 1.0;
-        DataType hx3 = -2.0;
-        DataType hy1 = 1.0;
-        DataType hy2 = 1.0;
-        DataType hy3 = -2.0;
+        ValueType hx1 = 1.0;
+        ValueType hx2 = 1.0;
+        ValueType hx3 = -2.0;
+        ValueType hy1 = 1.0;
+        ValueType hy2 = 1.0;
+        ValueType hy3 = -2.0;
 
         rResult[0]( 0, 0 ) = hx1 * fy1;
         rResult[0]( 0, 1 ) = gx1 * gy1;
@@ -842,14 +853,13 @@ public:
         return rResult;
     }
 
-
     /**
     * returns the third order derivatives of all shape functions
     * in given arbitrary points
     * @param rResult a fourth order tensor which contains the third derivatives
     * @param rPoint the given point the third order derivatives are calculated in
      */
-    ShapeFunctionsThirdDerivativesType& ShapeFunctionsThirdDerivatives( ShapeFunctionsThirdDerivativesType& rResult, const CoordinatesArrayType& rPoint ) const override
+    ShapeFunctionsThirdDerivativesType& ShapeFunctionsThirdDerivatives( ShapeFunctionsThirdDerivativesType& rResult, const LocalCoordinatesArrayType& rPoint ) const override
     {
 
         if ( rResult.size() != this->PointsNumber() )
@@ -876,27 +886,27 @@ public:
             }
         }
 
-//        DataType fx1 = 0.5 * ( rPoint[0] - 1 ) * rPoint[0];
+//        ValueType fx1 = 0.5 * ( rPoint[0] - 1 ) * rPoint[0];
 
-//        DataType fx2 = 0.5 * ( rPoint[0] + 1 ) * rPoint[0];
-//        DataType fx3 = 1 - rPoint[0] * rPoint[0];
-//        DataType fy1 = 0.5 * ( rPoint[1] - 1 ) * rPoint[1];
-//        DataType fy2 = 0.5 * ( rPoint[1] + 1 ) * rPoint[1];
-//        DataType fy3 = 1 - rPoint[1] * rPoint[1];
+//        ValueType fx2 = 0.5 * ( rPoint[0] + 1 ) * rPoint[0];
+//        ValueType fx3 = 1 - rPoint[0] * rPoint[0];
+//        ValueType fy1 = 0.5 * ( rPoint[1] - 1 ) * rPoint[1];
+//        ValueType fy2 = 0.5 * ( rPoint[1] + 1 ) * rPoint[1];
+//        ValueType fy3 = 1 - rPoint[1] * rPoint[1];
 
-        DataType gx1 = 0.5 * ( 2 * rPoint[0] - 1 );
-        DataType gx2 = 0.5 * ( 2 * rPoint[0] + 1 );
-        DataType gx3 = -2.0 * rPoint[0];
-        DataType gy1 = 0.5 * ( 2 * rPoint[1] - 1 );
-        DataType gy2 = 0.5 * ( 2 * rPoint[1] + 1 );
-        DataType gy3 = -2.0 * rPoint[1];
+        ValueType gx1 = 0.5 * ( 2 * rPoint[0] - 1 );
+        ValueType gx2 = 0.5 * ( 2 * rPoint[0] + 1 );
+        ValueType gx3 = -2.0 * rPoint[0];
+        ValueType gy1 = 0.5 * ( 2 * rPoint[1] - 1 );
+        ValueType gy2 = 0.5 * ( 2 * rPoint[1] + 1 );
+        ValueType gy3 = -2.0 * rPoint[1];
 
-        DataType hx1 = 1.0;
-        DataType hx2 = 1.0;
-        DataType hx3 = -2.0;
-        DataType hy1 = 1.0;
-        DataType hy2 = 1.0;
-        DataType hy3 = -2.0;
+        ValueType hx1 = 1.0;
+        ValueType hx2 = 1.0;
+        ValueType hx3 = -2.0;
+        ValueType hy1 = 1.0;
+        ValueType hy2 = 1.0;
+        ValueType hy3 = -2.0;
 
         rResult[0][0]( 0, 0 ) = 0.0;
         rResult[0][0]( 0, 1 ) = hx1 * gy1;
@@ -979,7 +989,6 @@ public:
         rResult[8][1]( 1, 0 ) = gx3 * hy3;
         rResult[8][1]( 1, 1 ) = 0.0;
 
-
         return rResult;
     }
 
@@ -1021,9 +1030,6 @@ private:
      * Private Operations
      */
 
-
-
-
     /**
      * :TODO: implemented but not yet tested
      */
@@ -1050,12 +1056,12 @@ private:
 
         for ( int pnt = 0; pnt < integration_points_number; pnt++ )
         {
-            DataType fx1 = 0.5 * ( integration_points[pnt].X() - 1 ) * integration_points[pnt].X();
-            DataType fx2 = 0.5 * ( integration_points[pnt].X() + 1 ) * integration_points[pnt].X();
-            DataType fx3 = 1 - integration_points[pnt].X() * integration_points[pnt].X();
-            DataType fy1 = 0.5 * ( integration_points[pnt].Y() - 1 ) * integration_points[pnt].Y();
-            DataType fy2 = 0.5 * ( integration_points[pnt].Y() + 1 ) * integration_points[pnt].Y();
-            DataType fy3 = 1 - integration_points[pnt].Y() * integration_points[pnt].Y();
+            ValueType fx1 = 0.5 * ( integration_points[pnt].X() - 1 ) * integration_points[pnt].X();
+            ValueType fx2 = 0.5 * ( integration_points[pnt].X() + 1 ) * integration_points[pnt].X();
+            ValueType fx3 = 1 - integration_points[pnt].X() * integration_points[pnt].X();
+            ValueType fy1 = 0.5 * ( integration_points[pnt].Y() - 1 ) * integration_points[pnt].Y();
+            ValueType fy2 = 0.5 * ( integration_points[pnt].Y() + 1 ) * integration_points[pnt].Y();
+            ValueType fy3 = 1 - integration_points[pnt].Y() * integration_points[pnt].Y();
 
             shape_function_values( pnt, 0 ) = ( fx1 * fy1 );
             shape_function_values( pnt, 1 ) = ( fx2 * fy1 );
@@ -1097,19 +1103,19 @@ private:
 
         for ( int pnt = 0; pnt < integration_points_number; pnt++ )
         {
-            DataType fx1 = 0.5 * ( integration_points[pnt].X() - 1 ) * integration_points[pnt].X();
-            DataType fx2 = 0.5 * ( integration_points[pnt].X() + 1 ) * integration_points[pnt].X();
-            DataType fx3 = 1 - integration_points[pnt].X() * integration_points[pnt].X();
-            DataType fy1 = 0.5 * ( integration_points[pnt].Y() - 1 ) * integration_points[pnt].Y();
-            DataType fy2 = 0.5 * ( integration_points[pnt].Y() + 1 ) * integration_points[pnt].Y();
-            DataType fy3 = 1 - integration_points[pnt].Y() * integration_points[pnt].Y();
+            ValueType fx1 = 0.5 * ( integration_points[pnt].X() - 1 ) * integration_points[pnt].X();
+            ValueType fx2 = 0.5 * ( integration_points[pnt].X() + 1 ) * integration_points[pnt].X();
+            ValueType fx3 = 1 - integration_points[pnt].X() * integration_points[pnt].X();
+            ValueType fy1 = 0.5 * ( integration_points[pnt].Y() - 1 ) * integration_points[pnt].Y();
+            ValueType fy2 = 0.5 * ( integration_points[pnt].Y() + 1 ) * integration_points[pnt].Y();
+            ValueType fy3 = 1 - integration_points[pnt].Y() * integration_points[pnt].Y();
 
-            DataType gx1 = 0.5 * ( 2 * integration_points[pnt].X() - 1 );
-            DataType gx2 = 0.5 * ( 2 * integration_points[pnt].X() + 1 );
-            DataType gx3 = -2.0 * integration_points[pnt].X();
-            DataType gy1 = 0.5 * ( 2 * integration_points[pnt].Y() - 1 );
-            DataType gy2 = 0.5 * ( 2 * integration_points[pnt].Y() + 1 );
-            DataType gy3 = -2.0 * integration_points[pnt].Y();
+            ValueType gx1 = 0.5 * ( 2 * integration_points[pnt].X() - 1 );
+            ValueType gx2 = 0.5 * ( 2 * integration_points[pnt].X() + 1 );
+            ValueType gx3 = -2.0 * integration_points[pnt].X();
+            ValueType gy1 = 0.5 * ( 2 * integration_points[pnt].Y() - 1 );
+            ValueType gy2 = 0.5 * ( 2 * integration_points[pnt].Y() + 1 );
+            ValueType gy3 = -2.0 * integration_points[pnt].Y();
 
             Matrix result( 9, 2 );
             result( 0, 0 ) = gx1 * fy1;
@@ -1137,9 +1143,6 @@ private:
         return d_shape_f_values;
     }
 
-    /**
-     * :TODO: testing
-     */
     static const IntegrationPointsContainerType AllIntegrationPoints()
     {
         IntegrationPointsContainerType integration_points =
@@ -1160,9 +1163,6 @@ private:
         return integration_points;
     }
 
-    /**
-     * :TODO: testing
-     */
     static const ShapeFunctionsValuesContainerType AllShapeFunctionsValues()
     {
         ShapeFunctionsValuesContainerType shape_functions_values =
@@ -1183,9 +1183,6 @@ private:
         return shape_functions_values;
     }
 
-    /**
-     * :TODO: testing
-     */
     static const ShapeFunctionsLocalGradientsContainerType AllShapeFunctionsLocalGradients()
     {
         ShapeFunctionsLocalGradientsContainerType shape_functions_local_gradients =

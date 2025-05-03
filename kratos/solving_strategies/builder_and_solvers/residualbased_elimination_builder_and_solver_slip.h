@@ -4,8 +4,8 @@
 //   _|\_\_|  \__,_|\__|\___/ ____/
 //                   Multi-Physics
 //
-//  License:		 BSD License
-//					 Kratos default license: kratos/license.txt
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Riccardo Rossi
 //
@@ -94,20 +94,26 @@ as the neighborhood relationships are considered to be known
 template<class TSparseSpace,
          class TDenseSpace,
          class TLinearSolver,
+         class TModelPartType,
          class TVariableType
          >
 class ResidualBasedEliminationBuilderAndSolverSlip
-    : public ResidualBasedEliminationBuilderAndSolver< TSparseSpace, TDenseSpace, TLinearSolver >
+    : public ResidualBasedEliminationBuilderAndSolver< TSparseSpace, TDenseSpace, TLinearSolver, TModelPartType >
 {
 public:
     /**@name Type Definitions */
     /*@{ */
     KRATOS_CLASS_POINTER_DEFINITION(ResidualBasedEliminationBuilderAndSolverSlip);
 
+    typedef BuilderAndSolver<TSparseSpace, TDenseSpace, TLinearSolver, TModelPartType> BaseType;
 
-    typedef BuilderAndSolver<TSparseSpace, TDenseSpace, TLinearSolver> BaseType;
+    typedef typename BaseType::ModelPartType ModelPartType;
 
     typedef typename BaseType::TSchemeType TSchemeType;
+
+    typedef typename BaseType::TSparseSpaceType TSparseSpaceType;
+
+    typedef typename BaseType::TLinearSolverType TLinearSolverType;
 
     typedef typename BaseType::TDataType TDataType;
 
@@ -124,12 +130,12 @@ public:
     typedef typename BaseType::TSystemMatrixPointerType TSystemMatrixPointerType;
     typedef typename BaseType::TSystemVectorPointerType TSystemVectorPointerType;
 
+    typedef typename BaseType::ElementType ElementType;
+    typedef typename BaseType::ConditionType ConditionType;
 
-    typedef typename BaseType::NodesArrayType NodesArrayType;
-    typedef typename BaseType::ElementsArrayType ElementsArrayType;
-    typedef typename BaseType::ConditionsArrayType ConditionsArrayType;
-
+    typedef typename BaseType::NodesContainerType NodesContainerType;
     typedef typename BaseType::ElementsContainerType ElementsContainerType;
+    typedef typename BaseType::ConditionsContainerType ConditionsContainerType;
 
     /*@} */
     /**@name Life Cycle
@@ -140,17 +146,17 @@ public:
      */
     ResidualBasedEliminationBuilderAndSolverSlip(
         typename TLinearSolver::Pointer pNewLinearSystemSolver, unsigned int dim, TVariableType const& Var_x, TVariableType const& Var_y, TVariableType const& Var_z)
-        : ResidualBasedEliminationBuilderAndSolver< TSparseSpace, TDenseSpace, TLinearSolver >(pNewLinearSystemSolver)
+        : BaseType(pNewLinearSystemSolver)
         , mdim(dim), mrVar_x(Var_x), mrVar_y(Var_y), mrVar_z(Var_z)
     {
 
-        /* 			std::cout << "using the standard builder and solver " << std::endl; */
+        /*          std::cout << "using the standard builder and solver " << std::endl; */
 
     }
 
     /** Destructor.
      */
-    virtual ~ResidualBasedEliminationBuilderAndSolverSlip()
+    ~ResidualBasedEliminationBuilderAndSolverSlip() override
     {
     }
 
@@ -167,9 +173,9 @@ public:
 
     void Build(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         TSystemMatrixType& A,
-        TSystemVectorType& b)
+        TSystemVectorType& b) override
     {
         KRATOS_TRY
         if (!pScheme)
@@ -178,7 +184,7 @@ public:
         if(r_model_part.MasterSlaveConstraints().size() != 0) {
             KRATOS_THROW_ERROR(std::logic_error, "This builder and solver does not support constraints!", "");
         }
-        
+
         //getting the elements from the model
         //ElementsArrayType& pElements = r_model_part.Elements();
 
@@ -242,15 +248,15 @@ public:
         #pragma omp parallel for firstprivate(number_of_threads) schedule(static,1)
         for (int k = 0; k < number_of_threads; k++)
         {
-            // 				KRATOS_WATCH("insdie the loop!!!!!");
-            // 				KRATOS_WATCH(nodes_partition);
+            //              KRATOS_WATCH("insdie the loop!!!!!");
+            //              KRATOS_WATCH(nodes_partition);
             //contributions to the system
             LocalSystemMatrixType LHS_Contribution = LocalSystemMatrixType(mdim, mdim);
             LocalSystemVectorType RHS_Contribution = LocalSystemVectorType(mdim);
 
             //vector containing the localization in the system of the different
             //terms
-            Element::EquationIdVectorType EquationId;
+            typename ElementType::EquationIdVectorType EquationId;
             //ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
 
             WeakPointerVector< Node < 3 > >::iterator it_begin = mActiveNodes.begin() + nodes_partition[k];
@@ -259,13 +265,12 @@ public:
             for (WeakPointerVector< Node < 3 > >::iterator it = it_begin;
                     it != it_end; it++)
             {
-                // 				  KRATOS_WATCH(it->GetValue(IS_STRUCTURE));
+                //                KRATOS_WATCH(it->GetValue(IS_STRUCTURE));
                 if (it->GetValue(IS_STRUCTURE) == 1.0) //slip node!
                 {
                     if (EquationId.size() != mdim) EquationId.resize(mdim, false);
 
-                    // 					    KRATOS_WATCH(it->Id());
-
+                    //                      KRATOS_WATCH(it->Id());
 
                     EquationId[0] = it->GetDof(mrVar_x).EquationId();
                     EquationId[1] = it->GetDof(mrVar_y).EquationId();
@@ -289,8 +294,8 @@ public:
 
                     double factor = 10.0 * large_diag / norm_v2;
 
-                    //  					    double factor = 1000.0*(Area/h) /norm_v2;
-                    // 					    double factor = 1.0*(Area/h) /norm_v2;
+                    //                          double factor = 1000.0*(Area/h) /norm_v2;
+                    //                      double factor = 1.0*(Area/h) /norm_v2;
 
                     noalias(LHS_Contribution) = ZeroMatrix(mdim, mdim);
 
@@ -304,7 +309,7 @@ public:
 
                         RHS_Contribution[i] = -factor * n[i] * scalar_prod;
 
-                        // 					      RHS_Contribution[i] += n[i]*it->FastGetSolutionStepValue(PRESSURE);
+                        //                        RHS_Contribution[i] += n[i]*it->FastGetSolutionStepValue(PRESSURE);
 
                     }
 
@@ -333,19 +338,15 @@ public:
 #endif
 
         KRATOS_CATCH("")
-
     }
-
-
-
 
     //**************************************************************************
     //**************************************************************************
 
     void SetUpDofSet(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& r_model_part
-    )
+        ModelPartType& r_model_part
+    ) override
     {
         KRATOS_TRY
 
@@ -396,8 +397,8 @@ public:
         TSystemVectorPointerType& pb,
         ElementsArrayType& rElements,
         ConditionsArrayType& rConditions,
-        ProcessInfo& CurrentProcessInfo
-    )
+        const ProcessInfo& CurrentProcessInfo
+    ) override
     {
         KRATOS_TRY
 
@@ -465,7 +466,7 @@ public:
     //**************************************************************************
     //**************************************************************************
 
-    void Clear()
+    void Clear() override
     {
         this->mDofSet = DofsArrayType();
 
@@ -473,13 +474,14 @@ public:
         {
             TSparseSpace::Clear((this->mpReactionsVector));
         }
-        // 			*(this->mpReactionsVector) = TSystemVectorType();
+        //          *(this->mpReactionsVector) = TSystemVectorType();
 
         if (this->GetEchoLevel() > 0)
         {
             KRATOS_WATCH("ResidualBasedEliminationBuilderAndSolver Clear Function called");
         }
     }
+
     /*@} */
     /**@name Operations */
     /*@{ */
@@ -651,7 +653,6 @@ protected:
                 //initialize component Z
                 if (mdim == 3)
                 {
-
                     if (current_dof_z.IsFixed() == false)
                     {
                         std::size_t index_i = (current_dof_z).EquationId();
@@ -736,14 +737,9 @@ protected:
         }
 #endif
 
-
         // KRATOS_WATCH("finished PArallel Construct Graph")
         KRATOS_CATCH("")
     }
-
-
-
-
 
     //**************************************************************************
     //**************************************************************************
@@ -752,7 +748,7 @@ protected:
         const TVariableType& rLocalVar,
         std::vector< omp_lock_t > lock_array,
         typename TSchemeType::Pointer pScheme,
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         TSystemMatrixType& A,
         TSystemVectorType& b)
 #else
@@ -760,7 +756,7 @@ protected:
     void ScalarBuildComponent(
         const TVariableType& rLocalVar,
         typename TSchemeType::Pointer pScheme,
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         TSystemMatrixType& A,
         TSystemVectorType& b)
 #endif
@@ -793,7 +789,7 @@ protected:
 
             //vector containing the localization in the system of the different
             //terms
-            Element::EquationIdVectorType EquationId;
+            typename ElementType::EquationIdVectorType EquationId;
             ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
             typename ElementsArrayType::ptr_iterator it_begin = pElements.ptr_begin() + element_partition[k];
             typename ElementsArrayType::ptr_iterator it_end = pElements.ptr_begin() + element_partition[k + 1];
@@ -881,11 +877,7 @@ protected:
         }
 
         KRATOS_CATCH("")
-
     }
-
-
-
 
     /*@} */
     /**@name Protected Operations*/
@@ -940,8 +932,6 @@ private:
             partitions[i] = partitions[i - 1] + partition_size;
     }
 
-
-
     //**************************************************************************
 #ifdef _OPENMP
 
@@ -950,7 +940,7 @@ private:
         TSystemVectorType& b,
         const LocalSystemMatrixType& LHS_Contribution,
         const LocalSystemVectorType& RHS_Contribution,
-        Element::EquationIdVectorType& EquationId,
+        typename ElementType::EquationIdVectorType& EquationId,
         std::vector< omp_lock_t >& lock_array
     )
     {

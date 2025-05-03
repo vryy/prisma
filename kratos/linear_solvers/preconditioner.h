@@ -22,8 +22,6 @@
 
 // Project includes
 #include "includes/define.h"
-#include "solving_strategies/builder_and_solvers/builder_and_solver.h"
-#include "includes/model_part.h"
 
 
 namespace Kratos
@@ -72,7 +70,7 @@ namespace Kratos
      }
      \end{verbatim}
 */
-template<class TSparseSpaceType, class TDenseSpaceType>
+template<class TSparseSpaceType, class TDenseSpaceType, class TModelPartType>
 class Preconditioner
 {
 public:
@@ -91,6 +89,12 @@ public:
     typedef typename TSparseSpaceType::VectorType VectorType;
 
     typedef typename TDenseSpaceType::MatrixType DenseMatrixType;
+
+    typedef TModelPartType ModelPartType;
+
+    typedef typename ModelPartType::IndexType IndexType;
+
+    typedef typename ModelPartType::SizeType SizeType;
 
     ///@}
     ///@name Life Cycle
@@ -190,8 +194,8 @@ public:
         SparseMatrixType& rA,
         VectorType& rX,
         VectorType& rB,
-        typename ModelPart::DofsArrayType& rdof_set,
-        ModelPart& r_model_part
+        typename ModelPartType::DofsArrayType& rdof_set,
+        ModelPartType& r_model_part
     )
     {}
 
@@ -227,17 +231,17 @@ public:
     */
     virtual VectorType& ApplyTransposeLeft(VectorType& rX)
     {
-// 	KRATOS_THROW_ERROR(std::logic_error,
-// 		     " virtual TVectorType& ApplyTransposeLeft(TVectorType& rX)",
-// 		     "This preconditioner dosn't have ApplyTransposeLeft defined.", "");
+//  KRATOS_THROW_ERROR(std::logic_error,
+//           " virtual TVectorType& ApplyTransposeLeft(TVectorType& rX)",
+//           "This preconditioner dosn't have ApplyTransposeLeft defined.", "");
         return rX;
     }
 
     virtual VectorType& ApplyTransposeRight(VectorType& rX)
     {
-// 	KRATOS_THROW_ERROR(std::logic_error,
-// 		     " virtual TVectorType& ApplyTransposeRight(TVectorType& rX)",
-// 		     "This preconditioner dosn't have ApplyTransposeRight defined.", "");
+//  KRATOS_THROW_ERROR(std::logic_error,
+//           " virtual TVectorType& ApplyTransposeRight(TVectorType& rX)",
+//           "This preconditioner dosn't have ApplyTransposeRight defined.", "");
         return rX;
     }
 
@@ -380,17 +384,17 @@ private:
 ///@{
 
 /// input stream function
-template<class TSparseSpaceType, class TDenseSpaceType>
+template<class TSparseSpaceType, class TDenseSpaceType, class TModelPartType>
 inline std::istream& operator >> (std::istream& IStream,
-                                  Preconditioner<TSparseSpaceType, TDenseSpaceType>& rThis)
+                                  Preconditioner<TSparseSpaceType, TDenseSpaceType, TModelPartType>& rThis)
 {
     return IStream;
 }
 
 /// output stream function
-template<class TSparseSpaceType, class TDenseSpaceType>
+template<class TSparseSpaceType, class TDenseSpaceType, class TModelPartType>
 inline std::ostream& operator << (std::ostream& OStream,
-                                  const Preconditioner<TSparseSpaceType, TDenseSpaceType>& rThis)
+                                  const Preconditioner<TSparseSpaceType, TDenseSpaceType, TModelPartType>& rThis)
 {
     rThis.PrintInfo(OStream);
     OStream << std::endl;

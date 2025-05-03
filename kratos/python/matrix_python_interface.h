@@ -217,7 +217,7 @@ public:
                .def("Size2", &TMatrixType::size2)
                .def("__setitem__", &set_item)
                .def("__getitem__", &BaseType::get_item)
-               .def(MatrixVectorOperatorPython<TMatrixType, vector<double> >())
+               .def(MatrixVectorOperatorPython<TMatrixType, vector<data_type> >())
 // 					.def(MatrixVectorOperatorPython<TMatrixType, zero_vector<double>, vector<double> >())
 // 					.def(MatrixVectorOperatorPython<TMatrixType, unit_vector<double>, vector<double> >())
 // 					.def(MatrixVectorOperatorPython<TMatrixType, scalar_vector<double>, vector<double> >())

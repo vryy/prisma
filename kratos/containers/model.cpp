@@ -4,8 +4,8 @@
 //   _|\_\_|  \__,_|\__|\___/ ____/
 //                   Multi-Physics
 //
-//  License:		 BSD License
-//					 Kratos default license: kratos/license.txt
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Riccardo Rossi
 //                   Pooyan Dadvand
@@ -29,7 +29,7 @@ Model::~Model()
     // std::cout << "Model " << mName << ", address: " << this << ", is safely deleted" << std::endl;
 }
 
-void Model::GetNameWithAscendants(const ModelPart& rModelPart, std::vector<std::string>& rModelPartNames) const
+void Model::GetNameWithAscendants(const BaseModelPart& rModelPart, std::vector<std::string>& rModelPartNames) const
 {
     rModelPartNames.insert(rModelPartNames.begin(), rModelPart.Name()); // "push_front"
     if (rModelPart.IsSubModelPart()) {
@@ -42,13 +42,15 @@ void Model::Reset()
     mRootModelPartMap.clear();
 }
 
-void Model::CreateRootModelPart(const std::string& ModelPartName, ModelPart::IndexType NewBufferSize)
+template<class TModelPartType>
+void Model::CreateRootModelPart(const std::string& ModelPartName, Model::IndexType NewBufferSize)
 {
-    ModelPart* p_model_part = new ModelPart(ModelPartName, NewBufferSize, *this );
-    mRootModelPartMap[ModelPartName] = std::unique_ptr<ModelPart>(p_model_part); // note that i create it separately since Model is friend of ModelPart but unique_ptr is not
+    BaseModelPart* p_model_part = new TModelPartType(ModelPartName, NewBufferSize, *this );
+    mRootModelPartMap[ModelPartName] = std::unique_ptr<BaseModelPart>(p_model_part); // note that i create it separately since Model is friend of ModelPart but unique_ptr is not
 }
 
-ModelPart& Model::CreateModelPart( const std::string& ModelPartName, ModelPart::IndexType NewBufferSize )
+template<class TModelPartType>
+TModelPartType& Model::CreateModelPart( const std::string& ModelPartName, Model::IndexType NewBufferSize )
 {
     KRATOS_TRY
 
@@ -59,18 +61,18 @@ ModelPart& Model::CreateModelPart( const std::string& ModelPartName, ModelPart::
 
     if (delim_pos == std::string::npos) {
         if (mRootModelPartMap.find(root_model_part_name) == mRootModelPartMap.end()) {
-            CreateRootModelPart(root_model_part_name, NewBufferSize);
-            return *(mRootModelPartMap[root_model_part_name].get());
+            CreateRootModelPart<TModelPartType>(root_model_part_name, NewBufferSize);
+            return dynamic_cast<TModelPartType&>(*(mRootModelPartMap[root_model_part_name].get()));
         } else {
             // KRATOS_WARNING("Model") << "Trying to create a root modelpart with name " << ModelPartName << " however a ModelPart with the same name already exists. \nReturning the already existent ModelPart.\n";
             std::cout << "Model" << "Trying to create a root modelpart with name " << ModelPartName << " however a ModelPart with the same name already exists. \nReturning the already existent ModelPart.\n"; // hbui: 29/6/2022 temporary use this because KRATOS_WARNING is not defined
-            return *(mRootModelPartMap[root_model_part_name].get());
+            return dynamic_cast<TModelPartType&>(*(mRootModelPartMap[root_model_part_name].get()));
         }
     } else {
         if (mRootModelPartMap.find(root_model_part_name) == mRootModelPartMap.end()) {
-            CreateRootModelPart(root_model_part_name, NewBufferSize);
+            CreateRootModelPart<TModelPartType>(root_model_part_name, NewBufferSize);
         }
-        return mRootModelPartMap[root_model_part_name]->CreateSubModelPart(ModelPartName.substr(delim_pos + 1));
+        return dynamic_cast<TModelPartType&>(mRootModelPartMap[root_model_part_name]->CreateSubModelPart(ModelPartName.substr(delim_pos + 1)));
     }
 
     KRATOS_CATCH("")
@@ -80,7 +82,7 @@ void Model::DeleteModelPart( const std::string& rModelPartName  )
 {
     KRATOS_TRY
 
-    if(this->HasModelPart(rModelPartName)) {
+    if(this->HasBaseModelPart(rModelPartName)) {
         mRootModelPartMap.erase(rModelPartName); //NOTE: the corresponding variable list should NOT be removed
     } else {
         // KRATOS_WARNING("Model") << "Attempting to delete inexisting modelpart : " << ModelPartName << std::endl;
@@ -94,23 +96,20 @@ void Model::RenameModelPart( const std::string& OldName, const std::string& NewN
 {
     KRATOS_TRY
 
-    KRATOS_ERROR_IF_NOT(this->HasModelPart(OldName)) << "The Old Name is not in model (as a root model part). Required old name was : " << OldName << std::endl;
+    KRATOS_ERROR_IF_NOT(this->HasBaseModelPart(OldName)) << "The Old Name is not in model (as a root model part). Required old name was : " << OldName << std::endl;
 
-    KRATOS_ERROR_IF(this->HasModelPart(NewName)) << "The New Name is already existing in model. Proposed name was : " << NewName << std::endl;
+    KRATOS_ERROR_IF(this->HasBaseModelPart(NewName)) << "The New Name is already existing in model. Proposed name was : " << NewName << std::endl;
 
-    mRootModelPartMap[OldName]->Name() = NewName; //change the name of the existing modelpart
+    mRootModelPartMap[OldName]->Name() = NewName; // change the name of the existing modelpart
 
-    CreateModelPart(NewName);
-
-    mRootModelPartMap[NewName].swap(mRootModelPartMap[OldName]);
+    mRootModelPartMap[NewName] = std::move(mRootModelPartMap[OldName]); // transfer the ownership from old to new
 
     mRootModelPartMap.erase(OldName);
 
     KRATOS_CATCH("")
 }
 
-
-ModelPart& Model::GetModelPart(const std::string& rFullModelPartName)
+BaseModelPart& Model::GetBaseModelPart(const std::string& rFullModelPartName)
 {
     KRATOS_TRY
 
@@ -126,7 +125,7 @@ ModelPart& Model::GetModelPart(const std::string& rFullModelPartName)
             return *(search->second);
         } else { //let's also search it as a flat name - a feature that SHOULD BE DEPRECATED
             for(auto it = mRootModelPartMap.begin(); it!=mRootModelPartMap.end(); it++) {
-                ModelPart* pmodel_part = RecursiveSearchByName(root_model_part_name, (it->second.get()));
+                BaseModelPart* pmodel_part = RecursiveSearchByName(root_model_part_name, (it->second.get()));
                 if (pmodel_part != nullptr) { //give back the first one that was found
                     // Get the names of the parent-modelparts to print them in the warning
                     std::vector<std::string> model_part_names;
@@ -154,18 +153,30 @@ ModelPart& Model::GetModelPart(const std::string& rFullModelPartName)
     {
         auto search = mRootModelPartMap.find(root_model_part_name);
         if(search != mRootModelPartMap.end()) {
-            ModelPart* p_model_part = (search->second).get();
+            BaseModelPart* p_model_part = (search->second).get();
             return p_model_part->GetSubModelPart(rFullModelPartName.substr(delim_pos + 1));
         } else {
             KRATOS_ERROR << "root model part " << rFullModelPartName << " not found" << std::endl;
         }
-
     }
 
     KRATOS_CATCH("")
 }
 
-const ModelPart& Model::GetModelPart(const std::string& rFullModelPartName) const
+template<class TModelPartType>
+TModelPartType& Model::GetModelPart(const std::string& rFullModelPartName)
+{
+    BaseModelPart& r_model_part = this->GetBaseModelPart(rFullModelPartName);
+
+    TModelPartType* p_model_part = dynamic_cast<TModelPartType*>(&r_model_part);
+
+    if (p_model_part == nullptr)
+        KRATOS_ERROR << "model part of type " << ModelPartTypeToString<TModelPartType>::Get() << " does not exist";
+
+    return *p_model_part;
+}
+
+const BaseModelPart& Model::GetBaseModelPart(const std::string& rFullModelPartName) const
 {
     KRATOS_TRY
 
@@ -181,7 +192,7 @@ const ModelPart& Model::GetModelPart(const std::string& rFullModelPartName) cons
             return *(search->second);
         } else { //let's also search it as a flat name - a feature that SHOULD BE DEPRECATED
             for(auto it = mRootModelPartMap.begin(); it!=mRootModelPartMap.end(); it++) {
-                ModelPart* p_model_part = RecursiveSearchByName(root_model_part_name, (it->second.get()));
+                BaseModelPart* p_model_part = RecursiveSearchByName(root_model_part_name, (it->second.get()));
                 if (p_model_part != nullptr) { //give back the first one that was found
                     // Get the names of the parent-modelparts to print them in the warning
                     std::vector<std::string> model_part_names;
@@ -207,18 +218,30 @@ const ModelPart& Model::GetModelPart(const std::string& rFullModelPartName) cons
     } else { //it is a submodelpart with the full name provided
         auto search = mRootModelPartMap.find(root_model_part_name);
         if(search != mRootModelPartMap.end()) {
-            ModelPart* p_model_part = (search->second).get();
+            BaseModelPart* p_model_part = (search->second).get();
             return p_model_part->GetSubModelPart(rFullModelPartName.substr(delim_pos + 1));
         } else {
             KRATOS_ERROR << "root model part " << rFullModelPartName << " not found" << std::endl;
         }
-
     }
 
     KRATOS_CATCH("")
 }
 
-bool Model::HasModelPart(const std::string& rFullModelPartName) const
+template<class TModelPartType>
+const TModelPartType& Model::GetModelPart(const std::string& rFullModelPartName) const
+{
+    const BaseModelPart& r_model_part = this->GetBaseModelPart(rFullModelPartName);
+
+    const TModelPartType* p_model_part = dynamic_cast<const TModelPartType*>(&r_model_part);
+
+    if (p_model_part == nullptr)
+        KRATOS_ERROR << "model part of type " << ModelPartTypeToString<TModelPartType>::Get() << " does not exist";
+
+    return *p_model_part;
+}
+
+bool Model::HasBaseModelPart(const std::string& rFullModelPartName) const
 {
     KRATOS_TRY
 
@@ -234,7 +257,7 @@ bool Model::HasModelPart(const std::string& rFullModelPartName) const
         if (delim_pos == std::string::npos) {
             return true;
         } else {
-            ModelPart* p_model_part = (search->second).get();
+            BaseModelPart* p_model_part = (search->second).get();
             return p_model_part->HasSubModelPart(rFullModelPartName.substr(delim_pos + 1));
         }
     } else {
@@ -242,6 +265,25 @@ bool Model::HasModelPart(const std::string& rFullModelPartName) const
     }
 
     KRATOS_CATCH("")
+}
+
+template<class TModelPartType>
+bool Model::HasModelPart(const std::string& rFullModelPartName) const
+{
+    // first check if the name exists
+    bool exist = this->HasBaseModelPart(rFullModelPartName);
+
+    if (!exist)
+        return false;
+
+    const BaseModelPart& r_model_part = this->GetBaseModelPart(rFullModelPartName);
+
+    const TModelPartType* p_model_part = dynamic_cast<const TModelPartType*>(&r_model_part);
+
+    if (p_model_part == nullptr)
+        return false;
+
+    return true;
 }
 
 std::vector<std::string> Model::GetModelPartNames() const
@@ -282,7 +324,7 @@ std::string Model::Info() const
     std::stringstream ss;
     for(auto it = mRootModelPartMap.begin(); it!=mRootModelPartMap.end(); it++)
     {
-            ss<< *((it->second).get()) << std::endl << std::endl;
+        ss << *((it->second).get()) << std::endl << std::endl;
     }
     return ss.str();
 }
@@ -300,7 +342,7 @@ void Model::PrintData(std::ostream& rOStream) const
 {
 }
 
-ModelPart* Model::RecursiveSearchByName(const std::string& ModelPartName, ModelPart* pModelPart) const
+BaseModelPart* Model::RecursiveSearchByName(const std::string& ModelPartName, BaseModelPart* pModelPart) const
 {
     for(auto& part : pModelPart->SubModelParts())
     {
@@ -308,7 +350,7 @@ ModelPart* Model::RecursiveSearchByName(const std::string& ModelPartName, ModelP
             return &part;
         else
         {
-            ModelPart* pmodel_part = RecursiveSearchByName(ModelPartName, &part);
+            BaseModelPart* pmodel_part = RecursiveSearchByName(ModelPartName, &part);
             if(pmodel_part != nullptr)
                 return pmodel_part;
         }
@@ -345,10 +387,23 @@ void Model::load(Serializer& rSerializer)
 
     // for(IndexType i=0; i<aux_names.size(); ++i) {
     //     //NOTE: CreateModelPart CANNOT be used here
-    //     ModelPart* pmodel_part = new ModelPart(aux_names[i], 1, *this );
+    //     BaseModelPart* pmodel_part = new ModelPart(aux_names[i], 1, *this );
     //     rSerializer.load(aux_names[i], pmodel_part);
     //     mRootModelPartMap.insert(std::make_pair(aux_names[i],std::unique_ptr<ModelPart>(pmodel_part)));
     // }
 }
+
+// template function specialization
+template ModelPart& Model::CreateModelPart<ModelPart>( const std::string&, Model::IndexType );
+template ModelPart& Model::GetModelPart<ModelPart>( const std::string& );
+template const ModelPart& Model::GetModelPart<ModelPart>( const std::string& ) const;
+
+template ComplexModelPart& Model::CreateModelPart<ComplexModelPart>( const std::string&, Model::IndexType );
+template ComplexModelPart& Model::GetModelPart<ComplexModelPart>( const std::string& );
+template const ComplexModelPart& Model::GetModelPart<ComplexModelPart>( const std::string& ) const;
+
+template GComplexModelPart& Model::CreateModelPart<GComplexModelPart>( const std::string&, Model::IndexType );
+template GComplexModelPart& Model::GetModelPart<GComplexModelPart>( const std::string& );
+template const GComplexModelPart& Model::GetModelPart<GComplexModelPart>( const std::string& ) const;
 
 }  // namespace Kratos.

@@ -106,18 +106,20 @@ Calculation of the reactions involves a cost very similiar to the calculation of
  */
 template<class TSparseSpace,
          class TDenseSpace, //= DenseSpace<double>,
-         class TLinearSolver //= LinearSolver<TSparseSpace,TDenseSpace>
+         class TLinearSolver, //= LinearSolver<TSparseSpace,TDenseSpace>
+         class TModelPartType
          >
 class ResidualBasedBlockBuilderAndSolver
-    : public BuilderAndSolver< TSparseSpace, TDenseSpace, TLinearSolver >
+    : public BuilderAndSolver< TSparseSpace, TDenseSpace, TLinearSolver, TModelPartType >
 {
 public:
     /**@name Type Definitions */
     /*@{ */
     KRATOS_CLASS_POINTER_DEFINITION(ResidualBasedBlockBuilderAndSolver);
 
+    typedef BuilderAndSolver<TSparseSpace, TDenseSpace, TLinearSolver, TModelPartType> BaseType;
 
-    typedef BuilderAndSolver<TSparseSpace, TDenseSpace, TLinearSolver> BaseType;
+    typedef typename BaseType::ModelPartType ModelPartType;
 
     typedef typename BaseType::TSchemeType TSchemeType;
 
@@ -136,11 +138,15 @@ public:
     typedef typename BaseType::TSystemMatrixPointerType TSystemMatrixPointerType;
     typedef typename BaseType::TSystemVectorPointerType TSystemVectorPointerType;
 
-    typedef typename BaseType::NodesArrayType NodesArrayType;
-    typedef typename BaseType::ElementsArrayType ElementsArrayType;
-    typedef typename BaseType::ConditionsArrayType ConditionsArrayType;
-
+    typedef typename BaseType::ElementType ElementType;
+    typedef typename BaseType::ConditionType ConditionType;
     typedef typename BaseType::ElementsContainerType ElementsContainerType;
+    typedef typename BaseType::ConditionsContainerType ConditionsContainerType;
+
+    typedef typename BaseType::IndexType IndexType;
+    typedef typename BaseType::SizeType SizeType;
+
+    static constexpr auto zero = TDataType();
 
     /*@} */
     /**@name Life Cycle
@@ -149,9 +155,8 @@ public:
 
     /** Constructor.
      */
-    ResidualBasedBlockBuilderAndSolver(
-        typename TLinearSolver::Pointer pNewLinearSystemSolver)
-        : BuilderAndSolver< TSparseSpace, TDenseSpace, TLinearSolver >(pNewLinearSystemSolver)
+    ResidualBasedBlockBuilderAndSolver(typename TLinearSolver::Pointer pNewLinearSystemSolver)
+        : BaseType(pNewLinearSystemSolver)
     {
         #ifdef ENABLE_LOG
         std::stringstream log_filename;
@@ -166,7 +171,7 @@ public:
 
     /** Destructor.
      */
-    virtual ~ResidualBasedBlockBuilderAndSolver()
+    ~ResidualBasedBlockBuilderAndSolver() override
     {
         #ifdef ENABLE_LOG
         mLogFile.close();
@@ -188,9 +193,9 @@ public:
 
     void Build(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         TSystemMatrixType& A,
-        TSystemVectorType& b)
+        TSystemVectorType& b) override
     {
         KRATOS_TRY
 
@@ -201,18 +206,16 @@ public:
         #endif
 
         if (!pScheme)
-            KRATOS_THROW_ERROR(std::runtime_error, "No scheme provided!", "");
+            KRATOS_ERROR << "No scheme provided!";
 
-        if(r_model_part.MasterSlaveConstraints().size() != 0) {
-            KRATOS_THROW_ERROR(std::logic_error, "This builder and solver does not support constraints!", "");
-        }
+        if(r_model_part.MasterSlaveConstraints().size() != 0)
+            KRATOS_ERROR << "This builder and solver does not support constraints!";
 
         //getting the elements from the model
-        ElementsArrayType& pElements = r_model_part.Elements();
+        ElementsContainerType& pElements = r_model_part.Elements();
 
         //getting the array of the conditions
-        ConditionsArrayType& ConditionsArray = r_model_part.Conditions();
-
+        ConditionsContainerType& ConditionsArray = r_model_part.Conditions();
 
         //contributions to the system
         LocalSystemMatrixType LHS_Contribution = LocalSystemMatrixType(0, 0);
@@ -220,15 +223,15 @@ public:
 
         //vector containing the localization in the system of the different
         //terms
-        Element::EquationIdVectorType EquationId;
+        typename ElementType::EquationIdVectorType EquationId;
 
         //double StartTime = GetTickCount();
 
         // assemble all elements
 #ifndef _OPENMP
-        ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
+        const ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
 
-        for (typename ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
+        for (typename ElementsContainerType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
             //detect if the element is active or not. If the user did not make any choice the element
             //is active by default
@@ -258,7 +261,7 @@ public:
         RHS_Contribution.resize(0, false);
 
         // assemble all conditions
-        for (typename ConditionsArrayType::iterator it = ConditionsArray.begin(); it != ConditionsArray.end(); ++it)
+        for (typename ConditionsContainerType::iterator it = ConditionsArray.begin(); it != ConditionsArray.end(); ++it)
         {
             //detect if the element is active or not. If the user did not make any choice the element
             //is active by default
@@ -332,13 +335,13 @@ public:
 
             //vector containing the localization in the system of the different
             //terms
-            Element::EquationIdVectorType EquationId;
-            ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
-            typename ElementsArrayType::iterator it_begin = pElements.begin() + element_partition[k];
-            typename ElementsArrayType::iterator it_end = pElements.begin() + element_partition[k + 1];
+            typename ElementType::EquationIdVectorType EquationId;
+            const ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
+            typename ElementsContainerType::iterator it_begin = pElements.begin() + element_partition[k];
+            typename ElementsContainerType::iterator it_end = pElements.begin() + element_partition[k + 1];
 
             // assemble all elements
-            for (typename ElementsArrayType::iterator it = it_begin; it != it_end; ++it)
+            for (typename ElementsContainerType::iterator it = it_begin; it != it_end; ++it)
             {
                 //detect if the element is active or not. If the user did not make any choice the element
                 //is active by default
@@ -374,13 +377,13 @@ public:
 
             Condition::EquationIdVectorType EquationId;
 
-            ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
+            const ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
 
-            typename ConditionsArrayType::iterator it_begin = ConditionsArray.begin() + condition_partition[k];
-            typename ConditionsArrayType::iterator it_end = ConditionsArray.begin() + condition_partition[k + 1];
+            typename ConditionsContainerType::iterator it_begin = ConditionsArray.begin() + condition_partition[k];
+            typename ConditionsContainerType::iterator it_end = ConditionsArray.begin() + condition_partition[k + 1];
 
             // assemble all elements
-            for (typename ConditionsArrayType::iterator it = it_begin; it != it_end; ++it)
+            for (typename ConditionsContainerType::iterator it = it_begin; it != it_end; ++it)
             {
                 //detect if the element is active or not. If the user did not make any choice the element
                 //is active by default
@@ -402,9 +405,6 @@ public:
             }
         }
 
-// equation_ids.close();
-// KRATOS_THROW_ERROR(std::logic_error,"i want to stop here :-D","")
-
         double stop_build = OpenMPUtils::GetCurrentTime();
         if (this->GetEchoLevel() >=1 && r_model_part.GetCommunicator().MyPID() == 0)
             std::cout << "build time: " << stop_build - start_build << std::endl;
@@ -415,8 +415,6 @@ public:
         {
             KRATOS_WATCH("finished parallel building");
         }
-
-
         //                        //ensure that all the threads are syncronized here
         //                        #pragma omp barrier
 #endif
@@ -444,29 +442,28 @@ public:
 
     void BuildLHS(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& r_model_part,
-        TSystemMatrixType& A)
+        ModelPartType& r_model_part,
+        TSystemMatrixType& A) override
     {
         KRATOS_TRY
 
         //getting the elements from the model
-        ElementsArrayType& pElements = r_model_part.Elements();
+        ElementsContainerType& pElements = r_model_part.Elements();
 
         //getting the array of the conditions
-        ConditionsArrayType& ConditionsArray = r_model_part.Conditions();
-
+        ConditionsContainerType& ConditionsArray = r_model_part.Conditions();
 
         //contributions to the system
         LocalSystemMatrixType LHS_Contribution = LocalSystemMatrixType(0, 0);
 
         //vector containing the localization in the system of the different
         //terms
-        Element::EquationIdVectorType EquationId;
+        typename ElementType::EquationIdVectorType EquationId;
 
-        ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
+        const ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
 
         // assemble all elements
-        for (typename ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
+        for (typename ElementsContainerType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
             //detect if the element is active or not. If the user did not make any choice the element
             //is active by default
@@ -490,7 +487,7 @@ public:
         LHS_Contribution.resize(0, 0, false);
 
         // assemble all conditions
-        for (typename ConditionsArrayType::iterator it = ConditionsArray.begin(); it != ConditionsArray.end(); ++it)
+        for (typename ConditionsContainerType::iterator it = ConditionsArray.begin(); it != ConditionsArray.end(); ++it)
         {
             //detect if the element is active or not. If the user did not make any choice the element
             //is active by default
@@ -520,28 +517,28 @@ public:
 
     void BuildLHS_CompleteOnFreeRows(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         TSystemMatrixType& A)
     {
         KRATOS_TRY
 
         //getting the elements from the model
-        ElementsArrayType& pElements = r_model_part.Elements();
+        ElementsContainerType& pElements = r_model_part.Elements();
 
         //getting the array of the conditions
-        ConditionsArrayType& ConditionsArray = r_model_part.Conditions();
+        ConditionsContainerType& ConditionsArray = r_model_part.Conditions();
 
-        ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
+        const ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
 
         //contributions to the system
         LocalSystemMatrixType LHS_Contribution = LocalSystemMatrixType(0, 0);
 
         //vector containing the localization in the system of the different
         //terms
-        Element::EquationIdVectorType EquationId;
+        typename ElementType::EquationIdVectorType EquationId;
 
         // assemble all elements
-        for (typename ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
+        for (typename ElementsContainerType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
             //detect if the element is active or not. If the user did not make any choice the element
             //is active by default
@@ -564,7 +561,7 @@ public:
 
         LHS_Contribution.resize(0, 0, false);
         // assemble all conditions
-        for (typename ConditionsArrayType::iterator it = ConditionsArray.begin(); it != ConditionsArray.end(); ++it)
+        for (typename ConditionsContainerType::iterator it = ConditionsArray.begin(); it != ConditionsArray.end(); ++it)
         {
             //detect if the element is active or not. If the user did not make any choice the element
             //is active by default
@@ -595,7 +592,7 @@ public:
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
         TSystemVectorType& b
-    )
+    ) override
     {
         KRATOS_TRY
 
@@ -603,9 +600,9 @@ public:
         if (TSparseSpace::Size(b) != 0)
             norm_b = TSparseSpace::TwoNorm(b);
         else
-            norm_b = 0.00;
+            norm_b = zero;
 
-        if (norm_b != 0.00)
+        if (norm_b != zero)
         {
             //do solve
             BaseType::mpLinearSystemSolver->Solve(A, Dx, b);
@@ -626,14 +623,13 @@ public:
         #endif
 
         KRATOS_CATCH("")
-
     }
 
     void SystemSolveWithPhysics(
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
         TSystemVectorType& b,
-        ModelPart& r_model_part
+        ModelPartType& r_model_part
     )
     {
         KRATOS_TRY
@@ -642,9 +638,9 @@ public:
         if (TSparseSpace::Size(b) != 0)
             norm_b = TSparseSpace::TwoNorm(b);
         else
-            norm_b = 0.00;
+            norm_b = zero;
 
-        if (norm_b != 0.00)
+        if (norm_b != zero)
         {
             //provide physical data as needed
             if(BaseType::mpLinearSystemSolver->AdditionalPhysicalDataIsNeeded() )
@@ -672,7 +668,6 @@ public:
         #endif
 
         KRATOS_CATCH("")
-
     }
 
     //**************************************************************************
@@ -680,7 +675,7 @@ public:
 
     void BuildAndSolve(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
         TSystemVectorType& b)
@@ -731,7 +726,7 @@ public:
 
     void BuildRHSAndSolve(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
         TSystemVectorType& b)
@@ -749,8 +744,8 @@ public:
 
     void BuildRHS(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& r_model_part,
-        TSystemVectorType& b)
+        ModelPartType& r_model_part,
+        TSystemVectorType& b) override
     {
         KRATOS_TRY
 
@@ -763,15 +758,15 @@ public:
             else i++;
 
         KRATOS_CATCH("")
-
     }
+
     //**************************************************************************
     //**************************************************************************
 
     void SetUpDofSet(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& r_model_part
-    )
+        ModelPartType& r_model_part
+    ) override
     {
         KRATOS_TRY;
 
@@ -781,18 +776,18 @@ public:
         }
 
         //Gets the array of elements from the modeler
-        ElementsArrayType& pElements = r_model_part.Elements();
+        ElementsContainerType& pElements = r_model_part.Elements();
 
-        Element::DofsVectorType ElementalDofList;
+        typename ElementType::DofsVectorType ElementalDofList;
 
-        ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
+        const ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
 
         DofsArrayType Doftemp;
         BaseType::mDofSet = DofsArrayType();
         //mDofSet.clear();
 
         //double StartTime = GetTickCount();
-        for (typename ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
+        for (typename ElementsContainerType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
             //detect if the element is active or not. If the user did not make any choice the element
             //is active by default
@@ -806,7 +801,7 @@ public:
                 pScheme->GetDofList(*it, ElementalDofList, CurrentProcessInfo);
 
                 //ccc = GetTickCount();
-                for (typename Element::DofsVectorType::iterator i = ElementalDofList.begin(); i != ElementalDofList.end(); ++i)
+                for (auto i = ElementalDofList.begin(); i != ElementalDofList.end(); ++i)
                 {
                     Doftemp.push_back(*i);
                 }
@@ -814,8 +809,8 @@ public:
         }
 
         //taking in account conditions
-        ConditionsArrayType& pConditions = r_model_part.Conditions();
-        for (typename ConditionsArrayType::iterator it = pConditions.begin(); it != pConditions.end(); ++it)
+        ConditionsContainerType& pConditions = r_model_part.Conditions();
+        for (typename ConditionsContainerType::iterator it = pConditions.begin(); it != pConditions.end(); ++it)
         {
             //detect if the condition is active or not. If the user did not make any choice the condition
             //is active by default
@@ -828,7 +823,7 @@ public:
                 // gets list of Dof involved on every condition
                 pScheme->GetDofList(*it, ElementalDofList, CurrentProcessInfo);
 
-                for (typename Element::DofsVectorType::iterator i = ElementalDofList.begin(); i != ElementalDofList.end(); ++i)
+                for (auto i = ElementalDofList.begin(); i != ElementalDofList.end(); ++i)
                 {
                     Doftemp.push_back(*i);
                 }
@@ -840,7 +835,7 @@ public:
 
         //throws an execption if there are no Degrees of freedom involved in the analysis
         if (BaseType::mDofSet.size() == 0)
-            KRATOS_THROW_ERROR(std::logic_error, "No degrees of freedom!", "");
+            KRATOS_ERROR << "No degrees of freedom!";
 
         BaseType::mDofSetIsInitialized = true;
         if( this->GetEchoLevel() > 2 && r_model_part.GetCommunicator().MyPID() == 0)
@@ -855,8 +850,8 @@ public:
     //**************************************************************************
 
     void SetUpSystem(
-        ModelPart& r_model_part
-    )
+        ModelPartType& r_model_part
+    ) override
     {
 
         int free_id = 0;
@@ -886,10 +881,10 @@ public:
         TSystemMatrixPointerType& pA,
         TSystemVectorPointerType& pDx,
         TSystemVectorPointerType& pb,
-        ElementsArrayType& rElements,
-        ConditionsArrayType& rConditions,
-        ProcessInfo& CurrentProcessInfo
-    )
+        ElementsContainerType& rElements,
+        ConditionsContainerType& rConditions,
+        const ProcessInfo& CurrentProcessInfo
+    ) override
     {
         KRATOS_TRY
         if (pA == NULL) //if the pointer is not initialized initialize it to an empty matrix
@@ -945,8 +940,8 @@ public:
         TSystemMatrixPointerType& pA,
         TSystemVectorPointerType& pDx,
         TSystemVectorPointerType& pb,
-        ModelPart& rModelPart
-    )
+        ModelPartType& rModelPart
+    ) override
     {
         ResizeAndInitializeVectors(pA, pDx, pb, rModelPart.Elements(), rModelPart.Conditions(), rModelPart.GetProcessInfo());
     }
@@ -955,10 +950,10 @@ public:
     //**************************************************************************
 
     void InitializeSolutionStep(
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
-        TSystemVectorType& b)
+        TSystemVectorType& b) override
     {
         KRATOS_TRY
         KRATOS_CATCH("")
@@ -968,25 +963,24 @@ public:
     //**************************************************************************
 
     void FinalizeSolutionStep(
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
-        TSystemVectorType& b)
+        TSystemVectorType& b) override
     {
         ++mStepCounter;
         mLocalCounter = 0;
     }
-
 
     //**************************************************************************
     //**************************************************************************
 
     void CalculateReactions(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
-        TSystemVectorType& b)
+        TSystemVectorType& b) override
     {
         TSparseSpace::SetToZero(b);
 
@@ -1006,8 +1000,6 @@ public:
                 (*it2)->GetSolutionStepReactionValue() = -b[i];
             }
         }
-
-        //KRATOS_WATCH(__LINE__)
     }
 
     //**************************************************************************
@@ -1015,10 +1007,10 @@ public:
 
     void ApplyDirichletConditions(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
-        TSystemVectorType& b)
+        TSystemVectorType& b) override
     {
         std::size_t system_size = A.size1();
         std::vector<TDataType> scaling_factors (system_size, 0.0f);
@@ -1048,7 +1040,7 @@ public:
 //            bool empty = true;
 //            for (std::size_t j = col_begin; j < col_end; ++j)
 //            {
-//                if(Avalues[j] != 0.0)
+//                if(Avalues[j] != zero)
 //                {
 //                    empty = false;
 //                    break;
@@ -1072,10 +1064,11 @@ public:
         {
             key = dof_iterator->GetVariable().Key();
             row = dof_iterator->EquationId();
-            if (diag_values.find(key) != diag_values.end())
+            auto it = diag_values.find(key);
+            if (it != diag_values.end())
             {
                 ++dof_numbers[key];
-                diag_values[key] += A(row, row);
+                it->second += static_cast<TDataType>(A(row, row));
             }
             else
             {
@@ -1108,7 +1101,7 @@ public:
                 bool empty = true;
                 for (std::size_t j = col_begin; j < col_end; ++j)
                 {
-                    if(Avalues[j] != 0.0)
+                    if(Avalues[j] != zero)
                     {
                         empty = false;
                         break;
@@ -1130,22 +1123,22 @@ public:
             std::size_t col_begin = Arow_indices[k];
             std::size_t col_end = Arow_indices[k+1];
             const auto k_factor = scaling_factors[k];
-            if (k_factor == 0)
+            if (k_factor == zero)
             {
                 // zero out the whole row, except the diagonal
                 for (std::size_t j = col_begin; j < col_end; ++j)
                     if (static_cast<int>(Acol_indices[j]) != k )
-                        Avalues[j] = 0.0;
+                        Avalues[j] = zero;
 
                 // zero out the RHS
-                b[k] = 0.0;
+                b[k] = zero;
             }
             else
             {
                 // zero out the column which is associated with the zero'ed row
                 for (std::size_t j = col_begin; j < col_end; ++j)
-                    if(scaling_factors[ Acol_indices[j] ] == 0 )
-                        Avalues[j] = 0.0;
+                    if(scaling_factors[ Acol_indices[j] ] == zero)
+                        Avalues[j] = zero;
             }
         }
 
@@ -1159,17 +1152,16 @@ public:
 
     void ApplyPointLoads(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         TSystemVectorType& b)
     {
-
     }
 
     /**
     this function is intended to be called at the end of the solution step to clean up memory
     storage not needed
      */
-    void Clear()
+    void Clear() override
     {
         this->mDofSet = DofsArrayType();
 
@@ -1188,15 +1180,14 @@ public:
      * @param r_model_part
      * @return 0 all ok
      */
-    virtual int Check(ModelPart& r_model_part)
+    int Check(const ModelPartType& r_model_part) const override
     {
         KRATOS_TRY
 
         return 0;
+
         KRATOS_CATCH("");
     }
-
-
 
     /*@} */
     /**@name Operations */
@@ -1272,15 +1263,15 @@ protected:
     virtual void ConstructMatrixStructure(
         TSystemMatrixType& A,
         ElementsContainerType& rElements,
-        ConditionsArrayType& rConditions,
-        ProcessInfo& CurrentProcessInfo) const
+        ConditionsContainerType& rConditions,
+        const ProcessInfo& CurrentProcessInfo) const
     {
 
-        std::size_t equation_size = A.size1();
-        std::vector<std::vector<std::size_t> > indices(equation_size);
+        SizeType equation_size = A.size1();
+        std::vector<std::vector<IndexType> > indices(equation_size);
         //              std::vector<std::vector<std::size_t> > dirichlet_indices(TSystemSpaceType::Size1(mDirichletMatrix));
 
-        Element::EquationIdVectorType ids(3, 0);
+        typename ElementType::EquationIdVectorType ids(3, 0);
         for (typename ElementsContainerType::iterator i_element = rElements.begin(); i_element != rElements.end(); i_element++)
         {
             (i_element)->EquationIdVector(ids, CurrentProcessInfo);
@@ -1299,7 +1290,7 @@ protected:
 
         }
 
-        for (typename ConditionsArrayType::iterator i_condition = rConditions.begin(); i_condition != rConditions.end(); i_condition++)
+        for (typename ConditionsContainerType::iterator i_condition = rConditions.begin(); i_condition != rConditions.end(); i_condition++)
         {
             (i_condition)->EquationIdVector(ids, CurrentProcessInfo);
             for (std::size_t i = 0; i < ids.size(); i++)
@@ -1316,8 +1307,8 @@ protected:
         }
 
         //allocating the memory needed
-        std::size_t data_size = 0;
-        for (std::size_t i = 0; i < indices.size(); i++)
+        SizeType data_size = 0;
+        for (SizeType i = 0; i < indices.size(); i++)
         {
             data_size += indices[i].size();
         }
@@ -1328,12 +1319,12 @@ protected:
 #ifndef _OPENMP
         for (std::size_t i = 0; i < indices.size(); i++)
         {
-            std::vector<std::size_t>& row_indices = indices[i];
+            std::vector<IndexType>& row_indices = indices[i];
             std::sort(row_indices.begin(), row_indices.end());
 
-            for (std::vector<std::size_t>::iterator it = row_indices.begin(); it != row_indices.end(); it++)
+            for (auto it = row_indices.begin(); it != row_indices.end(); it++)
             {
-                A.push_back(i, *it, 0.00);
+                A.push_back(i, *it, zero);
             }
             row_indices.clear();
         }
@@ -1357,7 +1348,7 @@ protected:
 
                     for (std::vector<std::size_t>::iterator it = row_indices.begin(); it != row_indices.end(); it++)
                     {
-                        A.push_back(i, *it, 0.00);
+                        A.push_back(i, *it, zero);
                     }
                     row_indices.clear();
                 }
@@ -1372,7 +1363,7 @@ protected:
     void AssembleLHS(
         TSystemMatrixType& A,
         LocalSystemMatrixType& LHS_Contribution,
-        Element::EquationIdVectorType& EquationId
+        typename ElementType::EquationIdVectorType& EquationId
     ) const
     {
         unsigned int local_size = LHS_Contribution.size1();
@@ -1395,7 +1386,7 @@ protected:
     void AssembleRHS(
         TSystemVectorType& b,
         LocalSystemVectorType& RHS_Contribution,
-        Element::EquationIdVectorType& EquationId
+        typename ElementType::EquationIdVectorType& EquationId
     ) const
     {
         unsigned int local_size = RHS_Contribution.size();
@@ -1419,7 +1410,7 @@ protected:
         TSystemVectorType& b,
         const LocalSystemMatrixType& LHS_Contribution,
         const LocalSystemVectorType& RHS_Contribution,
-        Element::EquationIdVectorType& EquationId,
+        typename ElementType::EquationIdVectorType& EquationId,
         std::vector< omp_lock_t >& lock_array
     ) const
     {
@@ -1444,8 +1435,6 @@ protected:
 //
 //                  }
             omp_unset_lock(&lock_array[i_global]);
-
-
 
             //note that computation of reactions is not performed here!
         }
@@ -1502,7 +1491,7 @@ private:
     void AssembleLHS_CompleteOnFreeRows(
         TSystemMatrixType& A,
         LocalSystemMatrixType& LHS_Contribution,
-        Element::EquationIdVectorType& EquationId
+        typename ElementType::EquationIdVectorType& EquationId
     )
     {
         unsigned int local_size = LHS_Contribution.size1();
@@ -1525,18 +1514,18 @@ private:
 
     void BuildRHSNoDirichlet(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         TSystemVectorType& b)
     {
         KRATOS_TRY
 
         //Getting the Elements
-        ElementsArrayType& pElements = r_model_part.Elements();
+        ElementsContainerType& pElements = r_model_part.Elements();
 
         //getting the array of the conditions
-        ConditionsArrayType& ConditionsArray = r_model_part.Conditions();
+        ConditionsContainerType& ConditionsArray = r_model_part.Conditions();
 
-        ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
+        const ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
 
         //contributions to the system
         LocalSystemMatrixType LHS_Contribution = LocalSystemMatrixType(0, 0);
@@ -1544,10 +1533,10 @@ private:
 
         //vector containing the localization in the system of the different
         //terms
-        Element::EquationIdVectorType EquationId;
+        typename ElementType::EquationIdVectorType EquationId;
 
         // assemble all elements
-        for (typename ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
+        for (typename ElementsContainerType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
                 //detect if the element is active or not. If the user did not make any choice the element
                 //is active by default
@@ -1569,7 +1558,7 @@ private:
         RHS_Contribution.resize(0, false);
 
         // assemble all conditions
-        for (typename ConditionsArrayType::iterator it = ConditionsArray.begin(); it != ConditionsArray.end(); ++it)
+        for (typename ConditionsContainerType::iterator it = ConditionsArray.begin(); it != ConditionsArray.end(); ++it)
         {
             //detect if the element is active or not. If the user did not make any choice the element
             //is active by default
@@ -1589,14 +1578,14 @@ private:
         }
 
         KRATOS_CATCH("")
-
     }
 
     //******************************************************************************************
     //******************************************************************************************
 
 #ifdef _OPENMP
-    inline void AssembleRowContribution(TSystemMatrixType& A, const Matrix& Alocal, const unsigned int i, const unsigned int i_local, Element::EquationIdVectorType& EquationId) const
+    inline void AssembleRowContribution(TSystemMatrixType& A, const LocalSystemMatrixType& Alocal,
+            const unsigned int i, const unsigned int i_local, typename ElementType::EquationIdVectorType& EquationId) const
     {
         auto* values_vector = A.value_data().begin();
         auto* index1_vector = A.index1_data().begin();

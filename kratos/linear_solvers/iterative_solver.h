@@ -59,9 +59,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 // Project includes
-#include "includes/define.h"
 #include "linear_solvers/linear_solver.h"
 #include "linear_solvers/preconditioner.h"
+#include "linear_solvers/reorderer.h"
 
 
 namespace Kratos
@@ -100,9 +100,10 @@ namespace Kratos
     - TReordererType which specify type of the Orderer that performs the reordering of matrix to optimize the solution.
 */
 template<class TSparseSpaceType, class TDenseSpaceType,
-         class TPreconditionerType = Preconditioner<TSparseSpaceType, TDenseSpaceType>,
+         class TModelPartType,
+         class TPreconditionerType = Preconditioner<TSparseSpaceType, TDenseSpaceType, TModelPartType>,
          class TReordererType = Reorderer<TSparseSpaceType, TDenseSpaceType> >
-class IterativeSolver : public LinearSolver<TSparseSpaceType, TDenseSpaceType, TReordererType>
+class IterativeSolver : public LinearSolver<TSparseSpaceType, TDenseSpaceType, TModelPartType, TReordererType>
 {
 public:
     ///@name Type Definitions
@@ -111,7 +112,9 @@ public:
     /// Pointer definition of IterativeSolver
     KRATOS_CLASS_POINTER_DEFINITION(IterativeSolver);
 
-    typedef LinearSolver<TSparseSpaceType, TDenseSpaceType, TReordererType> BaseType;
+    typedef LinearSolver<TSparseSpaceType, TDenseSpaceType, TModelPartType, TReordererType> BaseType;
+
+    typedef typename BaseType::ModelPartType ModelPartType;
 
     typedef typename BaseType::SparseMatrixType SparseMatrixType;
 
@@ -175,12 +178,10 @@ public:
         mTolerance(Other.mTolerance),
         mMaxIterationsNumber(Other.mMaxIterationsNumber)
     {
-
     }
 
     /// Destructor.
-    virtual ~IterativeSolver() {}
-
+    ~IterativeSolver() override {}
 
     ///@}
     ///@name Operators
@@ -198,13 +199,13 @@ public:
     }
 
     /** This function is designed to be called every time the coefficients change in the system
-    		 * that is, normally at the beginning of each solve.
-    		 * For example if we are implementing a direct solver, this is the place to do the factorization
-    		 * so that then the backward substitution can be performed effectively more than once
-    		@param rA. System matrix
-    		@param rX. Solution vector. it's also the initial guess for iterative linear solvers.
-    		@param rB. Right hand side vector.
-    		*/
+             * that is, normally at the beginning of each solve.
+             * For example if we are implementing a direct solver, this is the place to do the factorization
+             * so that then the backward substitution can be performed effectively more than once
+            @param rA. System matrix
+            @param rX. Solution vector. it's also the initial guess for iterative linear solvers.
+            @param rB. Right hand side vector.
+            */
     virtual void InitializeSolutionStep (SparseMatrixType& rA, VectorType& rX, VectorType& rB)
     {
         GetPreconditioner()->InitializeSolutionStep(rA,rX,rB);
@@ -254,8 +255,8 @@ public:
         SparseMatrixType& rA,
         VectorType& rX,
         VectorType& rB,
-        typename ModelPart::DofsArrayType& rdof_set,
-        ModelPart& r_model_part
+        typename ModelPartType::DofsArrayType& rdof_set,
+        ModelPartType& r_model_part
     )
     {
         if (GetPreconditioner()->AdditionalPhysicalDataIsNeeded())
@@ -287,14 +288,14 @@ public:
     }
 
 //       virtual typename TStopCriteriaType::Pointer GetStopCriteria(void)
-// 	{
-// 	  return mpStopCriteria;
-// 	}
+//  {
+//    return mpStopCriteria;
+//  }
 
 //       virtual void SetStopCriteria(typename TStopCriteriaType::Pointer pNewStopCriteria)
-// 	{
-// 	  mpStopCriteria = pNewStopCriteria;
-// 	}
+//  {
+//    mpStopCriteria = pNewStopCriteria;
+//  }
 
     virtual void SetMaxIterationsNumber(unsigned int NewMaxIterationsNumber)
     {

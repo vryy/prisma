@@ -53,10 +53,8 @@ set( KRATOS_CORE_SOURCES
 
 if( ${KRATOS_PYTHON} MATCHES TRUE)
     set( KRATOS_PYTHON_SOURCES
-        ${CMAKE_CURRENT_SOURCE_DIR}/python/add_banded_matrix_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_model_part_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_model_to_python.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/python/add_compressed_matrix_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_constant_matrix_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_points_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_variables_to_python.cpp
@@ -68,21 +66,13 @@ if( ${KRATOS_PYTHON} MATCHES TRUE)
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_containers_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_constitutive_law_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_processes_to_python.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/python/add_coordinate_matrix_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_quadratures_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_geometries_to_python.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/python/add_scalar_matrix_to_python.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/python/add_hermitian_matrix_to_python.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/python/add_sparse_matrix_to_python.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/python/add_identity_matrix_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_integration_points_to_python.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/python/add_symmetric_matrix_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_io_to_python.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/python/add_triangular_matrix_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_kernel_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_vector_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_kratos_application_to_python.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/python/add_zero_matrix_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_matrix_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_mesh_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/vectorial_spaces_python.cpp
@@ -93,8 +83,6 @@ if( ${KRATOS_PYTHON} MATCHES TRUE)
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_spaces_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_utilities_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_process_info_to_python.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/python/add_parallel_strategies_to_python.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/python/add_parallel_linear_solvers_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_matrix_market_interface_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_serializer_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_table_to_python.cpp
@@ -117,7 +105,12 @@ endif()
 
 if(MSVC)
     target_compile_options(KratosCore PRIVATE $<$<CONFIG:Debug>:/bigobj>)
+    target_compile_options(KratosCore PRIVATE /permissive) # enforce stricter compliant with C++ standard
 endif()
+if((${CMAKE_CXX_COMPILER_ID} MATCHES Clang) OR (${CMAKE_CXX_COMPILER_ID} MATCHES GNU))
+    target_compile_options(KratosCore PRIVATE -pedantic-errors) # enforce strict compliant with C++ standard
+endif()
+
 if(${KRATOS_PYTHON} MATCHES TRUE)
     target_link_libraries(KratosCore PUBLIC ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${PYTHON_LIBRARIES} gidpost )
 else()

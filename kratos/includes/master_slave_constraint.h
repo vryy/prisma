@@ -46,7 +46,7 @@ namespace Kratos
 ///@name Kratos Classes
 ///@{
 /**
- * @class MasterSlaveConstraint
+ * @class BaseMasterSlaveConstraint
  * @ingroup KratosCore
  * @brief A class that implements the interface for different master-slave constraints to be applied on a system.
  * @details This is the part that is seen by the user from the python level. Objects of this class are
@@ -62,7 +62,7 @@ namespace Kratos
  *
  * This class's object will provide its slave, master details and relation matrix between them.
  *
- * One can add two MasterSlaveConstraint objects with same slave but different masters and weights.
+ * One can add two BaseMasterSlaveConstraint objects with same slave but different masters and weights.
  * Consider user adds : SlaveDof = weight1 * MasterDof1 + Constant1
  *              and   : SlaveDof = weight2 * MasterDof2 + Constant2
  *
@@ -73,7 +73,8 @@ namespace Kratos
  * This unique equation is used later on to modify the equation system.
  * @author Aditya Ghantasala
  */
-class KRATOS_API(KRATOS_CORE) MasterSlaveConstraint
+template<class TNodeType = Node<3> >
+class KRATOS_API(KRATOS_CORE) BaseMasterSlaveConstraint
     :  public IndexedObject, public Flags
 {
 public:
@@ -83,11 +84,14 @@ public:
     /// The definition of the base class
     typedef IndexedObject BaseType;
 
+    ///definition of this entity type
+    typedef BaseMasterSlaveConstraint<TNodeType> EntityType;
+
     /// The index type definition
     typedef std::size_t IndexType;
 
     /// The node type definition
-    typedef Node<3> NodeType;
+    typedef TNodeType NodeType;
 
     /// The DoF type definition
     typedef typename NodeType::DofType DofType;
@@ -102,19 +106,19 @@ public:
     typedef std::vector<std::size_t> EquationIdVectorType;
 
     /// The matrix type definition
-    typedef Matrix MatrixType;
+    typedef typename MatrixVectorTypeSelector<DataType>::MatrixType MatrixType;
 
     /// The vector type definition
-    typedef Vector VectorType;
+    typedef typename MatrixVectorTypeSelector<DataType>::VectorType VectorType;
 
     /// The variable type definition (DataType)
-    typedef Kratos::Variable<DataType> VariableType;
+    typedef Variable<DataType> VariableType;
 
     /// The component variable type definition
-    typedef Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<DataType, 3>>> VariableComponentType;
+    typedef VariableComponent<VectorComponentAdaptor<array_1d<DataType, 3>>> VariableComponentType;
 
-    /// Pointer definition of MasterSlaveConstraint
-    KRATOS_CLASS_POINTER_DEFINITION(MasterSlaveConstraint);
+    /// Pointer definition of BaseMasterSlaveConstraint
+    KRATOS_CLASS_POINTER_DEFINITION(BaseMasterSlaveConstraint);
 
     ///@}
     ///@name  Enum's
@@ -128,25 +132,25 @@ public:
      * @brief The default constructor
      * @param IndexType The Id of the new created constraint
      */
-    explicit MasterSlaveConstraint(IndexType Id = 0) : IndexedObject(Id), Flags()
+    explicit BaseMasterSlaveConstraint(IndexType Id = 0) : IndexedObject(Id), Flags()
     {
     }
 
     /// Destructor.
-    virtual ~MasterSlaveConstraint() override
+    virtual ~BaseMasterSlaveConstraint() override
     {
 
     }
 
     /// Copy Constructor
-    MasterSlaveConstraint(const MasterSlaveConstraint& rOther)
+    BaseMasterSlaveConstraint(const BaseMasterSlaveConstraint& rOther)
         : BaseType(rOther),
           mData(rOther.mData)
     {
     }
 
     /// Assignment operator
-    MasterSlaveConstraint& operator=(const MasterSlaveConstraint& rOther)
+    BaseMasterSlaveConstraint& operator=(const BaseMasterSlaveConstraint& rOther)
     {
         BaseType::operator=( rOther );
         mData = rOther.mData;
@@ -170,7 +174,7 @@ public:
      * @param rConstantVector The vector of the constants, one entry for each of the slave.
      * @return A Pointer to the new constraint
      */
-    virtual MasterSlaveConstraint::Pointer Create(
+    virtual BaseMasterSlaveConstraint::Pointer Create(
         IndexType Id,
         DofPointerVectorType& rMasterDofsVector,
         DofPointerVectorType& rSlaveDofsVector,
@@ -180,7 +184,7 @@ public:
     {
         KRATOS_TRY
 
-        KRATOS_ERROR << "Create not implemented in MasterSlaveConstraintBaseClass" << std::endl;
+        KRATOS_ERROR << "Create not implemented in BaseMasterSlaveConstraintBaseClass" << std::endl;
 
         KRATOS_CATCH("");
     }
@@ -196,7 +200,7 @@ public:
      * @param Constant The constant in the master slave relation
      * @return A Pointer to the new constraint
      */
-    virtual MasterSlaveConstraint::Pointer Create(
+    virtual BaseMasterSlaveConstraint::Pointer Create(
         IndexType Id,
         NodeType& rMasterNode,
         const VariableType& rMasterVariable,
@@ -208,7 +212,7 @@ public:
     {
         KRATOS_TRY
 
-        KRATOS_ERROR << "Create not implemented in MasterSlaveConstraintBaseClass" << std::endl;
+        KRATOS_ERROR << "Create not implemented in BaseMasterSlaveConstraintBaseClass" << std::endl;
 
         KRATOS_CATCH("");
     }
@@ -224,7 +228,7 @@ public:
      * @param Constant The constant in the master slave relation
      * @return A Pointer to the new constraint
      */
-    virtual MasterSlaveConstraint::Pointer Create(
+    virtual BaseMasterSlaveConstraint::Pointer Create(
         IndexType Id,
         NodeType& rMasterNode,
         const VariableComponentType& rMasterVariable,
@@ -234,7 +238,7 @@ public:
         const DataType Constant
         ) const
     {
-        KRATOS_ERROR << "Create not implemented in MasterSlaveConstraintBaseClass";
+        KRATOS_ERROR << "Create not implemented in BaseMasterSlaveConstraintBaseClass";
     }
 
     /**
@@ -246,7 +250,7 @@ public:
     {
         KRATOS_TRY
 
-        MasterSlaveConstraint::Pointer p_new_const = boost::make_shared<MasterSlaveConstraint>(*this);
+        BaseMasterSlaveConstraint::Pointer p_new_const = boost::make_shared<BaseMasterSlaveConstraint>(*this);
         p_new_const->SetId(NewId);
         p_new_const->SetData(this->GetData());
         p_new_const->Set(Flags(*this));
@@ -324,7 +328,7 @@ public:
         const ProcessInfo& rCurrentProcessInfo
         ) const
     {
-        KRATOS_ERROR << "GetDofList not implemented in MasterSlaveConstraintBaseClass" << std::endl;
+        KRATOS_ERROR << "GetDofList not implemented in BaseMasterSlaveConstraintBaseClass" << std::endl;
     }
 
     /**
@@ -339,7 +343,7 @@ public:
         const ProcessInfo& rCurrentProcessInfo
         )
     {
-        KRATOS_ERROR << "SetDofList not implemented in MasterSlaveConstraintBaseClass" << std::endl;
+        KRATOS_ERROR << "SetDofList not implemented in BaseMasterSlaveConstraintBaseClass" << std::endl;
     }
 
     /**
@@ -367,7 +371,7 @@ public:
      */
     virtual const DofPointerVectorType& GetSlaveDofsVector() const
     {
-        KRATOS_ERROR << "GetSlaveDofsVector not implemented in MasterSlaveConstraintBaseClass" << std::endl;
+        KRATOS_ERROR << "GetSlaveDofsVector not implemented in BaseMasterSlaveConstraintBaseClass" << std::endl;
     }
 
     /**
@@ -376,7 +380,7 @@ public:
      */
     virtual void SetSlaveDofsVector(const DofPointerVectorType& rSlaveDofsVector)
     {
-        KRATOS_ERROR << "SetSlaveDofsVector not implemented in MasterSlaveConstraintBaseClass" << std::endl;
+        KRATOS_ERROR << "SetSlaveDofsVector not implemented in BaseMasterSlaveConstraintBaseClass" << std::endl;
     }
 
     /**
@@ -385,7 +389,7 @@ public:
      */
     virtual const DofPointerVectorType& GetMasterDofsVector() const
     {
-        KRATOS_ERROR << "GetMasterDofsVector not implemented in MasterSlaveConstraintBaseClass" << std::endl;
+        KRATOS_ERROR << "GetMasterDofsVector not implemented in BaseMasterSlaveConstraintBaseClass" << std::endl;
     }
 
     /**
@@ -394,7 +398,7 @@ public:
      */
     virtual void SetMasterDofsVector(const DofPointerVectorType& rMasterDofsVector)
     {
-        KRATOS_ERROR << "SetMasterDofsVector not implemented in MasterSlaveConstraintBaseClass" << std::endl;
+        KRATOS_ERROR << "SetMasterDofsVector not implemented in BaseMasterSlaveConstraintBaseClass" << std::endl;
     }
 
     /**
@@ -403,7 +407,7 @@ public:
      */
     virtual void ResetSlaveDofs(const ProcessInfo& rCurrentProcessInfo)
     {
-        KRATOS_ERROR << "ResetSlaveDofs not implemented in MasterSlaveConstraintBaseClass" << std::endl;
+        KRATOS_ERROR << "ResetSlaveDofs not implemented in BaseMasterSlaveConstraintBaseClass" << std::endl;
     }
 
     /**
@@ -412,7 +416,7 @@ public:
      */
     virtual void Apply(const ProcessInfo& rCurrentProcessInfo)
     {
-        KRATOS_ERROR << "Apply not implemented in MasterSlaveConstraintBaseClass" << std::endl;
+        KRATOS_ERROR << "Apply not implemented in BaseMasterSlaveConstraintBaseClass" << std::endl;
     }
 
     /**
@@ -429,7 +433,7 @@ public:
     {
         KRATOS_TRY
 
-        KRATOS_ERROR << "SetLocalSystem not implemented in MasterSlaveConstraintBaseClass" << std::endl;
+        KRATOS_ERROR << "SetLocalSystem not implemented in BaseMasterSlaveConstraintBaseClass" << std::endl;
 
         KRATOS_CATCH("");
     }
@@ -488,7 +492,7 @@ public:
         KRATOS_TRY
 
         if (this->Id() < 1)
-            KRATOS_ERROR << "MasterSlaveConstraint found with Id " << this->Id();
+            KRATOS_ERROR << "BaseMasterSlaveConstraint found with Id " << this->Id();
 
         return 0;
 
@@ -514,7 +518,7 @@ public:
      */
     virtual void PrintInfo(std::ostream &rOStream) const override
     {
-        rOStream << " MasterSlaveConstraint Id  : " << this->Id() << std::endl;
+        rOStream << " BaseMasterSlaveConstraint Id  : " << this->Id() << std::endl;
     }
 
     ///@}
@@ -668,19 +672,23 @@ private:
     }
 };
 
+typedef BaseMasterSlaveConstraint<> MasterSlaveConstraint;
+
 KRATOS_API_EXTERN template class KRATOS_API(KRATOS_CORE) KratosComponents<MasterSlaveConstraint>;
 
 ///@name Input/Output functions
 ///@{
 
 /// input stream function
-inline std::istream& operator >> (std::istream& rIStream, MasterSlaveConstraint& rThis)
+template<class TNodeType>
+inline std::istream& operator >> (std::istream& rIStream, BaseMasterSlaveConstraint<TNodeType>& rThis)
 {
     return rIStream;
 }
 
 /// output stream function
-inline std::ostream& operator << (std::ostream& rOStream, const MasterSlaveConstraint& rThis)
+template<class TNodeType>
+inline std::ostream& operator << (std::ostream& rOStream, const BaseMasterSlaveConstraint<TNodeType>& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;

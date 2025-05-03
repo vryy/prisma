@@ -24,32 +24,15 @@
 // System includes
 
 // External includes
-#include <boost/python.hpp>
-
 
 // Project includes
-#include "includes/define.h"
+#include "includes/define_python.h"
 #include "includes/ublas_interface.h"
 #include "includes/constitutive_law.h"
 #include "includes/convection_diffusion_settings.h"
 #include "includes/radiation_settings.h"
 #include "includes/variables.h"
 #include "python/add_variables_to_python.h"
-
-#ifdef KRATOS_REGISTER_IN_PYTHON_VARIABLE
-#undef KRATOS_REGISTER_IN_PYTHON_VARIABLE
-#endif
-#define KRATOS_REGISTER_IN_PYTHON_VARIABLE(variable) \
-    scope().attr(#variable) = boost::ref(variable);
-
-#ifdef KRATOS_REGISTER_IN_PYTHON_3D_VARIABLE_WITH_COMPONENTS
-#undef KRATOS_REGISTER_IN_PYTHON_3D_VARIABLE_WITH_COMPONENTS
-#endif
-#define KRATOS_REGISTER_IN_PYTHON_3D_VARIABLE_WITH_COMPONENTS(name) \
-    KRATOS_REGISTER_IN_PYTHON_VARIABLE(name) \
-    KRATOS_REGISTER_IN_PYTHON_VARIABLE(name##_X) \
-    KRATOS_REGISTER_IN_PYTHON_VARIABLE(name##_Y) \
-    KRATOS_REGISTER_IN_PYTHON_VARIABLE(name##_Z)
 
 namespace Kratos
 {
@@ -107,7 +90,6 @@ void  AddVariablesToPython()
     KRATOS_REGISTER_IN_PYTHON_3D_VARIABLE_WITH_COMPONENTS( ANGULAR_VELOCITY )
     KRATOS_REGISTER_IN_PYTHON_3D_VARIABLE_WITH_COMPONENTS( ACCELERATION )
     KRATOS_REGISTER_IN_PYTHON_3D_VARIABLE_WITH_COMPONENTS( VELOCITY )
-    // std::cout << "DISPLACEMENT before exporting to Python: " << DISPLACEMENT << std::endl;
     KRATOS_REGISTER_IN_PYTHON_3D_VARIABLE_WITH_COMPONENTS( DISPLACEMENT )
     KRATOS_REGISTER_IN_PYTHON_3D_VARIABLE_WITH_COMPONENTS( ROTATION )
     KRATOS_REGISTER_IN_PYTHON_3D_VARIABLE_WITH_COMPONENTS( DELTA_ROTATION )
@@ -153,8 +135,8 @@ void  AddVariablesToPython()
 //    KRATOS_REGISTER_IN_PYTHON_VARIABLE( LOCAL_INERTIA )
     KRATOS_REGISTER_IN_PYTHON_VARIABLE( LOCAL_CONSTITUTIVE_MATRIX )
 
-    //for structural application TO BE REMOVED
-    KRATOS_REGISTER_IN_PYTHON_VARIABLE( CONSTITUTIVE_LAW )
+    //for structural application
+    KRATOS_REGISTER_IN_PYTHON_CONSTITUTIVE_LAW_VARIABLE( CONSTITUTIVE_LAW )
     KRATOS_REGISTER_IN_PYTHON_VARIABLE( INTERNAL_VARIABLES )
     KRATOS_REGISTER_IN_PYTHON_VARIABLE( MATERIAL_PARAMETERS )
     KRATOS_REGISTER_IN_PYTHON_VARIABLE( GREEN_LAGRANGE_STRAIN_TENSOR )

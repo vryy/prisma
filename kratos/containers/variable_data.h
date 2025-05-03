@@ -202,7 +202,8 @@ public:
         return !mIsComponent;
     }
 
-    virtual const void* pZero() const {
+    virtual const void* pZero() const
+    {
         KRATOS_ERROR << "Calling base class method." << std::endl;
     }
 
@@ -321,7 +322,10 @@ private:
 
 /// input stream function
 inline std::istream& operator >> (std::istream& rIStream,
-                                  VariableData& rThis);
+                                  VariableData& rThis)
+{
+    return rIStream;
+}
 
 /// output stream function
 inline std::ostream& operator << (std::ostream& rOStream,

@@ -22,9 +22,8 @@
 
 
 /* Project includes */
-#include "includes/model_part.h"
 #include "includes/define.h"
-#include "includes/dof.h"
+#include "containers/variable.h"
 
 namespace Kratos
 {
@@ -73,11 +72,10 @@ Detail class definition.
                             \URL[Extended documentation doc]{ extended_documentation/no_ext_doc.doc}
 
                               \URL[Extended documentation ps]{ extended_documentation/no_ext_doc.ps}
-
-
 */
 template<class TSparseSpace,
-         class TDenseSpace //= DenseSpace<double>
+         class TDenseSpace, //= DenseSpace<double>
+         class TModelPartType
          >
 class ConvergenceCriteria
 {
@@ -92,12 +90,15 @@ public:
     typedef typename TDenseSpace::MatrixType LocalSystemMatrixType;
     typedef typename TDenseSpace::VectorType LocalSystemVectorType;
 
-    typedef Dof<KRATOS_DOUBLE_TYPE> TDofType;
-    typedef PointerVectorSet<TDofType, SetIdentityFunction<TDofType> > DofsArrayType;
-    /*      typedef PointerVectorSet<TDofType, IndexedObject> DofsArrayType; */
+    typedef TModelPartType ModelPartType;
+
+    typedef typename ModelPartType::ValueType ValueType;
+    typedef typename ModelPartType::DofType DofType;
+    typedef typename ModelPartType::DofsArrayType DofsArrayType;
 
     /** Counted pointer of ConvergenceCriteria */
     KRATOS_CLASS_POINTER_DEFINITION(ConvergenceCriteria);
+
     /*@} */
     /**@name Life Cycle
      */
@@ -111,7 +112,6 @@ public:
         mConvergenceCriteriaIsInitialized = false;
         SetEchoLevel(1);
     }
-
 
     /** Copy constructor.
      */
@@ -128,7 +128,6 @@ public:
     {
     }
 
-
     /*@} */
     /**@name Operators
      */
@@ -140,7 +139,7 @@ public:
      */
     virtual std::vector<TSystemVectorType>&  GetRHS_Element_Components()
     {
-      KRATOS_THROW_ERROR(std::logic_error, "Asking for Global Components to the CONVERGENCE CRITERION base class which is not component wise and not contains this member variable","")
+        KRATOS_ERROR << "Asking for Global Components to the CONVERGENCE CRITERION base class which is not component wise and not contains this member variable";
     }
 
     /**
@@ -148,7 +147,7 @@ public:
      */
     virtual std::vector< Variable< LocalSystemVectorType > >&  GetRHS_Element_Variables()
     {
-      KRATOS_THROW_ERROR(std::logic_error, "Asking for Global Components to the CONVERGENCE CRITERION base class which is not component wise and not contains this member variable","")
+        KRATOS_ERROR << "Asking for Global Components to the CONVERGENCE CRITERION base class which is not component wise and not contains this member variable";
     }
 
     /**
@@ -156,7 +155,7 @@ public:
      */
     virtual std::vector<TSystemVectorType>&  GetRHS_Condition_Components()
     {
-      KRATOS_THROW_ERROR(std::logic_error, "Asking for Global Components to the CONVERGENCE CRITERION base class which is not component wise and not contains this member variable","")
+        KRATOS_ERROR << "Asking for Global Components to the CONVERGENCE CRITERION base class which is not component wise and not contains this member variable";
     }
 
     /**
@@ -164,9 +163,8 @@ public:
      */
     virtual std::vector< Variable< LocalSystemVectorType > >&  GetRHS_Condition_Variables()
     {
-      KRATOS_THROW_ERROR(std::logic_error, "Asking for Global Components to the CONVERGENCE CRITERION base class which is not component wise and not contains this member variable","")
+        KRATOS_ERROR << "Asking for Global Components to the CONVERGENCE CRITERION base class which is not component wise and not contains this member variable";
     }
-
 
     //*********************************************************************************
 
@@ -180,25 +178,29 @@ public:
         mEchoLevel = Level;
     }
 
-    int GetEchoLevel()
+    int GetEchoLevel() const
     {
         return mEchoLevel;
     }
-
 
     void SetActualizeRHSFlag(bool flag)
     {
         mActualizeRHSIsNeeded = flag;
     }
 
-    bool GetActualizeRHSflag()
+    bool GetActualizeRHSflag() const
     {
         return mActualizeRHSIsNeeded;
     }
 
+    bool ConvergenceCriteriaIsInitialized() const
+    {
+        return mConvergenceCriteriaIsInitialized;
+    }
+
     /*Criterias that need to be called before getting the solution */
     virtual bool PreCriteria(
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         DofsArrayType& rDofSet,
         const TSystemMatrixType& A,
         const TSystemVectorType& Dx,
@@ -210,7 +212,7 @@ public:
 
     /*Criterias that need to be called after getting the solution */
     virtual bool PostCriteria(
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         DofsArrayType& rDofSet,
         const TSystemMatrixType& A,
         const TSystemVectorType& Dx,
@@ -221,14 +223,14 @@ public:
     }
 
     virtual void Initialize(
-        ModelPart& r_model_part
+        ModelPartType& r_model_part
     )
     {
         mConvergenceCriteriaIsInitialized = true;
     }
 
     virtual void InitializeSolutionStep(
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         DofsArrayType& rDofSet,
         const TSystemMatrixType& A,
         const TSystemVectorType& Dx,
@@ -238,7 +240,7 @@ public:
     }
 
     virtual void InitializeNonLinearIteration(
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         DofsArrayType& rDofSet,
         const TSystemMatrixType& A,
         const TSystemVectorType& Dx,
@@ -248,7 +250,7 @@ public:
     }
 
     virtual void FinalizeSolutionStep(
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         DofsArrayType& rDofSet,
         const TSystemMatrixType& A,
         const TSystemVectorType& Dx,
@@ -258,7 +260,7 @@ public:
     }
 
     virtual void FinalizeNonLinearIteration(
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         DofsArrayType& rDofSet,
         const TSystemMatrixType& A,
         const TSystemVectorType& Dx,
@@ -274,19 +276,14 @@ public:
      * @param r_model_part
      * @return 0 all ok
      */
-    virtual int Check(ModelPart& r_model_part)
+    virtual int Check(const ModelPartType& r_model_part) const
     {
         KRATOS_TRY
 
         return 0;
+
         KRATOS_CATCH("");
     }
-
-
-
-    bool mActualizeRHSIsNeeded;
-    bool mConvergenceCriteriaIsInitialized;
-    int  mEchoLevel;
 
     /*@} */
     /**@name Operations */
@@ -310,6 +307,29 @@ public:
 
     /*@} */
 
+    ///@name Input and output
+    ///@{
+
+    /// Turn back information as a string.
+    virtual std::string Info() const
+    {
+        return "ConvergenceCriteria";
+    }
+
+    /// Print information about this object.
+    virtual void PrintInfo(std::ostream& rOStream) const
+    {
+        rOStream << Info();
+    }
+
+    /// Print object's data.
+    virtual void PrintData(std::ostream& rOStream) const
+    {
+        rOStream << Info();
+    }
+
+    ///@}
+
 protected:
     /**@name Protected static Member Variables */
     /*@{ */
@@ -318,6 +338,7 @@ protected:
     /**@name Protected member Variables */
     /*@{ */
 
+    bool mConvergenceCriteriaIsInitialized;
 
     /*@} */
     /**@name Protected Operators*/
@@ -356,6 +377,9 @@ private:
     /**@name Member Variables */
     /*@{ */
 
+    bool mActualizeRHSIsNeeded;
+    int  mEchoLevel;
+
     /*@} */
     /**@name Private Operators*/
     /*@{ */
@@ -390,8 +414,30 @@ private:
 /**@name Type Definitions */
 /*@{ */
 
-
 /*@} */
+
+///@name Input and output
+///@{
+
+/// input stream function
+template<class TSparseSpace, class TDenseSpace, class TModelPartType>
+inline std::istream& operator >> (std::istream& rIStream, ConvergenceCriteria<TSparseSpace, TDenseSpace, TModelPartType>& rThis)
+{
+    return rIStream;
+}
+
+/// output stream function
+template<class TSparseSpace, class TDenseSpace, class TModelPartType>
+inline std::ostream& operator << (std::ostream& rOStream, const ConvergenceCriteria<TSparseSpace, TDenseSpace, TModelPartType>& rThis)
+{
+    rThis.PrintInfo(rOStream);
+    rOStream << std::endl;
+    rThis.PrintData(rOStream);
+
+    return rOStream;
+}
+
+///@}
 
 } /* namespace Kratos.*/
 

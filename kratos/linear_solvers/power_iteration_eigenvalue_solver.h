@@ -53,9 +53,10 @@ namespace Kratos
 /** Detail class definition.
 */
 template<class TSparseSpaceType, class TDenseSpaceType, class TLinearSolverType,
-         class TPreconditionerType = Preconditioner<TSparseSpaceType, TDenseSpaceType>,
+         class TModelPartType,
+         class TPreconditionerType = Preconditioner<TSparseSpaceType, TDenseSpaceType, TModelPartType>,
          class TReordererType = Reorderer<TSparseSpaceType, TDenseSpaceType> >
-class PowerIterationEigenvalueSolver : public IterativeSolver<TSparseSpaceType, TDenseSpaceType, TPreconditionerType, TReordererType>
+class PowerIterationEigenvalueSolver : public IterativeSolver<TSparseSpaceType, TDenseSpaceType, TModelPartType, TPreconditionerType, TReordererType>
 {
 public:
     ///@name Type Definitions
@@ -64,7 +65,7 @@ public:
     /// Pointer definition of PowerIterationEigenvalueSolver
     KRATOS_CLASS_POINTER_DEFINITION(PowerIterationEigenvalueSolver);
 
-    typedef IterativeSolver<TSparseSpaceType, TDenseSpaceType, TPreconditionerType, TReordererType> BaseType;
+    typedef IterativeSolver<TSparseSpaceType, TDenseSpaceType, TModelPartType, TPreconditionerType, TReordererType> BaseType;
 
     typedef typename BaseType::SparseMatrixType SparseMatrixType;
 
@@ -89,7 +90,7 @@ public:
     /// Default constructor.
     PowerIterationEigenvalueSolver() {}
 
-    PowerIterationEigenvalueSolver(double NewMaxTolerance, unsigned int NewMaxIterationsNumber,
+    PowerIterationEigenvalueSolver(ValueType NewMaxTolerance, unsigned int NewMaxIterationsNumber,
                                    unsigned int NewRequiredEigenvalueNumber, typename TLinearSolverType::Pointer pLinearSolver)
         : BaseType(NewMaxTolerance, NewMaxIterationsNumber), mRequiredEigenvalueNumber(NewRequiredEigenvalueNumber), mpLinearSolver(pLinearSolver) {}
 
@@ -99,10 +100,8 @@ public:
     /// Copy constructor.
     PowerIterationEigenvalueSolver(const PowerIterationEigenvalueSolver& Other) : BaseType(Other) {}
 
-
     /// Destructor.
-    virtual ~PowerIterationEigenvalueSolver() {}
-
+    ~PowerIterationEigenvalueSolver() override {}
 
     ///@}
     ///@name Operators
@@ -126,7 +125,6 @@ public:
 
         R /= norm_2(R);
     }
-
 
     // The power iteration algorithm
     void Solve(SparseMatrixType& K,
@@ -168,18 +166,18 @@ public:
             beta = inner_prod(x, y);
             if constexpr (std::is_same<DataType, ValueType>::value)
             {
-                if(beta <= 0.00)
+                if(beta <= 0)
                     KRATOS_THROW_ERROR(std::invalid_argument, "M is not Positive-definite", "");
             }
 
             ro = ro / beta;
             beta = std::sqrt(beta);
 
-            DataType inverse_of_beta = 1.00 / beta;
+            DataType inverse_of_beta = 1 / beta;
 
             y *= inverse_of_beta;
 
-            if(std::abs(ro) == 0.00)
+            if(std::abs(ro) == 0)
                 KRATOS_THROW_ERROR(std::runtime_error, "Perpendicular eigenvector to M", "");
 
             ValueType convergence_norm = std::abs((ro - old_ro) / ro);
@@ -191,9 +189,6 @@ public:
                 break;
 
             old_ro = ro;
-
-
-
         }
 
         KRATOS_WATCH(ro);
@@ -207,9 +202,6 @@ public:
         for(SizeType i = 0 ; i < size ; i++)
             Eigenvectors(0,i) = y[i];
     }
-
-
-
 
     ///@}
     ///@name Access

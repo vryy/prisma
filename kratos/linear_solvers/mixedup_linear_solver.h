@@ -43,18 +43,19 @@ namespace Kratos
  * and uses "standard" linear solvers for the different blocks as well as a GMRES for the outer part
 */
 template<class TSparseSpaceType, class TDenseSpaceType,
-         class TPreconditionerType = Preconditioner<TSparseSpaceType, TDenseSpaceType>,
+         class TModelPartType,
+         class TPreconditionerType = Preconditioner<TSparseSpaceType, TDenseSpaceType, TModelPartType>,
          class TReordererType = Reorderer<TSparseSpaceType, TDenseSpaceType> >
 class MixedUPLinearSolver :
-    public IterativeSolver<TSparseSpaceType, TDenseSpaceType,TPreconditionerType, TReordererType>
+    public IterativeSolver<TSparseSpaceType, TDenseSpaceType, TModelPartType, TPreconditionerType, TReordererType>
 {
 public:
     ///@name Type Definitions
     ///@{
     /// Pointer definition of MixedUPLinearSolver
     KRATOS_CLASS_POINTER_DEFINITION (MixedUPLinearSolver);
-    typedef IterativeSolver<TSparseSpaceType, TDenseSpaceType, TPreconditionerType, TReordererType> BaseType;
-    typedef LinearSolver<TSparseSpaceType, TDenseSpaceType, TReordererType> LinearSolverType;
+    typedef IterativeSolver<TSparseSpaceType, TDenseSpaceType, TModelPartType, TPreconditionerType, TReordererType> BaseType;
+    typedef LinearSolver<TSparseSpaceType, TDenseSpaceType, TModelPartType, TReordererType> LinearSolverType;
     typedef typename BaseType::SparseMatrixType SparseMatrixType;
     typedef typename BaseType::VectorType VectorType;
     typedef typename BaseType::DenseMatrixType DenseMatrixType;
@@ -63,13 +64,15 @@ public:
     typedef typename BaseType::SizeType SizeType;
     typedef typename BaseType::DataType DataType;
     typedef typename BaseType::ValueType ValueType;
+    typedef typename BaseType::ModelPartType ModelPartType;
     ///@}
 
     ///@name Life Cycle
     ///@{
+
     /// Default constructor.
-    MixedUPLinearSolver (typename LinearSolver<TSparseSpaceType, TDenseSpaceType, TReordererType>::Pointer psolver_UU_block,
-                         typename LinearSolver<TSparseSpaceType, TDenseSpaceType, TReordererType>::Pointer psolver_PP_block,
+    MixedUPLinearSolver (typename LinearSolverType::Pointer psolver_UU_block,
+                         typename LinearSolverType::Pointer psolver_PP_block,
                          ValueType NewMaxTolerance,
                          unsigned int NewMaxIterationsNumber,
                          unsigned int m
@@ -82,24 +85,30 @@ public:
         mis_initialized = false;
         mm = m;
     }
+
     /// Copy constructor.
     MixedUPLinearSolver (const MixedUPLinearSolver& Other)
     {
         KRATOS_ERROR << "copy constructor not correctly implemented";
     }
+
     /// Destructor.
-    virtual ~MixedUPLinearSolver() {}
+    ~MixedUPLinearSolver() override {}
+
     ///@}
     ///@name Operators
     ///@{
+
     /// Assignment operator.
     MixedUPLinearSolver& operator= (const MixedUPLinearSolver& Other)
     {
         return *this;
     }
+
     ///@}
     ///@name Operations
     ///@{
+
     /** This function is designed to be called as few times as possible. It creates the data structures
      * that only depend on the connectivity of the matrix (and not on its coefficients)
      * so that the memory can be allocated once and expensive operations can be done only when strictly
@@ -121,6 +130,7 @@ public:
           std::cout << "linear solver intialization is deferred to the moment at which blocks are available" << std::endl;
         }
     }
+
     /** This function is designed to be called every time the coefficients change in the system
      * that is, normally at the beginning of each solve.
      * For example if we are implementing a direct solver, this is the place to do the factorization
@@ -129,7 +139,7 @@ public:
     @param rX. Solution vector. it's also the initial guess for iterative linear solvers.
     @param rB. Right hand side vector.
     */
-    virtual void InitializeSolutionStep (SparseMatrixType& rA, VectorType& rX, VectorType& rB)
+    void InitializeSolutionStep (SparseMatrixType& rA, VectorType& rX, VectorType& rB) override
     {
         //copy to local matrices
         if (mBlocksAreAllocated == false)
@@ -156,7 +166,7 @@ public:
     @param rX. Solution vector. it's also the initial guess for iterative linear solvers.
     @param rB. Right hand side vector.
     */
-    virtual void PerformSolutionStep (SparseMatrixType& rA, VectorType& rX, VectorType& rB)
+    void PerformSolutionStep (SparseMatrixType& rA, VectorType& rX, VectorType& rB) override
     {
         unsigned int m = mm;
         unsigned int max_iter = BaseType::GetMaxIterationsNumber();
@@ -170,7 +180,7 @@ public:
     @param rX. Solution vector. it's also the initial guess for iterative linear solvers.
     @param rB. Right hand side vector.
     */
-    virtual void FinalizeSolutionStep (SparseMatrixType& rA, VectorType& rX, VectorType& rB)
+    void FinalizeSolutionStep (SparseMatrixType& rA, VectorType& rX, VectorType& rB) override
     {
         mpsolver_UU_block->FinalizeSolutionStep(mK, mu, mru);
         mpsolver_PP_block->FinalizeSolutionStep(mS, mp, mrp);
@@ -180,7 +190,7 @@ public:
      * Clear is designed to leave the solver object as if newly created.
      * After a clear a new Initialize is needed
      */
-    virtual void Clear()
+    void Clear() override
     {
         mK.clear();
         mG.clear();
@@ -204,7 +214,7 @@ public:
     guess for iterative linear solvers.
      @param rB. Right hand side vector.
     */
-    virtual bool Solve(SparseMatrixType& rA, VectorType& rX, VectorType& rB)
+    bool Solve(SparseMatrixType& rA, VectorType& rX, VectorType& rB) override
     {
         if (mis_initialized == false)
             this->Initialize (rA,rX,rB);
@@ -226,7 +236,7 @@ public:
     guess for iterative linear solvers.
      @param rB. Right hand side vector.
     */
-    virtual bool Solve (SparseMatrixType& rA, DenseMatrixType& rX, DenseMatrixType& rB)
+    bool Solve (SparseMatrixType& rA, DenseMatrixType& rX, DenseMatrixType& rB) override
     {
         return false;
     }
@@ -244,7 +254,7 @@ public:
      * which require knowledge on the spatial position of the nodes associated to a given dof.
      * This function tells if the solver requires such data
      */
-    virtual bool AdditionalPhysicalDataIsNeeded()
+    bool AdditionalPhysicalDataIsNeeded() override
     {
         return true;
     }
@@ -259,14 +269,14 @@ public:
         SparseMatrixType& rA,
         VectorType& rX,
         VectorType& rB,
-        typename ModelPart::DofsArrayType& rdof_set,
-        ModelPart& r_model_part
-    )
+        typename ModelPartType::DofsArrayType& rdof_set,
+        ModelPartType& r_model_part
+    ) override
     {
         //count pressure dofs
         unsigned int n_pressure_dofs = 0;
         unsigned int tot_active_dofs = 0;
-        for (ModelPart::DofsArrayType::iterator it = rdof_set.begin(); it!=rdof_set.end(); it++)
+        for (auto it = rdof_set.begin(); it!=rdof_set.end(); it++)
         {
           if (it->EquationId() < rA.size1())
           {
@@ -294,7 +304,7 @@ public:
         unsigned int pressure_counter = 0;
         unsigned int other_counter = 0;
         unsigned int global_pos = 0;
-        for (ModelPart::DofsArrayType::iterator it = rdof_set.begin(); it!=rdof_set.end(); it++)
+        for (auto it = rdof_set.begin(); it!=rdof_set.end(); it++)
         {
             if (it->EquationId() < rA.size1())
             {
@@ -528,7 +538,7 @@ private:
         }
         else
         {
-            const DataType rnorm = 1.0/std::sqrt (dx*dx + dy*dy);
+            const DataType rnorm = 1/std::sqrt(dx*dx + dy*dy);
             cs = std::abs(dx) * rnorm;
             sn = cs * dy / dx;
         }
@@ -627,7 +637,7 @@ private:
                 if (std::abs(normw) == 0)
                     TSparseSpaceType::Copy (V[i+1], w); //V[i+1] = w;
                 else
-                    TSparseSpaceType::Assign (V[i+1], 1.0/normw, w); //V[i+1] = w / normw;
+                    TSparseSpaceType::Assign (V[i+1], 1/normw, w); //V[i+1] = w / normw;
                 for (unsigned int k = 0; k < i; k++)
                     ApplyPlaneRotation (H (k,i), H (k+1,i), cs (k), sn (k) );
                 GeneratePlaneRotation (H (i,i), H (i+1,i), cs (i), sn (i) );
@@ -811,7 +821,7 @@ private:
         int DiagSize = int (diagK.size()); // to avoid comparison between int & unsigned int
         #pragma omp parallel for
         for ( int i = 0; i < DiagSize; i++)
-            rIDiagS[i] = 1.0/diagK[i];
+            rIDiagS[i] = 1/diagK[i];
         OpenMPUtils::PartitionVector Partition;
         int NumThreads = OpenMPUtils::GetNumThreads();
         OpenMPUtils::DivideInPartitions (A.size1(),NumThreads,Partition);

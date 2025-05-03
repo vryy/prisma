@@ -21,10 +21,11 @@ public:
 
     typedef typename TDenseSpaceType::MatrixType DenseMatrixType;
 
-    typedef std::size_t IndexType;
+    typedef typename TSparseSpaceType::IndexType IndexType;
 
     typedef typename TSparseSpaceType::DataType DataType;
 
+    static constexpr auto zero = DataType();
 
     int     size;
     int*    rowIndex;
@@ -324,7 +325,7 @@ public:
                 entry = *row_iterator;
                 newi= invperm[i];
                 newj= invperm[j];
-                if (entry != 0.00)
+                if (entry != zero)
                 {
                     if (newi<newj)
                     {
@@ -351,7 +352,7 @@ public:
 //                         entry = row_iterator->second; // Changed by Pooyan!!!
 //                         newi= invperm[i];
 //                         newj= invperm[j];
-//                         if (entry != 0.00)
+//                         if (entry != zero)
 //                         {
 //                             if (newi<newj)
 //                             {
@@ -396,7 +397,7 @@ public:
         DataType sum;
 
 
-        if(entriesD[0] == 0.00)
+        if(entriesD[0] == zero)
         {
             std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! LUSkylineFactorization::factorize: Error zero in diagonal" << std::endl;
         } //Roport Error zero in diagonal!!!!!!!!!!!
@@ -466,7 +467,7 @@ public:
             {
                 sum= sum - entriesL[j] * entriesU[j];
             }
-            if(sum == 0.00)
+            if(sum == zero)
             {
                 std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! LUSkylineFactorization::factorize: Error zero sum" << std::endl;
             } // Error reporting !!!!!!!!!!!!!!!!!!!
@@ -543,16 +544,17 @@ public:
 
 
 template<class TSparseSpaceType, class TDenseSpaceType,
+         class TModelPartType,
          class TReordererType = Reorderer<TSparseSpaceType, TDenseSpaceType> >
 class SkylineLUFactorizationSolver
-    : public DirectSolver<TSparseSpaceType, TDenseSpaceType, TReordererType>
+    : public DirectSolver<TSparseSpaceType, TDenseSpaceType, TModelPartType, TReordererType>
 {
 public:
 
     /// Counted pointer of SkylineLUFactorizationSolver
     KRATOS_CLASS_POINTER_DEFINITION(SkylineLUFactorizationSolver);
 
-    typedef LinearSolver<TSparseSpaceType, TDenseSpaceType, TReordererType> BaseType;
+    typedef LinearSolver<TSparseSpaceType, TDenseSpaceType, TModelPartType, TReordererType> BaseType;
 
     typedef typename BaseType::SparseMatrixType SparseMatrixType;
 
@@ -564,8 +566,7 @@ public:
     SkylineLUFactorizationSolver() {}
 
     /// Destructor.
-    virtual ~SkylineLUFactorizationSolver() {}
-
+    ~SkylineLUFactorizationSolver() override {}
 
     /** Normal solve method.
     Solves the linear system Ax=b and puts the result on SystemVector& rX.
@@ -574,7 +575,7 @@ public:
     @param rX. Solution vector.
     @param rB. Right hand side vector.
     */
-    bool Solve(SparseMatrixType& rA, VectorType& rX, VectorType& rB)
+    bool Solve(SparseMatrixType& rA, VectorType& rX, VectorType& rB) override
     {
         if(this->IsNotConsistent(rA, rX, rB))
             return false;
@@ -603,7 +604,7 @@ public:
     @param rX. Solution vector.
     @param rB. Right hand side vector.
     */
-    bool Solve(SparseMatrixType& rA, DenseMatrixType& rX, DenseMatrixType& rB)
+    bool Solve(SparseMatrixType& rA, DenseMatrixType& rX, DenseMatrixType& rB) override
     {
         const std::size_t size1 = TDenseSpaceType::Size1(rX);
         const std::size_t size2 = TDenseSpaceType::Size2(rX);
@@ -643,7 +644,7 @@ public:
     }
 
     /// Print information about this object.
-    void  PrintInfo(std::ostream& rOStream) const
+    void  PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << "LU factorization solver finished.";
     }

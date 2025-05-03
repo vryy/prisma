@@ -22,13 +22,14 @@
 namespace Kratos
 {
 
-
 template<class TSparseSpaceType,
          class TDenseSpaceType,
-         class TPreconditionerType = Preconditioner<TSparseSpaceType, TDenseSpaceType>,
+         class TModelPartType,
+         class TPreconditionerType = Preconditioner<TSparseSpaceType, TDenseSpaceType, TModelPartType>,
          class TReordererType = Reorderer<TSparseSpaceType, TDenseSpaceType> >
 class TFQMRSolver : public IterativeSolver<TSparseSpaceType,
     TDenseSpaceType,
+    TModelPartType,
     TPreconditionerType,
     TReordererType>
 {
@@ -37,7 +38,7 @@ public:
     /// Counted pointer of TFQMRSolver
     KRATOS_CLASS_POINTER_DEFINITION(TFQMRSolver);
 
-    typedef IterativeSolver<TSparseSpaceType, TDenseSpaceType, TPreconditionerType, TReordererType > BaseType;
+    typedef IterativeSolver<TSparseSpaceType, TDenseSpaceType, TModelPartType, TPreconditionerType, TReordererType > BaseType;
 
     typedef typename BaseType::DataType DataType;
 
@@ -48,6 +49,9 @@ public:
     typedef typename BaseType::VectorType VectorType;
 
     typedef typename BaseType::DenseMatrixType DenseMatrixType;
+
+    static constexpr auto zero = DataType();
+    static constexpr auto one = static_cast<DataType>(1.0);
 
     /// Default constructor.
     TFQMRSolver() {}
@@ -70,7 +74,7 @@ public:
 
 
     /// Destructor.
-    virtual ~TFQMRSolver() {}
+    ~TFQMRSolver() override {}
 
 
     /** Normal solve method.
@@ -80,7 +84,7 @@ public:
         @param rX. Solution vector. it's also the initial
         guess for iterative linear solvers.
         @param rB. Right hand side vector*/
-    bool Solve(SparseMatrixType& rA, VectorType& rX, VectorType& rB)
+    bool Solve(SparseMatrixType& rA, VectorType& rX, VectorType& rB) override
     {
         if(this->IsNotConsistent(rA, rX, rB))
             return false;
@@ -113,7 +117,7 @@ public:
         @param rX. Solution vector. it's also the initial
         guess for iterative linear solvers.
         @param rB. Right hand side vector*/
-    bool Solve(SparseMatrixType& rA, DenseMatrixType& rX, DenseMatrixType& rB)
+    bool Solve(SparseMatrixType& rA, DenseMatrixType& rX, DenseMatrixType& rB) override
     {
         /*            GetTimeTable()->Start(Info()); */
 
@@ -170,7 +174,6 @@ public:
 
 private:
 
-
     bool IterativeSolve(SparseMatrixType& rA, VectorType& rX, VectorType& rB)
     {
         const int size = TSparseSpaceType::Size(rX);
@@ -192,11 +195,11 @@ private:
 
         VectorType y1(r);
         VectorType y2(size);
-        for(typename VectorType::iterator ity2 = y2.begin(); ity2 != y2.end(); ity2++) *ity2 = 0.00;
+        for(typename VectorType::iterator ity2 = y2.begin(); ity2 != y2.end(); ity2++) *ity2 = zero;
 
 
         VectorType d(size);
-        for(typename VectorType::iterator itd = d.begin(); itd != d.end(); itd++) *itd = 0.00;
+        for(typename VectorType::iterator itd = d.begin(); itd != d.end(); itd++) *itd = zero;
 
 
         VectorType v(size);
@@ -205,20 +208,20 @@ private:
 
         VectorType u1(v);
         VectorType u2(size);
-        for(typename VectorType::iterator itu2 = u2.begin(); itu2 != u2.end(); itu2++) *itu2 = 0.00;
+        for(typename VectorType::iterator itu2 = u2.begin(); itu2 != u2.end(); itu2++) *itu2 = zero;
 
 
-        DataType theta = 0.00;
-        DataType eta   = 0.00;
-        DataType sigma = 0.00;
-        DataType alpha = 0.00;
-        DataType c     = 0.00;
+        DataType theta = zero;
+        DataType eta   = zero;
+        DataType sigma = zero;
+        DataType alpha = zero;
+        DataType c     = zero;
 
 
         DataType tau   = TSparseSpaceType::TwoNorm(r);
         DataType rho   = tau*tau;
-        DataType rhon  = 0.00;
-        DataType beta  = 0.00;
+        DataType rhon  = zero;
+        DataType beta  = zero;
 
 
         int m = 0;
@@ -234,7 +237,7 @@ private:
 
             sigma = TSparseSpaceType::Dot(r,v);
 
-            if (std::abs(sigma) == 0.00) break;
+            if (std::abs(sigma) == zero) break;
 
             alpha = rho/sigma;
 
@@ -247,20 +250,20 @@ private:
 
 
             //w=w-alpha*u1;
-            TSparseSpaceType::ScaleAndAdd(-alpha, u1, 1.00, w);
+            TSparseSpaceType::ScaleAndAdd(-alpha, u1, one, w);
 
 
             //d=y1+(theta*theta*eta/alpha)*d;
-            TSparseSpaceType::ScaleAndAdd(1.00, y1, (theta*theta*eta/alpha), d);
+            TSparseSpaceType::ScaleAndAdd(one, y1, (theta*theta*eta/alpha), d);
 
             theta = TSparseSpaceType::TwoNorm(w)/tau;
-            c     = 1.00/std::sqrt(1.00+theta*theta);
+            c     = 1 / std::sqrt(1+theta*theta);
             tau   = tau*theta*c;
             eta   = c*c*alpha;
 
 
             //x=x+eta*d;
-            TSparseSpaceType::ScaleAndAdd(eta, d, 1.00, rX);
+            TSparseSpaceType::ScaleAndAdd(eta, d, one, rX);
 
             BaseType::mResidualNorm = std::abs(tau)*std::sqrt((ValueType)(m+1));
 
@@ -275,27 +278,27 @@ private:
 
 
             //y2=y1-alpha*v;
-            TSparseSpaceType::ScaleAndAdd(1.00, y1, -alpha, v, y2);
+            TSparseSpaceType::ScaleAndAdd(one, y1, -alpha, v, y2);
 
 
             //u2=A*y2;
             this->PreconditionedMult(rA,y2,u2);
 
             //w=w-alpha*u2;
-            TSparseSpaceType::ScaleAndAdd(-alpha, u2, 1.00, w);
+            TSparseSpaceType::ScaleAndAdd(-alpha, u2, one, w);
 
             //d=y2+(theta*theta*eta/alpha)*d;
-            TSparseSpaceType::ScaleAndAdd(1.00, y2, (theta*theta*eta/alpha), d);
+            TSparseSpaceType::ScaleAndAdd(one, y2, (theta*theta*eta/alpha), d);
 
 
             theta = TSparseSpaceType::TwoNorm(w)/tau;
-            c     = 1.00/std::sqrt(1+theta*theta);
+            c     = one/std::sqrt(1+theta*theta);
             tau   = tau*theta*c;
             eta   = c*c*alpha;
 
 
             //x=x+eta*d;
-            TSparseSpaceType::ScaleAndAdd(eta, d, 1.00, rX);
+            TSparseSpaceType::ScaleAndAdd(eta, d, one, rX);
 
 
             BaseType::mResidualNorm = std::abs(tau)*std::sqrt((ValueType)(m+1));
@@ -308,7 +311,7 @@ private:
 
 
 
-            if (rho == 0.00) break;
+            if (rho == zero) break;
 
             rhon = TSparseSpaceType::Dot(r,w);
             beta = rhon/rho;
@@ -316,15 +319,15 @@ private:
 
 
             //y1= w + beta*y2;
-            TSparseSpaceType::ScaleAndAdd(1.00, w, beta, y2, y1);
+            TSparseSpaceType::ScaleAndAdd(one, w, beta, y2, y1);
 
 
             //u1 = A*y1;
             this->PreconditionedMult(rA,y1,u1);
 
             //v=u1+beta*(u2+beta*v);
-            TSparseSpaceType::ScaleAndAdd(1.00, u2, beta, v);
-            TSparseSpaceType::ScaleAndAdd(1.00, u1, beta, v);
+            TSparseSpaceType::ScaleAndAdd(one, u2, beta, v);
+            TSparseSpaceType::ScaleAndAdd(one, u1, beta, v);
 
 
             //Print iteration info
@@ -347,9 +350,6 @@ private:
 
     /// Assignment operator.
     TFQMRSolver& operator=(const TFQMRSolver& Other);
-
-
-
 
 }; // ********** Class TFQMRSolver *****************
 

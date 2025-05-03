@@ -34,6 +34,9 @@
 #include "python/add_strategies_to_python.h"
 #include "includes/model_part.h"
 #include "spaces/ublas_space.h"
+#ifdef _OPENMP
+#include "spaces/parallel_ublas_space.h"
+#endif
 
 //strategies
 #include "solving_strategies/strategies/solving_strategy.h"
@@ -81,32 +84,41 @@ namespace Kratos
     {
         using namespace boost::python;
 
-        typedef KRATOS_DOUBLE_TYPE DataType;
-        typedef UblasSpace<DataType, CompressedMatrix, Vector> SparseSpaceType;
-        typedef UblasSpace<DataType, Matrix, Vector> LocalSpaceType;
-
-        void MoveMesh(Scheme< SparseSpaceType, LocalSpaceType >& dummy, ModelPart::NodesContainerType& rNodes)
+        template<typename TSchemeType>
+        void MoveMesh(TSchemeType& dummy, typename TSchemeType::ModelPartType::NodesContainerType& rNodes)
         {
-            for (ModelPart::NodeIterator i = rNodes.begin(); i != rNodes.end(); ++i)
+            for (auto i = rNodes.begin(); i != rNodes.end(); ++i)
             {
-                const array_1d<DataType, 3> & disp = i->FastGetSolutionStepValue(DISPLACEMENT);
+                const auto& disp = i->FastGetSolutionStepValue(DISPLACEMENT);
                 (i)->X() = (i)->X0() + disp[0];
                 (i)->Y() = (i)->Y0() + disp[1];
                 (i)->Z() = (i)->Z0() + disp[2];
             }
         }
 
-        void AddStrategiesToPython()
+        template<typename TSparseSpaceType, typename TLocalSpaceType, typename TModelPartType>
+        void AddStrategiesToPythonImpl(const std::string& Prefix)
         {
-            typedef LinearSolver<SparseSpaceType, LocalSpaceType > LinearSolverType;
-            typedef SolvingStrategy< SparseSpaceType, LocalSpaceType, LinearSolverType > BaseSolvingStrategyType;
-            typedef Scheme< SparseSpaceType, LocalSpaceType > BaseSchemeType;
-            typedef ConvergenceCriteria< SparseSpaceType, LocalSpaceType > ::Pointer TConvergenceCriteriaPointer;
+            typedef TSparseSpaceType SparseSpaceType;
+            typedef TLocalSpaceType LocalSpaceType;
+
+            if constexpr(!std::is_same<typename SparseSpaceType::DataType, typename LocalSpaceType::DataType>::value)
+                KRATOS_ERROR << "The data type of sparse space and local space is incompatible";
+
+            if constexpr(!std::is_same<typename SparseSpaceType::DataType, typename TModelPartType::DataType>::value)
+                KRATOS_ERROR << "The data type of sparse space and model part is incompatible";
+
+            typedef typename LocalSpaceType::DataType DataType;
+            typedef typename DataTypeToValueType<DataType>::value_type ValueType;
+
+            typedef LinearSolver< SparseSpaceType, LocalSpaceType, TModelPartType, Reorderer<SparseSpaceType, LocalSpaceType> > LinearSolverType;
+            typedef SolvingStrategy< SparseSpaceType, LocalSpaceType, LinearSolverType, TModelPartType > BaseSolvingStrategyType;
+            typedef Scheme< SparseSpaceType, LocalSpaceType, TModelPartType > BaseSchemeType;
 
             //********************************************************************
             //********************************************************************
             //strategy base class
-            class_< BaseSolvingStrategyType, boost::noncopyable > ("SolvingStrategy", init < ModelPart&, bool >())
+            class_<BaseSolvingStrategyType, boost::noncopyable>((Prefix+"SolvingStrategy").c_str(), init<TModelPartType&, bool>())
                     .def("Predict", &BaseSolvingStrategyType::Predict)
                     .def("Initialize", &BaseSolvingStrategyType::Initialize)
                     .def("Solve", &BaseSolvingStrategyType::Solve)
@@ -127,51 +139,50 @@ namespace Kratos
                     //.def("GetModelPart", &BaseSolvingStrategyType::GetModelPart )
                     ;
 
-            typedef ConvergenceCriteria< SparseSpaceType, LocalSpaceType > TConvergenceCriteriaType;
-            typedef BuilderAndSolver< SparseSpaceType, LocalSpaceType, LinearSolverType > BuilderAndSolverType;
+            typedef ConvergenceCriteria<SparseSpaceType, LocalSpaceType, TModelPartType> ConvergenceCriteriaType;
+            typedef BuilderAndSolver<SparseSpaceType, LocalSpaceType, LinearSolverType, TModelPartType> BuilderAndSolverType;
 
-            class_< ResidualBasedLinearStrategy< SparseSpaceType, LocalSpaceType, LinearSolverType >, bases< BaseSolvingStrategyType >, boost::noncopyable >
-                    ("ResidualBasedLinearStrategy",init < ModelPart&, BaseSchemeType::Pointer, LinearSolverType::Pointer, bool, bool, bool, bool >())
-                    .def(init < ModelPart& ,  BaseSchemeType::Pointer, LinearSolverType::Pointer, BuilderAndSolverType::Pointer, bool, bool, bool,  bool  >())
-                    .def("GetResidualNorm", &ResidualBasedLinearStrategy< SparseSpaceType, LocalSpaceType, LinearSolverType >::GetResidualNorm)
-                    .def("SetBuilderAndSolver", &ResidualBasedLinearStrategy< SparseSpaceType, LocalSpaceType, LinearSolverType >::SetBuilderAndSolver)
+            typedef ResidualBasedLinearStrategy< SparseSpaceType, LocalSpaceType, LinearSolverType, TModelPartType > ResidualBasedLinearStrategyType;
+            class_< ResidualBasedLinearStrategyType, bases< BaseSolvingStrategyType >, boost::noncopyable >
+                    ((Prefix+"ResidualBasedLinearStrategy").c_str(),init < TModelPartType&, typename BaseSchemeType::Pointer, typename LinearSolverType::Pointer, bool, bool, bool, bool >())
+                    .def(init < TModelPartType&, typename BaseSchemeType::Pointer, typename LinearSolverType::Pointer, typename BuilderAndSolverType::Pointer, bool, bool, bool,  bool  >())
+                    .def("GetResidualNorm", &ResidualBasedLinearStrategyType::GetResidualNorm)
+                    .def("SetBuilderAndSolver", &ResidualBasedLinearStrategyType::SetBuilderAndSolver)
                     ;
 
-
-            class_< ResidualBasedNewtonRaphsonStrategy< SparseSpaceType, LocalSpaceType, LinearSolverType >, bases< BaseSolvingStrategyType >, boost::noncopyable >
-                    ("ResidualBasedNewtonRaphsonStrategy", init < ModelPart&, BaseSchemeType::Pointer, LinearSolverType::Pointer, TConvergenceCriteriaType::Pointer, int, bool, bool, bool >())
-                    .def(init < ModelPart&, BaseSchemeType::Pointer, LinearSolverType::Pointer, TConvergenceCriteriaType::Pointer, BuilderAndSolverType::Pointer, int, bool, bool, bool >())
-                    .def("SetMaxIterationNumber", &ResidualBasedNewtonRaphsonStrategy< SparseSpaceType, LocalSpaceType, LinearSolverType >::SetMaxIterationNumber)
-                    .def("GetMaxIterationNumber", &ResidualBasedNewtonRaphsonStrategy< SparseSpaceType, LocalSpaceType, LinearSolverType >::GetMaxIterationNumber)
-                    .def("SetKeepSystemConstantDuringIterations", &ResidualBasedNewtonRaphsonStrategy< SparseSpaceType, LocalSpaceType, LinearSolverType >::SetKeepSystemConstantDuringIterations)
-                    .def("GetKeepSystemConstantDuringIterations", &ResidualBasedNewtonRaphsonStrategy< SparseSpaceType, LocalSpaceType, LinearSolverType >::GetKeepSystemConstantDuringIterations)
+            typedef ResidualBasedNewtonRaphsonStrategy< SparseSpaceType, LocalSpaceType, LinearSolverType, TModelPartType > ResidualBasedNewtonRaphsonStrategyType;
+            class_< ResidualBasedNewtonRaphsonStrategyType, bases< BaseSolvingStrategyType >, boost::noncopyable >
+                    ((Prefix+"ResidualBasedNewtonRaphsonStrategy").c_str(), init < TModelPartType&, typename BaseSchemeType::Pointer, typename LinearSolverType::Pointer, typename ConvergenceCriteriaType::Pointer, int, bool, bool, bool >())
+                    .def(init < TModelPartType&, typename BaseSchemeType::Pointer, typename LinearSolverType::Pointer, typename ConvergenceCriteriaType::Pointer, typename BuilderAndSolverType::Pointer, int, bool, bool, bool >())
+                    .def("SetMaxIterationNumber", &ResidualBasedNewtonRaphsonStrategyType::SetMaxIterationNumber)
+                    .def("GetMaxIterationNumber", &ResidualBasedNewtonRaphsonStrategyType::GetMaxIterationNumber)
+                    .def("SetKeepSystemConstantDuringIterations", &ResidualBasedNewtonRaphsonStrategyType::SetKeepSystemConstantDuringIterations)
+                    .def("GetKeepSystemConstantDuringIterations", &ResidualBasedNewtonRaphsonStrategyType::GetKeepSystemConstantDuringIterations)
                     ;
 
-            class_< AdaptiveResidualBasedNewtonRaphsonStrategy< SparseSpaceType, LocalSpaceType, LinearSolverType >, bases< BaseSolvingStrategyType >, boost::noncopyable >
-                    ("AdaptiveResidualBasedNewtonRaphsonStrategy",
-                    init < ModelPart&, BaseSchemeType::Pointer, LinearSolverType::Pointer, TConvergenceCriteriaType::Pointer, int, int, bool, bool, bool, DataType, DataType, int
+            typedef AdaptiveResidualBasedNewtonRaphsonStrategy< SparseSpaceType, LocalSpaceType, LinearSolverType, TModelPartType > AdaptiveResidualBasedNewtonRaphsonStrategyType;
+            class_< AdaptiveResidualBasedNewtonRaphsonStrategyType, bases< BaseSolvingStrategyType >, boost::noncopyable >
+                    ((Prefix+"AdaptiveResidualBasedNewtonRaphsonStrategy").c_str(),
+                    init < TModelPartType&, typename BaseSchemeType::Pointer, typename LinearSolverType::Pointer, typename ConvergenceCriteriaType::Pointer, int, int, bool, bool, bool, ValueType, ValueType, int
                     >())
                     ;
 
-            class_< ExplicitStrategy< SparseSpaceType, LocalSpaceType, LinearSolverType >,
-                    bases< BaseSolvingStrategyType >,  boost::noncopyable >
-                    ("Explicit_Strategy",
-                    init<ModelPart&, int, bool >() )
+            typedef ExplicitStrategy< SparseSpaceType, LocalSpaceType, LinearSolverType, TModelPartType > ExplicitStrategyType;
+            class_< ExplicitStrategyType, bases< BaseSolvingStrategyType >,  boost::noncopyable >
+                    ((Prefix+"Explicit_Strategy").c_str(),
+                    init<TModelPartType&, int, bool >() )
                     //AssembleLoop loops the elements calling AddExplicitContribution. Using processinfo the element is the one who "decides" which variable to modify.
-                    .def("AssembleLoop",&ExplicitStrategy< SparseSpaceType, LocalSpaceType, LinearSolverType >::AssembleLoop)
+                    .def("AssembleLoop", &ExplicitStrategyType::AssembleLoop)
                     //once the assembleloop has been performed, the variable must be normalized. (for example with the nodal mass or the nodal area). Loop on nodes.
-                    .def("NormalizeVariable",&ExplicitStrategy< SparseSpaceType, LocalSpaceType, LinearSolverType >::NormalizeVariable)
+                    .def("NormalizeVariable", &ExplicitStrategyType::NormalizeVariable)
                     //ExplicitUpdateLoop modifies a vectorial variable by adding another variable (the RHS, PRESS_PROJ,etc) multiplied by a user-given factor (ie delta_time)
-                    .def("ExplicitUpdateLoop",&ExplicitStrategy< SparseSpaceType, LocalSpaceType, LinearSolverType >::ExplicitUpdateLoop)
-                    //initialize and finalize.
-                    .def("InitializeSolutionStep",&ExplicitStrategy< SparseSpaceType, LocalSpaceType, LinearSolverType >::InitializeSolutionStep)
-                    .def("FinalizeSolutionStep",&ExplicitStrategy< SparseSpaceType, LocalSpaceType, LinearSolverType >::FinalizeSolutionStep)
+                    .def("ExplicitUpdateLoop", &ExplicitStrategyType::ExplicitUpdateLoop)
                     ;
 
             //********************************************************************
             //********************************************************************
             class_< BaseSchemeType, boost::noncopyable >
-                    ("Scheme", init< >())
+                    ((Prefix+"Scheme").c_str(), init<>())
                     .def("Initialize", &BaseSchemeType::Initialize)
                     .def("SchemeIsInitialized", &BaseSchemeType::SchemeIsInitialized)
                     .def("ElementsAreInitialized", &BaseSchemeType::ElementsAreInitialized)
@@ -187,85 +198,66 @@ namespace Kratos
                     .def("CalculateOutputData", &BaseSchemeType::CalculateOutputData)
                     .def("Clean", &BaseSchemeType::Clean)
                     .def("Clear",&BaseSchemeType::Clear)
-                    .def("MoveMesh", MoveMesh)
+                    .def("MoveMesh", MoveMesh<BaseSchemeType>)
                     .def("Check", &BaseSchemeType::Check)
+                    .def(self_ns::str(self))
                     ;
 
-            class_< ResidualBasedIncrementalUpdateStaticScheme< SparseSpaceType, LocalSpaceType>,
+            class_< ResidualBasedIncrementalUpdateStaticScheme< SparseSpaceType, LocalSpaceType, TModelPartType>,
                     bases< BaseSchemeType >, boost::noncopyable >
-                    (
-                    "ResidualBasedIncrementalUpdateStaticScheme", init< >()
-                    );
+                    ((Prefix+"ResidualBasedIncrementalUpdateStaticScheme").c_str(), init<>());
 
-            class_< ResidualBasedIncrementalUpdateStaticSchemeSlip< SparseSpaceType, LocalSpaceType>,
-                    bases< ResidualBasedIncrementalUpdateStaticScheme< SparseSpaceType, LocalSpaceType> >,
+            class_< ResidualBasedIncrementalUpdateStaticSchemeSlip< SparseSpaceType, LocalSpaceType, TModelPartType >,
+                    bases< ResidualBasedIncrementalUpdateStaticScheme< SparseSpaceType, LocalSpaceType, TModelPartType > >,
                     boost::noncopyable >
-                    ("ResidualBasedIncrementalUpdateStaticSchemeSlip", init<unsigned int, unsigned int>());
-
+                    ((Prefix+"ResidualBasedIncrementalUpdateStaticSchemeSlip").c_str(), init<unsigned int, unsigned int>());
 
             //********************************************************************
             //********************************************************************
             //convergence criteria base class
-            class_< ConvergenceCriteria< SparseSpaceType, LocalSpaceType >, boost::noncopyable > ("ConvergenceCriteria", init<>())
-                    .def("SetActualizeRHSFlag", &ConvergenceCriteria<SparseSpaceType, LocalSpaceType >::SetActualizeRHSFlag)
-                    .def("GetActualizeRHSflag", &ConvergenceCriteria<SparseSpaceType, LocalSpaceType >::GetActualizeRHSflag)
-                    .def("PreCriteria", &ConvergenceCriteria<SparseSpaceType, LocalSpaceType >::PreCriteria)
-                    .def("PostCriteria", &ConvergenceCriteria<SparseSpaceType, LocalSpaceType >::PostCriteria)
-                    .def("Initialize", &ConvergenceCriteria<SparseSpaceType, LocalSpaceType >::Initialize)
-                    .def("InitializeNonLinearIteration", &ConvergenceCriteria<SparseSpaceType, LocalSpaceType >::InitializeNonLinearIteration)
-                    .def("InitializeSolutionStep", &ConvergenceCriteria<SparseSpaceType, LocalSpaceType >::InitializeSolutionStep)
-                    .def("FinalizeNonLinearIteration", &ConvergenceCriteria<SparseSpaceType, LocalSpaceType >::FinalizeNonLinearIteration)
-                    .def("FinalizeSolutionStep", &ConvergenceCriteria<SparseSpaceType, LocalSpaceType >::FinalizeSolutionStep)
-                    .def("Check", &ConvergenceCriteria<SparseSpaceType, LocalSpaceType >::Check)
+            class_< ConvergenceCriteriaType, boost::noncopyable > ((Prefix+"ConvergenceCriteria").c_str(), init<>())
+                    .def("SetActualizeRHSFlag", &ConvergenceCriteriaType::SetActualizeRHSFlag)
+                    .def("GetActualizeRHSflag", &ConvergenceCriteriaType::GetActualizeRHSflag)
+                    .def("PreCriteria", &ConvergenceCriteriaType::PreCriteria)
+                    .def("PostCriteria", &ConvergenceCriteriaType::PostCriteria)
+                    .def("Initialize", &ConvergenceCriteriaType::Initialize)
+                    .def("InitializeNonLinearIteration", &ConvergenceCriteriaType::InitializeNonLinearIteration)
+                    .def("InitializeSolutionStep", &ConvergenceCriteriaType::InitializeSolutionStep)
+                    .def("FinalizeNonLinearIteration", &ConvergenceCriteriaType::FinalizeNonLinearIteration)
+                    .def("FinalizeSolutionStep", &ConvergenceCriteriaType::FinalizeSolutionStep)
+                    .def("SetEchoLevel", &ConvergenceCriteriaType::SetEchoLevel)
+                    .def("Check", &ConvergenceCriteriaType::Check)
+                    .def(self_ns::str(self))
                     ;
 
-            class_< DisplacementCriteria<SparseSpaceType, LocalSpaceType >,
-                    bases<ConvergenceCriteria< SparseSpaceType, LocalSpaceType > >,
-                    boost::noncopyable >
-                    ("DisplacementCriteria", init< DataType, DataType>())
-                    .def("SetEchoLevel", &DisplacementCriteria<SparseSpaceType, LocalSpaceType >::SetEchoLevel);
+            class_< DisplacementCriteria<SparseSpaceType, LocalSpaceType, TModelPartType>,
+                    bases<ConvergenceCriteriaType>, boost::noncopyable >
+                    ((Prefix+"DisplacementCriteria").c_str(), init< ValueType, ValueType>())
+                    ;
 
-            class_< IncrementalDisplacementCriteria<SparseSpaceType, LocalSpaceType >,
-                    bases<ConvergenceCriteria< SparseSpaceType, LocalSpaceType > >,
-                    boost::noncopyable >
-                    ("IncrementalDisplacementCriteria", init< DataType, DataType>());
+            class_< IncrementalDisplacementCriteria<SparseSpaceType, LocalSpaceType, TModelPartType>,
+                    bases<ConvergenceCriteriaType>, boost::noncopyable >
+                    ((Prefix+"IncrementalDisplacementCriteria").c_str(), init< ValueType, ValueType>());
 
-            class_<ResidualCriteria<SparseSpaceType, LocalSpaceType >,
-                    bases<ConvergenceCriteria< SparseSpaceType, LocalSpaceType > >,
-                    boost::noncopyable >
-                    ("ResidualCriteria", init< DataType, DataType>());
+            class_<ResidualCriteria<SparseSpaceType, LocalSpaceType, TModelPartType>,
+                    bases<ConvergenceCriteriaType>, boost::noncopyable >
+                    ((Prefix+"ResidualCriteria").c_str(), init< ValueType, ValueType>());
 
-            /*          class_< ResidualCriteria< SparseSpaceType >,
-                                             bases<ConvergenceCriteria< SparseSpaceType > >,
-                                             boost::noncopyable >
-                                            ("ResidualCriteria", init<Model::Pointer, DataType >() );
+            class_<And_Criteria<SparseSpaceType, LocalSpaceType, TModelPartType>,
+                    bases<ConvergenceCriteriaType>, boost::noncopyable >
+                    ((Prefix+"AndCriteria").c_str(), init<typename ConvergenceCriteriaType::Pointer, typename ConvergenceCriteriaType::Pointer> ());
 
-                                    class_< AndCriteria< SparseSpaceType >,
-                                             bases<ConvergenceCriteria< SparseSpaceType > >,
-                                             boost::noncopyable >
-                                            ("AndCriteria", init<Model::Pointer, ConvergenceCriteria< SparseSpaceType >::Pointer, ConvergenceCriteria< SparseSpaceType >::Pointer >()*/
-            //);
-
-
-            class_<And_Criteria<SparseSpaceType, LocalSpaceType >,
-                    bases<ConvergenceCriteria< SparseSpaceType, LocalSpaceType > >,
-                    boost::noncopyable >
-                    ("AndCriteria", init<TConvergenceCriteriaPointer, TConvergenceCriteriaPointer > ());
-
-            class_<Or_Criteria<SparseSpaceType, LocalSpaceType >,
-                    bases<ConvergenceCriteria< SparseSpaceType, LocalSpaceType > >,
-                    boost::noncopyable >
-                    ("OrCriteria", init<TConvergenceCriteriaPointer, TConvergenceCriteriaPointer > ());
+            class_<Or_Criteria<SparseSpaceType, LocalSpaceType, TModelPartType>,
+                    bases<ConvergenceCriteriaType>, boost::noncopyable >
+                    ((Prefix+"OrCriteria").c_str(), init<typename ConvergenceCriteriaType::Pointer, typename ConvergenceCriteriaType::Pointer> ());
 
             //********************************************************************
             //********************************************************************
-            //
 
             //Builder and Solver
-            class_< BuilderAndSolverType::DofsArrayType, boost::noncopyable > ("DofsArrayType", init<>());
-            BuilderAndSolverType::DofsArrayType&(BuilderAndSolverType::*BuilderAndSolver_GetDofSet)() = &BuilderAndSolverType::GetDofSet;
+            typename BuilderAndSolverType::DofsArrayType&(BuilderAndSolverType::*BuilderAndSolver_GetDofSet)() = &BuilderAndSolverType::GetDofSet;
 
-            class_< BuilderAndSolverType, boost::noncopyable > ("BuilderAndSolver", init<LinearSolverType::Pointer > ())
+            class_< BuilderAndSolverType, boost::noncopyable > ((Prefix+"BuilderAndSolver").c_str(), init<typename LinearSolverType::Pointer > ())
                     .def("SetCalculateReactionsFlag", &BuilderAndSolverType::SetCalculateReactionsFlag)
                     .def("GetCalculateReactionsFlag", &BuilderAndSolverType::GetCalculateReactionsFlag)
                     .def("SetDofSetIsInitializedFlag", &BuilderAndSolverType::SetDofSetIsInitializedFlag)
@@ -294,35 +286,51 @@ namespace Kratos
                     .def("GetEchoLevel", &BuilderAndSolverType::GetEchoLevel)
                     ;
 
-            typedef ResidualBasedEliminationBuilderAndSolver< SparseSpaceType, LocalSpaceType, LinearSolverType > ResidualBasedEliminationBuilderAndSolverType;
-            class_< ResidualBasedEliminationBuilderAndSolverType, bases<BuilderAndSolverType>, boost::noncopyable > ("ResidualBasedEliminationBuilderAndSolver", init< LinearSolverType::Pointer > ());
+            typedef ResidualBasedEliminationBuilderAndSolver< SparseSpaceType, LocalSpaceType, LinearSolverType, TModelPartType > ResidualBasedEliminationBuilderAndSolverType;
+            class_< ResidualBasedEliminationBuilderAndSolverType, bases<BuilderAndSolverType>, boost::noncopyable > ((Prefix+"ResidualBasedEliminationBuilderAndSolver").c_str(), init< typename LinearSolverType::Pointer > ());
 
-            typedef ResidualBasedBlockBuilderAndSolver< SparseSpaceType, LocalSpaceType, LinearSolverType > ResidualBasedBlockBuilderAndSolverType;
-            class_< ResidualBasedBlockBuilderAndSolverType, bases<BuilderAndSolverType>, boost::noncopyable > ("ResidualBasedBlockBuilderAndSolver", init< LinearSolverType::Pointer > ());
+            typedef ResidualBasedEliminationBuilderAndSolverDeactivation< SparseSpaceType, LocalSpaceType, LinearSolverType, TModelPartType > ResidualBasedEliminationBuilderAndSolverDeactivationType;
+            class_< ResidualBasedEliminationBuilderAndSolverDeactivationType, bases<BuilderAndSolverType>, boost::noncopyable > ((Prefix+"ResidualBasedEliminationBuilderAndSolverDeactivation").c_str(), init< typename LinearSolverType::Pointer > ());
 
+            typedef ResidualBasedBlockBuilderAndSolver< SparseSpaceType, LocalSpaceType, LinearSolverType, TModelPartType > ResidualBasedBlockBuilderAndSolverType;
+            class_< ResidualBasedBlockBuilderAndSolverType, bases<BuilderAndSolverType>, boost::noncopyable > ((Prefix+"ResidualBasedBlockBuilderAndSolver").c_str(), init< typename LinearSolverType::Pointer > ());
 
-            typedef ResidualBasedEliminationBuilderAndSolverDeactivation< SparseSpaceType, LocalSpaceType, LinearSolverType > ResidualBasedEliminationBuilderAndSolverDeactivationType;
-            class_< ResidualBasedEliminationBuilderAndSolverDeactivationType, bases<BuilderAndSolverType>, boost::noncopyable > ("ResidualBasedEliminationBuilderAndSolverDeactivation", init< LinearSolverType::Pointer > ());
+            typedef ResidualBasedBlockBuilderAndSolverWithConstraints< SparseSpaceType, LocalSpaceType, LinearSolverType, TModelPartType > ResidualBasedBlockBuilderAndSolverWithConstraintsType;
+            class_< ResidualBasedBlockBuilderAndSolverWithConstraintsType, bases<BuilderAndSolverType>, boost::noncopyable > ((Prefix+"ResidualBasedBlockBuilderAndSolverWithConstraints").c_str(), init< typename LinearSolverType::Pointer > ());
 
-            typedef ResidualBasedBlockBuilderAndSolverWithConstraints< SparseSpaceType, LocalSpaceType, LinearSolverType > ResidualBasedBlockBuilderAndSolverWithConstraintsType;
-            class_< ResidualBasedBlockBuilderAndSolverWithConstraintsType, bases<BuilderAndSolverType>, boost::noncopyable > ("ResidualBasedBlockBuilderAndSolverWithConstraints", init< LinearSolverType::Pointer > ());
+            typedef ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise< SparseSpaceType, LocalSpaceType, LinearSolverType, TModelPartType > ResidualBasedBlockBuilderAndSolverWithConstraintsElementWiseType;
+            class_< ResidualBasedBlockBuilderAndSolverWithConstraintsElementWiseType, bases<ResidualBasedBlockBuilderAndSolverWithConstraintsType>, boost::noncopyable > ((Prefix+"ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise").c_str(), init< typename LinearSolverType::Pointer > ());
 
-            typedef ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise< SparseSpaceType, LocalSpaceType, LinearSolverType > ResidualBasedBlockBuilderAndSolverWithConstraintsElementWiseType;
-            class_< ResidualBasedBlockBuilderAndSolverWithConstraintsElementWiseType, bases<ResidualBasedBlockBuilderAndSolverWithConstraintsType>, boost::noncopyable > ("ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise", init< LinearSolverType::Pointer > ());
+            typedef ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation< SparseSpaceType, LocalSpaceType, LinearSolverType, TModelPartType > ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationType;
+            class_< ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationType, bases<BuilderAndSolverType>, boost::noncopyable > ((Prefix+"ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation").c_str(), init< typename LinearSolverType::Pointer > ());
 
-            typedef ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation< SparseSpaceType, LocalSpaceType, LinearSolverType > ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationType;
-            class_< ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationType, bases<BuilderAndSolverType>, boost::noncopyable > ("ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation", init< LinearSolverType::Pointer > ());
+            typedef ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise< SparseSpaceType, LocalSpaceType, LinearSolverType, TModelPartType > ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWiseType;
+            class_< ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWiseType, bases<BuilderAndSolverType>, boost::noncopyable > ((Prefix+"ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise").c_str(), init< typename LinearSolverType::Pointer > ());
+        }
 
-            typedef ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise< SparseSpaceType, LocalSpaceType, LinearSolverType > ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWiseType;
-            class_< ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWiseType, bases<BuilderAndSolverType>, boost::noncopyable > ("ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise", init< LinearSolverType::Pointer > ());
+        void AddStrategiesToPython()
+        {
+            typedef UblasSpace<KRATOS_DOUBLE_TYPE, CompressedMatrix, Vector> SparseSpaceType;
+            typedef UblasSpace<KRATOS_DOUBLE_TYPE, Matrix, Vector> LocalSpaceType;
 
-            //
-            // class_< ResidualBasedBlockBuilderAndSolverWithConstraintsType,
-            //             ResidualBasedBlockBuilderAndSolverWithConstraintsType::Pointer,
-            //             BuilderAndSolverType>
-            //             (m,"ResidualBasedBlockBuilderAndSolverWithConstraints").def(init< LinearSolverType::Pointer > ());
-            //********************************************************************
-            //********************************************************************
+            typedef UblasSpace<KRATOS_COMPLEX_TYPE, ComplexCompressedMatrix, ComplexVector> ComplexSparseSpaceType;
+            typedef UblasSpace<KRATOS_COMPLEX_TYPE, ComplexMatrix, ComplexVector> ComplexLocalSpaceType;
+
+            AddStrategiesToPythonImpl<SparseSpaceType, LocalSpaceType, ModelPart>("");
+            AddStrategiesToPythonImpl<ComplexSparseSpaceType, ComplexLocalSpaceType, ComplexModelPart>("Complex");
+            AddStrategiesToPythonImpl<ComplexSparseSpaceType, ComplexLocalSpaceType, GComplexModelPart>("GComplex");
+
+            #ifdef _OPENMP
+            typedef ParallelUblasSpace<KRATOS_DOUBLE_TYPE, CompressedMatrix, Vector> ParallelSparseSpaceType;
+            typedef UblasSpace<KRATOS_DOUBLE_TYPE, Matrix, Vector> ParallelLocalSpaceType;
+
+            typedef ParallelUblasSpace<KRATOS_COMPLEX_TYPE, ComplexCompressedMatrix, ComplexVector> ParallelComplexSparseSpaceType;
+            typedef UblasSpace<KRATOS_COMPLEX_TYPE, ComplexMatrix, ComplexVector> ParallelComplexLocalSpaceType;
+
+            AddStrategiesToPythonImpl<ParallelSparseSpaceType, ParallelLocalSpaceType, ModelPart>("Parallel");
+            AddStrategiesToPythonImpl<ParallelComplexSparseSpaceType, ParallelComplexLocalSpaceType, ComplexModelPart>("ParallelComplex");
+            AddStrategiesToPythonImpl<ParallelComplexSparseSpaceType, ParallelComplexLocalSpaceType, GComplexModelPart>("ParallelGComplex");
+            #endif
         }
 
     } // namespace Python.

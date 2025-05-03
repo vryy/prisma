@@ -232,7 +232,7 @@ namespace Kratos
 
 
       //CONSTITUTIVE LAW AND PROPERTIES
-      KRATOS_REGISTER_VARIABLE( CONSTITUTIVE_LAW )
+      KRATOS_REGISTER_CONSTITUTIVE_LAW_VARIABLE( CONSTITUTIVE_LAW )
       KRATOS_REGISTER_VARIABLE( DENSITY )
       KRATOS_REGISTER_VARIABLE( YOUNG_MODULUS )
       KRATOS_REGISTER_VARIABLE( POISSON_RATIO )
@@ -524,65 +524,22 @@ namespace Kratos
 
       KRATOS_REGISTER_VARIABLE( SEARCH_RADIUS )
 
-//       KRATOS_REGISTER_VARIABLE( LAST_AIR )
-//       KRATOS_REGISTER_VARIABLE( PRESSURES )
-//       KRATOS_REGISTER_VARIABLE( TEMPERATURES )
-//       KRATOS_REGISTER_3D_VARIABLE_WITH_COMPONENTS( VELOCITIES )
-
-      // for Vulcan application virtual mould properties
-//     KRATOS_REGISTER_VARIABLE(  MOULD_DENSITY)
-//     KRATOS_REGISTER_VARIABLE(  MOULD_SPECIFIC_HEAT)
-//     KRATOS_REGISTER_VARIABLE(  MOULD_THICKNESS)
-//     KRATOS_REGISTER_VARIABLE(  MOULD_SFACT)
-//     KRATOS_REGISTER_VARIABLE(  MOULD_VFACT)
-//     KRATOS_REGISTER_VARIABLE(  MOULD_CONDUCTIVITY)
-//     KRATOS_REGISTER_VARIABLE(  MOULD_HTC_ENVIRONMENT)
-//     KRATOS_REGISTER_VARIABLE(  MOULD_TEMPERATURE)
-//     KRATOS_REGISTER_VARIABLE(  MOULD_INNER_TEMPERATURE)
-
-
-      //--------------- Vulcan Application -------------------//
-
-      // for Click2Cast application
-//       KRATOS_REGISTER_VARIABLE(NODE_PROPERTY_ID)
-//       KRATOS_REGISTER_VARIABLE(HTC)
-//       KRATOS_REGISTER_VARIABLE(REF_ID)
-//       KRATOS_REGISTER_VARIABLE(PARTICLE_RADIUS)
-//       KRATOS_REGISTER_VARIABLE(POSETIVE_DISTANCE)
-//       KRATOS_REGISTER_VARIABLE(NAGATIVE_DISTANCE)
-//       KRATOS_REGISTER_VARIABLE(IS_ESCAPED)
-//       KRATOS_REGISTER_VARIABLE(IS_SOLIDIFIED)
-//       KRATOS_REGISTER_VARIABLE(SOLIDFRACTION)
-//       KRATOS_REGISTER_VARIABLE(SOLIDIF_TIME)
-//       KRATOS_REGISTER_VARIABLE(SOLIDIF_MODULUS)
-//       KRATOS_REGISTER_VARIABLE(MACRO_POROSITY)
-//       KRATOS_REGISTER_VARIABLE(SHRINKAGE_POROSITY)
-//       KRATOS_REGISTER_VARIABLE(FILLTIME)
-//       KRATOS_REGISTER_VARIABLE(MAX_VEL)
-//       KRATOS_REGISTER_VARIABLE(IS_GRAVITY_FILLING)
-//       KRATOS_REGISTER_VARIABLE(VOLUME_FRACTION )
-//       KRATOS_REGISTER_VARIABLE(KAPPA )
-//       KRATOS_REGISTER_VARIABLE(EPSILON )
-//       KRATOS_REGISTER_VARIABLE(SHRINKAGE_POROSITY_US)
-//       KRATOS_REGISTER_VARIABLE(SOLIDIF_MODULUS_US)
-//       KRATOS_REGISTER_VARIABLE(TEMPERATURES_US)
-//       KRATOS_REGISTER_VARIABLE(FRONT_MEETING)
-//     KRATOS_REGISTER_VARIABLE(  MOULD_AVERAGE_TEMPERATURE )
-
-
       //Register objects with general definition
-      Serializer::Register( "Node", Node<3>() );
-      Serializer::Register( "Dof", Dof<double>() );
+      Serializer::Register( "Node", RealNode() );
+      Serializer::Register( "ComplexNode", ComplexNode() );
+      Serializer::Register( "GComplexNode", GComplexNode() );
+      Serializer::Register( "Dof", Dof<KRATOS_DOUBLE_TYPE>() );
+      Serializer::Register( "ComplexDof", Dof<KRATOS_COMPLEX_TYPE>() );
       Serializer::Register( "Element", Element() );
+      Serializer::Register( "ComplexElement", ComplexElement() );
+      Serializer::Register( "GComplexElement", GComplexElement() );
       Serializer::Register( "Condition", Condition() );
+      Serializer::Register( "ComplexCondition", ComplexCondition() );
+      Serializer::Register( "GComplexCondition", GComplexCondition() );
       Serializer::Register( "Properties", Properties() );
-      Serializer::Register( "GeometricalObject", GeometricalObject() );
+      Serializer::Register( "GeometricalObject", GeometricalObject<Node<3> >() );
 
-      //Register objects with specific definition ( non essential, must be deleted in future )
-      Serializer::Register( "Node3D", Node<3>() );
-      Serializer::Register( "DofDouble", Dof<double>() );
-
-    Serializer::Register("MasterSlaveConstraint", MasterSlaveConstraint());
+      Serializer::Register("MasterSlaveConstraint", MasterSlaveConstraint());
 
       //Register specific conditions ( must be completed : conditions defined in kratos_appliction.h)
       KRATOS_REGISTER_CONDITION( "Condition3D", mCondition3D )
@@ -591,10 +548,10 @@ namespace Kratos
       KRATOS_REGISTER_CONDITION( "PeriodicConditionEdge", mPeriodicConditionEdge )
       KRATOS_REGISTER_CONDITION( "PeriodicConditionCorner", mPeriodicConditionCorner )
 
-    //master-slave constraints
-    KRATOS_REGISTER_CONSTRAINT("MasterSlaveConstraint",mMasterSlaveConstraint)
-    KRATOS_REGISTER_CONSTRAINT("LinearConstraint",mLinearConstraint)
-    KRATOS_REGISTER_CONSTRAINT("LinearMasterSlaveConstraint",mLinearMasterSlaveConstraint)
+      //master-slave constraints
+      KRATOS_REGISTER_CONSTRAINT("MasterSlaveConstraint", mMasterSlaveConstraint)
+      KRATOS_REGISTER_CONSTRAINT("LinearConstraint", mLinearConstraint)
+      KRATOS_REGISTER_CONSTRAINT("LinearMasterSlaveConstraint", mLinearMasterSlaveConstraint)
 
       //Register specific elements ( must be completed : elements defined in kratos_appliction.h)
       KRATOS_REGISTER_ELEMENT( "Element3D4N", mElement3D4N )
@@ -627,7 +584,6 @@ namespace Kratos
       Line3D3<Node<3> > Line3D3Prototype( Element::GeometryType::PointsArrayType( 3, Node<3>() ) );
       Serializer::Register( "Line3D3", Line3D3Prototype );
 
-
       //Triangles:
       Triangle2D3<Node<3> > Triangle2D3Prototype( Element::GeometryType::PointsArrayType( 3, Node<3>() ) );
       Serializer::Register( "Triangle2D3", Triangle2D3Prototype );
@@ -640,7 +596,6 @@ namespace Kratos
 
       Triangle3D6<Node<3> > Triangle3D6Prototype( Element::GeometryType::PointsArrayType( 6, Node<3>() ) );
       Serializer::Register( "Triangle3D6", Triangle3D6Prototype );
-
 
       //Quadrilaterals:
       Quadrilateral2D4<Node<3> > Quadrilateral2D4Prototype( Element::GeometryType::PointsArrayType( 4, Node<3>() ) );
@@ -669,14 +624,12 @@ namespace Kratos
       Tetrahedra3D10 <Node<3> > Tetrahedra3D10Prototype( Element::GeometryType::PointsArrayType( 10, Node<3>() ) );
       Serializer::Register( "Tetrahedra3D10", Tetrahedra3D10Prototype );
 
-
       //Prisms:
       Prism3D6<Node<3> > Prism3D6Prototype( Element::GeometryType::PointsArrayType( 6, Node<3>() ) );
       Serializer::Register( "Prism3D6", Prism3D6Prototype );
 
       Prism3D15<Node<3> > Prism3D15Prototype( Element::GeometryType::PointsArrayType( 15, Node<3>() ) );
       Serializer::Register( "Prism3D15", Prism3D15Prototype );
-
 
       //Hexahedra:
       Hexahedra3D8<Node<3> > Hexahedra3D8Prototype( Element::GeometryType::PointsArrayType( 8, Node<3>() ) );
@@ -687,8 +640,6 @@ namespace Kratos
 
       Hexahedra3D27<Node<3> > Hexahedra3D27Prototype( Element::GeometryType::PointsArrayType( 27, Node<3>() ) );
       Serializer::Register( "Hexahedra3D27", Hexahedra3D27Prototype );
-
-
 
       // Register flags:
       KRATOS_REGISTER_FLAG(STRUCTURE);
@@ -721,10 +672,7 @@ namespace Kratos
       KRATOS_REGISTER_FLAG(BLOCKED);
       KRATOS_REGISTER_FLAG(MARKER);
       KRATOS_REGISTER_FLAG(HANGING);
-
-
   }
-
 
 }  // namespace Kratos.
 

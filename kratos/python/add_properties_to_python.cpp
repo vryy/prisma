@@ -51,7 +51,7 @@ template< class TContainerType, class TVariableType > void SetValueHelperFunctio
     const TVariableType& rVar,
     const typename TVariableType::Type& Data)
 {
-    el.SetValue(rVar,Data);
+    el.SetValue(rVar, Data);
 }
 
 template< class TContainerType, class TVariableType >
@@ -78,75 +78,24 @@ typename Properties::TableType& GetTableHelperFunction1( TContainerType& el,
     return el.GetTable(XVar, YVar);
 }
 
+template<typename TAdapterType, typename TVariableType>
+void PropertiesAddVariableInterface(TAdapterType& a)
+{
+    a
+    .def("Has", &Properties::Has<TVariableType>)
+    .def("__setitem__", SetValueHelperFunction1< Properties, TVariableType>)
+    .def("__getitem__", GetValueHelperFunction1< Properties, TVariableType>)
+    .def("SetValue", SetValueHelperFunction1< Properties, TVariableType>)
+    .def("GetValue", GetValueHelperFunction1< Properties, TVariableType>)
+    ;
+}
+
 void  AddPropertiesToPython()
 {
     typedef Mesh<Node<3>, Properties, Element, Condition> MeshType;
-    typedef ConstitutiveLaw ConstitutiveLawBaseType;
 
-    class_<Properties, Properties::Pointer, bases<Properties::BaseType > >("Properties", init<int>())
+    auto a = class_<Properties, Properties::Pointer, bases<Properties::BaseType > >("Properties", init<int>())
     .def(init<const Properties&>())
-
-    .def("Has", &Properties::Has<Variable< array_1d<double, 6> > >)
-    .def("Has", &Properties::Has<Variable< array_1d<double, 3> > >)
-    .def("Has", &Properties::Has<Variable< Vector > >)
-    .def("Has", &Properties::Has<Variable< Matrix > >)
-    .def("Has", &Properties::Has<Variable< double > >)
-    .def("Has", &Properties::Has<Variable< int > >)
-    .def("Has", &Properties::Has<Variable< bool > >)
-    .def("Has", &Properties::Has<Variable< std::string > >)
-    .def("Has", &Properties::Has<Variable< ConstitutiveLawBaseType::Pointer > >)
-
-    .def("__setitem__", SetValueHelperFunction1< Element, Variable< array_1d<double, 6> > >)
-    .def("__getitem__", GetValueHelperFunction1< Properties, Variable< array_1d<double, 6> > >)
-    .def("SetValue", SetValueHelperFunction1< Properties, Variable< array_1d<double, 6> > >)
-    .def("GetValue", GetValueHelperFunction1< Properties, Variable< array_1d<double, 6> > >)
-
-    .def("__setitem__", SetValueHelperFunction1< Element, Variable< array_1d<double, 3> > >)
-    .def("__getitem__", GetValueHelperFunction1< Properties, Variable< array_1d<double, 3> > >)
-    .def("SetValue", SetValueHelperFunction1< Properties, Variable< array_1d<double, 3> > >)
-    .def("GetValue", GetValueHelperFunction1< Properties, Variable< array_1d<double, 3> > >)
-
-    .def("__setitem__", SetValueHelperFunction1< Properties, Variable< Vector > >)
-    .def("__getitem__", GetValueHelperFunction1< Properties, Variable< Vector > >)
-    .def("SetValue", SetValueHelperFunction1< Properties, Variable< Vector > >)
-    .def("GetValue", GetValueHelperFunction1< Properties, Variable< Vector > >)
-
-    .def("__setitem__", SetValueHelperFunction1< Properties, Variable< Matrix > >)
-    .def("__getitem__", GetValueHelperFunction1< Properties, Variable< Matrix > >)
-    .def("SetValue", SetValueHelperFunction1< Properties, Variable< Matrix > >)
-    .def("GetValue", GetValueHelperFunction1< Properties, Variable< Matrix > >)
-
-    .def("__setitem__", SetValueHelperFunction1< Properties, Variable< std::string > >)
-    .def("__getitem__", GetValueHelperFunction1< Properties, Variable< std::string > >)
-    .def("SetValue", SetValueHelperFunction1< Properties, Variable< std::string > >)
-    .def("GetValue", GetValueHelperFunction1< Properties, Variable< std::string > >)
-
-    .def("__setitem__", SetValueHelperFunction1< Properties, Variable< bool > >)
-    .def("__getitem__", GetValueHelperFunction1< Properties, Variable< bool > >)
-    .def("SetValue", SetValueHelperFunction1< Properties, Variable< bool > >)
-    .def("GetValue", GetValueHelperFunction1< Properties, Variable< bool > >)
-
-    .def("__setitem__", SetValueHelperFunction1< Properties, Variable< int > >)
-    .def("__getitem__", GetValueHelperFunction1< Properties, Variable< int > >)
-    .def("SetValue", SetValueHelperFunction1< Properties, Variable< int > >)
-    .def("GetValue", GetValueHelperFunction1< Properties, Variable< int > >)
-
-    .def("__setitem__", SetValueHelperFunction1< Properties, Variable< double > >)
-    .def("__getitem__", GetValueHelperFunction1< Properties, Variable< double > >)
-    .def("SetValue", SetValueHelperFunction1< Properties, Variable< double > >)
-    .def("GetValue", GetValueHelperFunction1< Properties, Variable< double > >)
-
-    //// does not compile with clang-11
-    // .def("__setitem__", SetValueHelperFunction1< Properties, Variable< boost::python::object > >)
-    // .def("__getitem__", GetValueHelperFunction1< Properties, Variable< boost::python::object > >)
-    // .def("SetValue", SetValueHelperFunction1< Properties, Variable< boost::python::object > >)
-    // .def("GetValue", GetValueHelperFunction1< Properties, Variable< boost::python::object > >)
-
-    .def("__setitem__", SetValueHelperFunction1< Properties, Variable< ConstitutiveLawBaseType::Pointer > >)
-    .def("__getitem__", GetValueHelperFunction1< Properties, Variable< ConstitutiveLawBaseType::Pointer > >)
-    .def("SetValue", SetValueHelperFunction1< Properties, Variable< ConstitutiveLawBaseType::Pointer > >)
-    .def("GetValue", GetValueHelperFunction1< Properties, Variable< ConstitutiveLawBaseType::Pointer > >)
-
     .def("GetTable", GetTableHelperFunction1< Properties, Variable< double > , Variable<double> >, return_internal_reference<>())
     .def("GetTable", GetTableHelperFunction1< Properties, VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > , Variable<double> >, return_internal_reference<>())
     .def("GetTable", GetTableHelperFunction1< Properties, Variable<double>, VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > >, return_internal_reference<>())
@@ -155,12 +104,29 @@ void  AddPropertiesToPython()
     .def("SetTable", SetTableHelperFunction1< Properties, VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > , Variable<double> >)
     .def("SetTable", SetTableHelperFunction1< Properties, Variable<double>, VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > >)
     .def("SetTable", SetTableHelperFunction1< Properties, VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > , VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > >)
-
     .def(self_ns::str(self))
     ;
+
+    PropertiesAddVariableInterface<decltype(a), Variable< array_1d<double, 6> > >( a );
+    PropertiesAddVariableInterface<decltype(a), Variable< array_1d<double, 3> > >( a );
+    PropertiesAddVariableInterface<decltype(a), Variable< bool > >( a );
+    PropertiesAddVariableInterface<decltype(a), Variable< int > >( a );
+    PropertiesAddVariableInterface<decltype(a), Variable< KRATOS_DOUBLE_TYPE > >( a );
+    PropertiesAddVariableInterface<decltype(a), Variable< KRATOS_COMPLEX_TYPE > >( a );
+    PropertiesAddVariableInterface<decltype(a), Variable< Vector > >( a );
+    PropertiesAddVariableInterface<decltype(a), Variable< ComplexVector > >( a );
+    PropertiesAddVariableInterface<decltype(a), Variable< Matrix > >( a );
+    PropertiesAddVariableInterface<decltype(a), Variable< ComplexMatrix > >( a );
+    PropertiesAddVariableInterface<decltype(a), Variable< std::string > >( a );
+    PropertiesAddVariableInterface<decltype(a), Variable< ConstitutiveLaw::Pointer > >( a );
+    PropertiesAddVariableInterface<decltype(a), Variable< ComplexConstitutiveLaw::Pointer > >( a );
+    PropertiesAddVariableInterface<decltype(a), Variable< GComplexConstitutiveLaw::Pointer > >( a );
+    // PropertiesAddVariableInterface<decltype(a), Variable< boost::python::object > >( a );   // does not compile with Clang
 
     PointerVectorSetPythonInterface<MeshType::PropertiesContainerType>::CreateInterface("PropertiesArray")
     ;
 }
+
 }  // namespace Python.
+
 } // Namespace Kratos

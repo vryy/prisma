@@ -77,9 +77,9 @@ public:
 
     typedef TDataType DataType;
 
-    typedef typename std::size_t SizeType;
+    typedef KRATOS_SIZE_TYPE SizeType;
 
-    typedef typename std::size_t IndexType;
+    typedef KRATOS_INDEX_TYPE IndexType;
 
     ///@}
     ///@name Constants
@@ -427,13 +427,13 @@ private:
     virtual void save(Serializer& rSerializer) const
     {
         rSerializer.save_base("BaseClass",*static_cast<const array_1d<TDataType, TDimension> *>(this));
-        //rSerializer.save_base("BaseData",*dynamic_cast<const array_1d<TDataType, TDimension>*>(this));
+        // rSerializer.save_base("BaseData",*dynamic_cast<const array_1d<TDataType, TDimension>*>(this));
     }
 
     virtual void load(Serializer& rSerializer)
     {
         rSerializer.load_base("BaseClass",*static_cast<array_1d<TDataType, TDimension> *>(this));
-//	  rSerializer.load_base("BaseData",*dynamic_cast<array_1d<TDataType, TDimension>*>(this));
+        // rSerializer.load_base("BaseData",*dynamic_cast<array_1d<TDataType, TDimension>*>(this));
     }
 
     ///@}
@@ -470,7 +470,10 @@ private:
 /// input stream function
 template<std::size_t TDimension, class TDataType>
 inline std::istream& operator >> (std::istream& rIStream,
-                                  Point<TDimension, TDataType>& rThis);
+                                  Point<TDimension, TDataType>& rThis)
+{
+    return rIStream;
+}
 
 /// output stream function
 template<std::size_t TDimension, class TDataType>

@@ -62,9 +62,6 @@
 #include "add_strategies_to_python.h"
 #include "add_utilities_to_python.h"
 
-#include "add_parallel_strategies_to_python.h"
-#include "add_parallel_linear_solvers_to_python.h"
-
 #include "add_matrix_market_interface_to_python.h"
 
 #include "add_search_strategies_to_python.h"
@@ -99,20 +96,6 @@ BOOST_PYTHON_MODULE(Kratos)
     AddVectorToPython();
 //    AddSparseVectorToPython();
     AddMatrixToPython();
-    AddBandedMatrixToPython();
-    AddTriangularMatrixToPython();
-    AddSymmetricMatrixToPython();
-#if defined KRATOS_ADD_HERMITIAN_MATRIX_INTERFACE
-    AddHermitianMatrixToPython();
-#endif
-    AddIdentityMatrixToPython();
-    AddZeroMatrixToPython();
-    AddScalarMatrixToPython();
-    AddSparseMatrixToPython();
-    AddCompressedMatrixToPython();
-#if defined KRATOS_ADD_COORDINATE_MATRIX_INTERFACE
-    AddCoordinateMatrixToPython();
-#endif
     AddPointsToPython();
     //  AddQuadraturesToPython();
     AddIntegrationPointsToPython();
@@ -137,8 +120,6 @@ BOOST_PYTHON_MODULE(Kratos)
     AddSerializerToPython();
     AddTableToPython();
     AddGeometriesToPython();
-    AddParallelStrategiesToPython();
-    AddParallelLinearSolversToPython();
     AddMatrixMarketInterfaceToPython();
     AddKratosParametersToPython();
     AddConstraintToPython();

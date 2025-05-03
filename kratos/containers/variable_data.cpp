@@ -110,18 +110,16 @@ namespace Kratos
 
     void VariableData::save(Serializer& rSerializer) const
     {
-        rSerializer.save("Name",mName);
-        rSerializer.save("Key",mKey);
+        rSerializer.save("Name", mName);
+        rSerializer.save("Key", mKey);
         rSerializer.save("IsComponent", mIsComponent);
     }
 
     void VariableData::load(Serializer& rSerializer)
     {
-        rSerializer.load("Name",mName);
-        rSerializer.load("Key",mKey);
+        rSerializer.load("Name", mName);
+        rSerializer.load("Key", mKey);
         rSerializer.load("IsComponent", mIsComponent);
     }
 
 }  // namespace Kratos.
-
-

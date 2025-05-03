@@ -56,22 +56,27 @@ namespace Kratos
  * not all of them have to be implemented if they are not needed for
  * the actual problem
  */
-class Element : public GeometricalObject
+template<class TNodeType = Node<3> >
+class BaseElement : public GeometricalObject<TNodeType>
 {
 public:
     ///@name Type Definitions
     ///@{
-    /// Pointer definition of Element
-    KRATOS_CLASS_POINTER_DEFINITION(Element);
 
-    ///definition of element type
-    typedef Element ElementType;
+    /// Pointer definition of BaseElement
+    KRATOS_CLASS_POINTER_DEFINITION(BaseElement);
 
     ///base type: an GeometricalObject that automatically has a unique number
-    typedef GeometricalObject BaseType;
+    typedef GeometricalObject<TNodeType> BaseType;
+
+    ///definition of this class of element type
+    typedef BaseElement<TNodeType> ElementType;
+
+    ///definition of this entity type
+    typedef BaseElement<TNodeType> EntityType;
 
     ///definition of node type (default is: Node<3>)
-    typedef Node < 3 > NodeType;
+    typedef typename BaseType::NodeType NodeType;
 
     /**
      * Properties are used to store any parameters
@@ -79,27 +84,32 @@ public:
      */
     typedef Properties PropertiesType;
 
+    ///definition of the constitutive law
+    typedef ConstitutiveLawImpl<TNodeType> ConstitutiveLawType;
+
     ///definition of the geometry type with given NodeType
-    typedef Geometry<NodeType> GeometryType;
+    typedef typename BaseType::GeometryType GeometryType;
 
     ///definition of nodes container type, redefined from GeometryType
-    typedef Geometry<NodeType>::PointsArrayType NodesArrayType;
+    typedef typename GeometryType::PointsArrayType NodesArrayType;
 
-    typedef Vector VectorType;
+    typedef typename BaseType::IndexType IndexType;
 
-    typedef Matrix MatrixType;
-
-    typedef ComplexVector ComplexVectorType;
-
-    typedef ComplexMatrix ComplexMatrixType;
-
-    typedef BaseType::IndexType IndexType;
-
-    typedef BaseType::SizeType SizeType;
+    typedef typename BaseType::SizeType SizeType;
 
     typedef typename NodeType::DofType DofType;
 
     typedef typename DofType::DataType DataType;
+
+    typedef typename DataTypeToValueType<DataType>::value_type ValueType;
+
+    typedef typename MatrixVectorTypeSelector<DataType>::VectorType VectorType;
+
+    typedef typename MatrixVectorTypeSelector<DataType>::ZeroVectorType ZeroVectorType;
+
+    typedef typename MatrixVectorTypeSelector<DataType>::MatrixType MatrixType;
+
+    typedef typename MatrixVectorTypeSelector<DataType>::ZeroMatrixType ZeroMatrixType;
 
     typedef std::vector<IndexType> EquationIdVectorType;
 
@@ -113,6 +123,7 @@ public:
     typedef GeometryData::IntegrationMethod IntegrationMethod;
 
     typedef GeometryData GeometryDataType;
+
     ///@}
 
     ///@name Life Cycle
@@ -126,7 +137,7 @@ public:
     /**
      * Constructor.
      */
-    Element(IndexType NewId = 0)
+    BaseElement(IndexType NewId = 0)
         : BaseType(NewId)
         , mpProperties(new PropertiesType)
     {
@@ -135,7 +146,7 @@ public:
     /**
      * Constructor using an array of nodes
      */
-    Element(IndexType NewId, const NodesArrayType& ThisNodes)
+    BaseElement(IndexType NewId, const NodesArrayType& ThisNodes)
         : BaseType(NewId,GeometryType::Pointer(new GeometryType(ThisNodes)))
         , mpProperties(new PropertiesType)
     {
@@ -144,7 +155,7 @@ public:
     /**
      * Constructor using Geometry
      */
-    Element(IndexType NewId, GeometryType::Pointer pGeometry)
+    BaseElement(IndexType NewId, typename GeometryType::Pointer pGeometry)
         : BaseType(NewId,pGeometry)
         , mpProperties(new PropertiesType)
     {
@@ -153,7 +164,7 @@ public:
     /**
      * Constructor using Properties
      */
-    Element(IndexType NewId, GeometryType::Pointer pGeometry, PropertiesType::Pointer pProperties)
+    BaseElement(IndexType NewId, typename GeometryType::Pointer pGeometry, PropertiesType::Pointer pProperties)
         : BaseType(NewId,pGeometry)
         , mpProperties(pProperties)
     {
@@ -161,7 +172,7 @@ public:
 
     /// Copy constructor.
 
-    Element(Element const& rOther)
+    BaseElement(BaseElement const& rOther)
         : BaseType(rOther)
         , mpProperties(rOther.mpProperties)
     {
@@ -169,7 +180,7 @@ public:
 
     /// Destructor.
 
-    ~Element() override
+    ~BaseElement() override
     {
     }
 
@@ -183,8 +194,7 @@ public:
      */
 
     /// Assignment operator.
-
-    Element & operator=(Element const& rOther)
+    BaseElement & operator=(BaseElement const& rOther)
     {
         BaseType::operator=(rOther);
         mpProperties = rOther.mpProperties;
@@ -201,7 +211,7 @@ public:
 
     SizeType WorkingSpaceDimension() const
     {
-         return pGetGeometry()->WorkingSpaceDimension();
+         return this->pGetGeometry()->WorkingSpaceDimension();
     }
 
     ///@}
@@ -234,7 +244,7 @@ public:
      * @return a Pointer to the new element
      */
     virtual Pointer Create(IndexType NewId,
-                           GeometryType::Pointer pGeom,
+                           typename GeometryType::Pointer pGeom,
                            PropertiesType::Pointer pProperties) const
     {
         KRATOS_ERROR << "Please implement the Second Create method in your derived Element" << Info() << std::endl;
@@ -248,7 +258,7 @@ public:
      * @return a Pointer to the new element
      */
     virtual Pointer Create(IndexType NewId,
-                           std::vector<GeometryType::Pointer> pGeom,
+                           std::vector<typename GeometryType::Pointer> pGeom,
                            PropertiesType::Pointer pProperties) const
     {
         KRATOS_ERROR << "Please implement the Third Create method in your derived Element" << Info() << std::endl;
@@ -305,7 +315,7 @@ public:
      */
     virtual IntegrationMethod GetIntegrationMethod() const
     {
-        return pGetGeometry()->GetDefaultIntegrationMethod();
+        return this->pGetGeometry()->GetDefaultIntegrationMethod();
     }
 
     /**
@@ -318,7 +328,7 @@ public:
     /**
      * Getting method to obtain the variable which defines the degrees of freedom
      */
-    virtual void GetValuesVector(Vector& values, int Step = 0) const
+    virtual void GetValuesVector(VectorType& values, int Step = 0) const
     {
         if (values.size() != 0) {
             values.resize(0, false);
@@ -328,7 +338,7 @@ public:
     /**
      * Getting method to obtain the time derivative of variable which defines the degrees of freedom
      */
-    virtual void GetFirstDerivativesVector(Vector& values, int Step = 0) const
+    virtual void GetFirstDerivativesVector(VectorType& values, int Step = 0) const
     {
         if (values.size() != 0) {
             values.resize(0, false);
@@ -338,7 +348,7 @@ public:
     /**
      * Getting method to obtain the second time derivative of variable which defines the degrees of freedom
      */
-    virtual void GetSecondDerivativesVector(Vector& values, int Step = 0) const
+    virtual void GetSecondDerivativesVector(VectorType& values, int Step = 0) const
     {
         if (values.size() != 0) {
             values.resize(0, false);
@@ -440,22 +450,6 @@ public:
      */
     virtual void CalculateLocalSystem(MatrixType& rLeftHandSideMatrix,
                                       VectorType& rRightHandSideVector,
-                                      const ProcessInfo& rCurrentProcessInfo)
-    {
-        KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
-                     << __FUNCTION__ << " is not implemented";
-    }
-
-    /**
-     * this is called during the assembling process in order
-     * to calculate all elemental contributions to the global system
-     * matrix and the right hand side
-     * @param rLeftHandSideMatrix the elemental (complex) left hand side matrix
-     * @param rRightHandSideVector the elemental (complex) right hand side
-     * @param rCurrentProcessInfo the current process info instance
-     */
-    virtual void CalculateLocalSystem(ComplexMatrixType& rLeftHandSideMatrix,
-                                      ComplexVectorType& rRightHandSideVector,
                                       const ProcessInfo& rCurrentProcessInfo)
     {
         KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
@@ -750,7 +744,7 @@ public:
     virtual void AddExplicitContribution(
         const MatrixType& rLHSMatrix,
         const Variable<MatrixType>& rLHSVariable,
-        const Variable<Matrix>& rDestinationVariable,
+        const Variable<MatrixType>& rDestinationVariable,
         const ProcessInfo& rCurrentProcessInfo
         )
     {
@@ -775,14 +769,14 @@ public:
     {
     }
 
-    virtual void Calculate(const Variable<Vector>& rVariable,
-                           Vector& Output,
+    virtual void Calculate(const Variable<VectorType>& rVariable,
+                           VectorType& Output,
                            const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
-    virtual void Calculate(const Variable<Matrix>& rVariable,
-                           Matrix& Output,
+    virtual void Calculate(const Variable<MatrixType>& rVariable,
+                           MatrixType& Output,
                            const ProcessInfo& rCurrentProcessInfo)
     {
     }
@@ -832,22 +826,22 @@ public:
     }
 
     virtual void CalculateOnIntegrationPoints(
-        const Variable<Vector>& rVariable,
-        std::vector<Vector>& rOutput,
+        const Variable<VectorType>& rVariable,
+        std::vector<VectorType>& rOutput,
         const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
     virtual void CalculateOnIntegrationPoints(
-        const Variable<Matrix>& rVariable,
-        std::vector<Matrix>& rOutput,
+        const Variable<MatrixType>& rVariable,
+        std::vector<MatrixType>& rOutput,
         const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
     virtual void CalculateOnIntegrationPoints(
-        const Variable<ConstitutiveLaw::Pointer>& rVariable,
-        std::vector<ConstitutiveLaw::Pointer>& rOutput,
+        const Variable<typename ConstitutiveLawType::Pointer>& rVariable,
+        std::vector<typename ConstitutiveLawType::Pointer>& rOutput,
         const ProcessInfo& rCurrentProcessInfo)
     {
     }
@@ -906,22 +900,22 @@ public:
     }
 
     virtual void SetValuesOnIntegrationPoints(
-        const Variable<Vector>& rVariable,
-        const std::vector<Vector>& rValues,
+        const Variable<VectorType>& rVariable,
+        const std::vector<VectorType>& rValues,
         const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
     virtual void SetValuesOnIntegrationPoints(
-        const Variable<Matrix>& rVariable,
-        const std::vector<Matrix>& rValues,
+        const Variable<MatrixType>& rVariable,
+        const std::vector<MatrixType>& rValues,
         const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
     virtual void SetValuesOnIntegrationPoints(
-        const Variable<ConstitutiveLaw::Pointer>& rVariable,
-        const std::vector<ConstitutiveLaw::Pointer>& rValues,
+        const Variable<typename ConstitutiveLawType::Pointer>& rVariable,
+        const std::vector<typename ConstitutiveLawType::Pointer>& rValues,
         const ProcessInfo& rCurrentProcessInfo)
     {
     }
@@ -964,22 +958,22 @@ public:
         this->CalculateOnIntegrationPoints(rVariable, rValues, rCurrentProcessInfo);
     }
 
-    void GetValuesOnIntegrationPoints(const Variable<Vector>& rVariable,
-                         std::vector<Vector>& rValues,
+    void GetValuesOnIntegrationPoints(const Variable<VectorType>& rVariable,
+                         std::vector<VectorType>& rValues,
                          const ProcessInfo& rCurrentProcessInfo)
     {
         this->CalculateOnIntegrationPoints(rVariable, rValues, rCurrentProcessInfo);
     }
 
-    void GetValuesOnIntegrationPoints(const Variable<Matrix>& rVariable,
-                         std::vector<Matrix>& rValues,
+    void GetValuesOnIntegrationPoints(const Variable<MatrixType>& rVariable,
+                         std::vector<MatrixType>& rValues,
                          const ProcessInfo& rCurrentProcessInfo)
     {
         this->CalculateOnIntegrationPoints(rVariable, rValues, rCurrentProcessInfo);
     }
 
-    void GetValuesOnIntegrationPoints(const Variable<ConstitutiveLaw::Pointer>& rVariable,
-                         std::vector<ConstitutiveLaw::Pointer>& rValues,
+    void GetValuesOnIntegrationPoints(const Variable<typename ConstitutiveLawType::Pointer>& rVariable,
+                         std::vector<typename ConstitutiveLawType::Pointer>& rValues,
                          const ProcessInfo& rCurrentProcessInfo)
     {
         this->CalculateOnIntegrationPoints(rVariable, rValues, rCurrentProcessInfo);
@@ -1017,10 +1011,13 @@ public:
         {
             KRATOS_ERROR << "Element found with Id 0 or negative";
         }
-        if (this->GetGeometry().Area() <= 0)
+        if constexpr (std::is_arithmetic<DataType>::value)
         {
-            KRATOS_ERROR << "error on element -> " << this->Id()
-                         << ". Area cannot be less than or equal to 0";
+            if (this->GetGeometry().Area() <= 0)
+            {
+                KRATOS_ERROR << "error on element -> " << this->Id()
+                             << ". Area cannot be less than or equal to 0";
+            }
         }
         return 0;
 
@@ -1111,7 +1108,7 @@ public:
      * Calculate the transposed gradient of the element's residual w.r.t. design variable.
      */
     virtual void CalculateSensitivityMatrix(const Variable<DataType>& rDesignVariable,
-                                            Matrix& rOutput,
+                                            MatrixType& rOutput,
                                             const ProcessInfo& rCurrentProcessInfo)
     {
         if (rOutput.size1() != 0)
@@ -1122,7 +1119,7 @@ public:
      * Calculate the transposed gradient of the element's residual w.r.t. design variable.
      */
     virtual void CalculateSensitivityMatrix(const Variable<array_1d<DataType, 3> >& rDesignVariable,
-                                            Matrix& rOutput,
+                                            MatrixType& rOutput,
                                             const ProcessInfo& rCurrentProcessInfo)
     {
         if (rOutput.size1() != 0)
@@ -1228,7 +1225,7 @@ public:
     std::string Info() const override
     {
         std::stringstream buffer;
-        buffer << "Element #" << Id();
+        buffer << "Element #" << this->Id();
         return buffer.str();
     }
 
@@ -1236,14 +1233,14 @@ public:
 
     void PrintInfo(std::ostream& rOStream) const override
     {
-        rOStream << "Element #" << Id();
+        rOStream << "Element #" << this->Id();
     }
 
     /// Print object's data.
 
     void PrintData(std::ostream& rOStream) const override
     {
-        pGetGeometry()->PrintData(rOStream);
+        this->pGetGeometry()->PrintData(rOStream);
     }
 
     ///@}
@@ -1305,14 +1302,14 @@ private:
 
     void save(Serializer& rSerializer) const override
     {
-        KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, GeometricalObject );
+        KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, BaseType);
         rSerializer.save("Data", mData);
         rSerializer.save("Properties", mpProperties);
     }
 
     void load(Serializer& rSerializer) override
     {
-        KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, GeometricalObject );
+        KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, BaseType);
         rSerializer.load("Data", mData);
         rSerializer.load("Properties", mpProperties);
     }
@@ -1328,7 +1325,7 @@ private:
     ///@{
     ///@}
 
-}; // Class Element
+}; // Class BaseElement
 
 ///@}
 ///@name Type Definitions
@@ -1338,13 +1335,15 @@ private:
 ///@{
 
 /// input stream function
-inline std::istream & operator >>(std::istream& rIStream, Element& rThis)
+template<class TNodeType>
+inline std::istream & operator >>(std::istream& rIStream, BaseElement<TNodeType>& rThis)
 {
     return rIStream;
 }
 
 /// output stream function
-inline std::ostream & operator <<(std::ostream& rOStream, const Element& rThis)
+template<class TNodeType>
+inline std::ostream & operator <<(std::ostream& rOStream, const BaseElement<TNodeType>& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << " : " << std::endl;
@@ -1354,7 +1353,13 @@ inline std::ostream & operator <<(std::ostream& rOStream, const Element& rThis)
 
 ///@}
 
+typedef BaseElement<Node<3, KRATOS_DOUBLE_TYPE, Dof<KRATOS_DOUBLE_TYPE> > > Element;
+typedef BaseElement<Node<3, KRATOS_DOUBLE_TYPE, Dof<KRATOS_COMPLEX_TYPE> > > ComplexElement;
+typedef BaseElement<Node<3, KRATOS_COMPLEX_TYPE, Dof<KRATOS_COMPLEX_TYPE> > > GComplexElement;
+
 void KRATOS_API(KRATOS_CORE) AddKratosComponent(std::string const& Name, Element const& ThisComponent);
+void KRATOS_API(KRATOS_CORE) AddKratosComponent(std::string const& Name, ComplexElement const& ThisComponent);
+void KRATOS_API(KRATOS_CORE) AddKratosComponent(std::string const& Name, GComplexElement const& ThisComponent);
 
 /**
  * definition of elemental specific variables
@@ -1368,5 +1373,9 @@ KRATOS_DEFINE_VARIABLE(WeakPointerVector< Element >, NEIGHBOUR_ELEMENTS)
 #undef  KRATOS_EXPORT_MACRO
 #define KRATOS_EXPORT_MACRO KRATOS_NO_EXPORT
 
+template<> struct DataTypeToString<WeakPointerVector<Element> > { static inline constexpr const char* Get() {return "WeakPointerVector<Element>";} };
+template<> struct DataTypeToString<typename Element::Pointer> { static inline constexpr const char* Get() {return "Element::Pointer";} };
+
 } // namespace Kratos.
+
 #endif // KRATOS_ELEMENT_H_INCLUDED  defined

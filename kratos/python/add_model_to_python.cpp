@@ -21,21 +21,24 @@
 #include "python/add_model_to_python.h"
 
 namespace Kratos {
+
 namespace Python {
 
-ModelPart& Model_CreateModelPart1(Model& rModel, const std::string& rName)
+template<class TModelPartType>
+TModelPartType& Model_CreateModelPart1(Model& rModel, const std::string& rName)
 {
-    return rModel.CreateModelPart(rName);
+    return dynamic_cast<TModelPartType&>(rModel.CreateModelPart<TModelPartType>(rName));
 }
 
-ModelPart& Model_CreateModelPart2(Model& rModel, const std::string& rName, unsigned int BufferSize)
+template<class TModelPartType>
+TModelPartType& Model_CreateModelPart2(Model& rModel, const std::string& rName, unsigned int BufferSize)
 {
-    return rModel.CreateModelPart(rName, BufferSize);
+    return dynamic_cast<TModelPartType&>(rModel.CreateModelPart<TModelPartType>(rName, BufferSize));
 }
 
-ModelPart& Model_GetModelPart(Model& rModel, const std::string& rFullModelPartName)
+BaseModelPart& Model_GetModelPart(Model& rModel, const std::string& rFullModelPartName)
 {
-    return rModel.GetModelPart(rFullModelPartName);
+    return rModel.GetBaseModelPart(rFullModelPartName);
 }
 
 Model& GetDefaultKratosModel()
@@ -43,17 +46,21 @@ Model& GetDefaultKratosModel()
     return *pKratosDefaultModel;
 }
 
-void  AddModelToPython()
+void AddModelToPython()
 {
     using namespace boost::python;
 
     class_<Model, boost::noncopyable>("Model", init<>())
         .def("Reset", &Model::Reset)
-        .def("CreateModelPart", &Model_CreateModelPart1, return_internal_reference<>())
-        .def("CreateModelPart", &Model_CreateModelPart2, return_internal_reference<>())
+        .def("CreateModelPart", &Model_CreateModelPart1<ModelPart>, return_internal_reference<>())
+        .def("CreateModelPart", &Model_CreateModelPart2<ModelPart>, return_internal_reference<>())
+        .def("CreateComplexModelPart", &Model_CreateModelPart1<ComplexModelPart>, return_internal_reference<>())
+        .def("CreateComplexModelPart", &Model_CreateModelPart2<ComplexModelPart>, return_internal_reference<>())
+        .def("CreateGComplexModelPart", &Model_CreateModelPart1<GComplexModelPart>, return_internal_reference<>())
+        .def("CreateGComplexModelPart", &Model_CreateModelPart2<GComplexModelPart>, return_internal_reference<>())
         .def("DeleteModelPart", &Model::DeleteModelPart)
         .def("GetModelPart", &Model_GetModelPart, return_internal_reference<>())
-        .def("HasModelPart", &Model::HasModelPart)
+        .def("HasModelPart", &Model::HasBaseModelPart)
         .def("GetModelPartNames", &Model::GetModelPartNames)
         .def("__getitem__", &Model_GetModelPart, return_internal_reference<>())
         .def(self_ns::str(self))
@@ -63,4 +70,5 @@ void  AddModelToPython()
 }
 
 }  // namespace Python.
+
 } // Namespace Kratos

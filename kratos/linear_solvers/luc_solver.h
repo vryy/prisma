@@ -53,8 +53,9 @@ namespace Kratos
 /** Detail class definition.
 */
 template<class TSparseSpaceType, class TDenseSpaceType,
+         class TModelPartType,
          class TReordererType = Reorderer<TSparseSpaceType, TDenseSpaceType> >
-class LUCSolver : public DirectSolver<TSparseSpaceType, TDenseSpaceType, TReordererType>
+class LUCSolver : public DirectSolver<TSparseSpaceType, TDenseSpaceType, TModelPartType, TReordererType>
 {
 public:
     ///@name Type Definitions
@@ -63,7 +64,7 @@ public:
     /// Pointer definition of LUCSolver
     KRATOS_CLASS_POINTER_DEFINITION(LUCSolver);
 
-    typedef DirectSolver<TSparseSpaceType, TDenseSpaceType, TReordererType> BaseType;
+    typedef DirectSolver<TSparseSpaceType, TDenseSpaceType, TModelPartType, TReordererType> BaseType;
 
     typedef typename TSparseSpaceType::MatrixType SparseMatrixType;
 
@@ -71,7 +72,7 @@ public:
 
     typedef typename TDenseSpaceType::MatrixType DenseMatrixType;
 
-    typedef std::size_t IndexType;
+    typedef BaseType::IndexType IndexType;
 
     typedef std::vector<IndexType> IndicesVectorType;
 
@@ -88,10 +89,8 @@ public:
     /// Copy constructor.
     LUCSolver(const LUCSolver& Other) : BaseType(Other) {}
 
-
     /// Destructor.
-    virtual ~LUCSolver() {}
-
+    ~LUCSolver() override {}
 
     ///@}
     ///@name Operators
@@ -115,7 +114,7 @@ public:
     guess for iterative linear solvers.
     @param rB. Right hand side vector.
     */
-    bool Solve(SparseMatrixType& rA, VectorType& rX, VectorType& rB)
+    bool Solve(SparseMatrixType& rA, VectorType& rX, VectorType& rB) override
     {
         GetReorderer()->Initialize(rA, rX, rB);
         std::cout << "	Decomposing Matrix A..." << std::endl;
@@ -141,9 +140,8 @@ public:
     guess for iterative linear solvers.
     @param rB. Right hand side vector.
     */
-    bool Solve(SparseMatrixType& rA, DenseMatrixType& rX, DenseMatrixType& rB)
+    bool Solve(SparseMatrixType& rA, DenseMatrixType& rX, DenseMatrixType& rB) override
     {
-
         return false;
     }
 
@@ -246,9 +244,6 @@ private:
     {
         KRATOS_TRY
 
-
-
-
         //GiD_FILE matrix_file = GiD_fOpenPostMeshFile("matricesA.post.msh", GiD_PostAscii);
         std::ofstream matrix_file(MatrixFileName.c_str());
 
@@ -316,12 +311,9 @@ private:
         //GiD_ClosePostResultFile();
 
         KRATOS_CATCH("")
-
     }
 
-
     /// Decomposes the Matrix A to L and U and store it in mL and mU
-
     std::size_t LUCDecompose(SparseMatrixType& rA)
     {
         typedef typename TSparseSpaceType::DataType DataType;
@@ -522,8 +514,6 @@ private:
         ThisLinkList[i] = ThisIndex;
     }
 
-
-
     std::size_t LUCPermuteAndDecompose(SparseMatrixType& rA)
     {
         typename TReordererType::IndexVectorType& r_index_permutation = GetReorderer()->GetIndexPermutation();
@@ -532,7 +522,7 @@ private:
 
         const SizeType size = TSparseSpaceType::Size1(rA);
 
-        DataType* z = new DataType[size]; // working vector for row k
+        std::vector<DataType> z(size); // working vector for row k
         VectorType w(size); // working vector for column k
         VectorType temp(size);
 
@@ -569,7 +559,6 @@ private:
                 z[i] = temp[r_index_permutation[i]];
             for(SizeType i = 0 ; i < k ; i++)
                 z[i] = 0;
-
 
             for(SizeType h = 0 ; h < l_rows[k].size() ; h++) // iterating over nonzeros of row k of L
             {
@@ -616,8 +605,7 @@ private:
             double u_kk = z[k];
 
             if(u_kk == 0.00)
-                KRATOS_THROW_ERROR(std::runtime_error, "Zero pivot found in row ",k);
-
+                KRATOS_ERROR << "Zero pivot found in row " << k;
 
             // adding nonzeros of w to the L
             for(SizeType i = k + 1 ; i < size ; i++)
@@ -640,9 +628,6 @@ private:
         }
 
         std::cout << "            " << 100 << " % : L nonzeros = " << mL.size() << " and U nonzeros = " << mU.size() << std::endl;
-
-
-        delete [] z;
 
         WriteMatrixForGid("matrixLU.post.msh", "lu_matrix");
 

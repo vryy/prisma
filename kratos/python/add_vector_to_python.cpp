@@ -67,59 +67,64 @@ struct UblasVectorModifier
     }
 };
 
-
-void  AddVectorToPython()
+template<typename TDataType>
+void AddVectorToPythonImpl(const std::string& Prefix)
 {
-
-    ReadonlyVectorPythonInterface<zero_vector<double> >::CreateInterface("ZeroVector")
-    .def(init<zero_vector<double>::size_type>())
-//       .def(VectorScalarOperatorPython<zero_vector<double>, double, vector<double> >())
-//       .def(VectorVectorOperatorPython<zero_vector<double>, unit_vector<double>, vector<double> >())
-//       .def(VectorVectorOperatorPython<zero_vector<double>, scalar_vector<double>, vector<double> >())
-//       .def(VectorVectorOperatorPython<zero_vector<double>, vector<double>, vector<double> >())
-//       .def(VectorVectorOperatorPython<zero_vector<double>, mapped_vector<double>, mapped_vector<double> >())
-//       .def(VectorVectorOperatorPython<zero_vector<double>, compressed_vector<double>, compressed_vector<double> >())
-//       .def(VectorVectorOperatorPython<zero_vector<double>, coordinate_vector<double>, coordinate_vector<double> >())
+    ReadonlyVectorPythonInterface<zero_vector<TDataType> >::CreateInterface(Prefix + "ZeroVector")
+    .def(init<typename zero_vector<TDataType>::size_type>())
+//       .def(VectorScalarOperatorPython<zero_vector<TDataType>, TDataType, vector<TDataType> >())
+//       .def(VectorVectorOperatorPython<zero_vector<TDataType>, unit_vector<TDataType>, vector<TDataType> >())
+//       .def(VectorVectorOperatorPython<zero_vector<TDataType>, scalar_vector<TDataType>, vector<TDataType> >())
+//       .def(VectorVectorOperatorPython<zero_vector<TDataType>, vector<TDataType>, vector<TDataType> >())
+//       .def(VectorVectorOperatorPython<zero_vector<TDataType>, mapped_vector<TDataType>, mapped_vector<TDataType> >())
+//       .def(VectorVectorOperatorPython<zero_vector<TDataType>, compressed_vector<TDataType>, compressed_vector<TDataType> >())
+//       .def(VectorVectorOperatorPython<zero_vector<TDataType>, coordinate_vector<TDataType>, coordinate_vector<TDataType> >())
     ;
 
-    ReadonlyVectorPythonInterface<unit_vector<double> >::CreateInterface("UnitVector")
-    .def(init<unit_vector<double>::size_type, vector<double>::size_type>())
-//       .def(VectorScalarOperatorPython<unit_vector<double>, double, vector<double> >())
-//       .def(VectorVectorOperatorPython<unit_vector<double>, zero_vector<double>, vector<double> >())
-//       .def(VectorVectorOperatorPython<unit_vector<double>, scalar_vector<double>, vector<double> >())
-//       .def(VectorVectorOperatorPython<unit_vector<double>, vector<double>, vector<double> >())
-//       .def(VectorVectorOperatorPython<unit_vector<double>, mapped_vector<double>, mapped_vector<double> >())
-//       .def(VectorVectorOperatorPython<unit_vector<double>, compressed_vector<double>, compressed_vector<double> >())
-//       .def(VectorVectorOperatorPython<unit_vector<double>, coordinate_vector<double>, coordinate_vector<double> >())
+    ReadonlyVectorPythonInterface<unit_vector<TDataType> >::CreateInterface(Prefix + "UnitVector")
+    .def(init<typename unit_vector<TDataType>::size_type, typename vector<TDataType>::size_type>())
+//       .def(VectorScalarOperatorPython<unit_vector<TDataType>, TDataType, vector<TDataType> >())
+//       .def(VectorVectorOperatorPython<unit_vector<TDataType>, zero_vector<TDataType>, vector<TDataType> >())
+//       .def(VectorVectorOperatorPython<unit_vector<TDataType>, scalar_vector<TDataType>, vector<TDataType> >())
+//       .def(VectorVectorOperatorPython<unit_vector<TDataType>, vector<TDataType>, vector<TDataType> >())
+//       .def(VectorVectorOperatorPython<unit_vector<TDataType>, mapped_vector<TDataType>, mapped_vector<TDataType> >())
+//       .def(VectorVectorOperatorPython<unit_vector<TDataType>, compressed_vector<TDataType>, compressed_vector<TDataType> >())
+//       .def(VectorVectorOperatorPython<unit_vector<TDataType>, coordinate_vector<TDataType>, coordinate_vector<TDataType> >())
     ;
 
-    ReadonlyVectorPythonInterface<scalar_vector<double> >::CreateInterface("ScalarVector")
-    .def(init<scalar_vector<double>::size_type, scalar_vector<double>::value_type>())
-//       .def(VectorScalarOperatorPython<scalar_vector<double>, double, vector<double> >())
-//       .def(VectorVectorOperatorPython<scalar_vector<double>, zero_vector<double>, vector<double> >())
-//       .def(VectorVectorOperatorPython<scalar_vector<double>, unit_vector<double>, vector<double> >())
-//       .def(VectorVectorOperatorPython<scalar_vector<double>, vector<double>, vector<double> >())
-//       .def(VectorVectorOperatorPython<scalar_vector<double>, mapped_vector<double>, mapped_vector<double> >())
-//       .def(VectorVectorOperatorPython<scalar_vector<double>, compressed_vector<double>, compressed_vector<double> >())
-//       .def(VectorVectorOperatorPython<scalar_vector<double>, coordinate_vector<double>, coordinate_vector<double> >())
+    ReadonlyVectorPythonInterface<scalar_vector<TDataType> >::CreateInterface(Prefix + "ScalarVector")
+    .def(init<typename scalar_vector<TDataType>::size_type, typename scalar_vector<TDataType>::value_type>())
+//       .def(VectorScalarOperatorPython<scalar_vector<TDataType>, TDataType, vector<TDataType> >())
+//       .def(VectorVectorOperatorPython<scalar_vector<TDataType>, zero_vector<TDataType>, vector<TDataType> >())
+//       .def(VectorVectorOperatorPython<scalar_vector<TDataType>, unit_vector<TDataType>, vector<TDataType> >())
+//       .def(VectorVectorOperatorPython<scalar_vector<TDataType>, vector<TDataType>, vector<TDataType> >())
+//       .def(VectorVectorOperatorPython<scalar_vector<TDataType>, mapped_vector<TDataType>, mapped_vector<TDataType> >())
+//       .def(VectorVectorOperatorPython<scalar_vector<TDataType>, compressed_vector<TDataType>, compressed_vector<TDataType> >())
+//       .def(VectorVectorOperatorPython<scalar_vector<TDataType>, coordinate_vector<TDataType>, coordinate_vector<TDataType> >())
     ;
 
-    VectorPythonInterface<vector<double>, UblasVectorModifier<vector<double> > >::CreateInterface("Vector")
-    .def(init<vector<double>::size_type>())
-    .def(init<vector_expression<vector<double> > >())
-    .def(init<array_1d<double, 3> >())
-    .def(VectorScalarOperatorPython<vector<double>, double, vector<double> >())
-//       .def(VectorVectorOperatorPython<vector<double>, zero_vector<double>, vector<double> >())
-//       .def(VectorVectorOperatorPython<vector<double>, unit_vector<double>, vector<double> >())
-//       .def(VectorVectorOperatorPython<vector<double>, scalar_vector<double>, vector<double> >())
-//       .def(VectorVectorOperatorPython<vector<double>, mapped_vector<double>, vector<double> >())
+    VectorPythonInterface<vector<TDataType>, UblasVectorModifier<vector<TDataType> > >::CreateInterface(Prefix + "Vector")
+    .def(init<typename vector<TDataType>::size_type>())
+    .def(init<vector_expression<vector<TDataType> > >())
+    .def(init<array_1d<TDataType, 3> >())
+    .def(VectorScalarOperatorPython<vector<TDataType>, TDataType, vector<TDataType> >())
+//       .def(VectorVectorOperatorPython<vector<TDataType>, zero_vector<TDataType>, vector<TDataType> >())
+//       .def(VectorVectorOperatorPython<vector<TDataType>, unit_vector<TDataType>, vector<TDataType> >())
+//       .def(VectorVectorOperatorPython<vector<TDataType>, scalar_vector<TDataType>, vector<TDataType> >())
+//       .def(VectorVectorOperatorPython<vector<TDataType>, mapped_vector<TDataType>, vector<TDataType> >())
    ;
-
-      VectorPythonInterface<vector<int>, UblasVectorModifier<vector<int> > >::CreateInterface("IntegerVector")
-      .def(init<vector<int>::size_type>())
-   ;
-
 }
+
+void AddVectorToPython()
+{
+    VectorPythonInterface<vector<int>, UblasVectorModifier<vector<int> > >::CreateInterface("IntegerVector")
+    .def(init<vector<int>::size_type>())
+    ;
+
+    AddVectorToPythonImpl<KRATOS_DOUBLE_TYPE>("");
+    AddVectorToPythonImpl<KRATOS_COMPLEX_TYPE>("Complex");
+}
+
 }  // namespace Python.
 
 } // Namespace Kratos

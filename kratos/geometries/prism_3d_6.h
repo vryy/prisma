@@ -60,9 +60,14 @@ public:
     typedef typename BaseType::GeometriesArrayType GeometriesArrayType;
 
     /**
-     * Redefinition of template parameter TPointType.
+     * Type used for coordinate value.
      */
-    typedef TPointType PointType;
+    typedef typename BaseType::DataType DataType;
+
+    /**
+     * Type used for shape function value.
+     */
+    typedef typename BaseType::ValueType ValueType;
 
     /**
      * Type used for indexing in geometry class.std::size_t used for indexing
@@ -72,16 +77,16 @@ public:
     typedef typename BaseType::IndexType IndexType;
 
     /**
-     * Type used for double value.
-     */
-    typedef typename BaseType::DataType DataType;
-
-    /**
      * This typed used to return size or dimension in
      * geometry. Dimension, WorkingDimension, PointsNumber and
      * ... return this type as their results.
      */
     typedef typename BaseType::SizeType SizeType;
+
+    /**
+     * Redefinition of template parameter TPointType.
+     */
+    typedef typename BaseType::PointType PointType;
 
     /**
      * Array of counted pointers to point. This type used to hold
@@ -115,15 +120,13 @@ public:
      * A third order tensor used as shape functions' values
      * container.
      */
-    typedef typename BaseType::ShapeFunctionsValuesContainerType
-    ShapeFunctionsValuesContainerType;
+    typedef typename BaseType::ShapeFunctionsValuesContainerType ShapeFunctionsValuesContainerType;
 
     /**
      * A fourth order tensor used as shape functions' local
      * gradients container in geometry.
      */
-    typedef typename BaseType::ShapeFunctionsLocalGradientsContainerType
-    ShapeFunctionsLocalGradientsContainerType;
+    typedef typename BaseType::ShapeFunctionsLocalGradientsContainerType ShapeFunctionsLocalGradientsContainerType;
 
     /**
      * A third order tensor to hold jacobian matrices evaluated at
@@ -133,11 +136,25 @@ public:
     typedef typename BaseType::JacobiansType JacobiansType;
 
     /**
-     * A third order tensor to hold shape functions' local
-     * gradients. ShapefunctionsLocalGradients function return this
+     * A third order tensor to hold shape functions' local gradients at all integration points.
+     * ShapefunctionsLocalGradients function return this
      * type as its result.
      */
     typedef typename BaseType::ShapeFunctionsGradientsType ShapeFunctionsGradientsType;
+
+    /**
+     * A third order tensor to hold shape functions' local second derivatives at a point.
+     * ShapeFunctionsSecondDerivatives function return this
+     * type as its result.
+     */
+    typedef typename BaseType::ShapeFunctionsSecondDerivativesType ShapeFunctionsSecondDerivativesType;
+
+    /**
+    * A fourth order tensor to hold shape functions' local third derivatives at a point.
+    * ShapeFunctionsThirdDerivatives function return this
+    * type as its result.
+    */
+    typedef typename BaseType::ShapeFunctionsThirdDerivativesType ShapeFunctionsThirdDerivativesType;
 
     /**
      * Type of the normal vector used for normal to edges in geomety.
@@ -145,15 +162,26 @@ public:
     typedef typename BaseType::NormalType NormalType;
 
     /**
-    * Type of coordinates array
-    */
+     * Type of coordinates array
+     */
     typedef typename BaseType::CoordinatesArrayType CoordinatesArrayType;
+
+    /** This type used for representing the local coordinates of
+    an integration point
+    */
+    typedef typename BaseType::LocalCoordinatesArrayType LocalCoordinatesArrayType;
 
     /**
      * Type of Matrix
      */
-    typedef Matrix MatrixType;
+    typedef typename BaseType::MatrixType MatrixType;
+    typedef typename BaseType::ZeroMatrixType ZeroMatrixType;
 
+    /**
+     * Type of Vector
+     */
+    typedef typename BaseType::VectorType VectorType;
+    typedef typename BaseType::ZeroVectorType ZeroVectorType;
 
     /**
      * Life Cycle
@@ -231,7 +259,7 @@ public:
     }
 
     /// Destructor. Does nothing!!!
-    virtual ~Prism3D6() {}
+    ~Prism3D6() override {}
 
     GeometryData::KratosGeometryFamily GetGeometryFamily() const final
     {
@@ -283,7 +311,6 @@ public:
         return *this;
     }
 
-
     /**
      * Operations
      */
@@ -293,17 +320,16 @@ public:
         return typename BaseType::Pointer( new Prism3D6( ThisPoints ) );
     }
 
-    Geometry< Point<3> >::Pointer Clone() const override
+    typename Geometry< Point<3, DataType> >::Pointer Clone() const override
     {
-        Geometry< Point<3> >::PointsArrayType NewPoints;
-        //making a copy of the nodes TO POINTS (not Nodes!!!)
+        typename Geometry< Point<3, DataType> >::PointsArrayType NewPoints;
 
+        //making a copy of the nodes TO POINTS (not Nodes!!!)
         for ( IndexType i = 0 ; i < this->Points().size() ; i++ )
             NewPoints.push_back( this->Points()[i] );
 
         //creating a geometry with the new points
-       Geometry< Point<3> >::Pointer
-        p_clone( new Prism3D6< Point<3> >( NewPoints ) );
+        typename Geometry< Point<3, DataType> >::Pointer p_clone( new Prism3D6< Point<3, DataType> >( NewPoints ) );
 
         p_clone->ClonePoints();
 
@@ -318,7 +344,6 @@ public:
         std::fill( rResult.begin(), rResult.end(), 1.00 / 6.00 );
         return rResult;
     }
-
 
     /**
      * Informations
@@ -341,18 +366,17 @@ public:
      */
     DataType Length() const override
     {
-        Vector temp;
+        VectorType temp;
         this->DeterminantOfJacobian( temp, msGeometryData.DefaultIntegrationMethod() );
         const IntegrationPointsArrayType& integration_points = this->IntegrationPoints( msGeometryData.DefaultIntegrationMethod() );
-        DataType Volume = 0.00;
 
+        DataType Volume = 0.00;
         for ( unsigned int i = 0; i < integration_points.size(); i++ )
         {
             Volume += temp[i] * integration_points[i].Weight();
         }
 
         return std::pow(Volume, 1.0/3.0)/3.0;
-//        return sqrt( fabs( this->DeterminantOfJacobian( PointType() ) ) );
     }
 
     /**
@@ -371,30 +395,23 @@ public:
      */
     DataType Area() const override
     {
-        return fabs( this->DeterminantOfJacobian( PointType() ) ) * 0.5;
+        return std::abs( this->DeterminantOfJacobian( LocalCoordinatesArrayType() ) ) * 0.5;
     }
-
-
 
     DataType Volume() const override
     {
-
-        Vector temp;
+        VectorType temp;
         this->DeterminantOfJacobian( temp, msGeometryData.DefaultIntegrationMethod() );
         const IntegrationPointsArrayType& integration_points = this->IntegrationPoints( msGeometryData.DefaultIntegrationMethod() );
-        DataType Volume = 0.00;
 
+        DataType Volume = 0.00;
         for ( unsigned int i = 0; i < integration_points.size(); i++ )
         {
             Volume += temp[i] * integration_points[i].Weight();
         }
 
-        //KRATOS_WATCH(temp)
         return Volume;
     }
-
-
-
 
     /**
      * This method calculate and return length, area or volume of
@@ -411,9 +428,8 @@ public:
      */
     DataType DomainSize() const override
     {
-        return fabs( this->DeterminantOfJacobian( PointType() ) ) * 0.5;
+        return std::abs( this->DeterminantOfJacobian( LocalCoordinatesArrayType() ) ) * 0.5;
     }
-
 
     /**
     * Returns a matrix of the local coordinates of all points
@@ -455,7 +471,7 @@ public:
     /**
      * Returns whether given arbitrary point is inside the Geometry
      */
-    bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult ) const override
+    bool IsInside( const CoordinatesArrayType& rPoint, LocalCoordinatesArrayType& rResult ) const override
     {
         this->PointLocalCoordinates( rResult, rPoint );
 
@@ -471,7 +487,7 @@ public:
     /**
      * Returns whether given arbitrary point is inside the Geometry
      */
-    bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult, const Matrix& DeltaPosition ) const override
+    bool IsInside( const CoordinatesArrayType& rPoint, LocalCoordinatesArrayType& rResult, const MatrixType& DeltaPosition ) const override
     {
         this->PointLocalCoordinates( rResult, rPoint, DeltaPosition );
 
@@ -483,8 +499,6 @@ public:
 
         return false;
     }
-
-
 
     /** This method gives you number of all edges of this
     geometry.
@@ -573,8 +587,6 @@ public:
         return faces;
     }
 
-
-
     /**
      * Shape Function
      */
@@ -589,8 +601,7 @@ public:
      * @return the value of the shape function at the given point
      * TODO: TO BE VERIFIED
      */
-    DataType ShapeFunctionValue( IndexType ShapeFunctionIndex,
-                               const CoordinatesArrayType& rPoint ) const override
+    ValueType ShapeFunctionValue( IndexType ShapeFunctionIndex, const LocalCoordinatesArrayType& rPoint ) const override
     {
         switch ( ShapeFunctionIndex )
         {
@@ -655,8 +666,8 @@ public:
     {
         BaseType::PrintData( rOStream );
         std::cout << std::endl;
-        Matrix jacobian;
-        this->Jacobian( jacobian, PointType() );
+        MatrixType jacobian;
+        this->Jacobian( jacobian, LocalCoordinatesArrayType() );
         rOStream << "    Jacobian in the origin\t : " << jacobian;
     }
 
@@ -692,7 +703,6 @@ private:
 
     Prism3D6(): BaseType( PointsArrayType(), &msGeometryData ) {}
 
-
     /**
      * Private Operations
      */
@@ -708,7 +718,7 @@ private:
      * @return the gradients of all shape functions
      * \f$ \frac{\partial N^i}{\partial \xi_j} \f$
      */
-    static Matrix& CalculateShapeFunctionsLocalGradients( Matrix& rResult, const CoordinatesArrayType& rPoint )
+    static Matrix& CalculateShapeFunctionsLocalGradients( Matrix& rResult, const LocalCoordinatesArrayType& rPoint )
     {
         rResult( 0, 0 ) = -1.0 + rPoint[2];
         rResult( 0, 1 ) = -1.0 + rPoint[2];
@@ -791,8 +801,7 @@ private:
      * in each integration point
      *
      */
-    static ShapeFunctionsGradientsType
-    CalculateShapeFunctionsIntegrationPointsLocalGradients(
+    static ShapeFunctionsGradientsType CalculateShapeFunctionsIntegrationPointsLocalGradients(
         typename BaseType::IntegrationMethod ThisMethod )
     {
         IntegrationPointsContainerType all_integration_points =
@@ -872,11 +881,7 @@ private:
         return shape_functions_values;
     }
 
-    /**
-     * TODO: TO BE VERIFIED
-     */
-    static const ShapeFunctionsLocalGradientsContainerType
-    AllShapeFunctionsLocalGradients()
+    static const ShapeFunctionsLocalGradientsContainerType AllShapeFunctionsLocalGradients()
     {
         ShapeFunctionsLocalGradientsContainerType shape_functions_local_gradients =
         {
@@ -896,7 +901,6 @@ private:
         return shape_functions_local_gradients;
     }
 
-
     /**
      * Private Friends
      */
@@ -908,8 +912,7 @@ private:
      * Un accessible methods
      */
 
-};// Class Prism3D6
-
+}; // Class Prism3D6
 
 template<class TPointType> const
 GeometryData Prism3D6<TPointType>::msGeometryData(

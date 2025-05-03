@@ -564,6 +564,8 @@ inline std::ostream& operator << (std::ostream& rOStream,
 }
 ///@}
 
+template<> struct DataTypeToString<Flags> { static inline constexpr const char* Get() {return "Flags";} };
+
 }  // namespace Kratos.
 
 #endif // KRATOS_FLAGS_H_INCLUDED  defined

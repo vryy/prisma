@@ -36,9 +36,10 @@ namespace ublas = boost::numeric::ublas;
 namespace Kratos
 {
 template< class TSparseSpaceType, class TDenseSpaceType,
+          class TModelPartType,
           class TReordererType = Reorderer<TSparseSpaceType, TDenseSpaceType> >
 class SuperLUSolver : public DirectSolver< TSparseSpaceType,
-    TDenseSpaceType, TReordererType>
+    TDenseSpaceType, TModelPartType, TReordererType>
 {
 public:
     /**
@@ -46,7 +47,7 @@ public:
      */
     KRATOS_CLASS_POINTER_DEFINITION( SuperLUSolver );
 
-    typedef LinearSolver<TSparseSpaceType, TDenseSpaceType, TReordererType> BaseType;
+    typedef LinearSolver<TSparseSpaceType, TDenseSpaceType, TModelPartType, TReordererType> BaseType;
 
     typedef typename TSparseSpaceType::MatrixType SparseMatrixType;
 
@@ -62,7 +63,7 @@ public:
     /**
      * Destructor
      */
-    virtual ~SuperLUSolver() {}
+    ~SuperLUSolver() override {}
 
     /**
      * Normal solve method.
@@ -72,7 +73,7 @@ public:
      * @param rX. Solution vector.
      * @param rB. Right hand side vector.
      */
-    bool Solve(SparseMatrixType& rA, VectorType& rX, VectorType& rB)
+    bool Solve(SparseMatrixType& rA, VectorType& rX, VectorType& rB) override
     {
         //std::cout << "matrix size in solver: " << rA.size1() << std::endl;
         //std::cout << "RHS size in solver: " << rB.size() << std::endl;
@@ -130,7 +131,7 @@ public:
      * @param rX. Solution vector.
      * @param rB. Right hand side vector.
      */
-    bool Solve(SparseMatrixType& rA, DenseMatrixType& rX, DenseMatrixType& rB)
+    bool Solve(SparseMatrixType& rA, DenseMatrixType& rX, DenseMatrixType& rB) override
     {
         //std::cout << "matrix size in solver: " << rA.size1() << std::endl;
         //std::cout << "RHS size in solver: " << rB.size() << std::endl;

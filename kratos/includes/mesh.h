@@ -73,9 +73,6 @@ public:
     /// Pointer definition of Mesh
     KRATOS_CLASS_POINTER_DEFINITION(Mesh);
 
-    // Alias for representing data type stored at node, element, etc
-    typedef KRATOS_DOUBLE_TYPE DataType;
-
     // Alias for representing indices, typically used for indexing arrays or collections.
     typedef KRATOS_INDEX_TYPE IndexType;
 
@@ -98,7 +95,7 @@ public:
     typedef TConditionType ConditionType;
 
     // Alias for representing master-slave constraints that can be applied in the mesh.
-    typedef MasterSlaveConstraint MasterSlaveConstraintType;
+    typedef BaseMasterSlaveConstraint<NodeType> MasterSlaveConstraintType;
 
     // Alias for the complete mesh data structure, including nodes, properties, elements, and conditions.
     typedef Mesh<TNodeType, TPropertiesType, TElementType, TConditionType> MeshType;
@@ -1010,7 +1007,10 @@ private:
 /// input stream function
 template<class TNodeType, class TPropertiesType, class TElementType, class TConditionType>
 inline std::istream& operator >> (std::istream& rIStream,
-                                  Mesh<TNodeType, TPropertiesType, TElementType, TConditionType>& rThis);
+                                  Mesh<TNodeType, TPropertiesType, TElementType, TConditionType>& rThis)
+{
+    return rIStream;
+}
 
 /// output stream function
 template<class TNodeType, class TPropertiesType, class TElementType, class TConditionType>

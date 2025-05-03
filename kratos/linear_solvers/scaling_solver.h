@@ -52,8 +52,9 @@ namespace Kratos
 /** Detail class definition.
 */
 template<class TSparseSpaceType, class TDenseSpaceType,
+         class TModelPartType,
          class TReordererType = Reorderer<TSparseSpaceType, TDenseSpaceType> >
-class ScalingSolver : public LinearSolver<TSparseSpaceType, TDenseSpaceType,  TReordererType>
+class ScalingSolver : public LinearSolver<TSparseSpaceType, TDenseSpaceType, TModelPartType, TReordererType>
 {
 public:
     ///@name Type Definitions
@@ -62,13 +63,15 @@ public:
     /// Pointer definition of ScalingSolver
     KRATOS_CLASS_POINTER_DEFINITION(ScalingSolver);
 
-    typedef LinearSolver<TSparseSpaceType, TDenseSpaceType, TReordererType> BaseType;
+    typedef LinearSolver<TSparseSpaceType, TDenseSpaceType, TModelPartType, TReordererType> BaseType;
 
     typedef typename TSparseSpaceType::MatrixType SparseMatrixType;
 
     typedef typename TSparseSpaceType::VectorType VectorType;
 
     typedef typename TDenseSpaceType::MatrixType DenseMatrixType;
+
+    typedef typename BaseType::ModelPartType ModelPartType;
 
     ///@}
     ///@name Life Cycle
@@ -79,7 +82,7 @@ public:
     {
     }
 
-    ScalingSolver(typename LinearSolver<TSparseSpaceType, TDenseSpaceType, TReordererType>::Pointer p_linear_solver,
+    ScalingSolver(typename BaseType::Pointer p_linear_solver,
                   bool symmetric_scaling )
     {
         msymmetric_scaling = true;
@@ -89,10 +92,8 @@ public:
     /// Copy constructor.
     ScalingSolver(const ScalingSolver& Other) : BaseType(Other) {}
 
-
     /// Destructor.
-    virtual ~ScalingSolver() {}
-
+    ~ScalingSolver() override {}
 
     ///@}
     ///@name Operators
@@ -114,7 +115,7 @@ public:
     * which require knowledge on the spatial position of the nodes associated to a given dof.
     * This function tells if the solver requires such data
     */
-    virtual bool AdditionalPhysicalDataIsNeeded()
+    bool AdditionalPhysicalDataIsNeeded() override
     {
         return mp_linear_solver->AdditionalPhysicalDataIsNeeded();
     }
@@ -129,14 +130,14 @@ public:
         SparseMatrixType& rA,
         VectorType& rX,
         VectorType& rB,
-        typename ModelPart::DofsArrayType& rdof_set,
-        ModelPart& r_model_part
-    )
+        typename ModelPartType::DofsArrayType& rdof_set,
+        ModelPartType& r_model_part
+    ) override
     {
         mp_linear_solver->ProvideAdditionalData(rA,rX,rB,rdof_set,r_model_part);
     }
 
-    virtual void InitializeSolutionStep (SparseMatrixType& rA, VectorType& rX, VectorType& rB)
+    void InitializeSolutionStep (SparseMatrixType& rA, VectorType& rX, VectorType& rB) override
     {
         mp_linear_solver->InitializeSolutionStep(rA,rX,rB);
     }
@@ -147,7 +148,7 @@ public:
     @param rX. Solution vector. it's also the initial guess for iterative linear solvers.
     @param rB. Right hand side vector.
     */
-    virtual void FinalizeSolutionStep (SparseMatrixType& rA, VectorType& rX, VectorType& rB)
+    void FinalizeSolutionStep (SparseMatrixType& rA, VectorType& rX, VectorType& rB) override
     {
         mp_linear_solver->FinalizeSolutionStep(rA,rX,rB);
     }
@@ -156,7 +157,7 @@ public:
      * Clear is designed to leave the solver object as if newly created.
      * After a clear a new Initialize is needed
      */
-    virtual void Clear()
+    void Clear() override
     {
         mp_linear_solver->Clear();
     }
@@ -169,7 +170,7 @@ public:
     guess for iterative linear solvers.
     @param rB. Right hand side vector.
     */
-    bool Solve(SparseMatrixType& rA, VectorType& rX, VectorType& rB)
+    bool Solve(SparseMatrixType& rA, VectorType& rX, VectorType& rB) override
     {
         if(this->IsNotConsistent(rA, rX, rB))
             return false;
@@ -191,8 +192,6 @@ public:
                 scaling_vector[i] = sqrt(scaling_vector[i]);
 
             SymmetricScaling(rA,scaling_vector);
-
-
         }
 
         //scale RHS
@@ -214,8 +213,6 @@ public:
 
         return is_solved;
     }
-
-
 
     ///@}
     ///@name Access
@@ -291,7 +288,7 @@ private:
     ///@}
     ///@name Member Variables
     ///@{
-    typename LinearSolver<TSparseSpaceType, TDenseSpaceType, TReordererType>::Pointer mp_linear_solver;
+    typename BaseType::Pointer mp_linear_solver;
     bool msymmetric_scaling;
 
     ///@}

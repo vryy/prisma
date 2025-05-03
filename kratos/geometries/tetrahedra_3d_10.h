@@ -69,9 +69,14 @@ public:
     typedef typename BaseType::GeometriesArrayType GeometriesArrayType;
 
     /**
-     * Redefinition of template parameter TPointType.
+     * Type used for coordinate value.
      */
-    typedef TPointType PointType;
+    typedef typename BaseType::DataType DataType;
+
+    /**
+     * Type used for shape function value.
+     */
+    typedef typename BaseType::ValueType ValueType;
 
     /**
      * Type used for indexing in geometry class.std::size_t used for indexing
@@ -81,16 +86,16 @@ public:
     typedef typename BaseType::IndexType IndexType;
 
     /**
-     * Type used for double value.
-     */
-    typedef typename BaseType::DataType DataType;
-
-    /**
      * This typed used to return size or dimension in
      * geometry. Dimension, WorkingDimension, PointsNumber and
      * ... return this type as their results.
      */
     typedef typename BaseType::SizeType SizeType;
+
+    /**
+     * Redefinition of template parameter TPointType.
+     */
+    typedef typename BaseType::PointType PointType;
 
     /**
      * Array of counted pointers to point. This type used to hold
@@ -124,15 +129,13 @@ public:
      * A third order tensor used as shape functions' values
      * container.
      */
-    typedef typename BaseType::ShapeFunctionsValuesContainerType
-    ShapeFunctionsValuesContainerType;
+    typedef typename BaseType::ShapeFunctionsValuesContainerType ShapeFunctionsValuesContainerType;
 
     /**
      * A fourth order tensor used as shape functions' local
      * gradients container in geometry.
      */
-    typedef typename BaseType::ShapeFunctionsLocalGradientsContainerType
-    ShapeFunctionsLocalGradientsContainerType;
+    typedef typename BaseType::ShapeFunctionsLocalGradientsContainerType ShapeFunctionsLocalGradientsContainerType;
 
     /**
      * A third order tensor to hold jacobian matrices evaluated at
@@ -142,11 +145,25 @@ public:
     typedef typename BaseType::JacobiansType JacobiansType;
 
     /**
-     * A third order tensor to hold shape functions' local
-     * gradients. ShapefunctionsLocalGradients function return this
+     * A third order tensor to hold shape functions' local gradients at all integration points.
+     * ShapefunctionsLocalGradients function return this
      * type as its result.
      */
     typedef typename BaseType::ShapeFunctionsGradientsType ShapeFunctionsGradientsType;
+
+    /**
+     * A third order tensor to hold shape functions' local second derivatives at a point.
+     * ShapeFunctionsSecondDerivatives function return this
+     * type as its result.
+     */
+    typedef typename BaseType::ShapeFunctionsSecondDerivativesType ShapeFunctionsSecondDerivativesType;
+
+    /**
+    * A fourth order tensor to hold shape functions' local third derivatives at a point.
+    * ShapeFunctionsThirdDerivatives function return this
+    * type as its result.
+    */
+    typedef typename BaseType::ShapeFunctionsThirdDerivativesType ShapeFunctionsThirdDerivativesType;
 
     /**
      * Type of the normal vector used for normal to edges in geomety.
@@ -158,11 +175,22 @@ public:
      */
     typedef typename BaseType::CoordinatesArrayType CoordinatesArrayType;
 
+    /** This type used for representing the local coordinates of
+    an integration point
+    */
+    typedef typename BaseType::LocalCoordinatesArrayType LocalCoordinatesArrayType;
+
     /**
      * Type of Matrix
      */
-    typedef Matrix MatrixType;
+    typedef typename BaseType::MatrixType MatrixType;
+    typedef typename BaseType::ZeroMatrixType ZeroMatrixType;
 
+    /**
+     * Type of Vector
+     */
+    typedef typename BaseType::VectorType VectorType;
+    typedef typename BaseType::ZeroVectorType ZeroVectorType;
 
     /**
      * Life Cycle
@@ -256,7 +284,7 @@ public:
     }
 
     /// Destructor. Does nothing!!!
-    virtual ~Tetrahedra3D10() {}
+    ~Tetrahedra3D10() override {}
 
     GeometryData::KratosGeometryFamily GetGeometryFamily() const final
     {
@@ -318,17 +346,16 @@ public:
         return typename BaseType::Pointer( new Tetrahedra3D10( ThisPoints ) );
     }
 
-    Geometry< Point<3> >::Pointer Clone() const override
+    typename Geometry< Point<3, DataType> >::Pointer Clone() const override
     {
-        Geometry< Point<3> >::PointsArrayType NewPoints;
-        //making a copy of the nodes TO POINTS (not Nodes!!!)
+        typename Geometry< Point<3, DataType> >::PointsArrayType NewPoints;
 
+        //making a copy of the nodes TO POINTS (not Nodes!!!)
         for ( IndexType i = 0 ; i < this->Points().size() ; i++ )
             NewPoints.push_back( this->Points()[i] );
 
         //creating a geometry with the new points
-        Geometry< Point<3> >::Pointer
-        p_clone( new Tetrahedra3D10< Point<3> >( NewPoints ) );
+        typename Geometry< Point<3, DataType> >::Pointer p_clone( new Tetrahedra3D10< Point<3, DataType> >( NewPoints ) );
 
         p_clone->ClonePoints();
 
@@ -366,7 +393,7 @@ public:
      */
     DataType Length() const override
     {
-        return sqrt( fabs( this->DeterminantOfJacobian( PointType() ) ) );
+        return std::sqrt( std::abs( this->DeterminantOfJacobian( LocalCoordinatesArrayType() ) ) );
     }
 
     /**
@@ -388,24 +415,20 @@ public:
         return Volume();
     }
 
-
     DataType Volume() const override //Not a closed formula for a quadratic tetrahedra
     {
-
-        Vector temp;
+        VectorType temp;
         this->DeterminantOfJacobian( temp, msGeometryData.DefaultIntegrationMethod() );
         const IntegrationPointsArrayType& integration_points = this->IntegrationPoints( msGeometryData.DefaultIntegrationMethod() );
-        DataType Volume = 0.00;
 
+        DataType Volume = 0.00;
         for ( unsigned int i = 0; i < integration_points.size(); i++ )
         {
             Volume += temp[i] * integration_points[i].Weight();
         }
 
-        //KRATOS_WATCH(temp)
         return Volume;
     }
-
 
     /**
      * This method calculate and return length, area or volume of
@@ -425,11 +448,10 @@ public:
         return  Volume();
     }
 
-
     /**
      * Returns whether local arbitrary point is inside the Geometry
      */
-    bool IsInside( const CoordinatesArrayType& rPoint ) const override
+    bool IsInside( const LocalCoordinatesArrayType& rPoint ) const override
     {
         if( rPoint[0] >= 0.0-1.0e-8 && rPoint[0] <= 1.0+1.0e-8 )
             if( rPoint[1] >= 0.0-1.0e-8 && rPoint[1] <= 1.0 +1.0e-8)
@@ -530,8 +552,6 @@ public:
         return faces;
     }
 
-
-
     /**
      * Shape Function
      */
@@ -547,12 +567,12 @@ public:
      * TODO: TO BE VERIFIED
      * REF: Jacob Fish, A First Course in Finite Elements
      */
-    DataType ShapeFunctionValue( IndexType ShapeFunctionIndex, const CoordinatesArrayType& rPoint ) const override
+    ValueType ShapeFunctionValue( IndexType ShapeFunctionIndex, const LocalCoordinatesArrayType& rPoint ) const override
     {
-        const DataType zeta1 = rPoint[0];
-        const DataType zeta2 = rPoint[1];
-        const DataType zeta3 = rPoint[2];
-        const DataType zeta0 = 1. - zeta1 - zeta2 - zeta3;
+        const ValueType zeta1 = rPoint[0];
+        const ValueType zeta2 = rPoint[1];
+        const ValueType zeta3 = rPoint[2];
+        const ValueType zeta0 = 1. - zeta1 - zeta2 - zeta3;
 
         switch ( ShapeFunctionIndex )
         {
@@ -584,7 +604,6 @@ public:
         return 0;
     }
 
-
     /** This method gives gradient of all shape functions evaluated
      * in given point.
      * There is no calculation and it just give it from
@@ -596,11 +615,10 @@ public:
      * @param rPoint the given local coordinates the gradients will be evaluated for
      * @return a matrix of gradients for each shape function
      */
-    Matrix& ShapeFunctionsLocalGradients( Matrix& rResult, const CoordinatesArrayType& rPoint ) const override
+    Matrix& ShapeFunctionsLocalGradients( Matrix& rResult, const LocalCoordinatesArrayType& rPoint ) const override
     {
-        return ShapeFunctionsLocalGradientsPrivate( rResult, rPoint );
+        return ShapeFunctionsLocalGradientsImpl( rResult, rPoint );
     }
-
 
     /**
      * Input and output
@@ -643,8 +661,8 @@ public:
     {
         BaseType::PrintData( rOStream );
         std::cout << std::endl;
-        Matrix jacobian;
-        this->Jacobian( jacobian, PointType() );
+        MatrixType jacobian;
+        this->Jacobian( jacobian, LocalCoordinatesArrayType() );
         rOStream << "    Jacobian in the origin\t : " << jacobian;
     }
 
@@ -661,8 +679,6 @@ private:
      */
     static const GeometryData msGeometryData;
 
-
-    ///@}
     ///@name Serialization
     ///@{
 
@@ -678,8 +694,9 @@ private:
         KRATOS_SERIALIZE_LOAD_BASE_CLASS( rSerializer, PointsArrayType );
     }
 
-    Tetrahedra3D10(): BaseType( PointsArrayType(), &msGeometryData ) {}
+    ///@}
 
+    Tetrahedra3D10(): BaseType( PointsArrayType(), &msGeometryData ) {}
 
     /**
      * Private Operations
@@ -696,29 +713,29 @@ private:
      * @return the gradients of all shape functions
      * \f$ \frac{\partial N^i}{\partial \xi_j} \f$
      */
-    static Matrix& ShapeFunctionsLocalGradientsPrivate( Matrix& result,
-            const CoordinatesArrayType& rPoint )
+    static Matrix& ShapeFunctionsLocalGradientsImpl( Matrix& result,
+            const LocalCoordinatesArrayType& rPoint )
     {
         // Area coordinates, pg. 205, Vol. I, Carey, Oden, Becker FEM
-        const DataType zeta1 = rPoint[0];
-        const DataType zeta2 = rPoint[1];
-        const DataType zeta3 = rPoint[2];
-        const DataType zeta0 = 1. - zeta1 - zeta2 - zeta3;
+        const ValueType zeta1 = rPoint[0];
+        const ValueType zeta2 = rPoint[1];
+        const ValueType zeta3 = rPoint[2];
+        const ValueType zeta0 = 1. - zeta1 - zeta2 - zeta3;
 
-        const DataType dzeta0dxi = -1.;
-        const DataType dzeta1dxi =  1.;
-        const DataType dzeta2dxi =  0.;
-        const DataType dzeta3dxi =  0.;
+        const ValueType dzeta0dxi = -1.;
+        const ValueType dzeta1dxi =  1.;
+        const ValueType dzeta2dxi =  0.;
+        const ValueType dzeta3dxi =  0.;
 
-        const DataType dzeta0deta = -1.;
-        const DataType dzeta1deta =  0.;
-        const DataType dzeta2deta =  1.;
-        const DataType dzeta3deta =  0.;
+        const ValueType dzeta0deta = -1.;
+        const ValueType dzeta1deta =  0.;
+        const ValueType dzeta2deta =  1.;
+        const ValueType dzeta3deta =  0.;
 
-        const DataType dzeta0dzeta = -1.;
-        const DataType dzeta1dzeta =  0.;
-        const DataType dzeta2dzeta =  0.;
-        const DataType dzeta3dzeta =  1.;
+        const ValueType dzeta0dzeta = -1.;
+        const ValueType dzeta1dzeta =  0.;
+        const ValueType dzeta2dzeta =  0.;
+        const ValueType dzeta3dzeta =  1.;
 
         if ( result.size1() != 10 || result.size2() != 3 )
             result.resize( 10, 3, false );
@@ -798,7 +815,7 @@ private:
      *
      */
     static Matrix CalculateShapeFunctionsIntegrationPointsValues(
-        typename BaseType::IntegrationMethod ThisMethod )
+        IntegrationMethod ThisMethod )
     {
         IntegrationPointsContainerType all_integration_points =
             AllIntegrationPoints();
@@ -814,10 +831,10 @@ private:
 
         for ( int pnt = 0; pnt < integration_points_number; pnt++ )
         {
-            const DataType zeta1 = integration_points[pnt].X();
-            const DataType zeta2 = integration_points[pnt].Y();
-            const DataType zeta3 = integration_points[pnt].Z();
-            const DataType zeta0 = 1. - zeta1 - zeta2 - zeta3;
+            const ValueType zeta1 = integration_points[pnt].X();
+            const ValueType zeta2 = integration_points[pnt].Y();
+            const ValueType zeta3 = integration_points[pnt].Z();
+            const ValueType zeta0 = 1. - zeta1 - zeta2 - zeta3;
 
             shape_function_values( pnt, 0 ) = zeta0*(2.*zeta0 - 1.);
 
@@ -855,9 +872,8 @@ private:
      * in each integration point
      *
      */
-    static ShapeFunctionsGradientsType
-    CalculateShapeFunctionsIntegrationPointsLocalGradients(
-        typename BaseType::IntegrationMethod ThisMethod )
+    static ShapeFunctionsGradientsType CalculateShapeFunctionsIntegrationPointsLocalGradients(
+        IntegrationMethod ThisMethod )
     {
         IntegrationPointsContainerType all_integration_points =
             AllIntegrationPoints();
@@ -871,7 +887,7 @@ private:
 
         for ( int pnt = 0; pnt < integration_points_number; pnt++ )
         {
-            d_shape_f_values[pnt] = ShapeFunctionsLocalGradientsPrivate(d_shape_f_values[pnt], integration_points[pnt]);
+            d_shape_f_values[pnt] = ShapeFunctionsLocalGradientsImpl(d_shape_f_values[pnt], integration_points[pnt]);
         }
 
         return d_shape_f_values;
@@ -917,11 +933,7 @@ private:
         return shape_functions_values;
     }
 
-    /**
-     * TODO: TO BE VERIFIED
-     */
-    static const ShapeFunctionsLocalGradientsContainerType
-    AllShapeFunctionsLocalGradients()
+    static const ShapeFunctionsLocalGradientsContainerType AllShapeFunctionsLocalGradients()
     {
         ShapeFunctionsLocalGradientsContainerType shape_functions_local_gradients =
         {
@@ -941,20 +953,17 @@ private:
         return shape_functions_local_gradients;
     }
 
-
     /**
      * Private Friends
      */
 
     template<class TOtherPointType> friend class Tetrahedra3D10;
 
-
     /**
      * Un accessible methods
      */
 
-
-};// Class Tetrahedra3D10
+}; // Class Tetrahedra3D10
 
 template<class TPointType> const
 GeometryData Tetrahedra3D10<TPointType>::msGeometryData(
@@ -964,6 +973,6 @@ GeometryData Tetrahedra3D10<TPointType>::msGeometryData(
     AllShapeFunctionsLocalGradients()
 );
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #endif // KRATOS_TETRAHEDRA_3D_4_H_INCLUDED  defined

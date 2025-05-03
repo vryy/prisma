@@ -77,37 +77,36 @@ Detail class definition.
  */
 template<class TSparseSpace,
          class TDenseSpace,
-         class TLinearSolver //= LinearSolver<TSparseSpace,TDenseSpace>
+         class TLinearSolver, //= LinearSolver<TSparseSpace,TDenseSpace>
+         class TModelPartType
          >
 class SolvingStrategy
 {
 public:
     /**@name Type Definitions */
     /*@{ */
-    //      typedef std::set<Dof::Pointer,ComparePDof> DofSetType;
+
+    /** Counted pointer of SolvingStrategy */
+    KRATOS_CLASS_POINTER_DEFINITION(SolvingStrategy);
 
     typedef typename TSparseSpace::DataType TDataType;
+    typedef typename DataTypeToValueType<TDataType>::value_type ValueType;
     typedef typename TSparseSpace::MatrixType TSystemMatrixType;
     typedef typename TSparseSpace::VectorType TSystemVectorType;
 
     typedef typename TSparseSpace::MatrixPointerType TSystemMatrixPointerType;
     typedef typename TSparseSpace::VectorPointerType TSystemVectorPointerType;
 
-
     typedef typename TDenseSpace::MatrixType LocalSystemMatrixType;
     typedef typename TDenseSpace::VectorType LocalSystemVectorType;
 
-    typedef Scheme<TSparseSpace, TDenseSpace> TSchemeType;
-    typedef BuilderAndSolver<TSparseSpace, TDenseSpace, TLinearSolver> TBuilderAndSolverType;
+    typedef TModelPartType ModelPartType;
+    typedef Scheme<TSparseSpace, TDenseSpace, ModelPartType> TSchemeType;
+    typedef BuilderAndSolver<TSparseSpace, TDenseSpace, TLinearSolver, ModelPartType> TBuilderAndSolverType;
 
-    /** Counted pointer of ClassName */
-    KRATOS_CLASS_POINTER_DEFINITION(SolvingStrategy);
-
-    typedef typename ModelPart::DofType TDofType;
-    typedef typename ModelPart::DofsArrayType DofsArrayType;
-    //typedef Dof<TDataType> TDofType;
-    //typedef PointerVectorSet<TDofType, IdentityFunction<TDofType> > DofsArrayType;
-    /*      typedef PointerVectorSet<TDofType, IndexedObject> DofsArrayType; */
+    typedef typename ModelPartType::DofType TDofType;
+    typedef typename ModelPartType::DofsArrayType DofsArrayType;
+    typedef typename ModelPartType::NodeType NodeType;
     typedef typename PointerVectorSet<TDofType, IndexedObject>::iterator DofIterator;
     typedef typename PointerVectorSet<TDofType, IndexedObject>::const_iterator DofConstantIterator;
     /*@} */
@@ -118,7 +117,7 @@ public:
     /*@{ */
 
     SolvingStrategy(
-        ModelPart& model_part, bool MoveMeshFlag = false
+        ModelPartType& model_part, bool MoveMeshFlag = false
     )
         : mr_model_part(model_part)
     {
@@ -233,7 +232,7 @@ public:
         mEchoLevel = Level;
     }
 
-    int GetEchoLevel()
+    int GetEchoLevel() const
     {
         return mEchoLevel;
     }
@@ -249,7 +248,7 @@ public:
         mStiffnessMatrixIsBuilt = false;
     }
 
-    int GetRebuildLevel()
+    int GetRebuildLevel() const
     {
         return mRebuildLevel;
     }
@@ -265,7 +264,7 @@ public:
         mMoveMeshFlag = Flag;
     }
 
-    bool MoveMeshFlag()
+    bool MoveMeshFlag() const
     {
         return mMoveMeshFlag;
     }
@@ -276,19 +275,20 @@ public:
     {
         KRATOS_TRY
 
-        if (GetModelPart().NodesBegin()->SolutionStepsDataHas(DISPLACEMENT_X) == false)
-            KRATOS_THROW_ERROR(std::logic_error, "It is impossible to move the mesh since the DISPLACEMENT var is not in the model_part. Either use SetMoveMeshFlag(False) or add DISPLACEMENT to the list of variables", "");
-
-        for (ModelPart::NodeIterator i = GetModelPart().NodesBegin();
-                i != GetModelPart().NodesEnd(); ++i)
+        if constexpr (std::is_same<typename NodeType::CoordinateType, TDataType>::value)
         {
-            (i)->X() = (i)->X0() + i->GetSolutionStepValue(DISPLACEMENT_X);
-            (i)->Y() = (i)->Y0() + i->GetSolutionStepValue(DISPLACEMENT_Y);
-            (i)->Z() = (i)->Z0() + i->GetSolutionStepValue(DISPLACEMENT_Z);
+            for (auto i = GetModelPart().NodesBegin(); i != GetModelPart().NodesEnd(); ++i)
+            {
+                (i)->X() = (i)->X0() + i->GetSolutionStepValue(VARSELC(TDataType, DISPLACEMENT, X));
+                (i)->Y() = (i)->Y0() + i->GetSolutionStepValue(VARSELC(TDataType, DISPLACEMENT, Y));
+                (i)->Z() = (i)->Z0() + i->GetSolutionStepValue(VARSELC(TDataType, DISPLACEMENT, Z));
+            }
         }
-
-    /*   std::cout<<" MESH MOVED "<<std::endl; */
-    /* if( mEchoLevel > 0 ) */
+        else
+        {
+            KRATOS_ERROR << "MoveMesh cannot be performed on " << ModelPartTypeToString<ModelPartType>::Get()
+                         << " due to incompatibility of nodal coordinates and displacement";
+        }
 
         KRATOS_CATCH("")
     }
@@ -297,12 +297,17 @@ public:
 
     //operations to get the pointer to the model
 
-    inline ModelPart& GetModelPart()
+    inline ModelPartType& GetModelPart()
     {
         return mr_model_part;
     };
 
-    virtual double GetResidualNorm()
+    inline const ModelPartType& GetModelPart() const
+    {
+        return mr_model_part;
+    };
+
+    virtual double GetResidualNorm() const
     {
         return 0.0;
     }
@@ -311,37 +316,35 @@ public:
      * function to perform expensive checks.
      * It is designed to be called ONCE to verify that the input is correct.
      */
-    virtual int Check()
+    virtual int Check() const
     {
         KRATOS_TRY
 
         //check if displacement var is needed
         if (mMoveMeshFlag == true)
         {
-            for (ModelPart::NodeIterator i = GetModelPart().NodesBegin();
-                    i != GetModelPart().NodesEnd(); ++i)
+            for (auto i = GetModelPart().NodesBegin(); i != GetModelPart().NodesEnd(); ++i)
 
-                if (i->SolutionStepsDataHas(DISPLACEMENT) == false)
+                if (i->SolutionStepsDataHas(VARSEL(TDataType, DISPLACEMENT)) == false)
                 {
                     std::cout << "problem on node with Id " << i->Id() << std::endl;
-                    KRATOS_THROW_ERROR(std::logic_error, "It is impossible to move the mesh since the DISPLACMENT var is not in the model_part. Either use SetMoveMeshFlag(False) or add DISPLACEMENT to the list of variables", "");
+                    KRATOS_ERROR << "It is impossible to move the mesh since the " << VARSEL(TDataType, DISPLACEMENT).Name() << " var is not in the model_part."
+                                 << " Either use SetMoveMeshFlag(False) or add " << VARSEL(TDataType, DISPLACEMENT).Name() << " to the list of variables";
                 }
         }
 
-
-
-        for (ModelPart::ElementsContainerType::iterator it = GetModelPart().ElementsBegin();
-                it != GetModelPart().ElementsEnd(); it++)
+        for (auto it = GetModelPart().ElementsBegin(); it != GetModelPart().ElementsEnd(); it++)
         {
             it->Check(GetModelPart().GetProcessInfo());
         }
 
-        for (ModelPart::ConditionsContainerType::iterator it = GetModelPart().ConditionsBegin();
-                it != GetModelPart().ConditionsEnd(); it++)
+        for (auto it = GetModelPart().ConditionsBegin(); it != GetModelPart().ConditionsEnd(); it++)
         {
             it->Check(GetModelPart().GetProcessInfo());
         }
+
         return 0;
+
         KRATOS_CATCH("")
     }
 
@@ -398,7 +401,7 @@ private:
     /**@name Member Variables */
     /*@{ */
 
-    ModelPart& mr_model_part;
+    ModelPartType& mr_model_part;
 
     bool mMoveMeshFlag;
 

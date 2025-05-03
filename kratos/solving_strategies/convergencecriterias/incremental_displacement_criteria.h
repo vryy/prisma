@@ -22,8 +22,6 @@
 
 
 /* Project includes */
-#include "includes/model_part.h"
-#include "includes/define.h"
 #include "solving_strategies/convergencecriterias/convergence_criteria.h"
 
 namespace Kratos
@@ -77,9 +75,10 @@ Detail class definition.
 
 */
 template<class TSparseSpace,
-         class TDenseSpace
+         class TDenseSpace,
+         class TModelPartType
          >
-class IncrementalDisplacementCriteria : virtual public ConvergenceCriteria< TSparseSpace, TDenseSpace >
+class IncrementalDisplacementCriteria : virtual public ConvergenceCriteria< TSparseSpace, TDenseSpace, TModelPartType >
 {
 public:
     /**@name Type Definitions */
@@ -87,11 +86,15 @@ public:
 
     KRATOS_CLASS_POINTER_DEFINITION( IncrementalDisplacementCriteria );
 
-    typedef ConvergenceCriteria< TSparseSpace, TDenseSpace > BaseType;
+    typedef ConvergenceCriteria< TSparseSpace, TDenseSpace, TModelPartType > BaseType;
 
     typedef TSparseSpace SparseSpaceType;
 
     typedef typename BaseType::TDataType TDataType;
+
+    typedef typename BaseType::ValueType ValueType;
+
+    typedef typename BaseType::ModelPartType ModelPartType;
 
     typedef typename BaseType::DofsArrayType DofsArrayType;
 
@@ -107,9 +110,9 @@ public:
     /** Constructor.
     */
     IncrementalDisplacementCriteria(
-        TDataType NewRatioTolerance,
-        TDataType AlwaysConvergedNorm)
-        : ConvergenceCriteria< TSparseSpace, TDenseSpace >()
+        ValueType NewRatioTolerance,
+        ValueType AlwaysConvergedNorm)
+        : BaseType()
     {
         mRatioTolerance = NewRatioTolerance;
         mAlwaysConvergedNorm = AlwaysConvergedNorm;
@@ -129,7 +132,7 @@ public:
 
     /** Destructor.
     */
-    virtual ~IncrementalDisplacementCriteria() {}
+    ~IncrementalDisplacementCriteria() override {}
 
 
     /*@} */
@@ -139,28 +142,28 @@ public:
 
     /*Criterias that need to be called after getting the solution */
     bool PostCriteria(
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         DofsArrayType& rDofSet,
         const TSystemMatrixType& A,
         const TSystemVectorType& Dx,
         const TSystemVectorType& b
-    )
+    ) override
     {
         if (SparseSpaceType::Size(Dx) != 0) //if we are solving for something
         {
-            //TDataType mFinalCorrectionNorm = sqrt(std::inner_product(Dx.begin(),Dx.end(),Dx.begin(),TDataType()));
-            //TDataType mFinalCorrectionNorm = sqrt(Dot(Dx,Dx));
-            TDataType mFinalCorrectionNorm = TSparseSpace::TwoNorm(Dx);
+            //TDataType FinalCorrectionNorm = sqrt(std::inner_product(Dx.begin(),Dx.end(),Dx.begin(),TDataType()));
+            //TDataType FinalCorrectionNorm = sqrt(Dot(Dx,Dx));
+            ValueType FinalCorrectionNorm = std::abs(TSparseSpace::TwoNorm(Dx));
 
-            TDataType ratio = 0.00;
+            ValueType ratio = 0.00;
 
             CalculateReferenceNorm(rDofSet);
 
-            ratio = mFinalCorrectionNorm/mReferenceDispNorm;
+            ratio = FinalCorrectionNorm/mReferenceDispNorm;
 
-            double aaa = SparseSpaceType::Size(Dx);
+            ValueType aaa = static_cast<ValueType>(SparseSpaceType::Size(Dx));
 
-            double AbsoluteNorm = (mFinalCorrectionNorm/sqrt(aaa));
+            ValueType AbsoluteNorm = (FinalCorrectionNorm/std::sqrt(aaa));
 //KRATOS_WATCH(AbsoluteNorm)
 //KRATOS_WATCH(mAlwaysConvergedNorm)
 //KRATOS_WATCH(mRatioTolerance)
@@ -170,7 +173,7 @@ public:
             r_model_part.GetProcessInfo()[CONVERGENCE_RATIO] = ratio;
             r_model_part.GetProcessInfo()[RESIDUAL_NORM] = AbsoluteNorm;
 
-            if ( ratio <= mRatioTolerance  ||  AbsoluteNorm<mAlwaysConvergedNorm )  //  || (mFinalCorrectionNorm/x.size())<=1e-7)
+            if ( ratio <= mRatioTolerance  ||  AbsoluteNorm<mAlwaysConvergedNorm )  //  || (FinalCorrectionNorm/x.size())<=1e-7)
             {
                 if (this->GetEchoLevel() == 1)
                     KRATOS_WATCH("convergence is achieved")
@@ -189,31 +192,29 @@ public:
     }
 
     void Initialize(
-        ModelPart& r_model_part
-    )
+        ModelPartType& r_model_part
+    ) override
     {
         BaseType::mConvergenceCriteriaIsInitialized = true;
     }
 
     void InitializeSolutionStep(
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         DofsArrayType& rDofSet,
         const TSystemMatrixType& A,
         const TSystemVectorType& Dx,
         const TSystemVectorType& b
-    )
+    ) override
     {}
 
     void FinalizeSolutionStep(
-        ModelPart& r_model_part,
+        ModelPartType& r_model_part,
         DofsArrayType& rDofSet,
         const TSystemMatrixType& A,
         const TSystemVectorType& Dx,
         const TSystemVectorType& b
-    )
+    ) override
     {}
-
-
 
     /*@} */
     /**@name Operations */
@@ -284,11 +285,11 @@ private:
     /**@name Member Variables */
     /*@{ */
 
-    TDataType mRatioTolerance;
+    ValueType mRatioTolerance;
 
-    TDataType mAlwaysConvergedNorm;
+    ValueType mAlwaysConvergedNorm;
 
-    TDataType mReferenceDispNorm;
+    ValueType mReferenceDispNorm;
 
     /*@} */
     /**@name Private Operators*/
@@ -296,8 +297,7 @@ private:
 
     void CalculateReferenceNorm(DofsArrayType& rDofSet)
     {
-        mReferenceDispNorm = TDataType();
-        TDataType temp;
+        mReferenceDispNorm = ValueType();
 
         //// x is set to its value at the beginning of the time step
         //typename DofsArrayType::iterator it2;
@@ -314,11 +314,11 @@ private:
             if(i_dof->IsFree())
             {
                 //here we do: d_n+1^it-d_n
-                temp = i_dof->GetSolutionStepValue()-i_dof->GetSolutionStepValue(1);
+                ValueType temp = std::abs(i_dof->GetSolutionStepValue() - i_dof->GetSolutionStepValue(1));
                 mReferenceDispNorm += temp*temp;
             }
         }
-        mReferenceDispNorm = sqrt(mReferenceDispNorm);
+        mReferenceDispNorm = std::sqrt(mReferenceDispNorm);
     }
 
     /*@} */

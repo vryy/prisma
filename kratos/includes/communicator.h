@@ -58,6 +58,7 @@ namespace Kratos
 /** The base Communicator class only holds the required data (local and remote mesh interfaces)
  *  for communication. The actual communication is implemented in the derived MPICommunicator.
  */
+template<class TNodeType = Node<3> >
 class KRATOS_API(KRATOS_CORE) Communicator
 {
 public:
@@ -72,40 +73,44 @@ public:
     /// Pointer definition of Communicator
     KRATOS_CLASS_POINTER_DEFINITION(Communicator);
 
-    typedef Node < 3 > NodeType;
+    typedef TNodeType NodeType;
 
     typedef Properties PropertiesType;
 
-    typedef Element ElementType;
+    typedef BaseElement<NodeType> ElementType;
 
-    typedef Condition ConditionType;
+    typedef BaseCondition<NodeType> ConditionType;
 
-    typedef vector<int> NeighbourIndicesContainerType;
+    typedef boost::numeric::ublas::vector<int> NeighbourIndicesContainerType;
 
     typedef Mesh<NodeType, PropertiesType, ElementType, ConditionType> MeshType;
 
-    typedef MeshType::DataType DataType;
+    typedef typename NodeType::DofType::DataType DataType;
 
-    typedef MeshType::IndexType IndexType;
+    typedef typename MeshType::IndexType IndexType;
 
-    typedef MeshType::SizeType SizeType;
+    typedef typename MeshType::SizeType SizeType;
+
+    typedef typename MatrixVectorTypeSelector<DataType>::MatrixType MatrixType;
+
+    typedef typename MatrixVectorTypeSelector<DataType>::VectorType VectorType;
 
     typedef PointerVector<MeshType> MeshesContainerType;
 
     /// Nodes container. Which is a vector set of nodes with their Id's as key.
-    typedef MeshType::NodesContainerType NodesContainerType;
+    typedef typename MeshType::NodesContainerType NodesContainerType;
 
     /** Iterator over the nodes. This iterator is an indirect
         iterator over Node::Pointer which turn back a reference to
         node by * operator and not a pointer for more convenient
         usage. */
-    typedef MeshType::NodeIterator NodeIterator;
+    typedef typename MeshType::NodeIterator NodeIterator;
 
     /** Const iterator over the nodes. This iterator is an indirect
         iterator over Node::Pointer which turn back a reference to
         node by * operator and not a pointer for more convenient
         usage. */
-    typedef MeshType::NodeConstantIterator NodeConstantIterator;
+    typedef typename MeshType::NodeConstantIterator NodeConstantIterator;
 
     /** Iterator over the properties. This iterator is an indirect
         iterator over Properties::Pointer which turn back a reference to
@@ -113,19 +118,19 @@ public:
         usage. */
 
     /// Properties container. Which is a vector set of Properties with their Id's as key.
-    typedef MeshType::PropertiesContainerType PropertiesContainerType;
+    typedef typename MeshType::PropertiesContainerType PropertiesContainerType;
 
     /** Iterator over the Properties. This iterator is an indirect
         iterator over Node::Pointer which turn back a reference to
         node by * operator and not a pointer for more convenient
         usage. */
-    typedef MeshType::PropertiesIterator PropertiesIterator;
+    typedef typename MeshType::PropertiesIterator PropertiesIterator;
 
     /** Const iterator over the Properties. This iterator is an indirect
         iterator over Properties::Pointer which turn back a reference to
         Properties by * operator and not a pointer for more convenient
         usage. */
-    typedef MeshType::PropertiesConstantIterator PropertiesConstantIterator;
+    typedef typename MeshType::PropertiesConstantIterator PropertiesConstantIterator;
 
     /** Iterator over the properties. This iterator is an indirect
         iterator over Properties::Pointer which turn back a reference to
@@ -133,34 +138,34 @@ public:
         usage. */
 
     /// Element container. A vector set of Elements with their Id's as key.
-    typedef MeshType::ElementsContainerType ElementsContainerType;
+    typedef typename MeshType::ElementsContainerType ElementsContainerType;
 
     /** Iterator over the Elements. This iterator is an indirect
         iterator over Elements::Pointer which turn back a reference to
         Element by * operator and not a pointer for more convenient
         usage. */
-    typedef MeshType::ElementIterator ElementIterator;
+    typedef typename MeshType::ElementIterator ElementIterator;
 
     /** Const iterator over the Elements. This iterator is an indirect
         iterator over Elements::Pointer which turn back a reference to
         Element by * operator and not a pointer for more convenient
         usage. */
-    typedef MeshType::ElementConstantIterator ElementConstantIterator;
+    typedef typename MeshType::ElementConstantIterator ElementConstantIterator;
 
     /// Condintions container. A vector set of Conditions with their Id's as key.
-    typedef MeshType::ConditionsContainerType ConditionsContainerType;
+    typedef typename MeshType::ConditionsContainerType ConditionsContainerType;
 
     /** Iterator over the Conditions. This iterator is an indirect
        iterator over Conditions::Pointer which turn back a reference to
        Condition by * operator and not a pointer for more convenient
        usage. */
-    typedef MeshType::ConditionIterator ConditionIterator;
+    typedef typename MeshType::ConditionIterator ConditionIterator;
 
     /** Const iterator over the Conditions. This iterator is an indirect
         iterator over Conditions::Pointer which turn back a reference to
         Condition by * operator and not a pointer for more convenient
         usage. */
-    typedef MeshType::ConditionConstantIterator ConditionConstantIterator;
+    typedef typename MeshType::ConditionConstantIterator ConditionConstantIterator;
 
     ///@}
     ///@name Life Cycle
@@ -168,9 +173,9 @@ public:
 
     /// Default constructor.
     Communicator() : mNumberOfColors(1)
-        , mpLocalMesh(MeshType::Pointer(new MeshType))
-        , mpGhostMesh(MeshType::Pointer(new MeshType)),
-        mpInterfaceMesh(MeshType::Pointer(new MeshType))
+        , mpLocalMesh(typename MeshType::Pointer(new MeshType))
+        , mpGhostMesh(typename MeshType::Pointer(new MeshType))
+        , mpInterfaceMesh(typename MeshType::Pointer(new MeshType))
     {
         MeshType mesh;
         mLocalMeshes.push_back(mesh.Clone());
@@ -182,9 +187,9 @@ public:
     Communicator(Communicator const& rOther)
         : mNumberOfColors(rOther.mNumberOfColors)
         , mNeighbourIndices(rOther.mNeighbourIndices)
-        , mpLocalMesh(MeshType::Pointer(rOther.mpLocalMesh))
-        , mpGhostMesh(MeshType::Pointer(rOther.mpGhostMesh))
-        , mpInterfaceMesh(MeshType::Pointer(rOther.mpInterfaceMesh))
+        , mpLocalMesh(typename MeshType::Pointer(rOther.mpLocalMesh))
+        , mpGhostMesh(typename MeshType::Pointer(rOther.mpGhostMesh))
+        , mpInterfaceMesh(typename MeshType::Pointer(rOther.mpInterfaceMesh))
         , mLocalMeshes(rOther.mLocalMeshes)
         , mGhostMeshes(rOther.mGhostMeshes)
         , mInterfaceMeshes(rOther.mInterfaceMeshes)
@@ -293,79 +298,79 @@ public:
     }
 
     // Set the local mesh pointer to the given mesh
-    void SetLocalMesh(MeshType::Pointer pGivenMesh)
+    void SetLocalMesh(typename MeshType::Pointer pGivenMesh)
     {
         mpLocalMesh = pGivenMesh;
     }
 
     // Returns pointer to the mesh storing all local entites
 
-    MeshType::Pointer pLocalMesh()
+    typename MeshType::Pointer pLocalMesh()
     {
         return mpLocalMesh;
     }
 
     // Returns pointer to the mesh storing all ghost entites
 
-    MeshType::Pointer pGhostMesh()
+    typename MeshType::Pointer pGhostMesh()
     {
         return mpGhostMesh;
     }
 
     // Returns pointer to the mesh storing all interface entites
 
-    MeshType::Pointer pInterfaceMesh()
+    typename MeshType::Pointer pInterfaceMesh()
     {
         return mpInterfaceMesh;
     }
 
     // Returns a constant pointer to the mesh storing all local entites
 
-    const MeshType::Pointer pLocalMesh() const
+    const typename MeshType::Pointer pLocalMesh() const
     {
         return mpLocalMesh;
     }
 
     // Returns a constant pointer to the mesh storing all ghost entites
 
-    const MeshType::Pointer pGhostMesh() const
+    const typename MeshType::Pointer pGhostMesh() const
     {
         return mpGhostMesh;
     }
 
     // Returns a constant pointer to the mesh storing all interface entites
 
-    const MeshType::Pointer pInterfaceMesh() const
+    const typename MeshType::Pointer pInterfaceMesh() const
     {
         return mpInterfaceMesh;
     }
 
-    MeshType::Pointer pLocalMesh(IndexType ThisIndex)
+    typename MeshType::Pointer pLocalMesh(IndexType ThisIndex)
     {
         return mLocalMeshes(ThisIndex);
     }
 
-    MeshType::Pointer pGhostMesh(IndexType ThisIndex)
+    typename MeshType::Pointer pGhostMesh(IndexType ThisIndex)
     {
         return mGhostMeshes(ThisIndex);
     }
 
-    MeshType::Pointer pInterfaceMesh(IndexType ThisIndex)
+    typename MeshType::Pointer pInterfaceMesh(IndexType ThisIndex)
     {
         return mInterfaceMeshes(ThisIndex);
     }
 
-    const MeshType::Pointer pLocalMesh(IndexType ThisIndex) const
+    const typename MeshType::Pointer pLocalMesh(IndexType ThisIndex) const
     {
         return mLocalMeshes(ThisIndex);
     }
 
-    const MeshType::Pointer pGhostMesh(IndexType ThisIndex) const
+    const typename MeshType::Pointer pGhostMesh(IndexType ThisIndex) const
     {
         return mGhostMeshes(ThisIndex);
     }
 
-    const MeshType::Pointer pInterfaceMesh(IndexType ThisIndex) const
+    const typename MeshType::Pointer pInterfaceMesh(IndexType ThisIndex) const
     {
         return mInterfaceMeshes(ThisIndex);
     }
@@ -669,7 +674,7 @@ public:
         return true;
     }
 
-    virtual bool SynchronizeVariable(Variable<Vector> const& ThisVariable)
+    virtual bool SynchronizeVariable(Variable<VectorType> const& ThisVariable)
     {
         // #if defined(KRATOS_USING_MPI )
         //  std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;
@@ -677,7 +682,7 @@ public:
         return true;
     }
 
-    virtual bool SynchronizeVariable(Variable<Matrix> const& ThisVariable)
+    virtual bool SynchronizeVariable(Variable<MatrixType> const& ThisVariable)
     {
         // #if defined(KRATOS_USING_MPI )
         //  std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;
@@ -722,7 +727,7 @@ public:
 
     }
 
-    virtual bool AssembleCurrentData(Variable<Vector> const& ThisVariable)
+    virtual bool AssembleCurrentData(Variable<VectorType> const& ThisVariable)
     {
         // #if defined(KRATOS_USING_MPI )
         //  std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;
@@ -731,7 +736,7 @@ public:
 
     }
 
-    virtual bool AssembleCurrentData(Variable<Matrix> const& ThisVariable)
+    virtual bool AssembleCurrentData(Variable<MatrixType> const& ThisVariable)
     {
         /*#if defined(KRATOS_USING_MPI )
                 std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;
@@ -777,7 +782,7 @@ public:
 
     }
 
-    virtual bool AssembleNonHistoricalData(Variable<Vector> const& ThisVariable)
+    virtual bool AssembleNonHistoricalData(Variable<VectorType> const& ThisVariable)
     {
         // #if defined(KRATOS_USING_MPI )
         //  std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;
@@ -786,7 +791,7 @@ public:
 
     }
 
-    virtual bool AssembleNonHistoricalData(Variable<Matrix> const& ThisVariable)
+    virtual bool AssembleNonHistoricalData(Variable<MatrixType> const& ThisVariable)
     {
         /*#if defined(KRATOS_USING_MPI )
                 std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;
@@ -827,7 +832,7 @@ public:
         return true;
     }
 
-    virtual bool SynchronizeElementalNonHistoricalVariable(Variable<Vector> const& ThisVariable)
+    virtual bool SynchronizeElementalNonHistoricalVariable(Variable<VectorType> const& ThisVariable)
     {
         /*#if defined(KRATOS_USING_MPI )
                 std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;
@@ -835,7 +840,7 @@ public:
         return true;
     }
 
-    virtual bool SynchronizeElementalNonHistoricalVariable(Variable<Matrix> const& ThisVariable)
+    virtual bool SynchronizeElementalNonHistoricalVariable(Variable<MatrixType> const& ThisVariable)
     {
         /*#if defined(KRATOS_USING_MPI )
                 std::cout << "WARNING: Using serial communicator with MPI defined. Use ModelPart::SetCommunicator to set its communicator to MPICommunicator" << std::endl;
@@ -947,18 +952,19 @@ protected:
     ///@}
     ///@name Protected member Variables
     ///@{
+
     SizeType mNumberOfColors;
 
     NeighbourIndicesContainerType mNeighbourIndices;
 
     // To store all local entities
-    MeshType::Pointer mpLocalMesh;
+    typename MeshType::Pointer mpLocalMesh;
 
     // To store all ghost entities
-    MeshType::Pointer mpGhostMesh;
+    typename MeshType::Pointer mpGhostMesh;
 
     // To store all interface entities
-    MeshType::Pointer mpInterfaceMesh;
+    typename MeshType::Pointer mpInterfaceMesh;
 
     // To store interfaces local entities
     MeshesContainerType mLocalMeshes;
@@ -968,7 +974,6 @@ protected:
 
     // To store interfaces ghost+local entities
     MeshesContainerType mInterfaceMeshes;
-
 
     ///@}
     ///@name Protected Operators
@@ -1049,13 +1054,15 @@ private:
 ///@{
 
 /// input stream function
-inline std::istream & operator >>(std::istream& rIStream, Communicator& rThis)
+template<class TNodeType>
+inline std::istream & operator >>(std::istream& rIStream, Communicator<TNodeType>& rThis)
 {
     return rIStream;
 }
 
 /// output stream function
-inline std::ostream & operator <<(std::ostream& rOStream, const Communicator& rThis)
+template<class TNodeType>
+inline std::ostream & operator <<(std::ostream& rOStream, const Communicator<TNodeType>& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;

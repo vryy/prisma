@@ -67,10 +67,11 @@ namespace Kratos
  */
 template<class TSparseSpace,
          class TDenseSpace, //= DenseSpace<double>,
-         class TLinearSolver //= LinearSolver<TSparseSpace,TDenseSpace>
+         class TLinearSolver, //= LinearSolver<TSparseSpace,TDenseSpace>
+         class TModelPartType
          >
 class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation
-    : public BuilderAndSolver< TSparseSpace, TDenseSpace, TLinearSolver >
+    : public BuilderAndSolver< TSparseSpace, TDenseSpace, TLinearSolver, TModelPartType >
 {
 public:
     ///@name Type Definitions
@@ -78,15 +79,13 @@ public:
     KRATOS_CLASS_POINTER_DEFINITION(ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation);
 
     /// Definition of the base class
-    typedef BuilderAndSolver<TSparseSpace, TDenseSpace, TLinearSolver> BaseType;
-
-    // The size_t types
-    typedef std::size_t SizeType;
-    typedef std::size_t IndexType;
+    typedef BuilderAndSolver<TSparseSpace, TDenseSpace, TLinearSolver, TModelPartType> BaseType;
 
     /// Definition of the classes from the base class
+    typedef typename BaseType::ModelPartType ModelPartType;
     typedef typename BaseType::TSchemeType TSchemeType;
     typedef typename BaseType::TDataType TDataType;
+    typedef typename BaseType::ValueType ValueType;
     typedef typename BaseType::DofsArrayType DofsArrayType;
     typedef typename BaseType::TSystemMatrixType TSystemMatrixType;
     typedef typename BaseType::TSystemVectorType TSystemVectorType;
@@ -94,20 +93,26 @@ public:
     typedef typename BaseType::LocalSystemMatrixType LocalSystemMatrixType;
     typedef typename BaseType::TSystemMatrixPointerType TSystemMatrixPointerType;
     typedef typename BaseType::TSystemVectorPointerType TSystemVectorPointerType;
-    typedef typename BaseType::NodesArrayType NodesArrayType;
-    typedef typename BaseType::ElementsArrayType ElementsArrayType;
-    typedef typename BaseType::ConditionsArrayType ConditionsArrayType;
+    typedef typename BaseType::NodesContainerType NodesContainerType;
+    typedef typename BaseType::ElementsContainerType ElementsContainerType;
+    typedef typename BaseType::ConditionsContainerType ConditionsContainerType;
 
     /// Additional definitions
-    typedef PointerVectorSet<Element, IndexedObject> ElementsContainerType;
-    typedef Element::EquationIdVectorType EquationIdVectorType;
-    typedef Element::DofsVectorType DofsVectorType;
-    typedef boost::numeric::ublas::compressed_matrix<TDataType> CompressedMatrixType;
+    typedef typename BaseType::IndexType IndexType;
+    typedef typename BaseType::SizeType SizeType;
+    typedef typename BaseType::NodeType NodeType;
+    typedef typename BaseType::ElementType ElementType;
+    typedef typename BaseType::ConditionType ConditionType;
+    typedef typename ElementType::EquationIdVectorType EquationIdVectorType;
+    typedef typename ElementType::DofsVectorType DofsVectorType;
+    typedef typename MatrixVectorTypeSelector<TDataType>::CompressedMatrixType CompressedMatrixType;
 
     /// DoF types definition
-    typedef Node<3> NodeType;
     typedef typename NodeType::DofType DofType;
     typedef typename DofType::Pointer DofPointerType;
+
+    static constexpr auto zero = TDataType();
+    static constexpr auto one = TDataType(1.0);
 
     ///@}
     ///@name Life Cycle
@@ -141,7 +146,7 @@ public:
 
     /** Destructor.
      */
-    ~ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation() //override
+    ~ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation() override
     {
     }
 
@@ -163,9 +168,9 @@ public:
      */
     void Build(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& rModelPart,
+        ModelPartType& rModelPart,
         TSystemMatrixType& A,
-        TSystemVectorType& b) //override
+        TSystemVectorType& b) override
     {
         KRATOS_TRY
 
@@ -189,9 +194,9 @@ public:
         std::cout << "Total number of constraints in assembly: " << rModelPart.NumberOfMasterSlaveConstraints() << std::endl;
         std::cout << "Number of threads: " << OpenMPUtils::GetNumThreads() << std::endl;
 
-        ProcessInfo& CurrentProcessInfo = rModelPart.GetProcessInfo();
-        ModelPart::ElementsContainerType::iterator el_begin = rModelPart.ElementsBegin();
-        ModelPart::ConditionsContainerType::iterator cond_begin = rModelPart.ConditionsBegin();
+        const ProcessInfo& CurrentProcessInfo = rModelPart.GetProcessInfo();
+        auto el_begin = rModelPart.ElementsBegin();
+        auto cond_begin = rModelPart.ConditionsBegin();
 
         //contributions to the system
         LocalSystemMatrixType LHS_Contribution = LocalSystemMatrixType(0, 0);
@@ -199,7 +204,7 @@ public:
 
         //vector containing the localization in the system of the different
         //terms
-        Element::EquationIdVectorType EquationId;
+        typename ElementType::EquationIdVectorType EquationId;
 
         // assemble all elements
         double start_build = OpenMPUtils::GetCurrentTime();
@@ -209,7 +214,7 @@ public:
             #pragma omp for  schedule(guided, 512) nowait
             for (int k = 0; k < nelements; k++)
             {
-                ModelPart::ElementsContainerType::iterator it = el_begin + k;
+                auto it = el_begin + k;
 
                 //detect if the element is active or not. If the user did not make any choice the element
                 //is active by default
@@ -233,7 +238,7 @@ public:
             #pragma omp for  schedule(guided, 512)
             for (int k = 0; k < nconditions; k++)
             {
-                ModelPart::ConditionsContainerType::iterator it = cond_begin + k;
+                auto it = cond_begin + k;
 
                 //detect if the element is active or not. If the user did not make any choice the element
                 //is active by default
@@ -279,8 +284,8 @@ public:
      */
     void BuildLHS(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& rModelPart,
-        TSystemMatrixType& A) //override
+        ModelPartType& rModelPart,
+        TSystemMatrixType& A) override
     {
         KRATOS_TRY
 
@@ -301,8 +306,8 @@ public:
      */
     void BuildLHS_CompleteOnFreeRows(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& rModelPart,
-        TSystemMatrixType& A) //override
+        ModelPartType& rModelPart,
+        TSystemMatrixType& A) override
     {
         KRATOS_TRY
 
@@ -322,7 +327,7 @@ public:
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
         TSystemVectorType& b
-    ) //override
+    ) override
     {
         KRATOS_TRY
 
@@ -332,9 +337,9 @@ public:
         if (TSparseSpace::Size(b) != 0)
             norm_b = TSparseSpace::TwoNorm(b);
         else
-            norm_b = 0.00;
+            norm_b = zero;
 
-        if (norm_b != 0.00)
+        if (norm_b != zero)
         {
             //do solve
             BaseType::mpLinearSystemSolver->Solve(A, Dx, b);
@@ -366,7 +371,7 @@ public:
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
         TSystemVectorType& b,
-        ModelPart& rModelPart
+        ModelPartType& rModelPart
     )
     {
         if(rModelPart.MasterSlaveConstraints().size() != 0) {
@@ -394,7 +399,7 @@ public:
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
         TSystemVectorType& b,
-        ModelPart& rModelPart
+        ModelPartType& rModelPart
     )
     {
         KRATOS_TRY
@@ -402,9 +407,9 @@ public:
         double start_solve = OpenMPUtils::GetCurrentTime();
         std::cout << "Begin Internal-System-Solve-With-Physics" << std::endl;
 
-        TDataType norm_b;
+        ValueType norm_b;
         if (TSparseSpace::Size(b) != 0)
-            norm_b = TSparseSpace::TwoNorm(b);
+            norm_b = std::abs(TSparseSpace::TwoNorm(b));
         else
             norm_b = 0.00;
 
@@ -530,10 +535,10 @@ public:
      */
     void BuildAndSolve(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& rModelPart,
+        ModelPartType& rModelPart,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
-        TSystemVectorType& b) //override
+        TSystemVectorType& b) override
     {
         KRATOS_TRY
 
@@ -587,10 +592,10 @@ public:
      */
     void BuildRHSAndSolve(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& rModelPart,
+        ModelPartType& rModelPart,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
-        TSystemVectorType& b) //override
+        TSystemVectorType& b) override
     {
         KRATOS_TRY
 
@@ -640,8 +645,8 @@ public:
      */
     void BuildRHS(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& rModelPart,
-        TSystemVectorType& b) //override
+        ModelPartType& rModelPart,
+        TSystemVectorType& b) override
     {
         KRATOS_TRY
 
@@ -673,8 +678,8 @@ public:
      */
     void SetUpDofSet(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& rModelPart
-    ) //override
+        ModelPartType& rModelPart
+    ) override
     {
         KRATOS_TRY;
 
@@ -691,10 +696,10 @@ public:
         mAllDofs.clear();
 
         // Gets the array of elements from the modeler
-        ElementsArrayType& r_elements_array = rModelPart.Elements();
+        ElementsContainerType& r_elements_array = rModelPart.Elements();
         const std::size_t number_of_elements = r_elements_array.size();
         bool element_is_active;
-        for(typename ElementsArrayType::iterator it = r_elements_array.begin(); it != r_elements_array.end(); ++it)
+        for(typename ElementsContainerType::iterator it = r_elements_array.begin(); it != r_elements_array.end(); ++it)
         {
             // Gets list of Dof involved on every element
             pScheme->GetDofList(*it, dof_list, r_current_process_info);
@@ -727,10 +732,10 @@ public:
         }
 
         // Gets the array of conditions from the modeler
-        ConditionsArrayType& r_conditions_array = rModelPart.Conditions();
+        ConditionsContainerType& r_conditions_array = rModelPart.Conditions();
         const std::size_t number_of_conditions = r_conditions_array.size();
         bool condition_is_active;
-        for(typename ConditionsArrayType::iterator it = r_conditions_array.begin(); it != r_conditions_array.end(); ++it)
+        for(typename ConditionsContainerType::iterator it = r_conditions_array.begin(); it != r_conditions_array.end(); ++it)
         {
             // Gets list of Dof involved on every condition
             pScheme->GetDofList(*it, dof_list, r_current_process_info);
@@ -813,8 +818,8 @@ public:
      * @param rModelPart The model part of the problem to solve
      */
     void SetUpSystem(
-        ModelPart& rModelPart
-    ) //override
+        ModelPartType& rModelPart
+    ) override
     {
         if ( this->GetEchoLevel() > 1 && rModelPart.GetCommunicator().MyPID() == 0)
         {
@@ -843,8 +848,8 @@ public:
         TSystemMatrixPointerType& pA,
         TSystemVectorPointerType& pDx,
         TSystemVectorPointerType& pb,
-        ModelPart& rModelPart
-    ) ////override
+        ModelPartType& rModelPart
+    ) override
     {
         if ( this->GetEchoLevel() > 1 && rModelPart.GetCommunicator().MyPID() == 0)
         {
@@ -916,10 +921,10 @@ public:
     //**************************************************************************
 
     void InitializeSolutionStep(
-        ModelPart& rModelPart,
+        ModelPartType& rModelPart,
         TSystemMatrixType& rA,
         TSystemVectorType& rDx,
-        TSystemVectorType& rb) //override
+        TSystemVectorType& rb) override
     {
         KRATOS_TRY
 
@@ -944,10 +949,10 @@ public:
     //**************************************************************************
 
     void FinalizeSolutionStep(
-        ModelPart& rModelPart,
+        ModelPartType& rModelPart,
         TSystemMatrixType& rA,
         TSystemVectorType& rDx,
-        TSystemVectorType& rb) //override
+        TSystemVectorType& rb) override
     {
         BaseType::FinalizeSolutionStep(rModelPart, rA, rDx, rb);
 
@@ -969,10 +974,10 @@ public:
 
     void CalculateReactions(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& rModelPart,
+        ModelPartType& rModelPart,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
-        TSystemVectorType& b) //override
+        TSystemVectorType& b) override
     {
         TSparseSpace::SetToZero(b);
 
@@ -1004,15 +1009,15 @@ public:
      */
     void ApplyDirichletConditions(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& rModelPart,
+        ModelPartType& rModelPart,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
-        TSystemVectorType& b) //override
+        TSystemVectorType& b) override
     {
         const double start_apply = OpenMPUtils::GetCurrentTime();
 
         std::size_t system_size = A.size1();
-        std::vector<TDataType> scaling_factors (system_size, 0.0);
+        std::vector<ValueType> scaling_factors (system_size, 0.0);
 
         const int ndofs = static_cast<int>(BaseType::mDofSet.size());
 
@@ -1039,7 +1044,7 @@ public:
             bool empty = true;
             for (std::size_t j = col_begin; j < col_end; ++j)
             {
-                if(Avalues[j] != 0.0)
+                if(Avalues[j] != zero)
                 {
                     empty = false;
                     break;
@@ -1058,23 +1063,23 @@ public:
         {
             std::size_t col_begin = Arow_indices[k];
             std::size_t col_end = Arow_indices[k+1];
-            TDataType k_factor = scaling_factors[k];
+            ValueType k_factor = scaling_factors[k];
             if (k_factor == 0)
             {
                 // zero out the whole row, except the diagonal
                 for (std::size_t j = col_begin; j < col_end; ++j)
                     if (static_cast<int>(Acol_indices[j]) != k )
-                        Avalues[j] = 0.0;
+                        Avalues[j] = zero;
 
                 // zero out the RHS
-                b[k] = 0.0;
+                b[k] = zero;
             }
             else
             {
                 // zero out the column which is associated with the zero'ed row
                 for (std::size_t j = col_begin; j < col_end; ++j)
                     if(scaling_factors[ Acol_indices[j] ] == 0 )
-                        Avalues[j] = 0.0;
+                        Avalues[j] = zero;
             }
         }
 
@@ -1089,7 +1094,7 @@ public:
     /**
      * @brief This function is intended to be called at the end of the solution step to clean up memory storage not needed
      */
-    void Clear() //override
+    void Clear() override
     {
         BaseType::Clear();
         this->mpLinearSystemSolver->Clear();
@@ -1113,7 +1118,7 @@ public:
      * @param rModelPart The model part of the problem to solve
      * @return 0 all ok
      */
-    int Check(ModelPart& rModelPart) //override
+    int Check(const ModelPartType& rModelPart) const override
     {
         KRATOS_TRY
 
@@ -1179,7 +1184,7 @@ protected:
     ///@name Protected Operations
     ///@{
 
-    void ConstructMasterSlaveConstraintsStructure(ModelPart& rModelPart)
+    void ConstructMasterSlaveConstraintsStructure(ModelPartType& rModelPart)
     {
         if (rModelPart.MasterSlaveConstraints().size() > 0) {
 
@@ -1197,8 +1202,8 @@ protected:
             const auto it_const_begin = rModelPart.MasterSlaveConstraints().begin();
             std::vector<std::unordered_set<IndexType> > indices(BaseType::mDofSet.size());
 
-            Element::EquationIdVectorType slave_ids(3);
-            Element::EquationIdVectorType master_ids(3);
+            typename ElementType::EquationIdVectorType slave_ids(3);
+            typename ElementType::EquationIdVectorType master_ids(3);
             std::unordered_map<IndexType, std::unordered_set<IndexType>> temp_indices;
 
             for (int i_const = 0; i_const < static_cast<int>(rModelPart.MasterSlaveConstraints().size()); ++i_const) {
@@ -1268,7 +1273,7 @@ protected:
                 IndexType k = row_begin;
                 for (auto it = indices[i].begin(); it != indices[i].end(); ++it) {
                     Tcol_indices[k] = *it;
-                    Tvalues[k] = 0.0;
+                    Tvalues[k] = zero;
                     k++;
                 }
 
@@ -1283,7 +1288,7 @@ protected:
         }
     }
 
-    void BuildMasterSlaveConstraints(ModelPart& rModelPart)
+    void BuildMasterSlaveConstraints(ModelPartType& rModelPart)
     {
         KRATOS_TRY
 
@@ -1297,11 +1302,11 @@ protected:
         DofsVectorType slave_dof_list, master_dof_list;
 
         // Contributions to the system
-        Matrix transformation_matrix = LocalSystemMatrixType(0, 0);
-        Vector constant_vector = LocalSystemVectorType(0);
+        LocalSystemMatrixType transformation_matrix(0, 0);
+        LocalSystemVectorType constant_vector(0);
 
         // Vector containing the localization in the system of the different terms
-        Element::EquationIdVectorType slave_equation_ids, master_equation_ids;
+        typename ElementType::EquationIdVectorType slave_equation_ids, master_equation_ids;
 
         const int number_of_constraints = static_cast<int>(rModelPart.MasterSlaveConstraints().size());
 
@@ -1331,23 +1336,10 @@ protected:
                         break;
                     }
                 }
-    // KRATOS_WATCH(it_const->Id())
+
                 if (constraint_is_active) {
                     it_const->CalculateLocalSystem(transformation_matrix, constant_vector, r_current_process_info);
 
-    // KRATOS_WATCH(__LINE__)
-    // KRATOS_WATCH(BaseType::mEquationSystemSize)
-    // KRATOS_WATCH(mT.size1())
-    // KRATOS_WATCH(mT.size2())
-    // KRATOS_WATCH(mConstantVector.size())
-    // std::cout << "slave_equation_ids:";
-    // for (IndexType i = 0; i < slave_equation_ids.size(); ++i)
-    //     std::cout << " " << slave_equation_ids[i];
-    // std::cout << std::endl;
-    // std::cout << "master_equation_ids:";
-    // for (IndexType i = 0; i < master_equation_ids.size(); ++i)
-    //     std::cout << " " << master_equation_ids[i];
-    // std::cout << std::endl;
                     for (IndexType i = 0; i < slave_equation_ids.size(); ++i) {
                         const IndexType i_global = slave_equation_ids[i];
 
@@ -1359,12 +1351,21 @@ protected:
                             // Assemble constant vector
                             const auto constant_value = constant_vector[i];
                             auto& r_value = mConstantVector[i_global];
-                            #pragma omp atomic
-                            r_value += constant_value;
+                            if constexpr (std::is_arithmetic<TDataType>::value)
+                            {
+                                #pragma omp atomic
+                                r_value += constant_value;
+                            }
+                            else
+                            {
+                                #pragma omp critical
+                                {
+                                    r_value += constant_value;
+                                }
+                            }
                         }
                     }
                 } else { // Taking into account inactive constraints
-    // KRATOS_WATCH(__LINE__)
                     for (auto &eq_id : slave_equation_ids) {
                         if (eq_id < BaseType::mEquationSystemSize) {
                             #pragma omp critical
@@ -1373,8 +1374,6 @@ protected:
                             }
                         }
                     }
-                    // mInactiveSlaveDofs.insert(slave_equation_ids.begin(), slave_equation_ids.end());
-    // KRATOS_WATCH(__LINE__)
                 }
             }
         }
@@ -1398,12 +1397,15 @@ protected:
             const IndexType slave_equation_id = mSlaveIds[k];
             for (int i = 0; i < static_cast<int>(mT.size1()); ++i)
             {
-                if (mT(i, slave_equation_id) != 0)
+                TDataType tmp = mT(i, slave_equation_id);
+                if (std::abs(tmp) > 1.0e-14)
                 {
                     std::cout << "ATTENTION! ResidualBasedBlockBuilderAndSolverWithConstraints. constraint slave is used as master for another constraint!" << std::endl;
                     for (int j = 0; j < static_cast<int>(mT.size2()); ++j)
                     {
-                        mT(i, j) = mT(i, j) + mT(i, slave_equation_id) * mT(slave_equation_id, j);
+                        TDataType v1 = mT(i, slave_equation_id);
+                        TDataType v2 = mT(slave_equation_id, j);
+                        mT(i, j) += v1*v2;
                     }
                     mT(i, slave_equation_id) = 0;
                 }
@@ -1416,7 +1418,7 @@ protected:
     void ApplyRHSConstraints(
         typename TSchemeType::Pointer pScheme,
         TSystemVectorType& rb,
-        ModelPart& rModelPart)
+        ModelPartType& rModelPart)
     {
         KRATOS_TRY
 
@@ -1432,7 +1434,7 @@ protected:
 
             // We compute the transposed matrix of the global relation matrix
             TSystemMatrixType T_transpose_matrix(mT.size2(), mT.size1());
-            SparseMatrixMultiplicationUtility::TransposeMatrix<TSystemMatrixType, TSystemMatrixType>(T_transpose_matrix, mT, 1.0);
+            SparseMatrixMultiplicationUtility::TransposeMatrix<TSystemMatrixType, TSystemMatrixType>(T_transpose_matrix, mT, one);
 
             time_end = OpenMPUtils::GetCurrentTime();
             time_2 = time_end - time_begin;
@@ -1476,7 +1478,7 @@ protected:
         TSystemMatrixType &rA,
         TSystemVectorType &rDx,
         TSystemVectorType &rb,
-        ModelPart &rModelPart)
+        ModelPartType &rModelPart)
     {
         KRATOS_TRY
 
@@ -1488,7 +1490,7 @@ protected:
             // We compute the transposed matrix of the global relation matrix
 // KRATOS_WATCH(mT)
             TSystemMatrixType T_transpose_matrix(mT.size2(), mT.size1());
-            SparseMatrixMultiplicationUtility::TransposeMatrix<TSystemMatrixType, TSystemMatrixType>(T_transpose_matrix, mT, 1.0);
+            SparseMatrixMultiplicationUtility::TransposeMatrix<TSystemMatrixType, TSystemMatrixType>(T_transpose_matrix, mT, one);
 // KRATOS_WATCH(T_transpose_matrix)
 
             TSystemVectorType b_modified(rb.size());
@@ -1503,9 +1505,10 @@ protected:
             SparseMatrixMultiplicationUtility::MatrixMultiplication(auxiliar_A_matrix, mT, rA); //A = auxilar * T   NOTE: here we are overwriting the old A matrix!
             auxiliar_A_matrix.resize(0, 0, false);                                              //free memory
 
-            TDataType max_diag = 0.0;
+            ValueType max_diag = 0.0;
             for(IndexType i = 0; i < rA.size1(); ++i) {
-                max_diag = std::max(std::abs(rA(i,i)), max_diag);
+                TDataType tmp = rA(i, i);
+                max_diag = std::max(std::abs(tmp), max_diag);
             }
 
             // Apply diagonal values on slaves
@@ -1533,7 +1536,7 @@ protected:
 
     virtual void ConstructMatrixStructure(
         TSystemMatrixType& A,
-        ModelPart& rModelPart)
+        const ModelPartType& rModelPart) const
     {
         if ( this->GetEchoLevel() > 1 && rModelPart.GetCommunicator().MyPID() == 0)
         {
@@ -1543,11 +1546,11 @@ protected:
         //filling with zero the matrix (creating the structure)
         Timer::Start("MatrixStructure");
 
-        ProcessInfo& CurrentProcessInfo = rModelPart.GetProcessInfo();
-        ElementsArrayType& r_elements_array = rModelPart.Elements();
-        ConditionsArrayType& r_conditions_array = rModelPart.Conditions();
+        const ProcessInfo& CurrentProcessInfo = rModelPart.GetProcessInfo();
+        const ElementsContainerType& r_elements_array = rModelPart.Elements();
+        const ConditionsContainerType& r_conditions_array = rModelPart.Conditions();
 
-        const std::size_t equation_size = BaseType::mEquationSystemSize;
+        const SizeType equation_size = BaseType::mEquationSystemSize;
 
         std::vector<std::unordered_set<std::size_t> > indices(equation_size);
         for (std::size_t iii = 0; iii < BaseType::mEquationSystemSize; iii++)
@@ -1555,11 +1558,10 @@ protected:
             indices[iii].reserve(40);
         }
 
-        Element::EquationIdVectorType ids(3, 0);
+        typename ElementType::EquationIdVectorType ids(3, 0);
 
         bool element_is_active;
-        for(typename ElementsArrayType::iterator it = r_elements_array.begin();
-                it != r_elements_array.end(); ++it)
+        for(auto it = r_elements_array.begin(); it != r_elements_array.end(); ++it)
         {
             element_is_active = true;
             if( it->IsDefined(ACTIVE) ) {
@@ -1580,8 +1582,7 @@ protected:
         }
 
         bool condition_is_active;
-        for(typename ConditionsArrayType::iterator it = r_conditions_array.begin();
-                it != r_conditions_array.end(); ++it)
+        for(auto it = r_conditions_array.begin(); it != r_conditions_array.end(); ++it)
         {
             condition_is_active = true;
             if( it->IsDefined(ACTIVE) ) {
@@ -1645,8 +1646,8 @@ protected:
         TSystemVectorType& b,
         const LocalSystemMatrixType& LHS_Contribution,
         const LocalSystemVectorType& RHS_Contribution,
-        Element::EquationIdVectorType& EquationId
-    )
+        typename ElementType::EquationIdVectorType& EquationId
+    ) const
     {
         unsigned int local_size = LHS_Contribution.size1();
 
@@ -1655,21 +1656,30 @@ protected:
 
             auto& r_a = b[i_global];
             const auto& v_a = RHS_Contribution(i_local);
-            #pragma omp atomic
-            r_a += v_a;
+            if constexpr (std::is_arithmetic<TDataType>::value)
+            {
+                #pragma omp atomic
+                r_a += v_a;
+            }
+            else
+            {
+                #pragma omp critical
+                {
+                    r_a += v_a;
+                }
+            }
 
             AssembleRowContribution(A, LHS_Contribution, i_global, i_local, EquationId);
         }
     }
-
 
     //**************************************************************************
 
     void AssembleRHS(
         TSystemVectorType& b,
         LocalSystemVectorType& RHS_Contribution,
-        Element::EquationIdVectorType& EquationId
-    )
+        typename ElementType::EquationIdVectorType& EquationId
+    ) const
     {
         unsigned int local_size = RHS_Contribution.size();
 
@@ -1679,9 +1689,18 @@ protected:
             // ASSEMBLING THE SYSTEM VECTOR
             auto& b_value = b[i_global];
             const auto& rhs_value = RHS_Contribution[i_local];
-
-            #pragma omp atomic
-            b_value += rhs_value;
+            if constexpr (std::is_arithmetic<TDataType>::value)
+            {
+                #pragma omp atomic
+                b_value += rhs_value;
+            }
+            else
+            {
+                #pragma omp critical
+                {
+                    b_value += rhs_value;
+                }
+            }
         }
     }
 
@@ -1732,16 +1751,16 @@ private:
 
     void BuildRHSNoDirichlet(
         typename TSchemeType::Pointer pScheme,
-        ModelPart& rModelPart,
+        ModelPartType& rModelPart,
         TSystemVectorType& b)
     {
         KRATOS_TRY
 
         //Getting the Elements
-        ElementsArrayType& pElements = rModelPart.Elements();
+        ElementsContainerType& pElements = rModelPart.Elements();
 
         //getting the array of the conditions
-        ConditionsArrayType& ConditionsArray = rModelPart.Conditions();
+        ConditionsContainerType& ConditionsArray = rModelPart.Conditions();
 
         ProcessInfo& CurrentProcessInfo = rModelPart.GetProcessInfo();
 
@@ -1751,17 +1770,17 @@ private:
 
         //vector containing the localization in the system of the different
         //terms
-        Element::EquationIdVectorType EquationId;
+        typename ElementType::EquationIdVectorType EquationId;
 
         // assemble all elements
-        //for (typename ElementsArrayType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
+        //for (typename ElementsContainerType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
 
         const int nelements = static_cast<int>(pElements.size());
         #pragma omp parallel firstprivate(nelements, RHS_Contribution, EquationId)
         {
             #pragma omp for schedule(guided, 512) nowait
             for (int i=0; i<nelements; i++) {
-                typename ElementsArrayType::iterator it = pElements.begin() + i;
+                typename ElementsContainerType::iterator it = pElements.begin() + i;
                 //detect if the element is active or not. If the user did not make any choice the element
                 //is active by default
                 bool element_is_active = true;
@@ -1810,28 +1829,39 @@ private:
     //******************************************************************************************
     //******************************************************************************************
 
-    inline void AssembleRowContribution(TSystemMatrixType& A, const Matrix& Alocal, const unsigned int i, const unsigned int i_local, Element::EquationIdVectorType& EquationId)
+    inline void AssembleRowContribution(TSystemMatrixType& A, const LocalSystemMatrixType& Alocal,
+            const unsigned int i, const unsigned int i_local, typename ElementType::EquationIdVectorType& EquationId) const
     {
         auto* values_vector = A.value_data().begin();
         auto* index1_vector = A.index1_data().begin();
         auto* index2_vector = A.index2_data().begin();
 
-        size_t left_limit = index1_vector[i];
-//    size_t right_limit = index1_vector[i+1];
+        auto left_limit = index1_vector[i];
+        // IndexType right_limit = index1_vector[i+1];
 
         //find the first entry
-        size_t last_pos = ForwardFind(EquationId[0],left_limit,index2_vector);
-        size_t last_found = EquationId[0];
+        IndexType last_pos = ForwardFind(EquationId[0],left_limit,index2_vector);
+        IndexType last_found = EquationId[0];
 
         auto& r_a = values_vector[last_pos];
         const auto& v_a = Alocal(i_local,0);
-        #pragma omp atomic
-        r_a +=  v_a;
+        if constexpr (std::is_arithmetic<TDataType>::value)
+        {
+            #pragma omp atomic
+            r_a += v_a;
+        }
+        else
+        {
+            #pragma omp critical
+            {
+                r_a += v_a;
+            }
+        }
 
         //now find all of the other entries
-        size_t pos = 0;
+        IndexType pos = 0;
         for (unsigned int j=1; j<EquationId.size(); j++) {
-            unsigned int id_to_find = EquationId[j];
+            IndexType id_to_find = EquationId[j];
             if(id_to_find > last_found) {
                 pos = ForwardFind(id_to_find,last_pos+1,index2_vector);
             } else if(id_to_find < last_found) {
@@ -1842,28 +1872,40 @@ private:
 
             auto& r = values_vector[pos];
             const auto& v = Alocal(i_local,j);
-            #pragma omp atomic
-            r +=  v;
+            if constexpr (std::is_arithmetic<TDataType>::value)
+            {
+                #pragma omp atomic
+                r += v;
+            }
+            else
+            {
+                #pragma omp critical
+                {
+                    r += v;
+                }
+            }
 
             last_found = id_to_find;
             last_pos = pos;
         }
     }
 
-    inline unsigned int ForwardFind(const unsigned int id_to_find,
-                                    const unsigned int start,
-                                    const size_t* index_vector)
+    template<typename TIndexType>
+    static inline TIndexType ForwardFind(const TIndexType id_to_find,
+                                         const TIndexType start,
+                                         const TIndexType* index_vector)
     {
-        unsigned int pos = start;
+        TIndexType pos = start;
         while(id_to_find != index_vector[pos]) pos++;
         return pos;
     }
 
-    inline unsigned int BackwardFind(const unsigned int id_to_find,
-                                     const unsigned int start,
-                                     const size_t* index_vector)
+    template<typename TIndexType>
+    static inline TIndexType BackwardFind(const TIndexType id_to_find,
+                                          const TIndexType start,
+                                          const TIndexType* index_vector)
     {
-        unsigned int pos = start;
+        TIndexType pos = start;
         while(id_to_find != index_vector[pos]) pos--;
         return pos;
     }

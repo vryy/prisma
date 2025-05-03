@@ -1,9 +1,5 @@
 #include <iostream>
 
-#if __cplusplus >= 201703L
-    #define register  // Define register as empty in C++17 or later
-#endif
-
 #ifdef _DEBUG
    #ifdef KRATOS_USE_RELEASE_PYTHON_LIBRARY
    // this is to circumvent an annoying bug in Python.h

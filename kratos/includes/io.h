@@ -58,10 +58,52 @@ namespace Kratos
 ///@name Kratos Classes
 ///@{
 
-/// Short class definition.
+class KRATOS_API(KRATOS_CORE) BaseIO
+{
+public:
+    /// Pointer definition of IO
+    KRATOS_CLASS_POINTER_DEFINITION(BaseIO);
+
+    /// Local Flags
+    KRATOS_DEFINE_LOCAL_FLAG( READ );
+    KRATOS_DEFINE_LOCAL_FLAG( WRITE );
+    KRATOS_DEFINE_LOCAL_FLAG( APPEND );
+    KRATOS_DEFINE_LOCAL_FLAG( IGNORE_VARIABLES_ERROR );
+
+    /// Default constructor.
+    BaseIO() {}
+
+    /// Destructor.
+    virtual ~BaseIO() {}
+
+    ///@name Input and output
+    ///@{
+
+    /// Turn back information as a string.
+    virtual std::string Info() const
+    {
+        return "BaseIO";
+    }
+
+    /// Print information about this object.
+    virtual void PrintInfo(std::ostream& rOStream) const
+    {
+        rOStream << Info();
+    }
+
+    /// Print object's data.
+    virtual void PrintData(std::ostream& rOStream) const
+    {
+    }
+
+    ///@}
+};
+
+/// Base class for all IO.
 /** Detail class definition.
 */
-class KRATOS_API(KRATOS_CORE) IO
+template<class TModelPartType = ModelPart>
+class KRATOS_API(KRATOS_CORE) IO : public BaseIO
 {
 public:
     ///@name Type Definitions
@@ -70,33 +112,41 @@ public:
     /// Pointer definition of IO
     KRATOS_CLASS_POINTER_DEFINITION(IO);
 
-    /// Local Flags
-    KRATOS_DEFINE_LOCAL_FLAG( READ );
-    KRATOS_DEFINE_LOCAL_FLAG( WRITE );
-    KRATOS_DEFINE_LOCAL_FLAG( APPEND );
-    KRATOS_DEFINE_LOCAL_FLAG( IGNORE_VARIABLES_ERROR );
+    typedef TModelPartType ModelPartType;
 
-    typedef Node<3> NodeType;
+    typedef typename ModelPartType::MeshType MeshType;
 
-    typedef Mesh<NodeType, Properties, Element, Condition> MeshType;
+    typedef typename MeshType::IndexType IndexType;
 
-    typedef MeshType::NodesContainerType NodesContainerType;
+    typedef typename MeshType::SizeType SizeType;
 
-    typedef MeshType::PropertiesContainerType PropertiesContainerType;
+    typedef typename MeshType::NodeType NodeType;
 
-    typedef MeshType::ElementsContainerType ElementsContainerType;
+    typedef typename NodeType::CoordinateType CoordinateType;
 
-    typedef MeshType::ConditionsContainerType ConditionsContainerType;
+    typedef typename NodeType::DofType::DataType DataType;
 
-    typedef std::vector<std::vector<std::size_t> > ConnectivitiesContainerType;
+    typedef typename ModelPartType::ValueType ValueType;
 
-    typedef std::vector<std::vector<std::size_t> > PartitionIndicesContainerType;
+    typedef typename ModelPartType::VectorType VectorType;
 
-    typedef std::vector<std::size_t> PartitionIndicesType;
+    typedef typename MeshType::ElementType ElementType;
 
-    typedef KRATOS_DOUBLE_TYPE DataType;
+    typedef typename MeshType::ConditionType ConditionType;
 
-    typedef std::size_t SizeType;
+    typedef typename MeshType::NodesContainerType NodesContainerType;
+
+    typedef typename MeshType::PropertiesContainerType PropertiesContainerType;
+
+    typedef typename MeshType::ElementsContainerType ElementsContainerType;
+
+    typedef typename MeshType::ConditionsContainerType ConditionsContainerType;
+
+    typedef std::vector<std::vector<IndexType> > ConnectivitiesContainerType;
+
+    typedef std::vector<std::vector<IndexType> > PartitionIndicesContainerType;
+
+    typedef std::vector<IndexType> PartitionIndicesType;
 
     typedef matrix<int> GraphType;
 
@@ -130,7 +180,7 @@ public:
         KRATOS_ERROR << "Calling base class member. Please check the definition of derived class.";
     }
 
-    virtual std::size_t ReadNodesNumber()
+    virtual SizeType ReadNodesNumber()
     {
         KRATOS_ERROR << "Calling base class member. Please check the definition of derived class.";;
     }
@@ -150,7 +200,7 @@ public:
         KRATOS_ERROR << "Calling base class member. Please check the definition of derived class.";
     }
 
-    virtual void ReadElement(NodesContainerType& rThisNodes, PropertiesContainerType& rThisProperties, Element::Pointer& pThisElements)
+    virtual void ReadElement(NodesContainerType& rThisNodes, PropertiesContainerType& rThisProperties, typename ElementType::Pointer& pThisElements)
     {
         KRATOS_ERROR << "Calling base class member. Please check the definition of derived class.";
     }
@@ -160,7 +210,7 @@ public:
         KRATOS_ERROR << "Calling base class member. Please check the definition of derived class.";
     }
 
-    virtual std::size_t  ReadElementsConnectivities(ConnectivitiesContainerType& rElementsConnectivities)
+    virtual SizeType ReadElementsConnectivities(ConnectivitiesContainerType& rElementsConnectivities)
     {
         KRATOS_ERROR << "Calling base class member. Please check the definition of derived class.";
     }
@@ -175,12 +225,12 @@ public:
         KRATOS_ERROR << "Calling base class member. Please check the definition of derived class.";
     }
 
-    virtual std::size_t  ReadConditionsConnectivities(ConnectivitiesContainerType& rConditionsConnectivities)
+    virtual SizeType ReadConditionsConnectivities(ConnectivitiesContainerType& rConditionsConnectivities)
     {
         KRATOS_ERROR << "Calling base class member. Please check the definition of derived class.";
     }
 
-    virtual void ReadInitialValues(ModelPart& rThisModelPart)
+    virtual void ReadInitialValues(ModelPartType& rThisModelPart)
     {
         KRATOS_ERROR << "Calling base class member. Please check the definition of derived class.";
     }
@@ -207,12 +257,12 @@ public:
         KRATOS_ERROR << "Calling base class member. Please check the definition of derived class.";
     }
 
-    virtual void ReadModelPart(ModelPart& rThisModelPart)
+    virtual void ReadModelPart(ModelPartType& rThisModelPart)
     {
         KRATOS_ERROR << "Calling base class member. Please check the definition of derived class.";
     }
 
-    virtual std::size_t ReadNodalGraph(int** NodeIndices, int** NodeConnectivities)
+    virtual SizeType ReadNodalGraph(int** NodeIndices, int** NodeConnectivities)
     {
         KRATOS_ERROR << "Calling base class member. Please check the definition of derived class.";;
     }
@@ -243,20 +293,9 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const override
     {
         return "IO";
-    }
-
-    /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
-    {
-        rOStream << Info();
-    }
-
-    /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
-    {
     }
 
     ///@}
@@ -353,13 +392,13 @@ private:
 ///@{
 
 /// input stream function
-inline std::istream& operator >> (std::istream& rIStream, IO& rThis)
+inline std::istream& operator >> (std::istream& rIStream, BaseIO& rThis)
 {
     return rIStream;
 }
 
 /// output stream function
-inline std::ostream& operator << (std::ostream& rOStream, const IO& rThis)
+inline std::ostream& operator << (std::ostream& rOStream, const BaseIO& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;
@@ -369,7 +408,6 @@ inline std::ostream& operator << (std::ostream& rOStream, const IO& rThis)
 }
 
 ///@}
-
 
 }  // namespace Kratos.
 

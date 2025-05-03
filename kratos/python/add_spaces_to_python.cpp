@@ -33,7 +33,9 @@
 #include "includes/define.h"
 #include "python/add_spaces_to_python.h"
 #include "spaces/ublas_space.h"
-
+#ifdef _OPENMP
+#include "spaces/parallel_ublas_space.h"
+#endif
 
 namespace Kratos
 {
@@ -41,12 +43,6 @@ namespace Kratos
     namespace Python
     {
         using namespace boost::python;
-
-        typedef UblasSpace<KRATOS_DOUBLE_TYPE, CompressedMatrix, Vector> UblasSparseSpaceType;
-        typedef UblasSpace<KRATOS_DOUBLE_TYPE, Matrix, Vector> UblasLocalSpaceType;
-
-        typedef UblasSpace<KRATOS_COMPLEX_TYPE, ComplexCompressedMatrix, ComplexVector> UblasComplexSparseSpaceType;
-        typedef UblasSpace<KRATOS_COMPLEX_TYPE, ComplexMatrix, ComplexVector> UblasComplexLocalSpaceType;
 
         //ADDED BY PAOLO (next two)
 
@@ -216,79 +212,100 @@ namespace Kratos
         }
 
         template<class SparseSpaceType, class CompressedMatrixType>
-        bool ReadMatrixMarketMatrix_(SparseSpaceType& dummy, const char* FileName, CompressedMatrixType& M)
+        bool ReadMatrixMarketMatrixImpl(SparseSpaceType& dummy, const char* FileName, CompressedMatrixType& M)
         {
             return ReadMatrixMarketMatrix<CompressedMatrixType>(FileName, M);
         }
 
         template<class SparseSpaceType, class VectorType>
-        bool ReadMatrixMarketVector_(SparseSpaceType& dummy, const char* FileName, VectorType& M)
+        bool ReadMatrixMarketVectorImpl(SparseSpaceType& dummy, const char* FileName, VectorType& M)
         {
             return ReadMatrixMarketVector<VectorType>(FileName, M);
         }
 
-        template<typename TSparseSpaceType, typename TLocalSpaceType>
-        void AddSpacesToPython_(const std::string& Prefix)
+        template<typename TMatrixType>
+        void AddMatrixToPython(const std::string& Name)
         {
-            typedef TSparseSpaceType SparseSpaceType;
-            typedef TLocalSpaceType LocalSpaceType;
-
-            typedef typename SparseSpaceType::MatrixType CompressedMatrixType;
-            typedef typename SparseSpaceType::VectorType VectorType;
-
-            class_< boost::shared_ptr<CompressedMatrixType> >((Prefix + "CompressedMatrixPointer").c_str(), init<boost::shared_ptr<CompressedMatrixType> >())
-            .def("GetReference", GetMatRef<CompressedMatrixType>, return_value_policy<reference_existing_object > ())
-            //                  .def("GetReference", GetRef, return_internal_reference<1>() )
+            class_< boost::shared_ptr<TMatrixType> >(Name.c_str(), init<boost::shared_ptr<TMatrixType> >())
+            .def("GetReference", GetMatRef<TMatrixType>, return_value_policy<reference_existing_object > ())
             ;
+        }
 
-            class_< boost::shared_ptr<VectorType> >((Prefix + "VectorPointer").c_str(), init< boost::shared_ptr<VectorType> >())
-            .def("GetReference", GetVecRef<VectorType>, return_value_policy<reference_existing_object > ())
+        template<typename TVectorType>
+        void AddVectorToPython(const std::string& Name)
+        {
+            class_< boost::shared_ptr<TVectorType> >(Name.c_str(), init< boost::shared_ptr<TVectorType> >())
+            .def("GetReference", GetVecRef<TVectorType>, return_value_policy<reference_existing_object > ())
             ;
+        }
 
-            class_< SparseSpaceType, boost::noncopyable > space((Prefix + "UblasSparseSpace").c_str(), init<>());
+        template<typename TSpaceType>
+        void AddSpacesToPythonImpl(const std::string& Name)
+        {
+            class_< TSpaceType, boost::noncopyable > space(Name.c_str(), init<>());
 
             space
-            .def("ClearMatrix", &ClearMatrix<SparseSpaceType>)
-            .def("ClearVector", &ClearVector<SparseSpaceType>)
-            .def("ResizeMatrix", &ResizeMatrix<SparseSpaceType>)
-            .def("ResizeVector", &ResizeVector<SparseSpaceType>)
-            .def("SetToZeroMatrix", &SetToZeroMatrix<SparseSpaceType>)
-            .def("SetToZeroVector", &SetToZeroVector<SparseSpaceType>)
-            .def("TwoNorm", &TwoNorm<SparseSpaceType>)
-            .def("Copy", &CopyVector<SparseSpaceType>)
-            .def("Copy", &CopyMatrix<SparseSpaceType>)
+            .def("ClearMatrix", &ClearMatrix<TSpaceType>)
+            .def("ClearVector", &ClearVector<TSpaceType>)
+            .def("ResizeMatrix", &ResizeMatrix<TSpaceType>)
+            .def("ResizeVector", &ResizeVector<TSpaceType>)
+            .def("SetToZeroMatrix", &SetToZeroMatrix<TSpaceType>)
+            .def("SetToZeroVector", &SetToZeroVector<TSpaceType>)
+            .def("TwoNorm", &TwoNorm<TSpaceType>)
+            .def("Copy", &CopyVector<TSpaceType>)
+            .def("Copy", &CopyMatrix<TSpaceType>)
             //the dot product of two vectors
-            .def("Dot", &Dot<SparseSpaceType>)
+            .def("Dot", &Dot<TSpaceType>)
             //the matrix-vector multiplication
-            .def("Mult", &Mult<SparseSpaceType>)
-            .def("TransposeMult", &TransposeMult<SparseSpaceType>)
-            .def("Size", &Size<SparseSpaceType>)
-            .def("Size1", &Size1<SparseSpaceType>)
-            .def("Size2", &Size2<SparseSpaceType>)
-            .def("UnaliasedAdd", &UnaliasedAdd<SparseSpaceType>)
-            .def("ScaleAndAdd", &ScaleAndAdd<SparseSpaceType>)
-            .def("CreateEmptyMatrixPointer", &CreateEmptyMatrixPointer<SparseSpaceType>)
-            .def("CreateEmptyVectorPointer", &CreateEmptyVectorPointer<SparseSpaceType>)
-            .def("PrintMatrixInfo", &PrintMatrixInfo<SparseSpaceType>)
-            .def("PrintVectorInfo", &PrintVectorInfo<SparseSpaceType>)
+            .def("Mult", &Mult<TSpaceType>)
+            .def("TransposeMult", &TransposeMult<TSpaceType>)
+            .def("Size", &Size<TSpaceType>)
+            .def("Size1", &Size1<TSpaceType>)
+            .def("Size2", &Size2<TSpaceType>)
+            .def("UnaliasedAdd", &UnaliasedAdd<TSpaceType>)
+            .def("ScaleAndAdd", &ScaleAndAdd<TSpaceType>)
+            .def("CreateEmptyMatrixPointer", &CreateEmptyMatrixPointer<TSpaceType>)
+            .def("CreateEmptyVectorPointer", &CreateEmptyVectorPointer<TSpaceType>)
+            .def("PrintMatrixInfo", &PrintMatrixInfo<TSpaceType>)
+            .def("PrintVectorInfo", &PrintVectorInfo<TSpaceType>)
             .def(self_ns::str(self))
             ;
 
-            if constexpr (std::is_same<SparseSpaceType, UblasSparseSpaceType>::value)
+            if constexpr (std::is_arithmetic<typename TSpaceType::DataType>::value)
             {
                 space
-                .def("WriteMatrixMarketMatrix", &WriteMatrixMarketMatrix<SparseSpaceType, CompressedMatrixType>)
-                .def("WriteMatrixMarketVector", &WriteMatrixMarketVector<SparseSpaceType, VectorType>)
-                .def("ReadMatrixMarketMatrix", &ReadMatrixMarketMatrix_<SparseSpaceType, CompressedMatrixType>)
-                .def("ReadMatrixMarketVector", &ReadMatrixMarketVector_<SparseSpaceType, VectorType>)
+                .def("WriteMatrixMarketMatrix", &WriteMatrixMarketMatrix<TSpaceType, typename TSpaceType::MatrixType>)
+                .def("WriteMatrixMarketVector", &WriteMatrixMarketVector<TSpaceType, typename TSpaceType::VectorType>)
+                .def("ReadMatrixMarketMatrix", &ReadMatrixMarketMatrixImpl<TSpaceType, typename TSpaceType::MatrixType>)
+                .def("ReadMatrixMarketVector", &ReadMatrixMarketVectorImpl<TSpaceType, typename TSpaceType::VectorType>)
                 ;
             }
         }
 
         void AddSpacesToPython()
         {
-            AddSpacesToPython_<UblasSparseSpaceType, UblasLocalSpaceType>("");
-            AddSpacesToPython_<UblasComplexSparseSpaceType, UblasComplexLocalSpaceType>("Complex");
+            typedef UblasSpace<KRATOS_DOUBLE_TYPE, CompressedMatrix, Vector> UblasSparseSpaceType;
+            typedef UblasSpace<KRATOS_DOUBLE_TYPE, Matrix, Vector> UblasLocalSpaceType;
+
+            typedef UblasSpace<KRATOS_COMPLEX_TYPE, ComplexCompressedMatrix, ComplexVector> UblasComplexSparseSpaceType;
+            typedef UblasSpace<KRATOS_COMPLEX_TYPE, ComplexMatrix, ComplexVector> UblasComplexLocalSpaceType;
+
+            AddMatrixToPython<typename UblasSparseSpaceType::MatrixType>("CompressedMatrixPointer");
+            AddMatrixToPython<typename UblasComplexSparseSpaceType::MatrixType>("ComplexCompressedMatrixPointer");
+            AddVectorToPython<typename UblasSparseSpaceType::VectorType>("VectorPointer");
+            AddVectorToPython<typename UblasComplexSparseSpaceType::VectorType>("ComplexVectorPointer");
+
+            AddSpacesToPythonImpl<UblasSparseSpaceType>("UblasSparseSpace");
+            // AddSpacesToPythonImpl<UblasLocalSpaceType>("UblasLocalSpace");
+            AddSpacesToPythonImpl<UblasComplexSparseSpaceType>("ComplexUblasSparseSpace");
+            // AddSpacesToPythonImpl<UblasComplexLocalSpaceType>("ComplexUblasLocalSpace");
+
+            #ifdef _OPENMP
+            typedef ParallelUblasSpace<KRATOS_DOUBLE_TYPE, CompressedMatrix, Vector> ParallelUblasSparseSpaceType;
+            typedef UblasSpace<KRATOS_DOUBLE_TYPE, Matrix, Vector> ParallelUblasLocalSpaceType;
+
+            AddSpacesToPythonImpl<ParallelUblasSparseSpaceType>("ParallelUblasSparseSpace");
+            #endif
         }
 
     } // namespace Python.

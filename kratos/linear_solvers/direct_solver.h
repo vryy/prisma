@@ -56,7 +56,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // External includes
 
 // Project includes
-#include "includes/define.h"
 #include "linear_solver.h"
 
 
@@ -76,40 +75,41 @@ namespace Kratos
    right hand sides and their operators.
    - TReordererType which specify type of the Orderer that performs the reordering of matrix to optimize the solution.
 */
-template<class TSparseSpaceType, class TDenseSpaceType,class TReordererType = Reorderer<TSparseSpaceType, TDenseSpaceType> >
-class DirectSolver : public LinearSolver<TSparseSpaceType, TDenseSpaceType, TReordererType>
+template<class TSparseSpaceType, class TDenseSpaceType, class TModelPartType, class TReordererType = Reorderer<TSparseSpaceType, TDenseSpaceType> >
+class DirectSolver : public LinearSolver<TSparseSpaceType, TDenseSpaceType, TModelPartType, TReordererType>
 {
 public:
 
     /// Counted pointer of DirectSolver
     KRATOS_CLASS_POINTER_DEFINITION(DirectSolver);
 
-    typedef LinearSolver<TSparseSpaceType, TDenseSpaceType, TReordererType> BaseType;
+    typedef LinearSolver<TSparseSpaceType, TDenseSpaceType, TModelPartType, TReordererType> BaseType;
 
-    typedef typename TSparseSpaceType::MatrixType SparseMatrixType;
+    typedef typename BaseType::SparseMatrixType SparseMatrixType;
 
-    typedef typename TSparseSpaceType::VectorType VectorType;
+    typedef typename BaseType::VectorType VectorType;
 
-    typedef typename TDenseSpaceType::MatrixType DenseMatrixType;
+    typedef typename BaseType::DenseMatrixType DenseMatrixType;
 
+    typedef typename BaseType::DataType DataType;
 
     /// Default constructor.
     DirectSolver() {}
 
     /// Destructor.
-    virtual ~DirectSolver() {}
+    ~DirectSolver() override {}
 
     /// Copy constructor.
     DirectSolver(const DirectSolver& Other) {}
 
     /// Print information about this object.
-    void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << "Direct solver";
     }
 
     /// Print object's data.
-    void  PrintData(std::ostream& rOStream) const
+    void  PrintData(std::ostream& rOStream) const override
     {
     }
 
@@ -118,7 +118,7 @@ private:
     /// Assignment operator.
     DirectSolver& operator=(const DirectSolver& Other);
 
-}; // Class DirectSolver
+}; // class DirectSolver
 
 }  // namespace Kratos.
 

@@ -65,16 +65,20 @@ enum MultiFileFlag {SingleFile, MultipleFiles};
  * in order to provide GiD compliant I/O functionality
  */
 template<class TGaussPointContainer = GidGaussPointsContainer, class TMeshContainer = GidMeshContainer>
-class GidIO : public IO
+class GidIO : public BaseIO
 {
 public:
     ///pointer definition of GidIO
     KRATOS_CLASS_POINTER_DEFINITION(GidIO);
 
     ///typedefs
-    typedef IO BaseType;
+    typedef BaseIO BaseType;
 
-    typedef BaseType::DataType DataType;
+    typedef KRATOS_DOUBLE_TYPE DataType;
+
+    typedef ModelPart::MeshType MeshType;
+
+    typedef ModelPart::NodesContainerType NodesContainerType;
 
     ///Flags for mesh writing
 //             enum WriteDeformedMeshFlag{WriteDeformed, WriteUndeformed};

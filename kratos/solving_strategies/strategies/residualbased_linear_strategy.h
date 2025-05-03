@@ -82,10 +82,11 @@ namespace Kratos
  */
 template<class TSparseSpace,
          class TDenseSpace, //= DenseSpace<double>,
-         class TLinearSolver //= LinearSolver<TSparseSpace,TDenseSpace>
+         class TLinearSolver, //= LinearSolver<TSparseSpace,TDenseSpace>
+         class TModelPartType
          >
 class ResidualBasedLinearStrategy
-    : public SolvingStrategy<TSparseSpace, TDenseSpace, TLinearSolver>
+    : public SolvingStrategy<TSparseSpace, TDenseSpace, TLinearSolver, TModelPartType>
 {
 public:
     /**@name Type Definitions */
@@ -94,16 +95,16 @@ public:
     /** Counted pointer of ClassName */
     KRATOS_CLASS_POINTER_DEFINITION(ResidualBasedLinearStrategy);
 
-    typedef SolvingStrategy<TSparseSpace, TDenseSpace, TLinearSolver> BaseType;
+    typedef SolvingStrategy<TSparseSpace, TDenseSpace, TLinearSolver, TModelPartType> BaseType;
+    typedef typename BaseType::TBuilderAndSolverType TBuilderAndSolverType;
 
     typedef typename BaseType::TDataType TDataType;
 
     typedef TSparseSpace SparseSpaceType;
 
-    typedef typename BaseType::TSchemeType TSchemeType;
-    typedef typename BaseType::TBuilderAndSolverType TBuilderAndSolverType;
+    typedef typename BaseType::ModelPartType ModelPartType;
 
-    //typedef typename BaseType::DofSetType DofSetType;
+    typedef typename BaseType::TSchemeType TSchemeType;
 
     typedef typename BaseType::DofsArrayType DofsArrayType;
 
@@ -118,7 +119,6 @@ public:
     typedef typename BaseType::TSystemMatrixPointerType TSystemMatrixPointerType;
     typedef typename BaseType::TSystemVectorPointerType TSystemVectorPointerType;
 
-
     /*@} */
     /**@name Life Cycle
      */
@@ -127,7 +127,7 @@ public:
     /** Constructor.
      */
     ResidualBasedLinearStrategy(
-        ModelPart& model_part,
+        ModelPartType& model_part,
         typename TSchemeType::Pointer pScheme,
         typename TLinearSolver::Pointer pNewLinearSolver,
         bool CalculateReactionFlag = false,
@@ -135,7 +135,7 @@ public:
         bool CalculateNormDxFlag = false,
         bool MoveMeshFlag = false
     )
-        : SolvingStrategy<TSparseSpace, TDenseSpace, TLinearSolver>(model_part, MoveMeshFlag)
+        : BaseType(model_part, MoveMeshFlag)
     {
         KRATOS_TRY
 
@@ -153,7 +153,7 @@ public:
         //setting up the default builder and solver
         mpBuilderAndSolver = typename TBuilderAndSolverType::Pointer
                              (
-                                 new ResidualBasedBlockBuilderAndSolver<TSparseSpace, TDenseSpace, TLinearSolver > (mpLinearSolver)
+                                 new ResidualBasedBlockBuilderAndSolver<TSparseSpace, TDenseSpace, TLinearSolver, TModelPartType> (mpLinearSolver)
                              );
 
         //set flag to start correcty the calculations
@@ -179,7 +179,7 @@ public:
     //constructor specifying the builder and solver
 
     ResidualBasedLinearStrategy(
-        ModelPart& model_part,
+        ModelPartType& model_part,
         typename TSchemeType::Pointer pScheme,
         typename TLinearSolver::Pointer pNewLinearSolver,
         typename TBuilderAndSolverType::Pointer pNewBuilderAndSolver,
@@ -188,7 +188,7 @@ public:
         bool CalculateNormDxFlag = false,
         bool MoveMeshFlag = false
     )
-        : SolvingStrategy<TSparseSpace, TDenseSpace, TLinearSolver>(model_part, MoveMeshFlag)
+        : BaseType(model_part, MoveMeshFlag)
     {
         KRATOS_TRY
 
@@ -227,7 +227,7 @@ public:
 
     /** Destructor.
      */
-    virtual ~ResidualBasedLinearStrategy()
+    ~ResidualBasedLinearStrategy() override
     {
       // in trilinos third party library, the linear solver's
       // preconditioner should be freed before the system matrix.
@@ -245,7 +245,7 @@ public:
         mpScheme = pScheme;
     };
 
-    typename TSchemeType::Pointer GetScheme()
+    typename TSchemeType::Pointer GetScheme() const
     {
         return mpScheme;
     };
@@ -257,7 +257,7 @@ public:
         mpBuilderAndSolver = pNewBuilderAndSolver;
     };
 
-    typename TBuilderAndSolverType::Pointer GetBuilderAndSolver()
+    typename TBuilderAndSolverType::Pointer GetBuilderAndSolver() const
     {
         return mpBuilderAndSolver;
     };
@@ -268,7 +268,7 @@ public:
         GetBuilderAndSolver()->SetCalculateReactionsFlag(mCalculateReactionsFlag);
     }
 
-    bool GetCalculateReactionsFlag()
+    bool GetCalculateReactionsFlag() const
     {
         return mCalculateReactionsFlag;
     }
@@ -279,7 +279,7 @@ public:
         GetBuilderAndSolver()->SetReshapeMatrixFlag(mReformDofSetAtEachStep);
     }
 
-    bool GetReformDofSetAtEachStepFlag()
+    bool GetReformDofSetAtEachStepFlag() const
     {
         return mReformDofSetAtEachStep;
     }
@@ -359,7 +359,7 @@ public:
      */
     //**********************************************************************
 
-    double Solve()
+    double Solve() override
     {
         KRATOS_TRY
 
@@ -368,7 +368,7 @@ public:
         typename TBuilderAndSolverType::Pointer pBuilderAndSolver = GetBuilderAndSolver();
         int rank = BaseType::GetModelPart().GetCommunicator().MyPID();
 
-        ProcessInfo& pCurrentProcessInfo = BaseType::GetModelPart().GetProcessInfo();
+        const ProcessInfo& pCurrentProcessInfo = BaseType::GetModelPart().GetProcessInfo();
 
         //OPERATIONS THAT SHOULD BE DONE ONCE - internal check to avoid repetitions
         //if the operations needed were already performed this does nothing
@@ -398,7 +398,6 @@ public:
         TSystemMatrixType& mA = *mpA;
         TSystemVectorType& mDx = *mpDx;
         TSystemVectorType& mb = *mpb;
-
 
         if (BaseType::mRebuildLevel > 0 || BaseType::mStiffnessMatrixIsBuilt == false)
         {
@@ -446,7 +445,7 @@ public:
         double normDx = 0.00;
         if (mCalculateNormDxFlag == true)
         {
-            normDx = TSparseSpace::TwoNorm(mDx);
+            normDx = std::abs(TSparseSpace::TwoNorm(mDx));
         }
 
         //calculate reactions if required
@@ -493,13 +492,12 @@ public:
     }
     //*********************************************************************************
 
-    double GetResidualNorm()
+    double GetResidualNorm() const
     {
         if (TSparseSpace::Size(*mpb) != 0)
-            return TSparseSpace::TwoNorm(*mpb);
+            return std::abs(TSparseSpace::TwoNorm(*mpb));
         else
             return 0.0;
-
     }
 
     //*********************************************************************************
@@ -510,7 +508,7 @@ public:
 
       This operations should be called only when needed, before printing as it can involve a non negligible cost
      */
-    void CalculateOutputData()
+    void CalculateOutputData() override
     {
         TSystemMatrixType& mA = *mpA;
         TSystemVectorType& mDx = *mpDx;
@@ -635,15 +633,13 @@ private:
     ///default = 30
     unsigned int mMaxIterationNumber;
 
-
-
     /*@} */
     /**@name Private Operators*/
     /*@{ */
     //**********************************************************************
     //**********************************************************************
 
-    void Initialize()
+    void Initialize() override
     {
         KRATOS_TRY
 
@@ -663,20 +659,18 @@ private:
 
         //Initialize The Conditions - OPERATIONS TO BE DONE ONCE
         if (pScheme->ConditionsAreInitialized() == false)
-      pScheme->InitializeConditions(BaseType::GetModelPart());
+            pScheme->InitializeConditions(BaseType::GetModelPart());
 
         if (BaseType::GetEchoLevel() > 2)
             std::cout << "exiting the  Initialize of the ResidualBasedLinearStrategy" << std::endl;
 
-
         KRATOS_CATCH("")
     }
 
-
     //**********************************************************************
     //**********************************************************************
 
-    void InitializeSolutionStep()
+    void InitializeSolutionStep() override
     {
         KRATOS_TRY
 
@@ -687,7 +681,6 @@ private:
 
         if (BaseType::GetEchoLevel() > 2 && rank == 0)
             std::cout << "entering in the  InitializeSolutionStep of the ResidualBasedLinearStrategy" << std::endl;
-
 
         //loop to reform the dofset
         Kratos::timer system_construction_time;
@@ -715,7 +708,6 @@ private:
         if (BaseType::GetEchoLevel() > 0 && rank == 0)
             std::cout << "System Construction Time : " << system_construction_time.elapsed() << std::endl;
 
-
         TSystemMatrixType& mA = *mpA;
         TSystemVectorType& mDx = *mpDx;
         TSystemVectorType& mb = *mpb;
@@ -733,7 +725,7 @@ private:
     //**********************************************************************
     //**********************************************************************
 
-    void MaxIterationsExceeded()
+    void MaxIterationsExceeded() const
     {
         std::cout << "***************************************************" << std::endl;
         std::cout << "******* ATTENTION: max iterations exceeded ********" << std::endl;
@@ -743,9 +735,10 @@ private:
     //**********************************************************************
     //**********************************************************************
 
-    void Clear()
+    void Clear() override
     {
         KRATOS_TRY;
+
         // if the preconditioner is saved between solves, it
         // should be cleared here.
         GetBuilderAndSolver()->GetLinearSystemSolver()->Clear();
@@ -769,7 +762,7 @@ private:
      * function to perform expensive checks.
      * It is designed to be called ONCE to verify that the input is correct.
      */
-    int Check()
+    int Check() const override
     {
         KRATOS_TRY
 
