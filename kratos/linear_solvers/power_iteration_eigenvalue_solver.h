@@ -166,18 +166,18 @@ public:
             beta = inner_prod(x, y);
             if constexpr (std::is_same<DataType, ValueType>::value)
             {
-                if(beta <= 0.00)
+                if(beta <= 0)
                     KRATOS_THROW_ERROR(std::invalid_argument, "M is not Positive-definite", "");
             }
 
             ro = ro / beta;
             beta = std::sqrt(beta);
 
-            DataType inverse_of_beta = 1.00 / beta;
+            DataType inverse_of_beta = 1 / beta;
 
             y *= inverse_of_beta;
 
-            if(std::abs(ro) == 0.00)
+            if(std::abs(ro) == 0)
                 KRATOS_THROW_ERROR(std::runtime_error, "Perpendicular eigenvector to M", "");
 
             ValueType convergence_norm = std::abs((ro - old_ro) / ro);

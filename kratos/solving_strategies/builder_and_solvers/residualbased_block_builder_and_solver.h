@@ -146,6 +146,8 @@ public:
     typedef typename BaseType::IndexType IndexType;
     typedef typename BaseType::SizeType SizeType;
 
+    static constexpr auto zero = TDataType();
+
     /*@} */
     /**@name Life Cycle
      */
@@ -598,9 +600,9 @@ public:
         if (TSparseSpace::Size(b) != 0)
             norm_b = TSparseSpace::TwoNorm(b);
         else
-            norm_b = 0.00;
+            norm_b = zero;
 
-        if (norm_b != 0.00)
+        if (norm_b != zero)
         {
             //do solve
             BaseType::mpLinearSystemSolver->Solve(A, Dx, b);
@@ -621,7 +623,6 @@ public:
         #endif
 
         KRATOS_CATCH("")
-
     }
 
     void SystemSolveWithPhysics(
@@ -637,9 +638,9 @@ public:
         if (TSparseSpace::Size(b) != 0)
             norm_b = TSparseSpace::TwoNorm(b);
         else
-            norm_b = 0.00;
+            norm_b = zero;
 
-        if (norm_b != 0.00)
+        if (norm_b != zero)
         {
             //provide physical data as needed
             if(BaseType::mpLinearSystemSolver->AdditionalPhysicalDataIsNeeded() )
@@ -667,7 +668,6 @@ public:
         #endif
 
         KRATOS_CATCH("")
-
     }
 
     //**************************************************************************
@@ -758,8 +758,8 @@ public:
             else i++;
 
         KRATOS_CATCH("")
-
     }
+
     //**************************************************************************
     //**************************************************************************
 
@@ -972,7 +972,6 @@ public:
         mLocalCounter = 0;
     }
 
-
     //**************************************************************************
     //**************************************************************************
 
@@ -1041,7 +1040,7 @@ public:
 //            bool empty = true;
 //            for (std::size_t j = col_begin; j < col_end; ++j)
 //            {
-//                if(Avalues[j] != 0.0)
+//                if(Avalues[j] != zero)
 //                {
 //                    empty = false;
 //                    break;
@@ -1102,7 +1101,7 @@ public:
                 bool empty = true;
                 for (std::size_t j = col_begin; j < col_end; ++j)
                 {
-                    if(Avalues[j] != 0.0)
+                    if(Avalues[j] != zero)
                     {
                         empty = false;
                         break;
@@ -1124,22 +1123,22 @@ public:
             std::size_t col_begin = Arow_indices[k];
             std::size_t col_end = Arow_indices[k+1];
             const auto k_factor = scaling_factors[k];
-            if (k_factor == 0.0)
+            if (k_factor == zero)
             {
                 // zero out the whole row, except the diagonal
                 for (std::size_t j = col_begin; j < col_end; ++j)
                     if (static_cast<int>(Acol_indices[j]) != k )
-                        Avalues[j] = 0.0;
+                        Avalues[j] = zero;
 
                 // zero out the RHS
-                b[k] = 0.0;
+                b[k] = zero;
             }
             else
             {
                 // zero out the column which is associated with the zero'ed row
                 for (std::size_t j = col_begin; j < col_end; ++j)
-                    if(scaling_factors[ Acol_indices[j] ] == 0.0 )
-                        Avalues[j] = 0.0;
+                    if(scaling_factors[ Acol_indices[j] ] == zero)
+                        Avalues[j] = zero;
             }
         }
 
@@ -1325,7 +1324,7 @@ protected:
 
             for (auto it = row_indices.begin(); it != row_indices.end(); it++)
             {
-                A.push_back(i, *it, 0.00);
+                A.push_back(i, *it, zero);
             }
             row_indices.clear();
         }
@@ -1349,7 +1348,7 @@ protected:
 
                     for (std::vector<std::size_t>::iterator it = row_indices.begin(); it != row_indices.end(); it++)
                     {
-                        A.push_back(i, *it, 0.00);
+                        A.push_back(i, *it, zero);
                     }
                     row_indices.clear();
                 }

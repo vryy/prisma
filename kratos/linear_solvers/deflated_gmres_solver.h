@@ -70,6 +70,8 @@ public:
     typedef typename BaseType::ModelPartType ModelPartType;
     typedef DeflationUtils<SparseMatrixType, VectorType> DeflationUtilsType;
 
+    static constexpr auto zero = DataType();
+
     ///@}
     ///@name Life Cycle
     ///@{
@@ -589,19 +591,19 @@ private:
 
     inline void GeneratePlaneRotation (const DataType dx, const DataType dy, DataType& cs, DataType& sn)
     {
-        if (dy == 0.0)
+        if (dy == zero)
         {
             cs = 1.0;
             sn = 0.0;
         }
-        else if (dx == 0.0)
+        else if (dx == zero)
         {
             cs = 0.0;
             sn = 1.0;
         }
         else
         {
-            const DataType rnorm = 1.0/sqrt (dx*dx + dy*dy);
+            const DataType rnorm = 1/sqrt(dx*dx + dy*dy);
             cs = std::abs (dx) * rnorm;
             sn = cs * dy / dx;
         }
@@ -730,7 +732,7 @@ private:
                 if (std::abs(normw) == 0)
                     TSparseSpaceType::Copy (V[i+1], w); //V[i+1] = w;
                 else
-                    TSparseSpaceType::Assign (V[i+1], 1.0/normw, w); //V[i+1] = w / normw;
+                    TSparseSpaceType::Assign (V[i+1], 1/normw, w); //V[i+1] = w / normw;
                 for (unsigned int k = 0; k < i; k++)
                     ApplyPlaneRotation (H (k,i), H (k+1,i), cs (k), sn (k) );
                 GeneratePlaneRotation (H (i,i), H (i+1,i), cs (i), sn (i) );

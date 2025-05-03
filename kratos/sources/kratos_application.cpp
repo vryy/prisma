@@ -526,7 +526,7 @@ namespace Kratos
 
       //Register objects with general definition
       Serializer::Register( "Node", Node<3>() );
-      Serializer::Register( "Dof", Dof<double>() );
+      Serializer::Register( "Dof", Dof<KRATOS_DOUBLE_TYPE>() );
       Serializer::Register( "Element", Element() );
       Serializer::Register( "Condition", Condition() );
       Serializer::Register( "Properties", Properties() );
@@ -534,7 +534,6 @@ namespace Kratos
 
       //Register objects with specific definition ( non essential, must be deleted in future )
       Serializer::Register( "Node3D", Node<3>() );
-      Serializer::Register( "DofDouble", Dof<double>() );
 
     Serializer::Register("MasterSlaveConstraint", MasterSlaveConstraint());
 

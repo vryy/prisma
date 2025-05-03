@@ -112,6 +112,9 @@ public:
     typedef typename NodeType::DofType DofType;
     typedef typename DofType::Pointer DofPointerType;
 
+    static constexpr auto zero = TDataType();
+    static constexpr auto one = TDataType(1.0);
+
     ///@}
     ///@name Life Cycle
     ///@{
@@ -1354,7 +1357,7 @@ protected:
 
             // We compute the transposed matrix of the global relation matrix
             TSystemMatrixType T_transpose_matrix(mT.size2(), mT.size1());
-            SparseMatrixMultiplicationUtility::TransposeMatrix<TSystemMatrixType, TSystemMatrixType>(T_transpose_matrix, mT, 1.0);
+            SparseMatrixMultiplicationUtility::TransposeMatrix<TSystemMatrixType, TSystemMatrixType>(T_transpose_matrix, mT, one);
 
             time_end = OpenMPUtils::GetCurrentTime();
             time_2 = time_end - time_begin;
@@ -1409,7 +1412,7 @@ protected:
 
             // We compute the transposed matrix of the global relation matrix
             TSystemMatrixType T_transpose_matrix(mT.size2(), mT.size1());
-            SparseMatrixMultiplicationUtility::TransposeMatrix<TSystemMatrixType, TSystemMatrixType>(T_transpose_matrix, mT, 1.0);
+            SparseMatrixMultiplicationUtility::TransposeMatrix<TSystemMatrixType, TSystemMatrixType>(T_transpose_matrix, mT, one);
 
             TSystemVectorType b_modified(rb.size());
             TSparseSpace::Mult(T_transpose_matrix, rb, b_modified);

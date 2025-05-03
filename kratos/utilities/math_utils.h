@@ -222,7 +222,7 @@ public:
         rInputMatrixDet = Det(rInputMatrix);
 
         if constexpr (TDim == 1) {
-            inverted_matrix(0,0) = 1.0/rInputMatrix(0,0);
+            inverted_matrix(0,0) = 1 / rInputMatrix(0,0);
             rInputMatrixDet = rInputMatrix(0,0);
         } else if constexpr (TDim == 2) {
             InvertMatrix2(rInputMatrix, inverted_matrix, rInputMatrixDet);
@@ -344,7 +344,7 @@ public:
             if(rInvertedMatrix.size1() != 1 || rInvertedMatrix.size2() != 1) {
                 rInvertedMatrix.resize(1,1,false);
             }
-            rInvertedMatrix(0,0) = 1.0/rInputMatrix(0,0);
+            rInvertedMatrix(0,0) = 1 / rInputMatrix(0,0);
             rInputMatrixDet = rInputMatrix(0,0);
         } else if (size == 2) {
             InvertMatrix2(rInputMatrix, rInvertedMatrix, rInputMatrixDet);
@@ -624,7 +624,8 @@ public:
 
                 for (IndexType i = 0; i < Aux.size1();++i) {
                     IndexType ki = pm[i] == i ? 0 : 1;
-                    det *= std::pow(-1.0, ki) * Aux(i,i);
+                    int sign = (ki % 2 == 0) ? 1 : -1;
+                    det *= sign * Aux(i,i);
                 }
                 return det;
        }
@@ -1321,24 +1322,26 @@ public:
      * @tparam TVector The vector type considered
      * @tparam TMatrixType The matrix returning type
      */
-    template<class TVector, class TMatrixType = MatrixType>
-    static inline TMatrixType StrainVectorToTensor( const TVector& rStrainVector)
+    template<class TVectorType, class TValueType = typename TVectorType::value_type, class TMatrixType = MatrixType>
+    static inline TMatrixType StrainVectorToTensor( const TVectorType& rStrainVector)
     {
         KRATOS_TRY
 
         const SizeType matrix_size = rStrainVector.size() == 3 ? 2 : 3;
         TMatrixType strain_tensor(matrix_size, matrix_size);
 
+        const TValueType half = static_cast<TValueType>(0.5);
+
         if (rStrainVector.size()==3) {
             strain_tensor(0,0) = rStrainVector[0];
-            strain_tensor(0,1) = 0.5*rStrainVector[2];
-            strain_tensor(1,0) = 0.5*rStrainVector[2];
+            strain_tensor(0,1) = half*rStrainVector[2];
+            strain_tensor(1,0) = half*rStrainVector[2];
             strain_tensor(1,1) = rStrainVector[1];
         } else if (rStrainVector.size()==4) {
             strain_tensor(0,0) = rStrainVector[0];
-            strain_tensor(0,1) = 0.5*rStrainVector[3];
+            strain_tensor(0,1) = half*rStrainVector[3];
             strain_tensor(0,2) = 0;
-            strain_tensor(1,0) = 0.5*rStrainVector[3];
+            strain_tensor(1,0) = half*rStrainVector[3];
             strain_tensor(1,1) = rStrainVector[1];
             strain_tensor(1,2) = 0;
             strain_tensor(2,0) = 0;
@@ -1346,13 +1349,13 @@ public:
             strain_tensor(2,2) = rStrainVector[2];
         } else if (rStrainVector.size()==6) {
             strain_tensor(0,0) = rStrainVector[0];
-            strain_tensor(0,1) = 0.5*rStrainVector[3];
-            strain_tensor(0,2) = 0.5*rStrainVector[5];
-            strain_tensor(1,0) = 0.5*rStrainVector[3];
+            strain_tensor(0,1) = half*rStrainVector[3];
+            strain_tensor(0,2) = half*rStrainVector[5];
+            strain_tensor(1,0) = half*rStrainVector[3];
             strain_tensor(1,1) = rStrainVector[1];
-            strain_tensor(1,2) = 0.5*rStrainVector[4];
-            strain_tensor(2,0) = 0.5*rStrainVector[5];
-            strain_tensor(2,1) = 0.5*rStrainVector[4];
+            strain_tensor(1,2) = half*rStrainVector[4];
+            strain_tensor(2,0) = half*rStrainVector[5];
+            strain_tensor(2,1) = half*rStrainVector[4];
             strain_tensor(2,2) = rStrainVector[2];
         }
 
@@ -1375,7 +1378,7 @@ public:
      * @tparam TMatrixType The matrix type considered
      * @tparam TVector The vector returning type
      */
-    template<class TMatrixType, class TVectorType = VectorType>
+    template<class TMatrixType, class TValueType = typename TMatrixType::value_type, class TVectorType = VectorType>
     static inline TVectorType StrainTensorToVector(
         const TMatrixType& rStrainTensor,
         SizeType rSize = 0
@@ -1393,22 +1396,24 @@ public:
 
         TVectorType strain_vector(rSize);
 
+        const TValueType two = static_cast<TValueType>(2.0);
+
         if (rSize == 3) {
             strain_vector[0] = rStrainTensor(0,0);
             strain_vector[1] = rStrainTensor(1,1);
-            strain_vector[2] = 2.0*rStrainTensor(0,1);
+            strain_vector[2] = two*rStrainTensor(0,1);
         } else if (rSize == 4) {
             strain_vector[0] = rStrainTensor(0,0);
             strain_vector[1] = rStrainTensor(1,1);
             strain_vector[2] = rStrainTensor(2,2);
-            strain_vector[3] = 2.0*rStrainTensor(0,1);
+            strain_vector[3] = two*rStrainTensor(0,1);
         } else if (rSize == 6) {
             strain_vector[0] = rStrainTensor(0,0);
             strain_vector[1] = rStrainTensor(1,1);
             strain_vector[2] = rStrainTensor(2,2);
-            strain_vector[3] = 2.0*rStrainTensor(0,1);
-            strain_vector[4] = 2.0*rStrainTensor(1,2);
-            strain_vector[5] = 2.0*rStrainTensor(0,2);
+            strain_vector[3] = two*rStrainTensor(0,1);
+            strain_vector[4] = two*rStrainTensor(1,2);
+            strain_vector[5] = two*rStrainTensor(0,2);
         }
 
         return strain_vector;

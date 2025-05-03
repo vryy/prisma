@@ -111,6 +111,9 @@ public:
     typedef typename NodeType::DofType DofType;
     typedef typename DofType::Pointer DofPointerType;
 
+    static constexpr auto zero = TDataType();
+    static constexpr auto one = TDataType(1.0);
+
     ///@}
     ///@name Life Cycle
     ///@{
@@ -334,9 +337,9 @@ public:
         if (TSparseSpace::Size(b) != 0)
             norm_b = TSparseSpace::TwoNorm(b);
         else
-            norm_b = 0.00;
+            norm_b = zero;
 
-        if (norm_b != 0.00)
+        if (norm_b != zero)
         {
             //do solve
             BaseType::mpLinearSystemSolver->Solve(A, Dx, b);
@@ -404,9 +407,9 @@ public:
         double start_solve = OpenMPUtils::GetCurrentTime();
         std::cout << "Begin Internal-System-Solve-With-Physics" << std::endl;
 
-        TDataType norm_b;
+        ValueType norm_b;
         if (TSparseSpace::Size(b) != 0)
-            norm_b = TSparseSpace::TwoNorm(b);
+            norm_b = std::abs(TSparseSpace::TwoNorm(b));
         else
             norm_b = 0.00;
 
@@ -1041,7 +1044,7 @@ public:
             bool empty = true;
             for (std::size_t j = col_begin; j < col_end; ++j)
             {
-                if(Avalues[j] != 0.0)
+                if(Avalues[j] != zero)
                 {
                     empty = false;
                     break;
@@ -1066,17 +1069,17 @@ public:
                 // zero out the whole row, except the diagonal
                 for (std::size_t j = col_begin; j < col_end; ++j)
                     if (static_cast<int>(Acol_indices[j]) != k )
-                        Avalues[j] = 0.0;
+                        Avalues[j] = zero;
 
                 // zero out the RHS
-                b[k] = 0.0;
+                b[k] = zero;
             }
             else
             {
                 // zero out the column which is associated with the zero'ed row
                 for (std::size_t j = col_begin; j < col_end; ++j)
                     if(scaling_factors[ Acol_indices[j] ] == 0 )
-                        Avalues[j] = 0.0;
+                        Avalues[j] = zero;
             }
         }
 
@@ -1270,7 +1273,7 @@ protected:
                 IndexType k = row_begin;
                 for (auto it = indices[i].begin(); it != indices[i].end(); ++it) {
                     Tcol_indices[k] = *it;
-                    Tvalues[k] = 0.0;
+                    Tvalues[k] = zero;
                     k++;
                 }
 
@@ -1431,7 +1434,7 @@ protected:
 
             // We compute the transposed matrix of the global relation matrix
             TSystemMatrixType T_transpose_matrix(mT.size2(), mT.size1());
-            SparseMatrixMultiplicationUtility::TransposeMatrix<TSystemMatrixType, TSystemMatrixType>(T_transpose_matrix, mT, 1.0);
+            SparseMatrixMultiplicationUtility::TransposeMatrix<TSystemMatrixType, TSystemMatrixType>(T_transpose_matrix, mT, one);
 
             time_end = OpenMPUtils::GetCurrentTime();
             time_2 = time_end - time_begin;
@@ -1487,7 +1490,7 @@ protected:
             // We compute the transposed matrix of the global relation matrix
 // KRATOS_WATCH(mT)
             TSystemMatrixType T_transpose_matrix(mT.size2(), mT.size1());
-            SparseMatrixMultiplicationUtility::TransposeMatrix<TSystemMatrixType, TSystemMatrixType>(T_transpose_matrix, mT, 1.0);
+            SparseMatrixMultiplicationUtility::TransposeMatrix<TSystemMatrixType, TSystemMatrixType>(T_transpose_matrix, mT, one);
 // KRATOS_WATCH(T_transpose_matrix)
 
             TSystemVectorType b_modified(rb.size());

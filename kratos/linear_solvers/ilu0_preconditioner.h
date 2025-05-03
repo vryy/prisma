@@ -75,6 +75,7 @@ public:
 
     typedef typename BaseType::DenseMatrixType DenseMatrixType;
 
+    static constexpr auto zero = DataType();
 
     ///@}
     ///@name Life Cycle
@@ -237,7 +238,7 @@ public:
                 {
                     // This row does not have a diagonal entry. Make it and put a zero.
                     BaseType::jU[fillU]=i;
-                    BaseType::U[fillU]=0.00;
+                    BaseType::U[fillU]=zero;
                     fillU++;
                     diagFound=true;
                 }
@@ -366,12 +367,10 @@ public:
         /*              } */
         /*      } */
 
-
-
-        for (i=0; i<n; i++) if (BaseType::U[BaseType::iU[i]]==0.00)
-            {
-                KRATOS_THROW_ERROR(std::runtime_error, "Zero in BaseType::U diagonal found!!", "")
-            }
+        for (i=0; i<n; i++) if (BaseType::U[BaseType::iU[i]]==zero)
+        {
+            KRATOS_ERROR << "Zero in BaseType::U diagonal found!!";
+        }
     }
 
     ///@}

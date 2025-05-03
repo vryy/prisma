@@ -135,6 +135,11 @@ public:
     typedef typename boost::shared_ptr< TMatrixType > MatrixPointerType;
     typedef typename boost::shared_ptr< TVectorType > VectorPointerType;
 
+    static constexpr ValueType zero = static_cast<ValueType>(0.0);
+    static constexpr ValueType half = static_cast<ValueType>(0.5);
+    static constexpr ValueType one = static_cast<ValueType>(1.0);
+    static constexpr ValueType two = static_cast<ValueType>(2.0);
+
     ///@}
     ///@name Life Cycle
     ///@{
@@ -388,10 +393,10 @@ public:
     //checks if a multiplication is needed and tries to do otherwise
     static void InplaceMult(VectorType& rX, const DataType A)
     {
-        if (A == 1.00)
+        if (A == one)
         {
         }
-        else if (A == -1.00)
+        else if (A == -one)
         {
 #ifndef _OPENMP
             typename VectorType::iterator x_iterator = rX.begin();
@@ -432,9 +437,9 @@ public:
     static void Assign(VectorType& rX, const DataType A, const VectorType& rY)
     {
 #ifndef _OPENMP
-        if (A == 1.00)
+        if (A == one)
             noalias(rX) = rY;
-        else if (A == -1.00)
+        else if (A == -one)
             noalias(rX) = -rY;
         else
             noalias(rX) = A*rY;
@@ -443,13 +448,13 @@ public:
         if (rX.size() != static_cast<unsigned int>(size) )
             rX.resize(size, false);
 
-        if (A == 1.00)
+        if (A == one)
         {
             #pragma omp parallel for
             for (int i = 0; i < size; i++)
                 rX[i] = rY[i];
         }
-        else if (A == -1.00)
+        else if (A == -one)
         {
             #pragma omp parallel for
             for (int i = 0; i < size; i++)
@@ -471,9 +476,9 @@ public:
     static void UnaliasedAdd(VectorType& rX, const DataType A, const VectorType& rY)
     {
 #ifndef _OPENMP
-        if (A == 1.00)
+        if (A == one)
             noalias(rX) += rY;
-        else if (A == -1.00)
+        else if (A == -one)
             noalias(rX) -= rY;
         else
             noalias(rX) += A*rY;
@@ -482,13 +487,13 @@ public:
         if (rX.size() != static_cast<unsigned int>(size) )
             rX.resize(size, false);
 
-        if (A == 1.00)
+        if (A == one)
         {
             #pragma omp parallel for
             for (int i = 0; i < size; i++)
                 rX[i] += rY[i];
         }
-        else if (A == -1.00)
+        else if (A == -one)
         {
             #pragma omp parallel for
             for (int i = 0; i < size; i++)
@@ -516,7 +521,6 @@ public:
         InplaceMult(rY, B);
         UnaliasedAdd(rY, A, rX);
     }
-
 
     /// rA[i] * rX
     static DataType RowDot(unsigned int i, MatrixType& rA, VectorType& rX)
@@ -710,13 +714,13 @@ public:
             {
                 for (IndexType i = 0; i < Size1(rA); ++i)
                     for (IndexType j = 0; j < Size2(rA); ++j)
-                        if (rA(i, j) != 0) ++num_entries;
+                        if (rA(i, j) != zero) ++num_entries;
             }
             else if constexpr (std::is_same<MatrixType, compressed_matrix<DataType> >::value)
             {
                 for (t_it_1 it_1 = rA.begin1(); it_1 != rA.end1(); ++it_1)
                     for (t_it_2 it_2 = it_1.begin(); it_2 != it_1.end(); ++it_2)
-                        if (*it_2 != 0.0) ++num_entries;
+                        if (*it_2 != zero) ++num_entries;
             }
 
             rOStream << ", entries: " << num_entries;
@@ -774,7 +778,7 @@ public:
             SizeType num_entries = 0;
             for (t_it it = rX.begin(); it != rX.end(); ++it)
             {
-                if (*it != 0.0)
+                if (*it != zero)
                     ++num_entries;
             }
             rOStream << ", entries: " << num_entries;
@@ -782,7 +786,7 @@ public:
 
         if (level > 2)
         {
-            ValueType max_entry = -1e99, sum_entry = 0.0;
+            ValueType max_entry = -static_cast<ValueType>(1e99), sum_entry = 0;
             for (t_it it = rX.begin(); it != rX.end(); ++it)
             {
                 const ValueType v = std::abs(*it);

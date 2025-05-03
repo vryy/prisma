@@ -1549,6 +1549,7 @@ private:
 
 template<> inline MPI_Datatype DataTypeToMpiDataType<int>(const int& Value) { return MPI_INT; }
 template<> inline MPI_Datatype DataTypeToMpiDataType<unsigned long>(const unsigned long& Value) { return MPI_UNSIGNED_LONG; }
+template<> inline MPI_Datatype DataTypeToMpiDataType<float>(const float& Value) { return MPI_FLOAT; }
 template<> inline MPI_Datatype DataTypeToMpiDataType<double>(const double& Value) { return MPI_DOUBLE; }
 
 } // namespace Kratos.

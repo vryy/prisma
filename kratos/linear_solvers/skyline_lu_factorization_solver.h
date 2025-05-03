@@ -25,6 +25,7 @@ public:
 
     typedef typename TSparseSpaceType::DataType DataType;
 
+    static constexpr auto zero = DataType();
 
     int     size;
     int*    rowIndex;
@@ -324,7 +325,7 @@ public:
                 entry = *row_iterator;
                 newi= invperm[i];
                 newj= invperm[j];
-                if (entry != 0.00)
+                if (entry != zero)
                 {
                     if (newi<newj)
                     {
@@ -351,7 +352,7 @@ public:
 //                         entry = row_iterator->second; // Changed by Pooyan!!!
 //                         newi= invperm[i];
 //                         newj= invperm[j];
-//                         if (entry != 0.00)
+//                         if (entry != zero)
 //                         {
 //                             if (newi<newj)
 //                             {
@@ -396,7 +397,7 @@ public:
         DataType sum;
 
 
-        if(entriesD[0] == 0.00)
+        if(entriesD[0] == zero)
         {
             std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! LUSkylineFactorization::factorize: Error zero in diagonal" << std::endl;
         } //Roport Error zero in diagonal!!!!!!!!!!!
@@ -466,7 +467,7 @@ public:
             {
                 sum= sum - entriesL[j] * entriesU[j];
             }
-            if(sum == 0.00)
+            if(sum == zero)
             {
                 std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! LUSkylineFactorization::factorize: Error zero sum" << std::endl;
             } // Error reporting !!!!!!!!!!!!!!!!!!!

@@ -538,7 +538,7 @@ private:
         }
         else
         {
-            const DataType rnorm = 1.0/std::sqrt (dx*dx + dy*dy);
+            const DataType rnorm = 1/std::sqrt(dx*dx + dy*dy);
             cs = std::abs(dx) * rnorm;
             sn = cs * dy / dx;
         }
@@ -637,7 +637,7 @@ private:
                 if (std::abs(normw) == 0)
                     TSparseSpaceType::Copy (V[i+1], w); //V[i+1] = w;
                 else
-                    TSparseSpaceType::Assign (V[i+1], 1.0/normw, w); //V[i+1] = w / normw;
+                    TSparseSpaceType::Assign (V[i+1], 1/normw, w); //V[i+1] = w / normw;
                 for (unsigned int k = 0; k < i; k++)
                     ApplyPlaneRotation (H (k,i), H (k+1,i), cs (k), sn (k) );
                 GeneratePlaneRotation (H (i,i), H (i+1,i), cs (i), sn (i) );
@@ -821,7 +821,7 @@ private:
         int DiagSize = int (diagK.size()); // to avoid comparison between int & unsigned int
         #pragma omp parallel for
         for ( int i = 0; i < DiagSize; i++)
-            rIDiagS[i] = 1.0/diagK[i];
+            rIDiagS[i] = 1/diagK[i];
         OpenMPUtils::PartitionVector Partition;
         int NumThreads = OpenMPUtils::GetNumThreads();
         OpenMPUtils::DivideInPartitions (A.size1(),NumThreads,Partition);
