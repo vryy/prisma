@@ -883,8 +883,6 @@ void ConstitutiveLawImpl<TNodeType>::RewindMaterial(const Properties& rMaterialP
     KRATOS_ERROR << "Calling virtual function for RewindMaterial";
 }
 
-
-
 /**
  * Methods to transform strain Vectors:
  * @param rStrainVector the strain tensor in matrix which its stress measure will be changed
@@ -912,22 +910,22 @@ typename ConstitutiveLawImpl<TNodeType>::VectorType& ConstitutiveLawImpl<TNodeTy
         {
             MatrixType StrainMatrix = MathUtils<DataType>::StrainVectorToTensor( rStrainVector );
 
-            CoVariantPushForward (StrainMatrix,rF);  //Almansi
+            CoVariantPushForward (StrainMatrix, rF);  //Almansi
 
             rStrainVector = MathUtils<DataType>::StrainTensorToVector( StrainMatrix, rStrainVector.size() );
         }
         break;
 
         case StrainMeasure_Hencky_Material:
-            KRATOS_ERROR <<"Hencky strain has no transformation coded";
+            KRATOS_ERROR << "Hencky strain has no transformation coded";
             break;
 
         case StrainMeasure_Hencky_Spatial:
-            KRATOS_ERROR <<"Hencky strain has no transformation coded";
+            KRATOS_ERROR << "Hencky strain has no transformation coded";
             break;
 
         default:
-            KRATOS_ERROR <<"FINAL STRAIN NOT DEFINED in StrainTransformation";
+            KRATOS_ERROR << "FINAL STRAIN NOT DEFINED in StrainTransformation";
             break;
         }
 
@@ -951,30 +949,30 @@ typename ConstitutiveLawImpl<TNodeType>::VectorType& ConstitutiveLawImpl<TNodeTy
             break;
 
         case StrainMeasure_Hencky_Material:
-            KRATOS_ERROR <<"Hencky strain has no transformation coded";
+            KRATOS_ERROR << "Hencky strain has no transformation coded";
             break;
 
         case StrainMeasure_Hencky_Spatial:
-            KRATOS_ERROR <<"Hencky strain has no transformation coded";
+            KRATOS_ERROR << "Hencky strain has no transformation coded";
             break;
 
         default:
-            KRATOS_ERROR <<"FINAL STRAIN NOT DEFINED in StrainTransformation";
+            KRATOS_ERROR << "FINAL STRAIN NOT DEFINED in StrainTransformation";
             break;
         }
 
         break;
 
     case StrainMeasure_Hencky_Material:
-        KRATOS_ERROR <<"Hencky strain has no transformation coded";
+        KRATOS_ERROR << "Hencky strain has no transformation coded";
         break;
 
     case StrainMeasure_Hencky_Spatial:
-        KRATOS_ERROR <<"Hencky strain has no transformation coded";
+        KRATOS_ERROR << "Hencky strain has no transformation coded";
         break;
 
     default:
-        KRATOS_ERROR <<"Measure of strain NOT DEFINED in Strains Transformation";
+        KRATOS_ERROR << "Measure of strain NOT DEFINED in Strains Transformation";
         break;
     }
 
