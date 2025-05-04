@@ -1547,10 +1547,15 @@ private:
 
 ///@}
 
+template<> inline MPI_Datatype DataTypeToMpiDataType<short>(const short& Value) { return MPI_SHORT; }
 template<> inline MPI_Datatype DataTypeToMpiDataType<int>(const int& Value) { return MPI_INT; }
+template<> inline MPI_Datatype DataTypeToMpiDataType<unsigned int>(const unsigned int& Value) { return MPI_UNSIGNED; }
+template<> inline MPI_Datatype DataTypeToMpiDataType<long>(const long& Value) { return MPI_LONG; }
+template<> inline MPI_Datatype DataTypeToMpiDataType<long long>(const long long& Value) { return MPI_LONG_LONG; }
 template<> inline MPI_Datatype DataTypeToMpiDataType<unsigned long>(const unsigned long& Value) { return MPI_UNSIGNED_LONG; }
 template<> inline MPI_Datatype DataTypeToMpiDataType<float>(const float& Value) { return MPI_FLOAT; }
 template<> inline MPI_Datatype DataTypeToMpiDataType<double>(const double& Value) { return MPI_DOUBLE; }
+template<> inline MPI_Datatype DataTypeToMpiDataType<long double>(const long double& Value) { return MPI_LONG_DOUBLE; }
 
 } // namespace Kratos.
 
