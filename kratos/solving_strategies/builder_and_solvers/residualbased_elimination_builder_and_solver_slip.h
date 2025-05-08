@@ -283,7 +283,7 @@ public:
 
                     double large_diag = diags[0];
                     for (unsigned int i = 1; i < mdim; i++)
-                        if (fabs(large_diag) < fabs(diags[i])) large_diag = diags[i];
+                        if (std::abs(large_diag) < std::abs(diags[i])) large_diag = diags[i];
 
 
                     const array_1d<double, 3 > & n = it->GetValue(NORMAL);

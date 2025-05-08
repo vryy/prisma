@@ -414,7 +414,7 @@ public:
      */
     bool IsInside( const LocalCoordinatesArrayType& rPoint ) const override
     {
-        if ( fabs( rPoint[0] ) < 1 + 1.0e-8 )
+        if ( std::abs( rPoint[0] ) < 1 + 1.0e-8 )
             return true;
 
         return false;

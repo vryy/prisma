@@ -421,7 +421,7 @@ public:
      */
     DataType Length() const override
     {
-        // return sqrt( fabs( DeterminantOfJacobian( PointType() ) ) );
+        // return sqrt( std::abs( DeterminantOfJacobian( PointType() ) ) );
         // Approximation to avoid errors. Can be improved.
 
         array_1d<DataType, 3> p0 = BaseType::GetPoint( 0 );
@@ -449,7 +449,7 @@ public:
      */
     DataType Area() const override
     {
-        //return fabs( DeterminantOfJacobian( PointType() ) ) * 0.5;
+        //return std::abs( DeterminantOfJacobian( PointType() ) ) * 0.5;
         // Approximation to avoid errors. Can be improved.
 
         array_1d<DataType, 3> p0 = BaseType::GetPoint( 0 );

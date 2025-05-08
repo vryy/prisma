@@ -505,7 +505,7 @@ private:
 //
 //             // It is possible that the normal is aligned with (1,0,0), resulting in norm(rT1) = 0
 //             // If this is the case, repeat the procedure using (0,1,0)
-//             if ( fabs(dot) > 0.99 )
+//             if ( std::abs(dot) > 0.99 )
 //             {
 //                 rT1(0) = 0.0;
 //                 rT1(1) = 1.0;
@@ -639,7 +639,7 @@ private:
 
         // It is possible that the normal is aligned with (1,0,0), resulting in norm(rT1) = 0
         // If this is the case, repeat the procedure using (0,1,0)
-        if ( fabs(dot) > 0.99 )
+        if ( std::abs(dot) > 0.99 )
         {
             rT1(0) = 0.0;
             rT1(1) = 1.0;
@@ -704,7 +704,7 @@ private:
 
         // It is possible that the normal is aligned with (1,0,0), resulting in norm(rT1) = 0
         // If this is the case, repeat the procedure using (0,1,0)
-        if ( fabs(dot) > 0.99 )
+        if ( std::abs(dot) > 0.99 )
         {
             rT1(0) = 0.0;
             rT1(1) = 1.0;

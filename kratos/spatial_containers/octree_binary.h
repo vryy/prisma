@@ -1421,9 +1421,9 @@ namespace Kratos {
 //
 //     /* Bullet 3:  */
 //     /*  test the 9 tests first (this was faster) */
-        fex = fabs( e0[0] );
-        fey = fabs( e0[1] );
-        fez = fabs( e0[2] );
+        fex = std::abs( e0[0] );
+        fey = std::abs( e0[1] );
+        fez = std::abs( e0[2] );
         //AXISTEST_X01(e0[2], e0[1], fez, fey);
 
         if ( AxisTest_X01( e0[2], e0[1], fez, fey, p0, p2, min, max, rad, v0, v2, boxhalfsize ) == 0 ) return false;
@@ -1436,11 +1436,11 @@ namespace Kratos {
 
 
 
-        fex = fabs( e1[0] );
+        fex = std::abs( e1[0] );
 
-        fey = fabs( e1[1] );
+        fey = std::abs( e1[1] );
 
-        fez = fabs( e1[2] );
+        fez = std::abs( e1[2] );
 
         //AXISTEST_X01(e1[2], e1[1], fez, fey);
         if ( AxisTest_X01( e1[2], e1[1], fez, fey, p0, p2, min, max, rad, v0, v2, boxhalfsize ) == 0 ) return false;
@@ -1452,11 +1452,11 @@ namespace Kratos {
         if ( AxisTest_Z0( e1[1], e1[0], fey, fex, p0,  p1, min, max, rad, v0, v1, boxhalfsize ) == 0 ) return false;
 
 
-        fex = fabs( e2[0] );
+        fex = std::abs( e2[0] );
 
-        fey = fabs( e2[1] );
+        fey = std::abs( e2[1] );
 
-        fez = fabs( e2[2] );
+        fez = std::abs( e2[2] );
 
         //AXISTEST_X2(e2[2], e2[1], fez, fey);
         if ( AxisTest_X2( e2[2], e2[1], fez, fey, p0, p1, min, max, rad, v0, v1, boxhalfsize ) == 0 ) return false;

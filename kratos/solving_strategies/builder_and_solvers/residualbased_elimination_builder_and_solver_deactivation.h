@@ -834,7 +834,7 @@ public:
 
                 double val = A.value_data()[counter];
 
-                if( ( fabs(val) < drop_tol ) && ( row != col ) )
+                if( ( std::abs(val) < drop_tol ) && ( row != col ) )
                 {
                     A(row, col) = 0;
                     //A.erase_element(row, col);
@@ -849,7 +849,7 @@ public:
         for(std::set<std::size_t>::iterator it = InactiveIdSet.begin(); it != InactiveIdSet.end(); ++it)
         {
             if(*it < BaseType::mEquationSystemSize)
-                sum_inactive_rhs += fabs(b[*it]);
+                sum_inactive_rhs += std::abs(b[*it]);
         }
         if(sum_inactive_rhs > 0.0)
         {

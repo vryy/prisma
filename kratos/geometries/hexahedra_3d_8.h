@@ -379,7 +379,7 @@ public:
     DataType Length() const override
     {
         DataType length = 0.000;
-        length = cbrt( fabs( Area() ) );
+        length = cbrt( std::abs( Area() ) );
         return length;
     }
 
@@ -486,9 +486,9 @@ public:
      */
     bool IsInside( const LocalCoordinatesArrayType& rPoint ) const override
     {
-        if ( fabs( rPoint[0] ) < 1 + 1.0e-8 )
-            if ( fabs( rPoint[1] ) < 1 + 1.0e-8 )
-                if ( fabs( rPoint[2] ) < 1 + 1.0e-8 )
+        if ( std::abs( rPoint[0] ) < 1 + 1.0e-8 )
+            if ( std::abs( rPoint[1] ) < 1 + 1.0e-8 )
+                if ( std::abs( rPoint[2] ) < 1 + 1.0e-8 )
                     return true;
 
         return false;

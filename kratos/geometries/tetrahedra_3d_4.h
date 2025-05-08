@@ -375,7 +375,7 @@ public:
     DataType Length() const override
     {
         const DataType param = 2.0396489026555;  //12/raiz(2);
-        return  param * pow(Volume(), 0.33333333333333); //sqrt(fabs( DeterminantOfJacobian(PointType())));
+        return  param * pow(Volume(), 0.33333333333333); //sqrt(std::abs( DeterminantOfJacobian(PointType())));
     }
 
     /**

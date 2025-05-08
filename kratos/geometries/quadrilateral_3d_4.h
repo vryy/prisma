@@ -506,7 +506,7 @@ public:
     {
         // Old
 
-        //return fabs( DeterminantOfJacobian( PointType() ) ) * 0.5;
+        //return std::abs( DeterminantOfJacobian( PointType() ) ) * 0.5;
 
         // New - 24/01/2014 - Massimo Petracca
 
@@ -543,8 +543,8 @@ public:
      */
     bool IsInside( const LocalCoordinatesArrayType& rPoint ) const override
     {
-        if ( fabs( rPoint[0] ) < 1 + 1.0e-8 )
-            if ( fabs( rPoint[1] ) < 1 + 1.0e-8 )
+        if ( std::abs( rPoint[0] ) < 1 + 1.0e-8 )
+            if ( std::abs( rPoint[1] ) < 1 + 1.0e-8 )
                 return true;
 
         return false;

@@ -198,7 +198,7 @@ public:
         double length = 0.0;
         for(std::size_t i = 0; i < this->NumberOfDirections(); ++i)
         {
-            double tmp = fabs(mMaxValues[i] - mMinValues[i]);
+            double tmp = std::abs(mMaxValues[i] - mMinValues[i]);
             if(tmp > length)
             {
                 longest_axis = i;

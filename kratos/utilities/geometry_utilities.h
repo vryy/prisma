@@ -241,7 +241,7 @@ public:
         array_1d<double,2>& N,
         double& Area)
     {
-        double x10 = fabs(geom[1].X() - geom[0].X());
+        double x10 = std::abs(geom[1].X() - geom[0].X());
 
 
         double detJ = x10;
@@ -298,7 +298,7 @@ public:
 			}
 //                       for(unsigned int i_node = 0; i_node < ThisGeometry.size() ; i_node++)
 //                       {
-//                           Distances[i_node] = fabs(ThisGeometry[i_node].Z()); // To be removed. Pooyan.
+//                           Distances[i_node] = std::abs(ThisGeometry[i_node].Z()); // To be removed. Pooyan.
 //                       }
 
 		}
@@ -328,7 +328,7 @@ public:
                        for(unsigned int i_node = 0; i_node < ThisGeometry.size() ; i_node++)
                        {
 				Distances[i_node] = PointDistanceToTriangle3D(intersection_points[0], intersection_points[1], intersection_points[2], ThisGeometry[i_node]);
-//                           Distances[i_node] = fabs(ThisGeometry[i_node].Z()); // To be removed. Pooyan.
+//                           Distances[i_node] = std::abs(ThisGeometry[i_node].Z()); // To be removed. Pooyan.
                        }
 
 		}
@@ -337,7 +337,7 @@ public:
                     //std::cout << "4 intersection points" << std::endl;
 //                       for(unsigned int i_node = 0; i_node < ThisGeometry.size() ; i_node++)
 //                       {
-//                           Distances[i_node] = fabs(ThisGeometry[i_node].Z()); // To be removed. Pooyan.
+//                           Distances[i_node] = std::abs(ThisGeometry[i_node].Z()); // To be removed. Pooyan.
 //                        }
 
 			// loop over nodes to calculate their distance to the each zero distance triangle.
@@ -400,7 +400,7 @@ public:
 			}
 //                       for(unsigned int i_node = 0; i_node < ThisGeometry.size() ; i_node++)
 //                       {
-//                           Distances[i_node] = fabs(ThisGeometry[i_node].Z()); // To be removed. Pooyan.
+//                           Distances[i_node] = std::abs(ThisGeometry[i_node].Z()); // To be removed. Pooyan.
 //                       }
 
 		}
@@ -453,7 +453,7 @@ public:
         int number_of_intersection_points = 0;
         for(unsigned int i = 0 ; i < TSize1 ; i++)
         {
-            if(fabs(Distances[i]) < epsilon)
+            if(std::abs(Distances[i]) < epsilon)
             {
                 noalias(IntersectionPoints[number_of_intersection_points].Coordinates()) = ThisGeometry[i].Coordinates();
 
@@ -462,16 +462,16 @@ public:
             }
             for(unsigned int j = i + 1 ; j < TSize1 ; j++)
             {
-                if(fabs(Distances[j]) < epsilon)
+                if(std::abs(Distances[j]) < epsilon)
                     continue; // we will add it to the intersections by the i index to be unique
 
                 if(Distances[i] * Distances[j] < 0.00)  // The interface passes through the edge
                 {
 
-                    double delta_d = fabs(Distances[i]) + fabs(Distances[j]);  // we know that both distances are greater than epsilon.
+                    double delta_d = std::abs(Distances[i]) + std::abs(Distances[j]);  // we know that both distances are greater than epsilon.
 
-                    double di = fabs(Distances[i]) / delta_d;
-                    double dj = fabs(Distances[j]) / delta_d;
+                    double di = std::abs(Distances[i]) / delta_d;
+                    double dj = std::abs(Distances[j]) / delta_d;
 
                     noalias(IntersectionPoints[number_of_intersection_points].Coordinates()) = dj * ThisGeometry[i].Coordinates();
                     noalias(IntersectionPoints[number_of_intersection_points].Coordinates()) += di * ThisGeometry[j].Coordinates();
