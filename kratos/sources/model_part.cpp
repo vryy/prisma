@@ -1349,11 +1349,11 @@ typename ModelPartImpl<TNodeType>::ConditionType::Pointer ModelPartImpl<TNodeTyp
         return p_new_condition;
     }
 
-    //get the element
+    //get the condition
     ConditionType const& r_clone_condition = KratosComponents<ConditionType>::Get(ConditionName);
     typename ConditionType::Pointer p_condition = r_clone_condition.Create(Id, pConditionNodes, pProperties);
 
-    //add the new element
+    //add the new condition
     GetMesh(ThisIndex).AddCondition(p_condition);
 
     return p_condition;
