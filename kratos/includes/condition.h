@@ -162,15 +162,14 @@ public:
     }
 
     /// Copy constructor.
-
     BaseCondition(BaseCondition const& rOther)
         : BaseType(rOther)
         , mpProperties(rOther.mpProperties)
+        , mData(rOther.mData)
     {
     }
 
     /// Destructor.
-
     ~BaseCondition() override
     {
     }
@@ -185,7 +184,6 @@ public:
      */
 
     /// Assignment operator.
-
     BaseCondition & operator=(BaseCondition const& rOther)
     {
         BaseType::operator=(rOther);
@@ -194,7 +192,6 @@ public:
         return *this;
     }
 
-
     ///@}
     ///@name Informations
     ///@{
@@ -202,8 +199,7 @@ public:
     /** Dimensional space of the condition geometry
     @return SizeType, working space dimension of this geometry.
     */
-
-    SizeType WorkingSpaceDimension() const
+    virtual SizeType WorkingSpaceDimension() const
     {
         return this->pGetGeometry()->WorkingSpaceDimension();
     }
@@ -1103,13 +1099,22 @@ public:
     }
 
     ///@}
-    ///@name BaseCondition Data
+    ///@name Conditional Data
     ///@{
 
     /**
-     * Access Data:
+     * Set Data
+     * (Allow to set data from external source, used when duplicating condition)
      */
-    DataValueContainer& Data()
+    void SetData(const DataValueContainer& rData)
+    {
+        mData = rData;
+    }
+
+    /**
+     * Access Data
+     */
+    const DataValueContainer& Data() const
     {
         return mData;
     }
@@ -1165,7 +1170,15 @@ public:
     std::string Info() const override
     {
         std::stringstream buffer;
-        buffer << "BaseCondition #" << this->Id();
+        if constexpr (std::is_same<TNodeType, RealNode>::value)
+            buffer << "Condition #";
+        else if constexpr (std::is_same<TNodeType, ComplexNode>::value)
+            buffer << "ComplexCondition #";
+        else if constexpr (std::is_same<TNodeType, GComplexNode>::value)
+            buffer << "GComplexCondition #";
+        else
+            buffer << "BaseCondition #";
+        buffer << this->Id();
         return buffer.str();
     }
 
@@ -1173,7 +1186,7 @@ public:
 
     void PrintInfo(std::ostream& rOStream) const override
     {
-        rOStream << "BaseCondition #" << this->Id();
+        rOStream << this->Info();
     }
 
     /// Print object's data.
@@ -1203,6 +1216,15 @@ protected:
     ///@}
     ///@name Protected  Access
     ///@{
+
+    /**
+     * Access Data
+     */
+    DataValueContainer& Data()
+    {
+        return mData;
+    }
+
     ///@}
     ///@name Protected Inquiry
     ///@{
@@ -1294,9 +1316,9 @@ inline std::ostream & operator <<(std::ostream& rOStream, const BaseCondition<TN
 
 ///@}
 
-typedef BaseCondition<Node<3, KRATOS_DOUBLE_TYPE, Dof<KRATOS_DOUBLE_TYPE> > > Condition;
-typedef BaseCondition<Node<3, KRATOS_DOUBLE_TYPE, Dof<KRATOS_COMPLEX_TYPE> > > ComplexCondition;
-typedef BaseCondition<Node<3, KRATOS_COMPLEX_TYPE, Dof<KRATOS_COMPLEX_TYPE> > > GComplexCondition;
+typedef BaseCondition<RealNode> Condition;
+typedef BaseCondition<ComplexNode> ComplexCondition;
+typedef BaseCondition<GComplexNode> GComplexCondition;
 
 void KRATOS_API(KRATOS_CORE) AddKratosComponent(std::string const& Name, Condition const& ThisComponent);
 void KRATOS_API(KRATOS_CORE) AddKratosComponent(std::string const& Name, ComplexCondition const& ThisComponent);

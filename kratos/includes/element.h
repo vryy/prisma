@@ -171,15 +171,14 @@ public:
     }
 
     /// Copy constructor.
-
     BaseElement(BaseElement const& rOther)
         : BaseType(rOther)
         , mpProperties(rOther.mpProperties)
+        , mData(rOther.mData)
     {
     }
 
     /// Destructor.
-
     ~BaseElement() override
     {
     }
@@ -208,8 +207,7 @@ public:
     /** Dimensional space of the element geometry
     @return SizeType, working space dimension of this geometry.
     */
-
-    SizeType WorkingSpaceDimension() const
+    virtual SizeType WorkingSpaceDimension() const
     {
          return this->pGetGeometry()->WorkingSpaceDimension();
     }
@@ -275,7 +273,6 @@ public:
     {
         KRATOS_ERROR << "Please implement the Clone method in your derived Element" << Info() << std::endl;
     }
-
 
     /**
      * ELEMENTS inherited from this class have to implement next
@@ -1166,9 +1163,18 @@ public:
     ///@{
 
     /**
-     * Access Data:
+     * Set Data
+     * (Allow to set data from external source, used when duplicating element)
      */
-    DataValueContainer& Data()
+    void SetData(const DataValueContainer& rData)
+    {
+        mData = rData;
+    }
+
+    /**
+     * Access Data
+     */
+    const DataValueContainer& Data() const
     {
         return mData;
     }
@@ -1225,7 +1231,15 @@ public:
     std::string Info() const override
     {
         std::stringstream buffer;
-        buffer << "Element #" << this->Id();
+        if constexpr (std::is_same<TNodeType, RealNode>::value)
+            buffer << "Element #";
+        else if constexpr (std::is_same<TNodeType, ComplexNode>::value)
+            buffer << "ComplexElement #";
+        else if constexpr (std::is_same<TNodeType, GComplexNode>::value)
+            buffer << "GComplexElement #";
+        else
+            buffer << "BaseElement #";
+        buffer << this->Id();
         return buffer.str();
     }
 
@@ -1233,7 +1247,7 @@ public:
 
     void PrintInfo(std::ostream& rOStream) const override
     {
-        rOStream << "Element #" << this->Id();
+        rOStream << this->Info();
     }
 
     /// Print object's data.
@@ -1263,6 +1277,15 @@ protected:
     ///@}
     ///@name Protected  Access
     ///@{
+
+    /**
+     * Access Data
+     */
+    DataValueContainer& Data()
+    {
+        return mData;
+    }
+
     ///@}
     ///@name Protected Inquiry
     ///@{
@@ -1353,9 +1376,9 @@ inline std::ostream & operator <<(std::ostream& rOStream, const BaseElement<TNod
 
 ///@}
 
-typedef BaseElement<Node<3, KRATOS_DOUBLE_TYPE, Dof<KRATOS_DOUBLE_TYPE> > > Element;
-typedef BaseElement<Node<3, KRATOS_DOUBLE_TYPE, Dof<KRATOS_COMPLEX_TYPE> > > ComplexElement;
-typedef BaseElement<Node<3, KRATOS_COMPLEX_TYPE, Dof<KRATOS_COMPLEX_TYPE> > > GComplexElement;
+typedef BaseElement<RealNode> Element;
+typedef BaseElement<ComplexNode> ComplexElement;
+typedef BaseElement<GComplexNode> GComplexElement;
 
 void KRATOS_API(KRATOS_CORE) AddKratosComponent(std::string const& Name, Element const& ThisComponent);
 void KRATOS_API(KRATOS_CORE) AddKratosComponent(std::string const& Name, ComplexElement const& ThisComponent);
