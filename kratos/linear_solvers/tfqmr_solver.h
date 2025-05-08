@@ -257,7 +257,7 @@ private:
             TSparseSpaceType::ScaleAndAdd(one, y1, (theta*theta*eta/alpha), d);
 
             theta = TSparseSpaceType::TwoNorm(w)/tau;
-            c     = 1 / std::sqrt(1+theta*theta);
+            c     = 1 / std::sqrt(1.0+theta*theta);
             tau   = tau*theta*c;
             eta   = c*c*alpha;
 
@@ -292,7 +292,7 @@ private:
 
 
             theta = TSparseSpaceType::TwoNorm(w)/tau;
-            c     = one/std::sqrt(1+theta*theta);
+            c     = one/std::sqrt(1.0+theta*theta);
             tau   = tau*theta*c;
             eta   = c*c*alpha;
 
