@@ -26,6 +26,7 @@
 // Project includes
 #include "includes/define.h"
 #include "includes/serializer.h"
+#include "containers/const_deref_iterator.h"
 #include "containers/set_identity_function.h"
 
 namespace Kratos
@@ -93,8 +94,10 @@ public:
     /// @{
     using iterator = boost::indirect_iterator<typename TContainerType::iterator>;
     using const_iterator = boost::indirect_iterator<typename TContainerType::const_iterator>;
+    using const_deref_iterator = ConstDerefIterator<typename TContainerType::const_iterator>;
     using reverse_iterator = boost::indirect_iterator<typename TContainerType::reverse_iterator>;
     using const_reverse_iterator = boost::indirect_iterator<typename TContainerType::const_reverse_iterator>;
+    using const_deref_reverse_iterator = ConstDerefIterator<typename TContainerType::const_reverse_iterator>;
 
     /// @}
     /// @name Other definitions
@@ -289,24 +292,6 @@ public:
     }
 
     /**
-     * @brief Returns a constant iterator pointing to the beginning of the container.
-     * @return A constant iterator pointing to the beginning of the container.
-     */
-    const_iterator cbegin()
-    {
-        return const_iterator(mData.begin());
-    }
-
-    /**
-     * @brief Returns a constant iterator pointing to the beginning of the container.
-     * @return A constant iterator pointing to the beginning of the container.
-     */
-    const_iterator cbegin() const
-    {
-        return const_iterator(mData.begin());
-    }
-
-    /**
      * @brief Returns an iterator pointing to the end of the container.
      * @return An iterator pointing to the end of the container.
      */
@@ -325,21 +310,39 @@ public:
     }
 
     /**
-     * @brief Returns a constant iterator pointing to the end of the container.
-     * @return A constant iterator pointing to the end of the container.
+     * @brief Returns a constant iterator pointing to the beginning of the container.
+     * @return A constant iterator pointing to the beginning of the container.
      */
-    const_iterator cend()
+    const_deref_iterator cbegin()
     {
-        return const_iterator(mData.end());
+        return const_deref_iterator(mData.begin());
+    }
+
+    /**
+     * @brief Returns a constant iterator pointing to the beginning of the container.
+     * @return A constant iterator pointing to the beginning of the container.
+     */
+    const_deref_iterator cbegin() const
+    {
+        return const_iterator(mData.begin());
     }
 
     /**
      * @brief Returns a constant iterator pointing to the end of the container.
      * @return A constant iterator pointing to the end of the container.
      */
-    const_iterator cend() const
+    const_deref_iterator cend()
     {
-        return const_iterator(mData.end());
+        return const_deref_iterator(mData.end());
+    }
+
+    /**
+     * @brief Returns a constant iterator pointing to the end of the container.
+     * @return A constant iterator pointing to the end of the container.
+     */
+    const_deref_iterator cend() const
+    {
+        return const_deref_iterator(mData.end());
     }
 
     /**
@@ -376,6 +379,42 @@ public:
     const_reverse_iterator rend() const
     {
         return const_reverse_iterator( mData.rend() );
+    }
+
+    /**
+     * @brief Returns a reverse iterator pointing to the beginning of the container.
+     * @return A reverse iterator pointing to the beginning of the container.
+     */
+    const_deref_reverse_iterator rcbegin()
+    {
+        return const_deref_reverse_iterator( mData.rbegin() );
+    }
+
+    /**
+     * @brief Returns a constant reverse iterator pointing to the beginning of the container.
+     * @return A constant reverse iterator pointing to the beginning of the container.
+     */
+    const_deref_reverse_iterator rcbegin() const
+    {
+        return const_deref_reverse_iterator( mData.rbegin() );
+    }
+
+    /**
+     * @brief Returns a reverse iterator pointing to the end of the container.
+     * @return A reverse iterator pointing to the end of the container.
+     */
+    const_deref_reverse_iterator rcend()
+    {
+        return const_deref_reverse_iterator( mData.rend() );
+    }
+
+    /**
+     * @brief Returns a constant reverse iterator pointing to the end of the container.
+     * @return A constant reverse iterator pointing to the end of the container.
+     */
+    const_deref_reverse_iterator rcend() const
+    {
+        return const_deref_reverse_iterator( mData.rend() );
     }
 
     /**
@@ -848,7 +887,7 @@ public:
         ptr_const_iterator i(std::lower_bound(mData.begin(), sorted_part_end, Key, CompareKey()));
         if (i == sorted_part_end || (!EqualKeyTo(Key)(*i)))
             if ((i = std::find_if(sorted_part_end, mData.end(), EqualKeyTo(Key))) == mData.end())
-                return mData.end();
+                return const_iterator(mData.end());
 
         return const_iterator(i);
     }
