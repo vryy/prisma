@@ -4,22 +4,13 @@
 //   _|\_\_|  \__,_|\__|\___/ ____/
 //                   Multi-Physics
 //
-//  License:		 BSD License
-//					 Kratos default license: kratos/license.txt
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Riccardo Rossi
 //                   Janosch Stascheit
 //                   Pooyan Dadvand
 //
-
-
-
-
-
-
-
-
-
 
 
 #if !defined(KRATOS_GID_MESH_CONTAINER_H_INCLUDED)
@@ -112,7 +103,7 @@ public:
         {
             //compute number of layers
             int max_id = 0;
-            for ( ModelPart::ElementsContainerType::iterator it = mMeshElements.begin();
+            for ( ModelPart::ElementsContainerType::const_iterator it = mMeshElements.begin();
                     it != mMeshElements.end(); ++it )
             {
                 int prop_id = (it)->GetProperties().Id();
@@ -124,7 +115,7 @@ public:
             //KRATOS_WATCH(max_id);
 
             //fill layer list
-            for ( ModelPart::ElementsContainerType::iterator it = mMeshElements.begin();
+            for ( ModelPart::ElementsContainerType::const_iterator it = mMeshElements.begin();
                     it != mMeshElements.end(); ++it )
             {
                 int prop_id = (it)->GetProperties().Id();
@@ -171,7 +162,7 @@ public:
                     //printing elements
                     GiD_fBeginElements(MeshFile);
                     int* nodes_id = new int[mMeshElements.begin()->GetGeometry().size() + 1];
-                    for ( ModelPart::ElementsContainerType::iterator it = mMeshElements.begin();
+                    for ( ModelPart::ElementsContainerType::const_iterator it = mMeshElements.begin();
                             it != mMeshElements.end(); ++it )
                     {
                         for ( unsigned int i=0; i< (it)->GetGeometry().size(); i++ )
@@ -180,9 +171,9 @@ public:
                         if ( mGeometryType == GeometryData::KratosGeometryType::Kratos_Line2D3
                                 || mGeometryType == GeometryData::KratosGeometryType::Kratos_Line3D3 )
                         {
-                            nodes_id[0] = (it)->GetGeometry() [0].Id();
-                            nodes_id[1] = (it)->GetGeometry() [2].Id();
-                            nodes_id[2] = (it)->GetGeometry() [1].Id();
+                            nodes_id[0] = (it)->GetGeometry()[0].Id();
+                            nodes_id[1] = (it)->GetGeometry()[2].Id();
+                            nodes_id[2] = (it)->GetGeometry()[1].Id();
                         }
                         nodes_id[ (it)->GetGeometry().size()]= (it)->GetProperties().Id()+1;
                         if ( it->Has ( IS_INACTIVE ) )
@@ -209,7 +200,7 @@ public:
         {
             //compute number of layers
             int max_id = 0;
-            for ( ModelPart::ConditionsContainerType::iterator it = mMeshConditions.begin();
+            for ( ModelPart::ConditionsContainerType::const_iterator it = mMeshConditions.begin();
                     it != mMeshConditions.end(); ++it )
             {
                 int prop_id = (it)->GetProperties().Id();
@@ -267,7 +258,7 @@ public:
                     //printing elements
                     GiD_fBeginElements(MeshFile);
                     int* nodes_id = new int[mMeshConditions.begin()->GetGeometry().size() + 1];
-                    for ( ModelPart::ConditionsContainerType::iterator it = mMeshConditions.begin(  );
+                    for ( ModelPart::ConditionsContainerType::const_iterator it = mMeshConditions.begin(  );
                             it != mMeshConditions.end(); ++it )
                     {
                         for ( unsigned int i=0; i< (it)->GetGeometry().size(); i++ )
@@ -275,14 +266,14 @@ public:
                         //workaround: reordering node ids for Hexahedra20 elements
                         if ( mGeometryType == GeometryData::KratosGeometryType::Kratos_Hexahedra3D20 )
                         {
-                            nodes_id[12] = (it)->GetGeometry() [16].Id();
-                            nodes_id[13] = (it)->GetGeometry() [17].Id();
-                            nodes_id[14] = (it)->GetGeometry() [18].Id();
-                            nodes_id[15] = (it)->GetGeometry() [19].Id();
-                            nodes_id[16] = (it)->GetGeometry() [12].Id();
-                            nodes_id[17] = (it)->GetGeometry() [13].Id();
-                            nodes_id[18] = (it)->GetGeometry() [14].Id();
-                            nodes_id[19] = (it)->GetGeometry() [15].Id();
+                            nodes_id[12] = (it)->GetGeometry()[16].Id();
+                            nodes_id[13] = (it)->GetGeometry()[17].Id();
+                            nodes_id[14] = (it)->GetGeometry()[18].Id();
+                            nodes_id[15] = (it)->GetGeometry()[19].Id();
+                            nodes_id[16] = (it)->GetGeometry()[12].Id();
+                            nodes_id[17] = (it)->GetGeometry()[13].Id();
+                            nodes_id[18] = (it)->GetGeometry()[14].Id();
+                            nodes_id[19] = (it)->GetGeometry()[15].Id();
                         }
                         nodes_id[ (it)->GetGeometry().size()]= (it)->GetProperties().Id()+1;
 
