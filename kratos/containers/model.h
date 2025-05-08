@@ -9,6 +9,7 @@
 //
 //  Main authors:    Riccardo Rossi
 //                   Pooyan Dadvand
+//  Contributors:    Hoang-Giang Bui
 //
 
 #if !defined(KRATOS_MODEL_H_INCLUDED )

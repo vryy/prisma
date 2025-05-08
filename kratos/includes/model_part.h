@@ -8,6 +8,7 @@
 //                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Pooyan Dadvand
+//  Contributors:    Hoang-Giang Bui
 //
 //
 
@@ -68,7 +69,7 @@ class Model;
 * @author Pooyan Dadvand
 * @author Riccardo Rossi
 */
-class BaseModelPart : public DataValueContainer, public Flags
+class KRATOS_API(KRATOS_CORE) BaseModelPart : public DataValueContainer, public Flags
 {
 protected:
     class GetModelPartName
@@ -348,7 +349,7 @@ private:
 * @author Riccardo Rossi
 */
 template<class TNodeType>
-class ModelPartImpl : public BaseModelPart
+class KRATOS_API(KRATOS_CORE) ModelPartImpl : public BaseModelPart
 {
 public:
     ///@name  Enum's

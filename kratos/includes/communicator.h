@@ -9,20 +9,16 @@
 //
 //  Main authors:    Pooyan Dadvand
 //                   Riccardo Rossi
+//  Contributors:    Hoang-Giang Bui
 //
 //
-
-
 
 #if !defined(KRATOS_COMMUNICATOR_H_INCLUDED )
 #define  KRATOS_COMMUNICATOR_H_INCLUDED
 
-
-
 // System includes
 #include <string>
 #include <iostream>
-
 
 // External includes
 
@@ -196,7 +192,7 @@ public:
     {
     }
 
-    virtual Communicator::Pointer Create()
+    virtual Communicator::Pointer Create() const
     {
         KRATOS_TRY
 
@@ -206,11 +202,9 @@ public:
     }
 
     /// Destructor.
-
     virtual ~Communicator()
     {
     }
-
 
     ///@}
     ///@name Operators

@@ -9,6 +9,7 @@
 //
 //  Main authors:    Riccardo Rossi
 //                   Pooyan Dadvand
+//  Contributors:    Hoang-Giang Bui
 //
 
 // System includes
@@ -394,15 +395,15 @@ void Model::load(Serializer& rSerializer)
 }
 
 // template function specialization
-template ModelPart& Model::CreateModelPart<ModelPart>( const std::string&, Model::IndexType );
+template KRATOS_API(KRATOS_CORE) ModelPart& Model::CreateModelPart<ModelPart>( const std::string&, Model::IndexType );
 template ModelPart& Model::GetModelPart<ModelPart>( const std::string& );
 template const ModelPart& Model::GetModelPart<ModelPart>( const std::string& ) const;
 
-template ComplexModelPart& Model::CreateModelPart<ComplexModelPart>( const std::string&, Model::IndexType );
+template KRATOS_API(KRATOS_CORE) ComplexModelPart& Model::CreateModelPart<ComplexModelPart>( const std::string&, Model::IndexType );
 template ComplexModelPart& Model::GetModelPart<ComplexModelPart>( const std::string& );
 template const ComplexModelPart& Model::GetModelPart<ComplexModelPart>( const std::string& ) const;
 
-template GComplexModelPart& Model::CreateModelPart<GComplexModelPart>( const std::string&, Model::IndexType );
+template KRATOS_API(KRATOS_CORE) GComplexModelPart& Model::CreateModelPart<GComplexModelPart>( const std::string&, Model::IndexType );
 template GComplexModelPart& Model::GetModelPart<GComplexModelPart>( const std::string& );
 template const GComplexModelPart& Model::GetModelPart<GComplexModelPart>( const std::string& ) const;
 

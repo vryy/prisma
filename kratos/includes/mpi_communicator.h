@@ -1,30 +1,20 @@
-// Kratos Multi-Physics
+//    |  /           |
+//    ' /   __| _` | __|  _ \   __|
+//    . \  |   (   | |   (   |\__ `
+//   _|\_\_|  \__,_|\__|\___/ ____/
+//                   Multi-Physics
 //
-// Copyright (c) 2016 Pooyan Dadvand, Riccardo Rossi, CIMNE (International Center for Numerical Methods in Engineering)
-// All rights reserved.
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
-// Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+//  Main authors:    Pooyan Dadvand
+//                   Riccardo Rossi
+//  Contributors:    Hoang-Giang Bui
 //
-//  -   Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-//  -   Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
-//      in the documentation and/or other materials provided with the distribution.
-//  -   All advertising materials mentioning features or use of this software must display the following acknowledgement:
-//          This product includes Kratos Multi-Physics technology.
-//  -   Neither the name of the CIMNE nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 //
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
-// THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// HOLDERS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED ANDON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
-// THE USE OF THISSOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-
 
 #if !defined(KRATOS_MPI_COMMUNICATOR_H_INCLUDED )
 #define  KRATOS_MPI_COMMUNICATOR_H_INCLUDED
-
-
 
 // System includes
 #include <string>
@@ -32,16 +22,12 @@
 #include <sstream>
 #include <cstddef>
 
-
 // External includes
-
-
 
 // Project includes
 #include "includes/define.h"
 #include "includes/model_part.h"
 #include "mpi.h"
-
 
 #define CUSTOMTIMER 1
 
@@ -86,7 +72,7 @@ inline MPI_Datatype DataTypeToMpiDataType(const T& Value);
 /** Detail class definition.
  */
 template<class TNodeType = Node<3> >
-class MPICommunicator : public Communicator<TNodeType>
+class KRATOS_API(KRATOS_CORE) MPICommunicator : public Communicator<TNodeType>
 {
 public:
     ///@name  Enum's
@@ -219,7 +205,7 @@ public:
     {
     }
 
-    typename BaseType::Pointer Create() override
+    typename BaseType::Pointer Create() const override
     {
         KRATOS_TRY
 
@@ -1553,6 +1539,9 @@ template<> inline MPI_Datatype DataTypeToMpiDataType<unsigned int>(const unsigne
 template<> inline MPI_Datatype DataTypeToMpiDataType<long>(const long& Value) { return MPI_LONG; }
 template<> inline MPI_Datatype DataTypeToMpiDataType<long long>(const long long& Value) { return MPI_LONG_LONG; }
 template<> inline MPI_Datatype DataTypeToMpiDataType<unsigned long>(const unsigned long& Value) { return MPI_UNSIGNED_LONG; }
+#ifdef _MSC_VER
+template<> inline MPI_Datatype DataTypeToMpiDataType<unsigned long long>(const unsigned long long& Value) { return MPI_UNSIGNED_LONG_LONG; }
+#endif
 template<> inline MPI_Datatype DataTypeToMpiDataType<float>(const float& Value) { return MPI_FLOAT; }
 template<> inline MPI_Datatype DataTypeToMpiDataType<double>(const double& Value) { return MPI_DOUBLE; }
 template<> inline MPI_Datatype DataTypeToMpiDataType<long double>(const long double& Value) { return MPI_LONG_DOUBLE; }

@@ -8,6 +8,7 @@
 //                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Pooyan Dadvand
+//  Contributors:    Hoang-Giang Bui
 //
 //
 
@@ -428,7 +429,6 @@ public:
         return *(TDataType*)(Position(QueueIndex) + ThisPosition);
     }
 
-
     template<class TDataType>
     const TDataType& FastGetCurrentValue(const Variable<TDataType>& rThisVariable, SizeType ThisPosition) const
     {
@@ -447,7 +447,6 @@ public:
         return rThisVariable.GetValue(GetValue(rThisVariable.GetSourceVariable(), QueueIndex));
     }
 
-
     template<class TAdaptorType>
     const typename TAdaptorType::Type& FastGetValue(const VariableComponent<TAdaptorType>& rThisVariable) const
     {
@@ -459,7 +458,6 @@ public:
     {
         return rThisVariable.GetValue(GetValue(rThisVariable.GetSourceVariable(), QueueIndex));
     }
-
 
     SizeType Size() const
     {

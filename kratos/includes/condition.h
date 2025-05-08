@@ -56,7 +56,7 @@ namespace Kratos
  * the actual problem
  */
 template<typename TNodeType = Node<3> >
-class BaseCondition : public GeometricalObject<TNodeType>
+class KRATOS_API(KRATOS_CORE) BaseCondition : public GeometricalObject<TNodeType>
 {
 public:
     ///@name Type Definitions

@@ -989,8 +989,6 @@ void AddModelPartToPythonImpl(const std::string& Prefix)
     .def("CreateNewMasterSlaveConstraint", CreateNewMasterSlaveConstraint3<TModelPartType>)
     .def("CreateNewLinearMasterSlaveConstraint", CreateNewLinearMasterSlaveConstraint<TModelPartType, typename TModelPartType::VariableComponentType>)
     .def("CreateNewLinearMasterSlaveConstraint", CreateNewLinearMasterSlaveConstraint<TModelPartType, typename TModelPartType::DoubleVariableType>)
-    //yaman return_internal_reference<>()
-    //.def("",&TModelPartType::)
     .def(self_ns::str(self))
     ;
 

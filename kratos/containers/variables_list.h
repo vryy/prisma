@@ -9,6 +9,7 @@
 //                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Pooyan Dadvand
+//  Contributors:    Hoang-Giang Bui
 //
 //
 

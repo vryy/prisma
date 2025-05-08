@@ -12,15 +12,20 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 ## generate variables with the sources
 set( KRATOS_CORE_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/containers/variable_data.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/containers/variables_list.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/containers/variables_list_data_value_container.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/containers/model.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/geometries/point.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/mmio.c
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/code_location.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/kratos_exception.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/containers/variable_data.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/timer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/io.cpp
-    # ${CMAKE_CURRENT_SOURCE_DIR}/containers/variables_list_data_value_container.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/kratos_components.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/geometries/point.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/communicator.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/element.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/condition.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/constitutive_law.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/serializer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/variables.cpp
@@ -31,7 +36,6 @@ set( KRATOS_CORE_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/dem_variables.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/legacy_structural_app_vars.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/model_part.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/containers/model.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/model_part_io.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/periodic_condition.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/kratos_application.cpp
@@ -41,15 +45,18 @@ set( KRATOS_CORE_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/kratos_filesystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/kratos_parameters.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/math_utils.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/utilities/logger.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/utilities/constraint_utilities.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/io.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/model_part_io.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/reorder_consecutive_model_part_io.cpp
-    # # ${CMAKE_CURRENT_SOURCE_DIR}/processes/calculate_signed_distance_to_3d_skin_process.cpp
-    # #${CMAKE_CURRENT_SOURCE_DIR}/processes/mesh_smoothing_process.cpp
-    # #${CMAKE_CURRENT_SOURCE_DIR}/processes/measure_mesh_quality_process.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/utilities/indexed_object.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/utilities/logger.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/utilities/constraint_utilities.cpp
 )
+
+if(${MPI_FOUND})
+    set(KRATOS_CORE_SOURCES ${KRATOS_CORE_SOURCES}
+        ${CMAKE_CURRENT_SOURCE_DIR}/sources/mpi_communicator.cpp)
+endif()
 
 if( ${KRATOS_PYTHON} MATCHES TRUE)
     set( KRATOS_PYTHON_SOURCES
@@ -115,6 +122,10 @@ if(${KRATOS_PYTHON} MATCHES TRUE)
     target_link_libraries(KratosCore PUBLIC ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${PYTHON_LIBRARIES} gidpost )
 else()
     target_link_libraries(KratosCore PUBLIC ${Boost_LIBRARIES} gidpost )
+endif()
+
+if(${MPI_FOUND})
+    target_link_libraries(KratosCore PUBLIC ${MPI_LIBRARIES} )
 endif()
 
 set(KRATOS_STACKTRACE_LEVEL 1 CACHE STRING "Stacktrace level for Kratos with boost::stacktrace")

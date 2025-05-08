@@ -8,6 +8,7 @@
 //                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Pooyan Dadvand
+//  Contributors:    Hoang-Giang Bui
 //
 //
 
@@ -19,6 +20,7 @@
 
 // Project includes
 #include "includes/define.h"
+#include "includes/node.h"
 #include "includes/model_part.h"
 #include "includes/process_info_with_dofs.h"
 #include "containers/model.h"
@@ -1715,8 +1717,8 @@ void ModelPartImpl<TNodeType>::load(Serializer& rSerializer)
 }
 
 /// template class instantiation
-template class ModelPartImpl<Node<3, KRATOS_DOUBLE_TYPE, Dof<KRATOS_DOUBLE_TYPE> > >;
-template class ModelPartImpl<Node<3, KRATOS_DOUBLE_TYPE, Dof<KRATOS_COMPLEX_TYPE> > >;
-template class ModelPartImpl<Node<3, KRATOS_COMPLEX_TYPE, Dof<KRATOS_COMPLEX_TYPE> > >;
+template class ModelPartImpl<RealNode>;
+template class ModelPartImpl<ComplexNode>;
+template class ModelPartImpl<GComplexNode>;
 
 }  // namespace Kratos.

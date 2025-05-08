@@ -1,29 +1,18 @@
-// Kratos Multi-Physics
+//    |  /           |
+//    ' /   __| _` | __|  _ \   __|
+//    . \  |   (   | |   (   |\__ `
+//   _|\_\_|  \__,_|\__|\___/ ____/
+//                   Multi-Physics
 //
-// Copyright (c) 2016 Pooyan Dadvand, Riccardo Rossi, CIMNE (International Center for Numerical Methods in Engineering)
-// All rights reserved.
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
-// Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+//  Main authors:    Pooyan Dadvand
+//  Contributors:    Hoang-Giang Bui
 //
-//  -   Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-//  -   Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
-//      in the documentation and/or other materials provided with the distribution.
-//  -   All advertising materials mentioning features or use of this software must display the following acknowledgement:
-//          This product includes Kratos Multi-Physics technology.
-//  -   Neither the name of the CIMNE nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
-// THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// HOLDERS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED ANDON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
-// THE USE OF THISSOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 
 #if !defined(KRATOS_SERIALIZER_H_INCLUDED )
 #define  KRATOS_SERIALIZER_H_INCLUDED
-
-
 
 // System includes
 #include <string>
@@ -33,10 +22,6 @@
 #include <set>
 #include <sstream>
 #include <fstream>
-
-
-
-
 
 // Project includes
 #include "includes/define.h"
@@ -356,13 +341,11 @@ public:
 //    read(rObject);
     }
 
-
     KRATOS_SERIALIZATION_DIRECT_LOAD(bool)
     KRATOS_SERIALIZATION_DIRECT_LOAD(char)
     KRATOS_SERIALIZATION_DIRECT_LOAD(short)
     KRATOS_SERIALIZATION_DIRECT_LOAD(int)
     KRATOS_SERIALIZATION_DIRECT_LOAD(long)
-    KRATOS_SERIALIZATION_DIRECT_LOAD(long long)
     KRATOS_SERIALIZATION_DIRECT_LOAD(float)
     KRATOS_SERIALIZATION_DIRECT_LOAD(double)
     KRATOS_SERIALIZATION_DIRECT_LOAD(long double)
@@ -379,14 +362,14 @@ public:
     KRATOS_SERIALIZATION_DIRECT_LOAD(ComplexMatrix)
     KRATOS_SERIALIZATION_DIRECT_LOAD(SymmetricMatrix)
     KRATOS_SERIALIZATION_DIRECT_LOAD(ComplexSymmetricMatrix)
-//#ifdef  _WIN32 // work around for windows int64_t error
-//    KRATOS_SERIALIZATION_DIRECT_LOAD(__int64)
-//#endif
+#ifdef  _WIN32 // work around for windows int64_t error
+    KRATOS_SERIALIZATION_DIRECT_LOAD(__int64)
+#else
+    KRATOS_SERIALIZATION_DIRECT_LOAD(long long)
+#endif
 #ifdef  _WIN64 // work around for windows size_t error in win64
     KRATOS_SERIALIZATION_DIRECT_LOAD(std::size_t)
 #endif
-
-
 
     template<class TDataType>
     void save(std::string const & rTag, std::vector<TDataType> const& rObject)
@@ -537,7 +520,6 @@ public:
     KRATOS_SERIALIZATION_DIRECT_SAVE(short)
     KRATOS_SERIALIZATION_DIRECT_SAVE(int)
     KRATOS_SERIALIZATION_DIRECT_SAVE(long)
-    KRATOS_SERIALIZATION_DIRECT_SAVE(long long)
     KRATOS_SERIALIZATION_DIRECT_SAVE(float)
     KRATOS_SERIALIZATION_DIRECT_SAVE(double)
     KRATOS_SERIALIZATION_DIRECT_SAVE(long double)
@@ -554,13 +536,14 @@ public:
     KRATOS_SERIALIZATION_DIRECT_SAVE(ComplexMatrix)
     KRATOS_SERIALIZATION_DIRECT_SAVE(SymmetricMatrix)
     KRATOS_SERIALIZATION_DIRECT_SAVE(ComplexSymmetricMatrix)
-//#ifdef  _WIN32 // work around for windows int64_t error
-//    KRATOS_SERIALIZATION_DIRECT_SAVE(__int64)
-//#endif
+#ifdef  _WIN32 // work around for windows int64_t error
+    KRATOS_SERIALIZATION_DIRECT_SAVE(__int64)
+#else
+    KRATOS_SERIALIZATION_DIRECT_SAVE(long long)
+#endif
 #ifdef  _WIN64 // work around for windows size_t error in win64
     KRATOS_SERIALIZATION_DIRECT_SAVE(std::size_t)
 #endif
-
 
     template<class TDataType>
     void load_base(std::string const & rTag, TDataType& rObject)
@@ -568,7 +551,6 @@ public:
         load_trace_point(rTag);
         rObject.TDataType::load(*this);
     }
-
 
     template<class TDataType>
     void load_base(std::string const & rTag, std::vector<TDataType>& rObject)

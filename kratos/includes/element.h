@@ -57,7 +57,7 @@ namespace Kratos
  * the actual problem
  */
 template<class TNodeType = Node<3> >
-class BaseElement : public GeometricalObject<TNodeType>
+class KRATOS_API(KRATOS_CORE) BaseElement : public GeometricalObject<TNodeType>
 {
 public:
     ///@name Type Definitions
@@ -111,6 +111,8 @@ public:
 
     typedef typename MatrixVectorTypeSelector<DataType>::ZeroMatrixType ZeroMatrixType;
 
+    typedef typename MatrixVectorTypeSelector<DataType>::IdentityMatrixType IdentityMatrixType;
+
     typedef std::vector<IndexType> EquationIdVectorType;
 
     typedef std::vector<typename DofType::Pointer> DofsVectorType;
@@ -147,7 +149,7 @@ public:
      * Constructor using an array of nodes
      */
     BaseElement(IndexType NewId, const NodesArrayType& ThisNodes)
-        : BaseType(NewId,GeometryType::Pointer(new GeometryType(ThisNodes)))
+        : BaseType(NewId, typename GeometryType::Pointer(new GeometryType(ThisNodes)))
         , mpProperties(new PropertiesType)
     {
     }
@@ -868,6 +870,7 @@ public:
         const ProcessInfo& rCurrentProcessInfo)
     {
     }
+
     virtual void SetValuesOnIntegrationPoints(
         const Variable<int>& rVariable,
         const std::vector<int>& rValues,
