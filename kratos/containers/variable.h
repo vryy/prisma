@@ -399,7 +399,6 @@ private:
 ///@name Input and output
 ///@{
 
-
 /// input stream function
 template<class TDataType>
 inline std::istream& operator >> (std::istream& rIStream,
@@ -418,6 +417,7 @@ inline std::ostream& operator << (std::ostream& rOStream,
 
     return rOStream;
 }
+
 ///@}
 
 }  // namespace Kratos.

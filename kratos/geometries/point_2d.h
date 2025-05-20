@@ -1,9 +1,13 @@
+//    |  /           |
+//    ' /   __| _` | __|  _ \   __|
+//    . \  |   (   | |   (   |\__ `
+//   _|\_\_|  \__,_|\__|\___/ ____/
+//                   Multi-Physics
 //
-//   Project Name:        Kratos
-//   Last Modified by:    $Author:   JMCarbonell $
-//   Date:                $Date:   December 2015 $
-//   Revision:            $Revision:         1.7 $
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
+//  Main authors:    Josep Maria Carbonell
 //
 
 #if !defined(KRATOS_POINT_2D_H_INCLUDED )
@@ -309,8 +313,8 @@ public:
         typename Geometry< Point<3, DataType> >::PointsArrayType NewPoints;
 
         //making a copy of the nodes TO POINTS (not Nodes!!!)
-        for(IndexType i = 0 ; i < BaseType::Points().size() ; i++)
-            NewPoints.push_back(BaseType::Points()[i]);
+        for ( IndexType i = 0 ; i < this->Points().size() ; i++ )
+            NewPoints.push_back( this->Points()[i] );
 
         //creating a geometry with the new points
         typename Geometry< Point<3, DataType> >::Pointer p_clone(new Point2D< Point<3, DataType> >(NewPoints));
@@ -319,13 +323,8 @@ public:
         return p_clone;
     }
 
-    //lumping factors for the calculation of the lumped mass matrix
-    //    virtual Vector& LumpingFactors(Vector& rResult) const
-    //	{
-    //	}
-
     ///@}
-    ///@name Informations
+    ///@name Information
     ///@{
 
     /** This method calculate and return Length or charactereistic
@@ -361,7 +360,6 @@ public:
         return 0.00;
     }
 
-
     /** This method calculate and return length, area or volume of
     this geometry depending to it's dimension. For one dimensional
     geometry it returns its length, for two dimensional it gives area
@@ -377,177 +375,6 @@ public:
         return 0.00;
     }
 
-
-//      virtual void Bounding_Box(BoundingBox<TPointType, BaseType>& rResult) const
-//              {
-//                 //rResult.Geometry() = *(this);
-//                 BaseType::Bounding_Box(rResult.LowPoint(), rResult.HighPoint());
-//              }
-
-    ///@}
-    ///@name Jacobian
-    ///@{
-
-    /** Jacobians for given  method. This method
-    calculate jacobians matrices in all integrations points of
-    given integration method.
-
-    @param ThisMethod integration method which jacobians has to
-    be calculated in its integration points.
-
-    @return JacobiansType a Vector of jacobian
-    matrices \f$ J_i \f$ where \f$ i=1,2,...,n \f$ is the integration
-    point index of given integration method.
-
-    @see DeterminantOfJacobian
-    @see InverseOfJacobian
-    */
-    //         virtual JacobiansType& Jacobian(JacobiansType& rResult, IntegrationMethod ThisMethod) const
-    //	{
-    //	}
-
-    /** Jacobian in specific integration point of given integration
-    method. This method calculate jacobian matrix in given
-    integration point of given integration method.
-
-    @param IntegrationPointIndex index of integration point which jacobians has to
-    be calculated in it.
-
-    @param ThisMethod integration method which jacobians has to
-    be calculated in its integration points.
-
-    @return Matrix<DataType> Jacobian matrix \f$ J_i \f$ where \f$
-    i \f$ is the given integration point index of given
-    integration method.
-
-    @see DeterminantOfJacobian
-    @see InverseOfJacobian
-    */
-    //    virtual Matrix& Jacobian(Matrix& rResult, IndexType IntegrationPointIndex, IntegrationMethod ThisMethod) const
-    //	{
-    //	}
-
-    /** Jacobian in given point. This method calculate jacobian
-    matrix in given point.
-
-    @param rPoint point which jacobians has to
-    be calculated in it.
-
-    @return Matrix of DataType which is jacobian matrix \f$ J \f$ in given point.
-
-    @see DeterminantOfJacobian
-    @see InverseOfJacobian
-    */
-//
-    /** Determinant of jacobians for given integration method. This
-    method calculate determinant of jacobian in all
-    integrations points of given integration method.
-
-    @return Vector of DataType which is vector of determinants of
-    jacobians \f$ |J|_i \f$ where \f$ i=1,2,...,n \f$ is the
-    integration point index of given integration method.
-
-    @see Jacobian
-    @see InverseOfJacobian
-    */
-    //     virtual Vector& DeterminantOfJacobian(Vector& rResult, IntegrationMethod ThisMethod) const
-    //	{
-    //	}
-
-    /** Determinant of jacobian in specific integration point of
-    given integration method. This method calculate determinant
-    of jacobian in given integration point of given integration
-    method.
-
-    @param IntegrationPointIndex index of integration point which jacobians has to
-    be calculated in it.
-
-    @param IntegrationPointIndex index of integration point
-    which determinant of jacobians has to be calculated in it.
-
-    @return Determinamt of jacobian matrix \f$ |J|_i \f$ where \f$
-    i \f$ is the given integration point index of given
-    integration method.
-
-    @see Jacobian
-    @see InverseOfJacobian
-    */
-    //     virtual DataType DeterminantOfJacobian(IndexType IntegrationPointIndex, IntegrationMethod ThisMethod) const
-    //	{
-    //	}
-
-    /** Determinant of jacobian in given point. This method calculate determinant of jacobian
-    matrix in given point.
-
-    @param rPoint point which determinant of jacobians has to
-    be calculated in it.
-
-    @return Determinamt of jacobian matrix \f$ |J| \f$ in given
-    point.
-
-    @see DeterminantOfJacobian
-    @see InverseOfJacobian
-    */
-//       virtual DataType DeterminantOfJacobian(const CoordinatesArrayType& rPoint) const
-// 	{
-// 	}
-
-
-    /** Inverse of jacobians for given integration method. This method
-    calculate inverse of jacobians matrices in all integrations points of
-    given integration method.
-
-    @param ThisMethod integration method which inverse of jacobians has to
-    be calculated in its integration points.
-
-    @return Inverse of jacobian
-    matrices \f$ J^{-1}_i \f$ where \f$ i=1,2,...,n \f$ is the integration
-    point index of given integration method.
-
-    @see Jacobian
-    @see DeterminantOfJacobian
-    */
-    //      virtual JacobiansType& InverseOfJacobian(JacobiansType& rResult, IntegrationMethod ThisMethod) const
-    //	{
-    //	}
-
-    /** Inverse of jacobian in specific integration point of given integration
-    method. This method calculate Inverse of jacobian matrix in given
-    integration point of given integration method.
-
-    @param IntegrationPointIndex index of integration point which inverse of jacobians has to
-    be calculated in it.
-
-    @param ThisMethod integration method which inverse of jacobians has to
-    be calculated in its integration points.
-
-    @return Inverse of jacobian matrix \f$ J^{-1}_i \f$ where \f$
-    i \f$ is the given integration point index of given
-    integration method.
-
-    @see Jacobian
-    @see DeterminantOfJacobian
-    */
-    //      virtual Matrix& InverseOfJacobian(Matrix& rResult, IndexType IntegrationPointIndex, IntegrationMethod ThisMethod) const
-    //	{
-    //	}
-
-    /** Inverse of jacobian in given point. This method calculate inverse of jacobian
-    matrix in given point.
-
-    @param rPoint point which inverse of jacobians has to
-    be calculated in it.
-
-    @return Inverse of jacobian matrix \f$ J^{-1} \f$ in given point.
-
-    @see DeterminantOfJacobian
-    @see InverseOfJacobian
-    */
-    //    virtual Matrix& InverseOfJacobian(Matrix& rResult, const CoordinatesArrayType& rPoint) const
-    //	{
-    //	}
-
-
     /** EdgesNumber
     @return SizeType containes number of this geometry edges.
     */
@@ -560,18 +387,10 @@ public:
     ///@name Shape Function
     ///@{
 
-    DataType ShapeFunctionValue(IndexType ShapeFunctionIndex, const CoordinatesArrayType& rPoint) const override
+    ValueType ShapeFunctionValue( IndexType ShapeFunctionIndex, const LocalCoordinatesArrayType& rCoordinates ) const override
     {
         return 1.0;
     }
-
-
-
-    //      virtual ShapeFunctionsGradientsType& ShapeFunctionsIntegrationPointsGradients(ShapeFunctionsGradientsType& rResult, IntegrationMethod ThisMethod) const
-    //	{
-    //		  KRATOS_THROW_ERROR(std::logic_error, "Jacobian is not square" , "");
-    //	}
-
 
     ///@}
     ///@name Input and output
@@ -585,7 +404,7 @@ public:
     */
     std::string Info() const override
     {
-        return "a point load in 2D space";
+        return "a point in 2D space";
     }
 
     /** Print information about this object.
@@ -596,7 +415,7 @@ public:
     */
     void PrintInfo(std::ostream& rOStream) const override
     {
-        rOStream << "a point load in 2D space";
+        rOStream << "a point in 2D space";
     }
 
     /** Print geometry's data into given stream. Prints it's points
@@ -609,7 +428,7 @@ public:
     */
     void PrintData(std::ostream& rOStream) const override
     {
-        rOStream << "a point load in 2D space";
+        rOStream << "a point in 2D space";
     }
 
     ///@}
@@ -684,7 +503,7 @@ private:
     }
 
     // Default constructor needed for serialization only
-        Point2D() : BaseType() {}
+    Point2D() : BaseType() {}
 
     ///@}
     ///@name Private Operators
@@ -694,14 +513,6 @@ private:
     ///@}
     ///@name Private Operations
     ///@{
-
-//      static Matrix CalculateShapeFunctionsIntegrationPointsValues(typename BaseType::IntegrationMethod ThisMethod)
-//     {
-//      }
-
-    //      static ShapeFunctionsGradientsType CalculateShapeFunctionsIntegrationPointsLocalGradients(typename BaseType::IntegrationMethod ThisMethod)
-    //  {
-    //  }
 
     static const IntegrationPointsContainerType AllIntegrationPoints()
     {
@@ -714,6 +525,7 @@ private:
         ShapeFunctionsValuesContainerType shape_functions_value;
         return shape_functions_value;
     }
+
     static const ShapeFunctionsLocalGradientsContainerType AllShapeFunctionsLocalGradients()
     {
         ShapeFunctionsLocalGradientsContainerType shape_functions_local_gradients;
@@ -769,4 +581,4 @@ const GeometryData Point2D<TPointType>::msGeometryData( 2,
 
 }  // namespace Kratos.
 
-#endif // KRATOS_LINE_2D_H_INCLUDED  defined
+#endif // KRATOS_POINT_2D_H_INCLUDED  defined

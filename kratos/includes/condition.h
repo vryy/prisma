@@ -113,8 +113,6 @@ public:
     typedef GeometryData::IntegrationMethod IntegrationMethod;
 
     typedef GeometryData GeometryDataType;
-    ///@}
-
 
     ///@}
     ///@name Life Cycle
@@ -521,7 +519,6 @@ public:
      * CalculateFirstDerivativesLHS, CalculateFirstDerivativesRHS methods are : OPTIONAL
      */
 
-
     /**
      * this is called during the assembling process in order
      * to calculate the first derivatives contributions for the LHS and RHS
@@ -550,7 +547,6 @@ public:
                      << __FUNCTION__ << " is not implemented";
     }
 
-
     /**
      * this is called during the assembling process in order
      * to calculate the condition right hand side vector for the first derivatives contributions
@@ -572,7 +568,6 @@ public:
      * CalculateSecondDerivativesContributions,
      * CalculateSecondDerivativesLHS, CalculateSecondDerivativesRHS methods are : OPTIONAL
      */
-
 
    /**
      * this is called during the assembling process in order
@@ -632,6 +627,7 @@ public:
         KRATOS_ERROR << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
                      << __FUNCTION__ << " is not implemented";
     }
+
     /**
      * this is called during the assembling process in order
      * to calculate the condition damping matrix
@@ -1157,6 +1153,7 @@ public:
     {
         return mData.GetValue(rThisVariable);
     }
+
     ///@}
 
     ///@name Inquiry
@@ -1166,7 +1163,6 @@ public:
     ///@{
 
     /// Turn back information as a string.
-
     std::string Info() const override
     {
         std::stringstream buffer;
@@ -1183,14 +1179,12 @@ public:
     }
 
     /// Print information about this object.
-
     void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << this->Info();
     }
 
     /// Print object's data.
-
     void PrintData(std::ostream& rOStream) const override
     {
         this->pGetGeometry()->PrintData(rOStream);

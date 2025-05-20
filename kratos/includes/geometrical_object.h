@@ -111,7 +111,6 @@ public:
           mpGeometry(rOther.mpGeometry)
     {}
 
-
     ///@}
     ///@name Operators
     ///@{
@@ -223,7 +222,6 @@ public:
     void PrintData(std::ostream& rOStream) const override
     {
     }
-
 
     ///@}
     ///@name Friends
@@ -362,6 +360,6 @@ inline std::ostream& operator << (std::ostream& rOStream, const GeometricalObjec
 
 template<> struct DataTypeToString<WeakPointerVector<GeometricalObject<Node<3> > > > { static inline constexpr const char* Get() {return "WeakPointerVector<GeometricalObject<Node<3>>>";} };
 
-}  // namespace Kratos.
+} // namespace Kratos.
 
 #endif // KRATOS_GEOMETRICAL_OBJECT_H_INCLUDED  defined

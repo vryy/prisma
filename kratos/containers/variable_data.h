@@ -180,7 +180,7 @@ public:
 
     /// NOTE: This function is for internal use and not
     /// to change arbitrary any variable's key
-   void SetKey(KeyType NewKey);
+    void SetKey(KeyType NewKey);
 
     const std::string& Name() const
     {
@@ -206,7 +206,6 @@ public:
     {
         KRATOS_ERROR << "Calling base class method." << std::endl;
     }
-
 
     ///@}
     ///@name Inquiry
@@ -314,11 +313,9 @@ private:
 
 }; // Class VariableData
 
-
 ///@}
 ///@name Input and output
 ///@{
-
 
 /// input stream function
 inline std::istream& operator >> (std::istream& rIStream,
@@ -336,13 +333,11 @@ inline std::ostream& operator << (std::ostream& rOStream,
 
     return rOStream;
 }
+
 ///@}
 
 ///@} addtogroup block
 
-
 }  // namespace Kratos.
 
 #endif // KRATOS_VARIABLE_DATA_H_INCLUDED  defined
-
-
