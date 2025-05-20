@@ -102,6 +102,17 @@ void VariablesList_AddVariable(TVariablesListType& rDummy, Variable<TDataType> c
     rDummy.Add(rThisVariable);
 }
 
+const char* VariableData_GetName(const VariableData& rDummy)
+{
+    return rDummy.Name().c_str();
+}
+
+template<class TVariableType>
+const char* Variable_GetType(const TVariableType& rDummy)
+{
+    return DataTypeToString<typename TVariableType::Type>::Get();
+}
+
 template<typename TDataType>
 void AddValueContainersToPython(const std::string& Prefix)
 {
@@ -126,14 +137,17 @@ void AddValueContainersToPython(const std::string& Prefix)
     ;
 
     class_<Variable<typename MatrixVectorTypeSelector<DataType>::VectorType>, bases<VariableData>, boost::noncopyable >( (Prefix + "VectorVariable").c_str(), no_init )
+    .add_property("Type", &Variable_GetType<Variable<typename MatrixVectorTypeSelector<DataType>::VectorType> >)
     .def( self_ns::str( self ) )
     ;
 
     class_<Variable<array_1d<DataType, 3> >, bases<VariableData>, boost::noncopyable >( (Prefix + "Array1DVariable3").c_str(), no_init )
+    .add_property("Type", &Variable_GetType<Variable<array_1d<DataType, 3> > >)
     .def( self_ns::str( self ) )
     ;
 
     class_<Variable<array_1d<DataType, 6> >, bases<VariableData>, boost::noncopyable >( (Prefix + "Array1DVariable6").c_str(), no_init )
+    .add_property("Type", &Variable_GetType<Variable<array_1d<DataType, 6> > >)
     .def( self_ns::str( self ) )
     ;
 
@@ -258,6 +272,10 @@ void AddValueContainersToPython(const std::string& Prefix)
 void AddContainersToPython()
 {
     class_<VariableData>( "VariableData", no_init )
+    .add_property("Name", &VariableData_GetName)
+    .add_property("Key", &VariableData::Key)
+    .add_property("Size", &VariableData::Size)
+    .add_property("IsComponent", &VariableData::IsComponent)
     .def( self_ns::str( self ) )
     ;
 
@@ -274,10 +292,12 @@ void AddContainersToPython()
     ;
 
     class_<Variable<KRATOS_DOUBLE_TYPE>, bases<VariableData>, boost::noncopyable >( "DoubleVariable", no_init )
+    .add_property("Type", &Variable_GetType<Variable<KRATOS_DOUBLE_TYPE> >)
     .def( self_ns::str( self ) )
     ;
 
     class_<Variable<KRATOS_COMPLEX_TYPE>, bases<VariableData>, boost::noncopyable >( "ComplexVariable", no_init )
+    .add_property("Type", &Variable_GetType<Variable<KRATOS_COMPLEX_TYPE> >)
     .def( self_ns::str( self ) )
     ;
 
