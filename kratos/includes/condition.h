@@ -21,6 +21,7 @@
 #include "includes/properties.h"
 #include "includes/process_info.h"
 #include "includes/geometrical_object.h"
+#include "includes/node.h"
 #include "containers/vector_map.h"
 
 
@@ -55,7 +56,7 @@ namespace Kratos
  * not all of them have to be implemented if they are not needed for
  * the actual problem
  */
-template<typename TNodeType = Node<3> >
+template<class TNodeType>
 class KRATOS_API(KRATOS_CORE) BaseCondition : public GeometricalObject<TNodeType>
 {
 public:
@@ -97,9 +98,17 @@ public:
 
     typedef typename DofType::DataType DataType;
 
+    typedef typename DataTypeToValueType<DataType>::value_type ValueType;
+
     typedef typename MatrixVectorTypeSelector<DataType>::VectorType VectorType;
 
+    typedef typename MatrixVectorTypeSelector<DataType>::ZeroVectorType ZeroVectorType;
+
     typedef typename MatrixVectorTypeSelector<DataType>::MatrixType MatrixType;
+
+    typedef typename MatrixVectorTypeSelector<DataType>::ZeroMatrixType ZeroMatrixType;
+
+    typedef typename MatrixVectorTypeSelector<DataType>::IdentityMatrixType IdentityMatrixType;
 
     typedef std::vector<IndexType> EquationIdVectorType;
 

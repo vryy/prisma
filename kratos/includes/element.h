@@ -21,6 +21,7 @@
 #include "includes/properties.h"
 #include "includes/process_info.h"
 #include "includes/geometrical_object.h"
+#include "includes/node.h"
 #include "containers/vector_map.h"
 #include "containers/weak_pointer_vector.h"
 #include "constitutive_law.h"
@@ -56,7 +57,7 @@ namespace Kratos
  * not all of them have to be implemented if they are not needed for
  * the actual problem
  */
-template<class TNodeType = Node<3> >
+template<class TNodeType>
 class KRATOS_API(KRATOS_CORE) BaseElement : public GeometricalObject<TNodeType>
 {
 public:
