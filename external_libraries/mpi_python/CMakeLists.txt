@@ -11,9 +11,10 @@ add_definitions( -w )
 add_library(mpipython SHARED ${MPI_PYTHON_SOURCES})
 
 if(CMAKE_VERSION VERSION_LESS "3.30")
+    target_include_directories(mpipython PRIVATE ${MPI_INCLUDE_PATH})
     target_link_libraries(mpipython ${Boost_PYTHON${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}_LIBRARIES} ${PYTHON_LIBRARIES} ${MPI_LIBRARIES})
 else()
-    target_link_libraries(mpipython Boost::python ${PYTHON_LIBRARIES} ${MPI_LIBRARIES})
+    target_link_libraries(mpipython PUBLIC Boost::python MPI::MPI_CXX ${PYTHON_LIBRARIES})
 endif()
 
 set_target_properties(mpipython PROPERTIES PREFIX "")

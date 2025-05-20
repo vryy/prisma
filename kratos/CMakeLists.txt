@@ -125,7 +125,8 @@ else()
 endif()
 
 if(${MPI_FOUND})
-    target_link_libraries(KratosCore PUBLIC ${MPI_LIBRARIES} )
+    target_compile_definitions(KratosCore PUBLIC KRATOS_USING_MPI)
+    target_link_libraries(KratosCore PUBLIC MPI::MPI_CXX )
 endif()
 
 set(KRATOS_STACKTRACE_LEVEL 1 CACHE STRING "Stacktrace level for Kratos with boost::stacktrace")
