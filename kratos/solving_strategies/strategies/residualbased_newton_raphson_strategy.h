@@ -23,7 +23,7 @@
 #include "solving_strategies/convergencecriterias/convergence_criteria.h"
 
 //default builder and solver
-#include "solving_strategies/builder_and_solvers/residualbased_block_builder_and_solver.h"
+#include "solving_strategies/builder_and_solvers/residualbased_elimination_builder_and_solver_deactivation.h"
 
 namespace Kratos
 {
@@ -159,7 +159,7 @@ public:
         //setting up the default builder and solver
         mpBuilderAndSolver = typename TBuilderAndSolverType::Pointer
                              (
-                                 new ResidualBasedBlockBuilderAndSolver<TSparseSpace, TDenseSpace, TLinearSolver, TModelPartType > (mpLinearSolver)
+                                 new ResidualBasedEliminationBuilderAndSolverDeactivation<TSparseSpace, TDenseSpace, TLinearSolver, TModelPartType > (mpLinearSolver)
                              );
 
         //set flags to start correcty the calculations

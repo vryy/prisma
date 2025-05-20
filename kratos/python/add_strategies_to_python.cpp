@@ -158,6 +158,8 @@ namespace Kratos
                     .def("GetMaxIterationNumber", &ResidualBasedNewtonRaphsonStrategyType::GetMaxIterationNumber)
                     .def("SetKeepSystemConstantDuringIterations", &ResidualBasedNewtonRaphsonStrategyType::SetKeepSystemConstantDuringIterations)
                     .def("GetKeepSystemConstantDuringIterations", &ResidualBasedNewtonRaphsonStrategyType::GetKeepSystemConstantDuringIterations)
+                    .def("SetBuilderAndSolver", &ResidualBasedNewtonRaphsonStrategyType::SetBuilderAndSolver)
+                    .def("GetBuilderAndSolver", &ResidualBasedNewtonRaphsonStrategyType::GetBuilderAndSolver)
                     ;
 
             typedef AdaptiveResidualBasedNewtonRaphsonStrategy< SparseSpaceType, LocalSpaceType, LinearSolverType, TModelPartType > AdaptiveResidualBasedNewtonRaphsonStrategyType;
@@ -257,7 +259,7 @@ namespace Kratos
             //Builder and Solver
             typename BuilderAndSolverType::DofsArrayType&(BuilderAndSolverType::*BuilderAndSolver_GetDofSet)() = &BuilderAndSolverType::GetDofSet;
 
-            class_< BuilderAndSolverType, boost::noncopyable > ((Prefix+"BuilderAndSolver").c_str(), init<typename LinearSolverType::Pointer > ())
+            class_< BuilderAndSolverType, typename BuilderAndSolverType::Pointer, boost::noncopyable > ((Prefix+"BuilderAndSolver").c_str(), init<typename LinearSolverType::Pointer > ())
                     .def("SetCalculateReactionsFlag", &BuilderAndSolverType::SetCalculateReactionsFlag)
                     .def("GetCalculateReactionsFlag", &BuilderAndSolverType::GetCalculateReactionsFlag)
                     .def("SetDofSetIsInitializedFlag", &BuilderAndSolverType::SetDofSetIsInitializedFlag)
