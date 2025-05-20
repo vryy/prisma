@@ -434,7 +434,6 @@ public:
         ++mLocalCounter;
 
         KRATOS_CATCH("")
-
     }
 
     //**************************************************************************
@@ -853,7 +852,6 @@ public:
         ModelPartType& r_model_part
     ) override
     {
-
         int free_id = 0;
 
         for (typename DofsArrayType::iterator dof_iterator = BaseType::mDofSet.begin(); dof_iterator != BaseType::mDofSet.end(); ++dof_iterator)
@@ -1078,7 +1076,10 @@ public:
         }
 
         for (auto it = diag_values.begin(); it != diag_values.end(); ++it)
-            it->second /= dof_numbers[it->first];
+        {
+            const auto ndofs = dof_numbers[it->first];
+            if (ndofs > 0) it->second /= ndofs;
+        }
 
         // iterate through all dofs and set the respective diagonal
         int number_of_threads = omp_get_max_threads();
