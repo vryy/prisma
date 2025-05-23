@@ -608,6 +608,16 @@ template<> struct DataTypeToValueType<std::complex<float> > { typedef float valu
 template<> struct DataTypeToValueType<std::complex<double> > { typedef double value_type; };
 template<> struct DataTypeToValueType<std::complex<long double> > { typedef long double value_type; };
 
+/// Extended struct to allow std::complex<T> as arithmetic number
+namespace Internals
+{
+    template<typename T>
+    struct is_extended_arithmetic : std::is_arithmetic<T> {};
+
+    template<typename T>
+    struct is_extended_arithmetic<std::complex<T> > : std::true_type {};
+}
+
 //Print Trace if defined
 //#define KRATOS_PRINT_TRACE
 #ifdef KRATOS_PRINT_TRACE
