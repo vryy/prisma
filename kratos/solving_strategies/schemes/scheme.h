@@ -11,7 +11,6 @@
 //
 
 
-
 #if !defined(KRATOS_SCHEME )
 #define  KRATOS_SCHEME
 

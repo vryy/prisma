@@ -1367,14 +1367,14 @@ public:
 
         mAllDofs.clear();
 
-        ElementsContainerType& pElements = r_model_part.Elements();
+        const ElementsContainerType& pElements = r_model_part.Elements();
         std::size_t num_active_elements = 0;
-        for (typename ElementsContainerType::iterator it=pElements.begin(); it!=pElements.end(); ++it)
+        for (auto it = pElements.begin(); it != pElements.end(); ++it)
         {
             // gets list of Dof involved on every element
-            pScheme->GetDofList(*it,DofList,CurrentProcessInfo);
+            pScheme->GetDofList(*it, DofList, CurrentProcessInfo);
 
-            for(typename ElementType::DofsVectorType::iterator i = DofList.begin() ; i != DofList.end() ; ++i)
+            for(auto i = DofList.begin(); i != DofList.end(); ++i)
                 mAllDofs.push_back(*i);
 
             #ifndef INCLUDE_INACTIVE_ELEMENTS_IN_SETUP_DOFSET
@@ -1392,21 +1392,21 @@ public:
         KRATOS_WATCH(num_active_elements);
 
         // taking in account conditions
-        ConditionsContainerType& pConditions = r_model_part.Conditions();
+        const ConditionsContainerType& pConditions = r_model_part.Conditions();
         std::size_t num_active_conditions = 0;
-        for (typename ConditionsContainerType::iterator it=pConditions.begin(); it!=pConditions.end(); ++it)
+        for (auto it = pConditions.begin(); it != pConditions.end(); ++it)
         {
             // gets list of Dof involved on every condition
-            pScheme->GetDofList(*it,DofList,CurrentProcessInfo);
+            pScheme->GetDofList(*it, DofList, CurrentProcessInfo);
 
-            for(typename ElementType::DofsVectorType::iterator i = DofList.begin() ; i != DofList.end() ; ++i)
+            for(auto i = DofList.begin(); i != DofList.end(); ++i)
                 mAllDofs.push_back(*i);
 
             #ifndef INCLUDE_INACTIVE_ELEMENTS_IN_SETUP_DOFSET
             if( !it->GetValue( IS_INACTIVE ) || it->Is( ACTIVE ) )
             {
             #endif
-                for(typename ElementType::DofsVectorType::iterator i = DofList.begin() ; i != DofList.end() ; ++i)
+                for(auto i = DofList.begin(); i != DofList.end(); ++i)
                     Doftemp.push_back(*i);
                 ++num_active_conditions;
             #ifndef INCLUDE_INACTIVE_ELEMENTS_IN_SETUP_DOFSET

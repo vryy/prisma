@@ -31,8 +31,6 @@
 #include "includes/kratos_exception.h"
 
 
-
-
 #define KRATOS_CLASS_POINTER_DEFINITION(a) typedef boost::shared_ptr<a> Pointer; \
 typedef boost::shared_ptr<a> SharedPointer; \
 typedef boost::shared_ptr<const a> ConstPointer; \
@@ -515,7 +513,6 @@ VariableIsCompleteHelper<VariableSelector_##name<T> >::value          \
   const Kratos::Flags class_name::NOT_##name(Kratos::Flags::Create(position, false))    \
 
 
-
 //-----------------------------------------------------------------
 //
 // components
@@ -549,7 +546,6 @@ VariableIsCompleteHelper<VariableSelector_##name<T> >::value          \
 #define KRATOS_REGISTER_ENTITY(type, name, reference)                 \
     KratosComponents<type>::Add(name, reference);  \
     Serializer::Register(name, reference);                          \
-
 
 
 namespace Kratos
@@ -586,9 +582,6 @@ typedef const char* PointerToConstCharType;
 /* #define KRATOS_REGISTER_VARIABLE_WITH_ZERO(type, name, zero) const Variable<type> name(#name, __LINE__, zero) */
 /* #define KRATOS_REGISTER_VARIABLE(type, name) const Variable<type> name(#name, __LINE__) */
 /* #define KRATOS_REGISTER_VARIABLE_COMPONENT(type, name, source) const VariableComponent<type> name(#name, __LINE__, type source) */
-
-/* #define KRATOS_REGISTER_LINEAR_SOLVER_BEGIN \ */
-/* template<class TFunction> ApplyToLinearSolver(String Name){ */
 
 // struct to get the string of the data type
 template<typename TDataType> struct DataTypeToString { static inline constexpr const char* Get() {return typeid(TDataType).name();} };
@@ -641,12 +634,11 @@ template<> struct DataTypeToValueType<std::complex<long double> > { typedef long
 }  /* namespace Kratos.*/
 
 
-
 #define KRATOS_SERIALIZE_SAVE_BASE_CLASS(Serializer, BaseType) \
-    Serializer.save_base("BaseClass",*static_cast<const BaseType *>(this));
+    Serializer.save_base("BaseClass", *static_cast<const BaseType*>(this));
 
 #define KRATOS_SERIALIZE_LOAD_BASE_CLASS(Serializer, BaseType) \
-    Serializer.load_base("BaseClass",*static_cast<BaseType *>(this));
+    Serializer.load_base("BaseClass", *static_cast<BaseType*>(this));
 
 
 #endif /* KRATOS_DEFINE_H_INCLUDED  defined */
