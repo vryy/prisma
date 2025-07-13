@@ -30,6 +30,17 @@ namespace Kratos
 
 /**
  * A twenty node hexahedra geometry with serendipity shape functions
+ *      3----10----2
+ *      |\         |\
+ *      | 15       | 14
+ *     11  \       9  \
+ *      |   7----18+---6
+ *      |   |      |   |
+ *      0---+-8----1   |
+ *       \  19      \  17
+ *       12 |        13|
+ *         \|         \|
+ *          4----16----5
  */
 template<class TPointType> class Hexahedra3D20 : public Geometry<TPointType>
 {
@@ -622,8 +633,8 @@ public:
                                               this->pGetPoint( 6 ),
                                               this->pGetPoint( 2 ),
                                               this->pGetPoint( 3 ),
-                                              this->pGetPoint( 14 ),
                                               this->pGetPoint( 18 ),
+                                              this->pGetPoint( 14 ),
                                               this->pGetPoint( 10 ),
                                               this->pGetPoint( 15 ) ) ) );
         faces.push_back( FacePointerType( new FaceType(

@@ -31,6 +31,18 @@ namespace Kratos
 
 /**
  * An eight node hexahedra geometry with linear shape functions
+ *             v
+ *      3----------2
+ *      |\     ^   |\
+ *      | \    |   | \
+ *      |  \   |   |  \
+ *      |   7------+---6
+ *      |   |  +-- |-- | -> u
+ *      0---+---\--1   |
+ *       \  |    \  \  |
+ *        \ |     \  \ |
+ *         \|      w  \|
+ *          4----------5
  */
 template<class TPointType> class Hexahedra3D8 : public Geometry<TPointType>
 {

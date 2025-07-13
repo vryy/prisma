@@ -33,6 +33,17 @@ namespace Kratos
 
 /**
  * A twenty-seven node hexahedra geometry with second order shape functions
+ *      3----10----2
+ *      |\         |\
+ *      |15    23  | 14
+ *      11  \ 20   9  \
+ *      |   7----18+---6
+ *      |24 |  26  | 22|
+ *      0---+-8----1   |
+ *       \ 19    25 \  17
+ *       12 |  21    13|
+ *         \|         \|
+ *          4----16----5
  */
 template<class TPointType> class Hexahedra3D27 : public Geometry<TPointType>
 {
@@ -654,8 +665,8 @@ public:
                                               this->pGetPoint( 6 ),
                                               this->pGetPoint( 2 ),
                                               this->pGetPoint( 3 ),
-                                              this->pGetPoint( 14 ),
                                               this->pGetPoint( 18 ),
+                                              this->pGetPoint( 14 ),
                                               this->pGetPoint( 10 ),
                                               this->pGetPoint( 15 ),
                                               this->pGetPoint( 23 ) ) ) );
