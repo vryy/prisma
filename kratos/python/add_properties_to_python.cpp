@@ -96,23 +96,27 @@ void  AddPropertiesToPython()
 
     auto a = class_<Properties, Properties::Pointer, bases<Properties::BaseType > >("Properties", init<int>())
     .def(init<const Properties&>())
-    .def("GetTable", GetTableHelperFunction1< Properties, Variable< double > , Variable<double> >, return_internal_reference<>())
+    .def("GetTable", GetTableHelperFunction1< Properties, Variable<double> , Variable<double> >, return_internal_reference<>())
     .def("GetTable", GetTableHelperFunction1< Properties, VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > , Variable<double> >, return_internal_reference<>())
     .def("GetTable", GetTableHelperFunction1< Properties, Variable<double>, VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > >, return_internal_reference<>())
     .def("GetTable", GetTableHelperFunction1< Properties, VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > , VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > >, return_internal_reference<>())
-    .def("SetTable", SetTableHelperFunction1< Properties, Variable< double > , Variable<double> >)
+    .def("SetTable", SetTableHelperFunction1< Properties, Variable<double> , Variable<double> >)
     .def("SetTable", SetTableHelperFunction1< Properties, VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > , Variable<double> >)
     .def("SetTable", SetTableHelperFunction1< Properties, Variable<double>, VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > >)
     .def("SetTable", SetTableHelperFunction1< Properties, VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > , VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > >)
     .def(self_ns::str(self))
     ;
 
-    PropertiesAddVariableInterface<decltype(a), Variable< array_1d<double, 6> > >( a );
-    PropertiesAddVariableInterface<decltype(a), Variable< array_1d<double, 3> > >( a );
+    PropertiesAddVariableInterface<decltype(a), Variable< array_1d<KRATOS_DOUBLE_TYPE, 6> > >( a );
+    PropertiesAddVariableInterface<decltype(a), Variable< array_1d<KRATOS_DOUBLE_TYPE, 3> > >( a );
+    PropertiesAddVariableInterface<decltype(a), VariableComponent<VectorComponentAdaptor<array_1d<KRATOS_DOUBLE_TYPE, 3> > > >( a );
     PropertiesAddVariableInterface<decltype(a), Variable< bool > >( a );
     PropertiesAddVariableInterface<decltype(a), Variable< int > >( a );
     PropertiesAddVariableInterface<decltype(a), Variable< KRATOS_DOUBLE_TYPE > >( a );
     PropertiesAddVariableInterface<decltype(a), Variable< KRATOS_COMPLEX_TYPE > >( a );
+    PropertiesAddVariableInterface<decltype(a), Variable< array_1d<KRATOS_COMPLEX_TYPE, 6> > >( a );
+    PropertiesAddVariableInterface<decltype(a), Variable< array_1d<KRATOS_COMPLEX_TYPE, 3> > >( a );
+    PropertiesAddVariableInterface<decltype(a), VariableComponent<VectorComponentAdaptor<array_1d<KRATOS_COMPLEX_TYPE, 3> > > >( a );
     PropertiesAddVariableInterface<decltype(a), Variable< Vector > >( a );
     PropertiesAddVariableInterface<decltype(a), Variable< ComplexVector > >( a );
     PropertiesAddVariableInterface<decltype(a), Variable< Matrix > >( a );
