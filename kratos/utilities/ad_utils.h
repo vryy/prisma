@@ -54,6 +54,10 @@ inline double AD_Helper_GetADValue<adtl::adouble>(const adtl::adouble& v, const 
 
 struct AD_Helper_Base
 {
+    // struct to extract the innermost value_type of nested std::vector
+    template<typename T> struct get_value_type { using type = T; };
+    template<typename T> struct get_value_type<std::vector<T> > { using type = typename get_value_type<T>::type; };
+
     template<typename TDataType>
     static inline void Resize(std::vector<TDataType>& v, const std::size_t n)
     {
@@ -323,11 +327,39 @@ public:
     template<typename TTensorType>
     static inline void CrossProduct(TTensorType& c, const TTensorType& a, const TTensorType& b)
     {
-        if (dim == 3)
+        if constexpr (dim == 3)
         {
             c[0] = a[1]*b[2] - a[2]*b[1];
             c[1] = a[2]*b[0] - a[0]*b[2];
             c[2] = a[0]*b[1] - a[1]*b[0];
+        }
+        else
+            std::cout << __FUNCTION__ <<  ": Invalid dimension" << std::endl;
+    }
+
+    /// Compute the cross product of two first order tensor of dimension 3
+    template<typename TTensorType>
+    static inline void CrossProduct(TTensorType& c, const TDataType alpha, const TTensorType& a, const TTensorType& b)
+    {
+        if constexpr (dim == 3)
+        {
+            c[0] += alpha * (a[1]*b[2] - a[2]*b[1]);
+            c[1] += alpha * (a[2]*b[0] - a[0]*b[2]);
+            c[2] += alpha * (a[0]*b[1] - a[1]*b[0]);
+        }
+        else
+            std::cout << __FUNCTION__ <<  ": Invalid dimension" << std::endl;
+    }
+
+    /// Compute the cross product of two first order tensor of dimension 3
+    template<typename TTensorType>
+    static inline void CrossProductVariation(TTensorType& dc, const TTensorType& a, const TTensorType& b, const TTensorType& da, const TTensorType& db)
+    {
+        if constexpr (dim == 3)
+        {
+            dc[0] = da[1]*b[2] + a[1]*db[2] - da[2]*b[1] - a[2]*db[1];
+            dc[1] = da[2]*b[0] + a[2]*db[0] - da[0]*b[2] - a[0]*db[2];
+            dc[2] = da[0]*b[1] + a[0]*db[1] - da[1]*b[0] - a[1]*db[0];
         }
         else
             std::cout << __FUNCTION__ <<  ": Invalid dimension" << std::endl;
