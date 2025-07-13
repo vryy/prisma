@@ -586,6 +586,7 @@ typedef const char* PointerToConstCharType;
 // struct to get the string of the data type
 template<typename TDataType> struct DataTypeToString { static inline constexpr const char* Get() {return typeid(TDataType).name();} };
 template<> struct DataTypeToString<int> { static inline constexpr const char* Get() {return "int";} };
+template<> struct DataTypeToString<char> { static inline constexpr const char* Get() {return "char";} };
 template<> struct DataTypeToString<unsigned int> { static inline constexpr const char* Get() {return "unsigned int";} };
 template<> struct DataTypeToString<bool> { static inline constexpr const char* Get() {return "bool";} };
 template<> struct DataTypeToString<float> { static inline constexpr const char* Get() {return "float";} };
@@ -599,11 +600,6 @@ template<> struct DataTypeToString<std::string> { static inline constexpr const 
 // get the "real" value type behind data type. For primitive type, value type is the same as data type,
 // but for complex number the value type is the type of the real part of the complex data type
 template<typename TDataType> struct DataTypeToValueType { typedef TDataType value_type; };
-template<> struct DataTypeToValueType<int> { typedef int value_type; };
-template<> struct DataTypeToValueType<bool> { typedef bool value_type; };
-template<> struct DataTypeToValueType<float> { typedef float value_type; };
-template<> struct DataTypeToValueType<double> { typedef double value_type; };
-template<> struct DataTypeToValueType<long double> { typedef long double value_type; };
 template<> struct DataTypeToValueType<std::complex<float> > { typedef float value_type; };
 template<> struct DataTypeToValueType<std::complex<double> > { typedef double value_type; };
 template<> struct DataTypeToValueType<std::complex<long double> > { typedef long double value_type; };
