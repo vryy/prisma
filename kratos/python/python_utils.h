@@ -21,6 +21,7 @@
 #include <boost/python/operators.hpp>
 
 // Project includes
+#include "includes/define.h"
 
 
 namespace Kratos
@@ -187,6 +188,13 @@ struct PythonUtils
             values[cnt] = (static_cast<TOutputValueType>(v));
             ++cnt;
         }
+    }
+
+    template<typename TInputValueType>
+    static void Extend(boost::python::list& rValues, const std::vector<TInputValueType>& values)
+    {
+        for (auto v : values)
+            rValues.append(v);
     }
 
 };
