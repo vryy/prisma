@@ -935,6 +935,38 @@ public:
         return this->IsInside(rResult);
     }
 
+    /**
+     * Compare the two geometries in terms of nodal indices. This is useful when putting the geometry in std::set
+     */
+    template<typename TOtherGeometryType>
+    bool IsLess(const TOtherGeometryType& rOtherGeometry) const
+    {
+        if (this->GetGeometryType() != rOtherGeometry.GetGeometryType())
+        {
+            if (this->WorkingSpaceDimension() == rOtherGeometry.WorkingSpaceDimension())
+                return this->size() < rOtherGeometry.size();
+            else
+                return this->WorkingSpaceDimension() < rOtherGeometry.WorkingSpaceDimension();
+        }
+
+        std::vector<IndexType> nodes1, nodes2;
+        for (std::size_t i = 0; i < this->size(); ++i)
+            nodes1.push_back(this->Points()[i].Id());
+        for (std::size_t i = 0; i < rOtherGeometry.size(); ++i)
+            nodes2.push_back(rOtherGeometry[i].Id());
+
+        std::sort(nodes1.begin(), nodes1.end());
+        std::sort(nodes2.begin(), nodes2.end());
+
+        for (std::size_t i = 0; i < nodes1.size(); ++i)
+        {
+            if (nodes1[i] != nodes2[i])
+                return nodes1[i] < nodes2[i];
+        }
+
+        return false;
+    }
+
     ///@}
     ///@name Inquiry
     ///@{
@@ -1075,7 +1107,6 @@ public:
     {
         KRATOS_ERROR << "Calling base class NodesInFaces method instead of derived class one. Please check the definition of derived class.";
     }
-
 
     /** This method gives you an edge of this geometry related to
     given index. The numbering order of each geometries edges is
@@ -2395,6 +2426,23 @@ private:
 ///@name Type Definitions
 ///@{
 
+/**
+ * Comparator of the geometry. This can be use when creating std::set, e.g.,
+ *      std::set<GeometryType::Pointer, GeometryComparator<GeometryType> > geom_set;
+ */
+template<typename TGeometryType>
+struct GeometryComparator
+{
+    bool operator()(const TGeometryType& a, const TGeometryType& b) const
+    {
+        return a.IsLess(b);
+    }
+
+    bool operator()(const typename TGeometryType::Pointer& a, const typename TGeometryType::Pointer& b) const
+    {
+        return a->IsLess(*b);
+    }
+};
 
 ///@}
 ///@name Input and output
