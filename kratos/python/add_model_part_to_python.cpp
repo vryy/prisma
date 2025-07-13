@@ -157,6 +157,18 @@ typename TModelPartType::ConditionType::Pointer ModelPartCreateNewCondition(TMod
 }
 
 template<class TModelPartType>
+TModelPartType& ModelPartCreateSubModelPart(TModelPartType& rModelPart, std::string const& NewSubModelPartName)
+{
+    return dynamic_cast<TModelPartType&>(rModelPart.CreateSubModelPart(NewSubModelPartName));
+}
+
+template<class TModelPartType>
+TModelPartType& ModelPartGetSubModelPart(TModelPartType& rModelPart, std::string const& SubModelPartName)
+{
+    return dynamic_cast<TModelPartType&>(rModelPart.GetSubModelPart(SubModelPartName));
+}
+
+template<class TModelPartType>
 typename TModelPartType::SizeType ModelPartNumberOfNodes1(TModelPartType& rModelPart)
 {
     return rModelPart.NumberOfNodes();
@@ -946,9 +958,9 @@ void AddModelPartToPythonImpl(const std::string& Prefix)
     .def("RemoveConditionFromAllLevels", ModelPartRemoveConditionFromAllLevels2<TModelPartType>)
     .def("RemoveConditionFromAllLevels", ModelPartRemoveConditionFromAllLevels3<TModelPartType>)
     .def("RemoveConditionFromAllLevels", ModelPartRemoveConditionFromAllLevels4<TModelPartType>)
-    .def("CreateSubModelPart", &TModelPartType::CreateSubModelPart, return_internal_reference<>())
+    .def("CreateSubModelPart", ModelPartCreateSubModelPart<TModelPartType>, return_internal_reference<>())
     .def("NumberOfSubModelParts", &TModelPartType::NumberOfSubModelParts)
-    .def("GetSubModelPart", &TModelPartType::GetSubModelPart, return_internal_reference<>())
+    .def("GetSubModelPart", ModelPartGetSubModelPart<TModelPartType>, return_internal_reference<>())
     .def("RemoveSubModelPart", RemoveSubModelPart1<TModelPartType>)
     .def("RemoveSubModelPart", RemoveSubModelPart2<TModelPartType>)
     .def("HasSubModelPart", &TModelPartType::HasSubModelPart)
