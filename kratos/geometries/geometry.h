@@ -751,8 +751,8 @@ public:
     }
 
     /**
-    * Returns the local coordinates of a given arbitrary point
-    */
+     * Returns the local coordinates of a given arbitrary point
+     */
     virtual LocalCoordinatesArrayType& PointLocalCoordinates( LocalCoordinatesArrayType& rResult,
             const CoordinatesArrayType& rPoint, bool force_error = true ) const
     {
@@ -828,8 +828,8 @@ public:
     }
 
     /**
-    * Returns the local coordinates of a given arbitrary point
-    */
+     * Returns the local coordinates of a given arbitrary point
+     */
     virtual LocalCoordinatesArrayType& PointLocalCoordinates( LocalCoordinatesArrayType& rResult,
             const CoordinatesArrayType& rPoint, const MatrixType& DeltaPosition, bool force_error = true ) const
     {
@@ -906,7 +906,7 @@ public:
 
     /**
      * Returns whether given local point is inside the Geometry
-    */
+     */
     virtual bool IsInside( const LocalCoordinatesArrayType& rLocalPoint ) const
     {
         KRATOS_ERROR << "Calling base class IsInside method instead of derived class one. Please check the definition of derived class.";
@@ -916,7 +916,7 @@ public:
     /**
      * Returns whether given arbitrary point is inside the Geometry and the respective
      * local point for the given global point
-    */
+     */
     virtual bool IsInside( const CoordinatesArrayType& rPoint, LocalCoordinatesArrayType& rResult ) const
     {
         this->PointLocalCoordinates( rResult, rPoint, false );
@@ -927,7 +927,7 @@ public:
     /**
      * Returns whether given arbitrary point is inside the Geometry and the respective
      * local point for the given global point
-    */
+     */
     virtual bool IsInside( const CoordinatesArrayType& rPoint, LocalCoordinatesArrayType& rResult, const MatrixType& DeltaPosition ) const
     {
         this->PointLocalCoordinates( rResult, rPoint, DeltaPosition, false );
