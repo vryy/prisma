@@ -67,6 +67,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "includes/deprecated_variables.h"
 #include "utilities/timer.h"
 #include "utilities/openmp_utils.h"
+#include "utilities/progress.h"
 #include "solving_strategies/builder_and_solvers/builder_and_solver.h"
 
 // #define ENABLE_LOG
@@ -535,6 +536,8 @@ public:
         unsigned int num_computed_elements = 0;
         unsigned int num_assembled_elements = 0;
 
+        Kratos::progress_display show_progress_elements( pElements.size() );
+
         #pragma omp declare reduction( \
             sum: TDataType: omp_out += omp_in) \
             initializer(omp_priv = TDataType())
@@ -654,6 +657,8 @@ public:
                         num_assembled_elements += 1;
                     }
                 }
+
+                ++show_progress_elements;
 
                 #ifdef MEASURE_TIME_CUT_CELL
                 if(it->GetValue(CUT_STATUS_var) == -1)
@@ -1768,12 +1773,11 @@ public:
             TSparseSpace::Clear( (this->mpReactionsVector) );
 //          this->mReactionsVector = TSystemVectorType();
 
-        if (this->GetEchoLevel()>0)
+        if (this->GetEchoLevel() > 0)
         {
-            KRATOS_WATCH("ResidualBasedEliminationBuilderAndSolverDeactivation Clear Function called");
+            std::cout << "ResidualBasedEliminationBuilderAndSolverDeactivation Clear Function called";
         }
     }
-
 
     /*@} */
     /**@name Operations */
