@@ -157,42 +157,82 @@ struct AD_Helper<adtl::adouble> : public AD_Helper_Base
 #endif
 
 /**
- * Defines several utility functions for operation with AD tensor
+ * Utility functions for operation with tensor
  */
-template<std::size_t rank, std::size_t dim, typename TDataType>
-class AD_Utils
+template<std::size_t rank> class AD_Utils_Base;
+
+template<> class AD_Utils_Base<1>
 {
 public:
     /// Zero out an arbitrary first order tensor/1D array
     template<typename TTensorType>
-    static inline void Zero( TTensorType& A, const std::size_t& size1 )
+    static inline void Zero( TTensorType& A, const std::size_t size1 )
     {
         for(unsigned int i = 0; i < size1; ++i)
             A[i] = 0.0;
     }
+}; /* Class AD_Utils_Base<1> */
 
+template<> class AD_Utils_Base<2>
+{
+public:
     /// Zero out an arbitrary second order tensor/2D array
     template<typename TTensorType>
-    static inline void Zero( TTensorType& A, const std::size_t& size1, const std::size_t& size2 )
+    static inline void Zero( TTensorType& A, const std::size_t size1, const std::size_t size2 )
     {
         for(unsigned int i = 0; i < size1; ++i)
             for(unsigned int j = 0; j < size2; ++j)
                 A[i][j] = 0.0;
     }
 
+    /// Multiply two rank-2 tensors
+    template<typename TTensorType1, typename TTensorType2, typename TTensorType3>
+    static inline void Multiply( TTensorType1& C, const TTensorType2& A, const TTensorType3& B,
+            const std::size_t size1, const std::size_t size2, const std::size_t size3 )
+    {
+        for(unsigned int i = 0; i < size1; ++i)
+        {
+            for(unsigned int k = 0; k < size3; ++k)
+            {
+                C[i][k] = 0.0;
+                for(unsigned int j = 0; j < size2; ++j)
+                    C[i][k] += A[i][j] * B[j][k];
+            }
+        }
+    }
+
+    /// Double dot product of two rank-2 tensors
+    template<typename TValueType, typename TTensorType1, typename TTensorType2>
+    static inline void DoubleDot( TValueType& v, const TTensorType1& A, const TTensorType2& B,
+            const std::size_t size1, const std::size_t size2 )
+    {
+        v = 0.0;
+        for(unsigned int i = 0; i < size1; ++i)
+            for(unsigned int j = 0; j < size2; ++j)
+                v += A[i][j] * B[i][j];
+    }
+}; /* Class AD_Utils_Base<2> */
+
+template<> class AD_Utils_Base<3>
+{
+public:
     /// Zero out an arbitrary third order tensor/3D array
     template<typename TTensorType>
-    static inline void Zero( TTensorType& A, const std::size_t& size1, const std::size_t& size2, const std::size_t& size3 )
+    static inline void Zero( TTensorType& A, const std::size_t size1, const std::size_t size2, const std::size_t size3 )
     {
         for(unsigned int i = 0; i < size1; ++i)
             for(unsigned int j = 0; j < size2; ++j)
                 for(unsigned int k = 0; k < size3; ++k)
                     A[i][j][k] = 0.0;
     }
+}; /* Class AD_Utils_Base<3> */
 
+template<> class AD_Utils_Base<4>
+{
+public:
     /// Zero out an arbitrary fourth order tensor
     template<typename TTensorType>
-    static inline void Zero( TTensorType& A, const std::size_t& size1, const std::size_t& size2, const std::size_t& size3, const std::size_t& size4 )
+    static inline void Zero( TTensorType& A, const std::size_t size1, const std::size_t size2, const std::size_t size3, const std::size_t size4 )
     {
         for(unsigned int i = 0; i < size1; ++i)
             for(unsigned int j = 0; j < size2; ++j)
@@ -200,11 +240,16 @@ public:
                     for(unsigned int l = 0; l < size4; ++l)
                         A[i][j][k][l] = 0.0;
     }
-}; /* Class AD_Utils */
+}; /* Class AD_Utils_Base<4> */
 
+template<std::size_t rank, std::size_t dim, typename TDataType>
+class AD_Utils;
 
+/**
+ * Specialization for rank-1 tensor (vector) with fixed size dim
+ */
 template<std::size_t dim, typename TDataType>
-class AD_Utils<1, dim, TDataType>
+class AD_Utils<1, dim, TDataType> : public AD_Utils_Base<1>
 {
 public:
     /// Assign A = B
@@ -386,8 +431,11 @@ public:
     }
 };
 
+/**
+ * Specialization for rank-2 tensor (matrix) with fixed size dim x dim
+ */
 template<std::size_t dim, typename TDataType>
-class AD_Utils<2, dim, TDataType>
+class AD_Utils<2, dim, TDataType> : public AD_Utils_Base<2>
 {
 public:
     /// Assign A = B
@@ -564,8 +612,11 @@ public:
     }
 };
 
+/**
+ * Specialization for rank-4 tensor  with fixed size dim x dim x dim x dim
+ */
 template<std::size_t dim, typename TDataType>
-class AD_Utils<4, dim, TDataType>
+class AD_Utils<4, dim, TDataType> : public AD_Utils_Base<3>
 {
 public:
 
