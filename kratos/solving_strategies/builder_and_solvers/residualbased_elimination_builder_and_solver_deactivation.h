@@ -186,7 +186,6 @@ Calculation of the reactions involves a cost very similiar to the calculation of
 
 \URL[Example of use ps]{ extended_documentation/no_ex_of_use.ps}
 
-
 \URL[Extended documentation html]{ extended_documentation/no_ext_doc.html}
 
 \URL[Extended documentation pdf]{ extended_documentation/no_ext_doc.pdf}
@@ -194,7 +193,6 @@ Calculation of the reactions involves a cost very similiar to the calculation of
 \URL[Extended documentation doc]{ extended_documentation/no_ext_doc.doc}
 
 \URL[Extended documentation ps]{ extended_documentation/no_ext_doc.ps}
-
 
 */
 template<class TSparseSpace,
@@ -208,7 +206,7 @@ class ResidualBasedEliminationBuilderAndSolverDeactivation
 public:
     /**@name Type Definitions */
     /*@{ */
-    //typedef boost::shared_ptr< ResidualBasedEliminationBuilderAndSolverDeactivation<TSparseSpace,TDenseSpace,TLinearSolver> > Pointer;
+
     KRATOS_CLASS_POINTER_DEFINITION( ResidualBasedEliminationBuilderAndSolverDeactivation );
 
     typedef BuilderAndSolver<TSparseSpace,TDenseSpace, TLinearSolver, TModelPartType> BaseType;
@@ -350,7 +348,6 @@ public:
 
         //double StartTime = GetTickCount();
 
-//        ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
         // assemble all elements
 #ifndef _OPENMP
         const ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
@@ -512,7 +509,7 @@ public:
             KRATOS_WATCH(BaseType::mEquationSystemSize)
             KRATOS_THROW_ERROR(std::logic_error, "Error: The active set of equation id's and inactive set of equation id's do not cover whole mEquationSystemSize. Check the enumeration.", __FUNCTION__)
         }
-        #endif
+        #endif // MODIFY_INACTIVE_PART_OF_THE_MATRIX
 
         std::vector< omp_lock_t > lock_array(A.size1());
 
@@ -589,22 +586,9 @@ public:
                         std::cout << "type of element: " << typeid((*it)).name() << std::endl;
                         std::cout << "element Properties " << it->GetProperties().Id() << ": " << it->GetProperties() << std::endl;
                         KRATOS_WATCH((*it))
-                        KRATOS_THROW_ERROR(std::logic_error, "NaN is detected at element ", it->Id())
+                        KRATOS_ERROR << "NaN is detected at element " << it->Id();
                     }
                     #endif
-
-                    // for (int i = 0; i < EquationId.size(); ++i)
-                    // {
-                    //     if (EquationId[i] == 0)
-                    //     {
-                    //         std::cout << "Element " << it->Id() << " contributes " << RHS_Contribution(i) << " to row " << EquationId[i] << std::endl;
-                    //         std::cout << "EquationId:";
-                    //         for (int i = 0; i < EquationId.size(); ++i)
-                    //             std::cout << " " << EquationId[i];
-                    //         std::cout << std::endl;
-                    //         break;
-                    //     }
-                    // }
 
 //                    KRATOS_WATCH(LHS_Contribution);
 //                    KRATOS_WATCH(RHS_Contribution);
@@ -715,22 +699,9 @@ public:
                         std::cout << "type of condition: " << typeid((*it)).name() << std::endl;
                         std::cout << "condition Properties " << it->GetProperties().Id() << ": " << it->GetProperties() << std::endl;
                         KRATOS_WATCH((*it))
-                        KRATOS_THROW_ERROR(std::logic_error, "NaN is detected at condition ", it->Id())
+                        KRATOS_ERROR << "NaN is detected at condition " << it->Id();
                     }
                     #endif
-
-                    // for (int i = 0; i < EquationId.size(); ++i)
-                    // {
-                    //     if (EquationId[i] == 0)
-                    //     {
-                    //         std::cout << "Condition " << it->Id() << " contributes " << RHS_Contribution(i) << " to row " << EquationId[i] << std::endl;
-                    //         std::cout << "EquationId:";
-                    //         for (int i = 0; i < EquationId.size(); ++i)
-                    //             std::cout << " " << EquationId[i];
-                    //         std::cout << std::endl;
-                    //         break;
-                    //     }
-                    // }
 
                     #if defined(ENABLE_LOG) && defined(QUERY_EQUATION_ID_AT_BUILD)
                     std::stringstream ss;
@@ -858,7 +829,7 @@ public:
         }
         if(sum_inactive_rhs > 0.0)
         {
-            KRATOS_THROW_ERROR(std::logic_error, "Error: Right hand side at inactive id's is nonzero. Check the assembly or enumeration", __FUNCTION__)
+            KRATOS_ERROR << "Error: Right hand side at inactive id's is nonzero. Check the assembly or enumeration";
         }
         else
             std::cout << "Sum of inactive ids is zero, which is ok" << std::endl;
@@ -987,7 +958,6 @@ public:
         }
 
         KRATOS_CATCH("")
-
     }
 
     //**************************************************************************
@@ -1047,9 +1017,7 @@ public:
             }
         }
 
-
         KRATOS_CATCH("")
-
     }
 
     //**************************************************************************
@@ -1620,6 +1588,7 @@ public:
     ) override
     {
         KRATOS_TRY
+
         if(pA == NULL) //if the pointer is not initialized initialize it to an empty matrix
         {
             TSystemMatrixPointerType pNewA = TSystemMatrixPointerType(new TSystemMatrixType(0,0) );
@@ -1674,7 +1643,6 @@ public:
         }
 
         KRATOS_CATCH("")
-
     }
 
     //**************************************************************************
@@ -1775,7 +1743,7 @@ public:
 
         if (this->GetEchoLevel() > 0)
         {
-            std::cout << "ResidualBasedEliminationBuilderAndSolverDeactivation Clear Function called";
+            std::cout << "ResidualBasedEliminationBuilderAndSolverDeactivation Clear Function called" << std::endl;
         }
     }
 
@@ -1835,12 +1803,13 @@ protected:
     /*@} */
     /**@name Protected Operators*/
     /*@{ */
+
     //**************************************************************************
     virtual void ConstructMatrixStructure(
         TSystemMatrixType& A,
         ElementsContainerType& rElements,
         ConditionsContainerType& rConditions,
-        const ProcessInfo& CurrentProcessInfo)
+        const ProcessInfo& CurrentProcessInfo) const
     {
         std::cout << "Warning: ConstructMatrixStructure is called." << std::endl;
         double start_time = OpenMPUtils::GetCurrentTime();
@@ -1979,14 +1948,12 @@ protected:
         }
     }
 
-
-
     //**************************************************************************
     void AssembleRHS(
         TSystemVectorType& b,
         LocalSystemVectorType& RHS_Contribution,
         typename ElementType::EquationIdVectorType& EquationId
-    )
+    ) const
     {
         unsigned int local_size = RHS_Contribution.size();
 
@@ -2021,7 +1988,6 @@ protected:
             }
         }
     }
-
 
     //**************************************************************************
     void AssembleRHSreactions(
@@ -2147,7 +2113,6 @@ private:
     /**@name Private Operations*/
     /*@{ */
 
-
     //**************************************************************************
     void AssembleLHS_CompleteOnFreeRows(
         TSystemMatrixType& A,
@@ -2172,8 +2137,7 @@ private:
     }
 
     //******************************************************************************************
-    //******************************************************************************************
-    inline void AddUnique(std::vector<std::size_t>& v, const std::size_t& candidate)
+    inline void AddUnique(std::vector<std::size_t>& v, const std::size_t& candidate) const
     {
         std::vector<std::size_t>::iterator i = v.begin();
         std::vector<std::size_t>::iterator endit = v.end();
@@ -2218,8 +2182,6 @@ private:
         }
     }
 #endif
-
-
 
     /*@} */
     /**@name Private  Access */

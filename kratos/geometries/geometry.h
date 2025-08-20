@@ -518,7 +518,7 @@ public:
         return this->size();
     }
 
-    /** This method calculate and return Length or charactereistic
+    /** This method calculate and return Length or characteristic
     length of this geometry depending to it's dimension. For one
     dimensional geometry for example Line it returns length of it
     and for the other geometries it gives Characteristic length

@@ -66,6 +66,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 namespace Kratos
 {
+
 ///this function provides basic routines for working with simplicial meshes.
 ///It is faster than using Geometry as it is more specialized
 class GeometryUtils
@@ -164,19 +165,19 @@ public:
         double y20 = geom[2].Y() - geom[0].Y();
 
         //Jacobian is calculated:
-        //  |dx/dxi  dx/deta|	|x1-x0   x2-x0|
-        //J=|				|=	|			  |
-        //  |dy/dxi  dy/deta|	|y1-y0   y2-y0|
+        //  |dx/dxi  dx/deta|   |x1-x0   x2-x0|
+        //J=|               |=  |             |
+        //  |dy/dxi  dy/deta|   |y1-y0   y2-y0|
 
 
         double detJ = x10 * y20-y10 * x20;
 
         DN_DX(0,0) = -y20 + y10;
         DN_DX(0,1) = x20 - x10;
-        DN_DX(1,0) =  y20	   ;
+        DN_DX(1,0) =  y20      ;
         DN_DX(1,1) = -x20     ;
-        DN_DX(2,0) = -y10	   ;
-        DN_DX(2,1) = x10	   ;
+        DN_DX(2,0) = -y10      ;
+        DN_DX(2,1) = x10       ;
 
         DN_DX /= detJ;
         N[0] = 0.333333333333333;
@@ -233,8 +234,8 @@ public:
         hmin = sqrt(hmin);
     }
 
-
-
+    //********************************************************************************
+    //********************************************************************************
     static inline void CalculateGeometryData(
         Element::GeometryType& geom,
         boost::numeric::ublas::bounded_matrix<double,2,1>& DN_DX,
@@ -276,71 +277,71 @@ public:
 //            KRATOS_WATCH(intersection_points[i]);
 
 
-		if(number_of_intersection_points == 0)
-		{
-			std::cout << "Warning: The intersection with interface hasn't found!" << std::endl;
-			std::cout << "Warning: The distances are: " << Distances << std::endl;
-		}
-		else if(number_of_intersection_points == 1)
-		{ // There is one point with zero distance. The distance of the nodes are their distance to this point
+        if(number_of_intersection_points == 0)
+        {
+            std::cout << "Warning: The intersection with interface hasn't found!" << std::endl;
+            std::cout << "Warning: The distances are: " << Distances << std::endl;
+        }
+        else if(number_of_intersection_points == 1)
+        { // There is one point with zero distance. The distance of the nodes are their distance to this point
 //                    std::cout << "1 intersection point" << std::endl;
-			array_1d<double,3> temp;
-			// loop over nodes to calculate their distance to the zero distance node.
+            array_1d<double,3> temp;
+            // loop over nodes to calculate their distance to the zero distance node.
                         for(unsigned int i_node = 0; i_node < ThisGeometry.size() ; i_node++)
                         {
-				noalias(temp) = intersection_points[0] - ThisGeometry[i_node];
-				Distances[i_node] = norm_2(temp);
+                noalias(temp) = intersection_points[0] - ThisGeometry[i_node];
+                Distances[i_node] = norm_2(temp);
 //                        KRATOS_WATCH(ThisGeometry[i_node].Id());
 //                        KRATOS_WATCH(intersection_points[0]);
 //                        KRATOS_WATCH(ThisGeometry[i_node].Coordinates());
 //                        KRATOS_WATCH(Distances[i_node]);
 
-			}
+            }
 //                       for(unsigned int i_node = 0; i_node < ThisGeometry.size() ; i_node++)
 //                       {
 //                           Distances[i_node] = std::abs(ThisGeometry[i_node].Z()); // To be removed. Pooyan.
 //                       }
 
-		}
-		else if(number_of_intersection_points == 2)
-		{
+        }
+        else if(number_of_intersection_points == 2)
+        {
 
 //                    std::cout << "2 intersection points" << std::endl;
-			// loop over nodes to calculate their distance to the zero distance line.
+            // loop over nodes to calculate their distance to the zero distance line.
                         for(unsigned int i_node = 0; i_node < ThisGeometry.size() ; i_node++)
                         {
-				Distances[i_node] = PointDistanceToLineSegment3D(intersection_points[0], intersection_points[1], ThisGeometry[i_node]);
+                Distances[i_node] = PointDistanceToLineSegment3D(intersection_points[0], intersection_points[1], ThisGeometry[i_node]);
 //                        KRATOS_WATCH(intersection_points[0]);
 //                        KRATOS_WATCH(intersection_points[1]);
 //                        KRATOS_WATCH(ThisGeometry[i_node]);
 //                        KRATOS_WATCH(Distances[i_node]);
-			}
+            }
 //                       for(unsigned int i_node = 0; i_node < ThisGeometry.size() ; i_node++)
 //                       {
 //                           Distances[i_node] = ThisGeometry[i_node].Z(); // To be removed. Pooyan.
 //                       }
 
-		}
-		else if(number_of_intersection_points == 3)
-		{
+        }
+        else if(number_of_intersection_points == 3)
+        {
 //                    std::cout << "3 intersection points" << std::endl;
-			// loop over nodes to calculate their distance to the zero distance triangle.
+            // loop over nodes to calculate their distance to the zero distance triangle.
                        for(unsigned int i_node = 0; i_node < ThisGeometry.size() ; i_node++)
                        {
-				Distances[i_node] = PointDistanceToTriangle3D(intersection_points[0], intersection_points[1], intersection_points[2], ThisGeometry[i_node]);
+                Distances[i_node] = PointDistanceToTriangle3D(intersection_points[0], intersection_points[1], intersection_points[2], ThisGeometry[i_node]);
 //                           Distances[i_node] = std::abs(ThisGeometry[i_node].Z()); // To be removed. Pooyan.
                        }
 
-		}
-		else if(number_of_intersection_points == 4)
-		{
+        }
+        else if(number_of_intersection_points == 4)
+        {
                     //std::cout << "4 intersection points" << std::endl;
 //                       for(unsigned int i_node = 0; i_node < ThisGeometry.size() ; i_node++)
 //                       {
 //                           Distances[i_node] = std::abs(ThisGeometry[i_node].Z()); // To be removed. Pooyan.
 //                        }
 
-			// loop over nodes to calculate their distance to the each zero distance triangle.
+            // loop over nodes to calculate their distance to the each zero distance triangle.
                        for(unsigned int i_node = 0; i_node < ThisGeometry.size() ; i_node++)
                        {   // here I'm taking in account the order of edges where I'm looking for intersection
                            double d1 = PointDistanceToTriangle3D(intersection_points[0], intersection_points[1], intersection_points[3], ThisGeometry[i_node]);
@@ -350,13 +351,10 @@ public:
 //                           KRATOS_WATCH(d2);
 //                           KRATOS_WATCH(Distances[i_node] );
 
- 			   Distances[i_node] = (d1 > d2) ? d2 : d1;
+               Distances[i_node] = (d1 > d2) ? d2 : d1;
                        }
 
-		}
-
-
-
+        }
     }
 
     /**
@@ -378,59 +376,57 @@ public:
 //            KRATOS_WATCH(intersection_points[i]);
 
 
-		if(number_of_intersection_points == 0)
-		{
-			std::cout << "Warning: The intersection with interface hasn't found!" << std::endl;
-			std::cout << "Warning: The distances are: " << Distances << std::endl;
-		}
-		else if(number_of_intersection_points == 1)
-		{ // There is one point with zero distance. The distance of the nodes are their distance to this point
+        if(number_of_intersection_points == 0)
+        {
+            std::cout << "Warning: The intersection with interface hasn't found!" << std::endl;
+            std::cout << "Warning: The distances are: " << Distances << std::endl;
+        }
+        else if(number_of_intersection_points == 1)
+        { // There is one point with zero distance. The distance of the nodes are their distance to this point
 //                    std::cout << "1 intersection point" << std::endl;
-			array_1d<double,3> temp;
-			// loop over nodes to calculate their distance to the zero distance node.
+            array_1d<double,3> temp;
+            // loop over nodes to calculate their distance to the zero distance node.
                         for(unsigned int i_node = 0; i_node < ThisGeometry.size() ; i_node++)
                         {
-				noalias(temp) = intersection_points[0] - ThisGeometry[i_node];
-				Distances[i_node] = norm_2(temp);
+                noalias(temp) = intersection_points[0] - ThisGeometry[i_node];
+                Distances[i_node] = norm_2(temp);
 //                        KRATOS_WATCH(ThisGeometry[i_node].Id());
 //                        KRATOS_WATCH(intersection_points[0]);
 //                        KRATOS_WATCH(ThisGeometry[i_node].Coordinates());
 //                        KRATOS_WATCH(Distances[i_node]);
 
-			}
+            }
 //                       for(unsigned int i_node = 0; i_node < ThisGeometry.size() ; i_node++)
 //                       {
 //                           Distances[i_node] = std::abs(ThisGeometry[i_node].Z()); // To be removed. Pooyan.
 //                       }
 
-		}
-		else if(number_of_intersection_points == 2)
-		{
+        }
+        else if(number_of_intersection_points == 2)
+        {
 
 //                    std::cout << "2 intersection points" << std::endl;
-			// loop over nodes to calculate their distance to the zero distance line.
+            // loop over nodes to calculate their distance to the zero distance line.
                         for(unsigned int i_node = 0; i_node < ThisGeometry.size() ; i_node++)
                         {
-				Distances[i_node] = PointDistanceToLineSegment3D(intersection_points[0], intersection_points[1], ThisGeometry[i_node]);
+                Distances[i_node] = PointDistanceToLineSegment3D(intersection_points[0], intersection_points[1], ThisGeometry[i_node]);
 //                        KRATOS_WATCH(intersection_points[0]);
 //                        KRATOS_WATCH(intersection_points[1]);
 //                        KRATOS_WATCH(ThisGeometry[i_node]);
 //                        KRATOS_WATCH(Distances[i_node]);
-			}
+            }
 //                       for(unsigned int i_node = 0; i_node < ThisGeometry.size() ; i_node++)
 //                       {
 //                           Distances[i_node] = ThisGeometry[i_node].Z(); // To be removed. Pooyan.
 //                       }
 
-		}
-		else
-		{
-			std::cout << "This is a triangle with more than two intersections!" << std::endl;	
-			std::cout << "Warning: Too many intersections: " << number_of_intersection_points << std::endl;		
-			std::cout << "Warning: The distances are: " << Distances << std::endl;
-			
-		}
-
+        }
+        else
+        {
+            std::cout << "This is a triangle with more than two intersections!" << std::endl;
+            std::cout << "Warning: Too many intersections: " << number_of_intersection_points << std::endl;
+            std::cout << "Warning: The distances are: " << Distances << std::endl;
+        }
     }
 
 
@@ -481,8 +477,8 @@ public:
             }
         }
 
-		return number_of_intersection_points;
-	}
+        return number_of_intersection_points;
+    }
 
 
     /**
@@ -498,9 +494,9 @@ public:
     {
         const double epsilon = 1e-15; //1.00e-9;
 
-		array_1d<double,3> v1 = LinePoint2 - LinePoint1;
-		array_1d<double,3> v2 = LinePoint1 - ToPoint;
-		array_1d<double,3> v3;
+        array_1d<double,3> v1 = LinePoint2 - LinePoint1;
+        array_1d<double,3> v2 = LinePoint1 - ToPoint;
+        array_1d<double,3> v3;
 
 //                KRATOS_WATCH(LinePoint1);
 //                KRATOS_WATCH(LinePoint2);
@@ -508,36 +504,36 @@ public:
 //
 //
 
-		double square_distance = inner_prod(v1,v1);
+        double square_distance = inner_prod(v1,v1);
 
-		if(square_distance < epsilon) // near zero length line
-			return norm_2(v2); // we return the distance to the first point of line
+        if(square_distance < epsilon) // near zero length line
+            return norm_2(v2); // we return the distance to the first point of line
 
-		double t = - inner_prod(v1,v2) / square_distance;
+        double t = - inner_prod(v1,v2) / square_distance;
 
 //                KRATOS_WATCH(t);
 
-		if(t < 0.00) // it is before point 1
-		{ // we return the distance to point 1
-			v3 = LinePoint1 - ToPoint;
+        if(t < 0.00) // it is before point 1
+        { // we return the distance to point 1
+            v3 = LinePoint1 - ToPoint;
 
-			return norm_2(v3);
-		}
+            return norm_2(v3);
+        }
 
-		if(t > 1.00) // it is after point 2
-		{ // we return the distance to point 2
-			v3 = LinePoint2 - ToPoint;
+        if(t > 1.00) // it is after point 2
+        { // we return the distance to point 2
+            v3 = LinePoint2 - ToPoint;
 
-			return norm_2(v3);
-		}
+            return norm_2(v3);
+        }
 
-		// The projection point is between point 1 and 2 of the line segment
-		v3 = LinePoint1 * (1.00 - t) + LinePoint2 * t;
+        // The projection point is between point 1 and 2 of the line segment
+        v3 = LinePoint1 * (1.00 - t) + LinePoint2 * t;
 //
 //                KRATOS_WATCH(v3);
 //                KRATOS_WATCH(v3 - ToPoint);
 
-		return norm_2(v3 - ToPoint);
+        return norm_2(v3 - ToPoint);
 
     }
 
@@ -554,96 +550,96 @@ public:
                                  Point<3> const& TrianglePoint3,
                                  Point<3> const& ToPoint)
     {
-		// The implementation is done using following reference:
-		// http://www.geometrictools.com/Documentation/DistancePoint3Triangle3.pdf
+        // The implementation is done using following reference:
+        // http://www.geometrictools.com/Documentation/DistancePoint3Triangle3.pdf
 
 
 
-		array_1d<double, 3> e0 = TrianglePoint2 - TrianglePoint1;
-		array_1d<double, 3> e1 = TrianglePoint3 - TrianglePoint1;
-		array_1d<double, 3> dd = TrianglePoint1 - ToPoint;
+        array_1d<double, 3> e0 = TrianglePoint2 - TrianglePoint1;
+        array_1d<double, 3> e1 = TrianglePoint3 - TrianglePoint1;
+        array_1d<double, 3> dd = TrianglePoint1 - ToPoint;
 
-		double a = inner_prod(e0, e0);
-		double b = inner_prod(e0, e1);
-		double c = inner_prod(e1, e1);
-		double d = inner_prod(e0, dd);
-		double e = inner_prod(e1, dd);
-		double f = inner_prod(dd, dd);
+        double a = inner_prod(e0, e0);
+        double b = inner_prod(e0, e1);
+        double c = inner_prod(e1, e1);
+        double d = inner_prod(e0, dd);
+        double e = inner_prod(e1, dd);
+        double f = inner_prod(dd, dd);
 
-		double det = a*c-b*b;
-		double s = b*e-c*d;
-		double t = b*d-a*e;
+        double det = a*c-b*b;
+        double s = b*e-c*d;
+        double t = b*d-a*e;
 
-		double square_distance = 0.00;
+        double square_distance = 0.00;
 
-		if ( s + t <= det )
-		{
-			if ( s < 0.00 )
-			{
-				if ( t < 0.00 )
-				{ // region 4
-					if (d < 0)
-					{
-						t = 0;
-						if (-d >= a)
-						{
-							s = 1;
-							square_distance = a + 2*d + f;
-						}
-						else
-						{
-							s = -d/a;
-							square_distance = d*s + f;
-						}
-					}
-					else
-					{
-						s = 0;
-						if (e >= 0)
-						{
-							t = 0;
-							square_distance = f;
-						}
-						else
-						{
-							if (-e >= c)
-							{
-								t = 1;
-								square_distance = c + 2*e + f;
-							}
-							else
-							{
-								t = -e/c;
-								square_distance = e*t + f;
-							}
-						}
-					}
-				}
-				else
-				{ // region 3
-					s = 0.00;
-					if(e >= 0.00)
-					{
-						t = 0.00;
-						square_distance = f;
-					}
-					else
-					{
-						if (-e >= c)
-						{
-							t = 1.00;
-							square_distance = c + 2*e +f;
-						}
-						else
-						{
-							t = -e/c;
-							square_distance = e*t + f;
-						}
-					}
+        if ( s + t <= det )
+        {
+            if ( s < 0.00 )
+            {
+                if ( t < 0.00 )
+                { // region 4
+                    if (d < 0)
+                    {
+                        t = 0;
+                        if (-d >= a)
+                        {
+                            s = 1;
+                            square_distance = a + 2*d + f;
+                        }
+                        else
+                        {
+                            s = -d/a;
+                            square_distance = d*s + f;
+                        }
+                    }
+                    else
+                    {
+                        s = 0;
+                        if (e >= 0)
+                        {
+                            t = 0;
+                            square_distance = f;
+                        }
+                        else
+                        {
+                            if (-e >= c)
+                            {
+                                t = 1;
+                                square_distance = c + 2*e + f;
+                            }
+                            else
+                            {
+                                t = -e/c;
+                                square_distance = e*t + f;
+                            }
+                        }
+                    }
+                }
+                else
+                { // region 3
+                    s = 0.00;
+                    if(e >= 0.00)
+                    {
+                        t = 0.00;
+                        square_distance = f;
+                    }
+                    else
+                    {
+                        if (-e >= c)
+                        {
+                            t = 1.00;
+                            square_distance = c + 2*e +f;
+                        }
+                        else
+                        {
+                            t = -e/c;
+                            square_distance = e*t + f;
+                        }
+                    }
 
-				}
-			}
-			else if ( t < 0.00 )
+                }
+            }
+            else if ( t < 0.00 )
                         { // region 5
                             t = 0;
                             if (d >= 0)
@@ -666,131 +662,131 @@ public:
                             }
                         }
                         else
-			{ // region 0
-				double inv_det = 1.00 / det;
-				s *= inv_det;
-				t *= inv_det;
-				square_distance = s*(a*s + b*t + 2*d) + t*(b*s + c*t + 2*e) + f;
-			}
-		}
-		else
-		{
-			if ( s < 0.00 )
-			{ // region 2
-				double temp0 = b + d;
-				double temp1 = c + e;
-				if (temp1 > temp0)  // minimum on edge s+t=1
-				{
-					double numer = temp1 - temp0;
-					double denom = a - 2*b + c;
-					if(numer >= denom)
-					{
-						s = 1.00;
-						t = 0.00;
-						square_distance = a + 2*d + f;
-					}
-					else
-					{
-						s = numer/denom;
-						t = 1.00-s;
-						square_distance = s*(a*s + b*t + 2*d) + t*(b*s + c*t + 2*e) + f;
-					}
-				}
-				else          // minimum on edge s=0
-				{
-					s = 0.00;
-					if(temp1 <= 0.00)
-					{
-						t = 1;
-						square_distance = c + 2*e + f;
-					}
-					else
-					{
-						if(e >= 0.00)
-						{
-							t = 0.00;
-							square_distance = f;
-						}
-						else
-						{
-							t = -e/c;
-							square_distance = e*t + f;
-						}
-					}
-				}
-			}
-			else if ( t < 0.00 )
-			{ // region 6
-				double temp0 = b + e;
-				double temp1 = a + d;
-				if (temp1 > temp0)
-				{
-					double numer = temp1 - temp0;
-					double denom = a - 2*b + c;
-					if(numer >= denom)
-					{
-						s = 0.00;
-						t = 1.00;
-						square_distance = c + 2*e + f;
-					}
-					else
-					{
-						t = numer/denom;
-						s = 1.00-t;
-						square_distance = s*(a*s + b*t + 2*d) + t*(b*s + c*t + 2*e) + f;
-					}
-				}
-				else
-				{
-					t = 0.00;
-					if(temp1 <= 0.00)
-					{
-						s = 1;
-						square_distance = a + 2*d + f;
-					}
-					else
-					{
-						if(d >= 0.00)
-						{
-							s = 0.00;
-							square_distance = f;
-						}
-						else
-						{
-							s = -d/a;
-							square_distance = d*s + f;
-						}
-					}
-				}
-			}
-			else
-			{ // region 1
-				double numer = c + e - b - d;
+            { // region 0
+                double inv_det = 1.00 / det;
+                s *= inv_det;
+                t *= inv_det;
+                square_distance = s*(a*s + b*t + 2*d) + t*(b*s + c*t + 2*e) + f;
+            }
+        }
+        else
+        {
+            if ( s < 0.00 )
+            { // region 2
+                double temp0 = b + d;
+                double temp1 = c + e;
+                if (temp1 > temp0)  // minimum on edge s+t=1
+                {
+                    double numer = temp1 - temp0;
+                    double denom = a - 2*b + c;
+                    if(numer >= denom)
+                    {
+                        s = 1.00;
+                        t = 0.00;
+                        square_distance = a + 2*d + f;
+                    }
+                    else
+                    {
+                        s = numer/denom;
+                        t = 1.00-s;
+                        square_distance = s*(a*s + b*t + 2*d) + t*(b*s + c*t + 2*e) + f;
+                    }
+                }
+                else          // minimum on edge s=0
+                {
+                    s = 0.00;
+                    if(temp1 <= 0.00)
+                    {
+                        t = 1;
+                        square_distance = c + 2*e + f;
+                    }
+                    else
+                    {
+                        if(e >= 0.00)
+                        {
+                            t = 0.00;
+                            square_distance = f;
+                        }
+                        else
+                        {
+                            t = -e/c;
+                            square_distance = e*t + f;
+                        }
+                    }
+                }
+            }
+            else if ( t < 0.00 )
+            { // region 6
+                double temp0 = b + e;
+                double temp1 = a + d;
+                if (temp1 > temp0)
+                {
+                    double numer = temp1 - temp0;
+                    double denom = a - 2*b + c;
+                    if(numer >= denom)
+                    {
+                        s = 0.00;
+                        t = 1.00;
+                        square_distance = c + 2*e + f;
+                    }
+                    else
+                    {
+                        t = numer/denom;
+                        s = 1.00-t;
+                        square_distance = s*(a*s + b*t + 2*d) + t*(b*s + c*t + 2*e) + f;
+                    }
+                }
+                else
+                {
+                    t = 0.00;
+                    if(temp1 <= 0.00)
+                    {
+                        s = 1;
+                        square_distance = a + 2*d + f;
+                    }
+                    else
+                    {
+                        if(d >= 0.00)
+                        {
+                            s = 0.00;
+                            square_distance = f;
+                        }
+                        else
+                        {
+                            s = -d/a;
+                            square_distance = d*s + f;
+                        }
+                    }
+                }
+            }
+            else
+            { // region 1
+                double numer = c + e - b - d;
 
-				if (numer <= 0.00)
-				{
-					s = 0.00;
-					t = 1.00;
-					square_distance = c + 2.00 * e + f;
-				}
-				else
-				{
-					double denom = a - 2.00 * b + c;
-					if (numer >= denom)
-					{
-						s = 1.00;
-						t = 0.00;
-						square_distance = a + 2.00 * d + f;
-					}
-					else
-					{
-						s = numer / denom;
-						t = 1.00 - s;
-						square_distance = s*(a*s + b*t + 2*d) + t*(b*s + c*t + 2*e) + f;
-					}
-				}
-			}
-		}
+                if (numer <= 0.00)
+                {
+                    s = 0.00;
+                    t = 1.00;
+                    square_distance = c + 2.00 * e + f;
+                }
+                else
+                {
+                    double denom = a - 2.00 * b + c;
+                    if (numer >= denom)
+                    {
+                        s = 1.00;
+                        t = 0.00;
+                        square_distance = a + 2.00 * d + f;
+                    }
+                    else
+                    {
+                        s = numer / denom;
+                        t = 1.00 - s;
+                        square_distance = s*(a*s + b*t + 2*d) + t*(b*s + c*t + 2*e) + f;
+                    }
+                }
+            }
+        }
 
                 if(square_distance < 0.00)
                     return 0.00; // avoiding -0 case!!
@@ -798,12 +794,30 @@ public:
         return std::sqrt(square_distance);
     }
 
+    /** This method calculate and return Length or characteristic
+    length of this geometry depending on the plane normal. This is
+    inspired by the crack band approach
 
+    @return double value contains length or Characteristic
+    length
+    @see Area()
+    @see Volume()
+    @see DomainSize()
+    */
+    static double Length(const Element::GeometryType& rGeometry, const Element::GeometryType::CoordinatesArrayType& rNormal)
+    {
+        double max_dist = -1e99, min_dist = 1e99, dist;
+        for (unsigned int i = 0; i < rGeometry.size(); ++i)
+        {
+            dist = inner_prod(rGeometry[i].GetInitialPosition(), rNormal);
 
+            if (dist > max_dist) max_dist = dist;
+            if (dist < min_dist) min_dist = dist;
+        }
+        return max_dist - min_dist;
+    }
 };
 
 }  // namespace Kratos.
 
-#endif // KRATOS_GEOMETRY_UTILITIES_INCLUDED  defined 
-
-
+#endif // KRATOS_GEOMETRY_UTILITIES_INCLUDED  defined

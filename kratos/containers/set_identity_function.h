@@ -2,13 +2,13 @@
 //    ' /   __| _` | __|  _ \   __|
 //    . \  |   (   | |   (   |\__ `
 //   _|\_\_|  \__,_|\__|\___/ ____/
-//                   Multi-Physics 
+//                   Multi-Physics
 //
 //  License:         BSD License
 //                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Pooyan Dadvand
-//                    
+//
 //
 
 #if !defined(KRATOS_SET_IDENTITY_FUNCTION_H_INCLUDED )
@@ -38,7 +38,7 @@ namespace Kratos
  * @tparam TDataType The data type of the object that the functor operates on.
  * @author Pooyan Dadvand
  */
-template<class TDataType> 
+template<class TDataType>
 class SetIdentityFunction
 {
 public:
@@ -70,4 +70,4 @@ public:
 
 }  // namespace Kratos.
 
-#endif // KRATOS_SET_IDENTITY_FUNCTION_H_INCLUDED  defined 
+#endif // KRATOS_SET_IDENTITY_FUNCTION_H_INCLUDED  defined

@@ -205,7 +205,7 @@ boost::python::list CalculateOnIntegrationPointsDouble( TEntityType& dummy,
 
 template<class TEntityType, typename TDataType>
 void SetValuesOnIntegrationPointsDouble( TEntityType& dummy, const Variable<TDataType>& rVariable,
-        boost::python::list values_list,  const ProcessInfo& rCurrentProcessInfo )
+        boost::python::list values_list, const ProcessInfo& rCurrentProcessInfo )
 {
     typename TEntityType::GeometryType::IntegrationPointsArrayType integration_points =
             dummy.GetGeometry().IntegrationPoints( dummy.GetIntegrationMethod() );
@@ -254,7 +254,8 @@ void SetValuesOnIntegrationPointsInt( TEntityType& dummy, const Variable<int>& r
     typename TEntityType::GeometryType::IntegrationPointsArrayType integration_points =
             dummy.GetGeometry().IntegrationPoints( dummy.GetIntegrationMethod() );
     if (boost::python::len(values_list) != integration_points.size())
-        KRATOS_ERROR << "Incompatiable number of integration points and given values";
+        KRATOS_ERROR << "Incompatiable number of integration points and given values "
+                     << boost::python::len(values_list) << " != " << integration_points.size();
     std::vector<int> values( integration_points.size() );
     for( unsigned int i=0; i<integration_points.size(); i++ )
     {
@@ -298,7 +299,8 @@ void SetValuesOnIntegrationPointsBool( TEntityType& dummy, const Variable<bool>&
     typename TEntityType::GeometryType::IntegrationPointsArrayType integration_points =
             dummy.GetGeometry().IntegrationPoints( dummy.GetIntegrationMethod() );
     if (boost::python::len(values_list) != integration_points.size())
-        KRATOS_ERROR << "Incompatiable number of integration points and given values";
+        KRATOS_ERROR << "Incompatiable number of integration points and given values "
+                     << boost::python::len(values_list) << " != " << integration_points.size();
     std::vector<bool> values( integration_points.size() );
     for( unsigned int i=0; i<integration_points.size(); i++ )
     {
@@ -340,7 +342,8 @@ void SetValuesOnIntegrationPointsString( TEntityType& dummy, const Variable<std:
     typename TEntityType::GeometryType::IntegrationPointsArrayType integration_points
             = dummy.GetGeometry().IntegrationPoints( dummy.GetIntegrationMethod() );
     if (boost::python::len(values_list) != integration_points.size())
-        KRATOS_ERROR << "Incompatiable number of integration points and given values";
+        KRATOS_ERROR << "Incompatiable number of integration points and given values "
+                     << boost::python::len(values_list) << " != " << integration_points.size();
     std::vector<std::string> values( integration_points.size() );
     for( unsigned int i=0; i<integration_points.size(); i++ )
     {
@@ -385,7 +388,8 @@ void SetValuesOnIntegrationPointsArray1d( TEntityType& dummy, const Variable< ar
     typename TEntityType::GeometryType::IntegrationPointsArrayType integration_points =
             dummy.GetGeometry().IntegrationPoints( dummy.GetIntegrationMethod() );
     if (boost::python::len(values_list) != integration_points.size())
-        KRATOS_ERROR << "Incompatiable number of integration points and given values";
+        KRATOS_ERROR << "Incompatiable number of integration points and given values "
+                     << boost::python::len(values_list) << " != " << integration_points.size();
     std::vector< array_1d<TDataType, 3> > values( integration_points.size() );
     for( unsigned int i=0; i<integration_points.size(); i++ )
     {
@@ -431,7 +435,8 @@ void SetValuesOnIntegrationPointsVector( TEntityType& dummy,
     typename TEntityType::GeometryType::IntegrationPointsArrayType integration_points =
             dummy.GetGeometry().IntegrationPoints( dummy.GetIntegrationMethod() );
     if (boost::python::len(values_list) != integration_points.size())
-        KRATOS_ERROR << "Incompatiable number of integration points and given values";
+        KRATOS_ERROR << "Incompatiable number of integration points and given values "
+                     << boost::python::len(values_list) << " != " << integration_points.size();
     std::vector<TVectorType> values( integration_points.size() );
     for( unsigned int i=0; i<integration_points.size(); i++ )
     {
@@ -459,7 +464,8 @@ void SetValuesOnIntegrationPointsVectorVariableLength( TEntityType& dummy,
     typename TEntityType::GeometryType::IntegrationPointsArrayType integration_points =
             dummy.GetGeometry().IntegrationPoints( dummy.GetIntegrationMethod() );
     if (boost::python::len(values_list) != integration_points.size())
-        KRATOS_ERROR << "Incompatiable number of integration points and given values";
+        KRATOS_ERROR << "Incompatiable number of integration points and given values "
+                     << boost::python::len(values_list) << " != " << integration_points.size();
     std::vector<TVectorType> values( integration_points.size() );
     for( unsigned int i=0; i<integration_points.size(); i++ )
     {
@@ -542,7 +548,8 @@ void SetValuesOnIntegrationPointsConstitutiveLaw( TEntityType& dummy, const Vari
     typename TEntityType::GeometryType::IntegrationPointsArrayType integration_points =
             dummy.GetGeometry().IntegrationPoints( dummy.GetIntegrationMethod() );
     if (boost::python::len(values_list) != integration_points.size())
-        KRATOS_ERROR << "Incompatiable number of integration points and given values";
+        KRATOS_ERROR << "Incompatiable number of integration points and given values "
+                     << boost::python::len(values_list) << " != " << integration_points.size();
     std::vector<typename TEntityType::ConstitutiveLawType::Pointer> values( integration_points.size() );
     for( unsigned int i=0; i<integration_points.size(); i++ )
     {

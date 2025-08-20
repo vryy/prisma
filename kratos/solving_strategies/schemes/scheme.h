@@ -276,8 +276,7 @@ public:
         ModelPartType& rModelPart,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
-        TSystemVectorType& b
-    )
+        TSystemVectorType& b)
     {
         KRATOS_TRY
 
@@ -370,8 +369,7 @@ public:
         ModelPartType& rModelPart,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
-        TSystemVectorType& b
-        )
+        TSystemVectorType& b)
     {
         KRATOS_TRY
 
@@ -403,8 +401,7 @@ public:
         ModelPartType& rModelPart,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
-        TSystemVectorType& b
-        )
+        TSystemVectorType& b)
     {
         KRATOS_TRY
 
@@ -438,8 +435,7 @@ public:
         DofsArrayType& rDofSet,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
-        TSystemVectorType& b
-    )
+        TSystemVectorType& b)
     {
         KRATOS_TRY
         KRATOS_CATCH("")
@@ -459,8 +455,7 @@ public:
         DofsArrayType& rDofSet,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
-        TSystemVectorType& b
-        )
+        TSystemVectorType& b)
     {
         KRATOS_TRY
         KRATOS_CATCH("")
@@ -480,8 +475,7 @@ public:
         DofsArrayType& rDofSet,
         TSystemMatrixType& A,
         TSystemVectorType& Dx,
-        TSystemVectorType& b
-        )
+        TSystemVectorType& b)
     {
         KRATOS_TRY
         KRATOS_CATCH("")
@@ -576,8 +570,7 @@ public:
         LocalSystemMatrixType& LHS_Contribution,
         LocalSystemVectorType& RHS_Contribution,
         typename ElementType::EquationIdVectorType& rEquationIdVector,
-        const ProcessInfo& rCurrentProcessInfo
-        )
+        const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
@@ -593,9 +586,8 @@ public:
         ConditionType& rCondition,
         LocalSystemMatrixType& LHS_Contribution,
         LocalSystemVectorType& RHS_Contribution,
-        typename ElementType::EquationIdVectorType& rEquationIdVector,
-        const ProcessInfo& rCurrentProcessInfo
-        )
+        typename ConditionType::EquationIdVectorType& rEquationIdVector,
+        const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
@@ -610,8 +602,7 @@ public:
         ElementType& rElement,
         LocalSystemVectorType& RHS_Contribution,
         typename ElementType::EquationIdVectorType& rEquationIdVector,
-        const ProcessInfo& rCurrentProcessInfo
-        )
+        const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
@@ -625,9 +616,8 @@ public:
     virtual void CalculateRHSContribution(
         ConditionType& rCondition,
         LocalSystemVectorType& RHS_Contribution,
-        typename ElementType::EquationIdVectorType& rEquationIdVector,
-        const ProcessInfo& rCurrentProcessInfo
-        )
+        typename ConditionType::EquationIdVectorType& rEquationIdVector,
+        const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
@@ -642,8 +632,7 @@ public:
         ElementType& rElement,
         LocalSystemMatrixType& LHS_Contribution,
         typename ElementType::EquationIdVectorType& rEquationIdVector,
-        const ProcessInfo& rCurrentProcessInfo
-        )
+        const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
@@ -657,14 +646,13 @@ public:
     virtual void CalculateLHSContribution(
         ConditionType& rCondition,
         LocalSystemMatrixType& LHS_Contribution,
-        typename ElementType::EquationIdVectorType& rEquationIdVector,
-        const ProcessInfo& rCurrentProcessInfo
-        )
+        typename ConditionType::EquationIdVectorType& rEquationIdVector,
+        const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
     /**
-     * @brief This method gets the eqaution id corresponding to the current element
+     * @brief This method gets the equation id corresponding to the current element
      * @param rElement The element to compute
      * @param rEquationId The ID's of the element degrees of freedom
      * @param rCurrentProcessInfo The current process info instance
@@ -672,23 +660,21 @@ public:
     virtual void EquationId(
         const ElementType& rElement,
         typename ElementType::EquationIdVectorType& rEquationId,
-        const ProcessInfo& rCurrentProcessInfo
-        )
+        const ProcessInfo& rCurrentProcessInfo)
     {
         rElement.EquationIdVector(rEquationId, rCurrentProcessInfo);
     }
 
     /**
-     * @brief Functions totally analogous to the precedent but applied to the "condition" objects
+     * @brief This method gets the equation id corresponding to the current condition
      * @param rCondition The condition to compute
      * @param rEquationId The ID's of the condition degrees of freedom
      * @param rCurrentProcessInfo The current process info instance
      */
     virtual void EquationId(
         const ConditionType& rCondition,
-        typename ElementType::EquationIdVectorType& rEquationId,
-        const ProcessInfo& rCurrentProcessInfo
-        )
+        typename ConditionType::EquationIdVectorType& rEquationId,
+        const ProcessInfo& rCurrentProcessInfo)
     {
         rCondition.EquationIdVector(rEquationId, rCurrentProcessInfo);
     }
@@ -702,8 +688,7 @@ public:
     virtual void GetDofList(
         const ElementType& rElement,
         typename ElementType::DofsVectorType& rDofList,
-        const ProcessInfo& rCurrentProcessInfo
-        )
+        const ProcessInfo& rCurrentProcessInfo)
     {
         rElement.GetDofList(rDofList, rCurrentProcessInfo);
     }
@@ -716,9 +701,8 @@ public:
      */
     virtual void GetDofList(
         const ConditionType& rCondition,
-        typename ElementType::DofsVectorType& rDofList,
-        const ProcessInfo& rCurrentProcessInfo
-        )
+        typename ConditionType::DofsVectorType& rDofList,
+        const ProcessInfo& rCurrentProcessInfo)
     {
         rCondition.GetDofList(rDofList, rCurrentProcessInfo);
     }
