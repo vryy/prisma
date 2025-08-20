@@ -629,6 +629,14 @@ namespace Internals
 #define KRATOS_QUADRILATERAL_DIFFUSION_CONVECTION_ELEMENT_INCLUDED
 #define KRATOS_TETRAHEDRAL_HEAT_CONDUCTIVITY_ELEMENT_INCLUDED
 
+#define KRATOS_SWATCH(ostream, variable) \
+  ostream << #variable << " : " << variable << std::endl;
+
+#define KRATOS_SWATCH_STD_CON(ostream, variable) \
+  ostream << #variable << " :"; \
+  for (auto it___ = variable.begin(); it___ != variable.end(); ++it___) ostream << " " << *it___; \
+  ostream << std::endl;
+
 #define KRATOS_WATCH(variable) \
   std::cout << #variable << " : " << variable << std::endl;
 
