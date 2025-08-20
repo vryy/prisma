@@ -21,6 +21,7 @@
 #define  KRATOS_GEOMETRY_H_INCLUDED
 
 // System includes
+#include <limits>
 
 // External includes
 
@@ -533,6 +534,31 @@ public:
     virtual DataType Length() const
     {
         return 0;
+    }
+
+    /** This method calculate and return Length or characteristic
+    length of this geometry depending on the plane normal. This is
+    inspired by the crack band approach
+
+    @return double value contains length or Characteristic
+    length
+    @see Area()
+    @see Volume()
+    @see DomainSize()
+    */
+    double Length(const CoordinatesArrayType& rNormal) const
+    {
+        double max_dist = -std::numeric_limits<double>::max(),
+               min_dist = std::numeric_limits<double>::max(),
+               dist;
+        for (unsigned int i = 0; i < this->PointsNumber(); ++i)
+        {
+            dist = inner_prod((( *this )[i]).GetInitialPosition(), rNormal);
+
+            if (dist > max_dist) max_dist = dist;
+            if (dist < min_dist) min_dist = dist;
+        }
+        return max_dist - min_dist;
     }
 
     /** This method calculate and return area or surface area of
