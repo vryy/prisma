@@ -1213,11 +1213,14 @@ public:
         // assemble all elements
         for (typename ElementsContainerType::iterator it=pElements.begin(); it!=pElements.end(); ++it)
         {
-            //calculate elemental Right Hand Side Contribution
-            pScheme->CalculateRHSContribution(*it,RHS_Contribution,EquationId,CurrentProcessInfo);
+            if( !it->GetValue( IS_INACTIVE ) || it->Is( ACTIVE ) )
+            {
+                //calculate elemental Right Hand Side Contribution
+                pScheme->CalculateRHSContribution(*it,RHS_Contribution,EquationId,CurrentProcessInfo);
 
-            //assemble the elemental contribution
-            AssembleRHS(b,RHS_Contribution,EquationId);
+                //assemble the elemental contribution
+                AssembleRHS(b,RHS_Contribution,EquationId);
+            }
         }
 
         LHS_Contribution.resize(0,0,false);
@@ -1226,11 +1229,14 @@ public:
         // assemble all conditions
         for (typename ConditionsContainerType::iterator it=ConditionsArray.begin(); it!=ConditionsArray.end(); ++it)
         {
-            //calculate elemental contribution
-            pScheme->CalculateRHSContribution(*it,RHS_Contribution,EquationId,CurrentProcessInfo);
+            if( !it->GetValue( IS_INACTIVE ) || it->Is( ACTIVE ) )
+            {
+                //calculate conditional contribution
+                pScheme->CalculateRHSContribution(*it,RHS_Contribution,EquationId,CurrentProcessInfo);
 
-            //assemble the elemental contribution
-            AssembleRHS(b,RHS_Contribution,EquationId);
+                //assemble the conditional contribution
+                AssembleRHS(b,RHS_Contribution,EquationId);
+            }
         }
 
         KRATOS_CATCH("")
