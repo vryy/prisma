@@ -225,6 +225,35 @@ void SetValuesOnIntegrationPointsDouble( TEntityType& dummy, const Variable<TDat
     dummy.SetValuesOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
 }
 
+template<class TEntityType, typename TDataType>
+void SetValuesOnIntegrationPointsDoubleWithCheck( TEntityType& dummy, const Variable<TDataType>& rVariable,
+        boost::python::list values_list, const ProcessInfo& rCurrentProcessInfo, const bool check )
+{
+    const unsigned int len = boost::python::len(values_list);
+
+    if (check)
+    {
+        typename TEntityType::GeometryType::IntegrationPointsArrayType integration_points =
+                dummy.GetGeometry().IntegrationPoints( dummy.GetIntegrationMethod() );
+        if (boost::python::len(values_list) != integration_points.size())
+            KRATOS_ERROR << "Incompatiable number of integration points and given values "
+                         << len << " != " << integration_points.size();
+    }
+    std::vector<TDataType> values( len );
+    for( unsigned int i=0; i<len; i++ )
+    {
+        boost::python::extract<TDataType> x( values_list[i] );
+        if( x.check() )
+        {
+            values[i] = x();
+        }
+        else
+            break;
+    }
+    dummy.SetValuesOnIntegrationPoints( rVariable, values, rCurrentProcessInfo );
+}
+
+
 template<class TEntityType>
 boost::python::list GetValuesOnIntegrationPointsInt( TEntityType& dummy,
         const Variable<int>& rVariable, const ProcessInfo& rCurrentProcessInfo )
@@ -704,6 +733,7 @@ void AddMeshToPython(const std::string& Prefix)
     .def("SetValuesOnIntegrationPoints", SetValuesOnIntegrationPointsVectorVariableLength<ElementType, VectorType>)
     .def("SetValuesOnIntegrationPoints", SetValuesOnIntegrationPointsConstitutiveLaw<ElementType>)
     .def("SetValuesOnIntegrationPoints", SetValuesOnIntegrationPointsDouble<ElementType, DataType>)
+    .def("SetValuesOnIntegrationPoints", SetValuesOnIntegrationPointsDoubleWithCheck<ElementType, DataType>)
     .def("SetValuesOnIntegrationPoints", SetValuesOnIntegrationPointsInt<ElementType>)
     .def("SetValuesOnIntegrationPoints", SetValuesOnIntegrationPointsBool<ElementType>)
     .def("SetValuesOnIntegrationPoints", SetValuesOnIntegrationPointsString<ElementType>)
