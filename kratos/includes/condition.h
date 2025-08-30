@@ -291,6 +291,32 @@ public:
                      << __FUNCTION__ << " is not implemented";
     }
 
+#ifdef KRATOS_NONSQUARE_SUPPORT
+    /**
+     * this determines the row condition equation ID vector for all condition DOFs
+     * By default, the equation ID vector of the squared version is returned
+     * @param rResult the condition equation ID vector
+     * @param rCurrentProcessInfo the current process info instance
+     */
+    virtual void RowEquationIdVector(EquationIdVectorType& rResult,
+                                     const ProcessInfo& rCurrentProcessInfo) const
+    {
+        this->EquationIdVector(rResult, rCurrentProcessInfo);
+    }
+
+    /**
+     * this determines the column condition equation ID vector for all condition DOFs
+     * By default, the equation ID vector of the squared version is returned
+     * @param rResult the condition equation ID vector
+     * @param rCurrentProcessInfo the current process info instance
+     */
+    virtual void ColumnEquationIdVector(EquationIdVectorType& rResult,
+                                        const ProcessInfo& rCurrentProcessInfo) const
+    {
+        this->EquationIdVector(rResult, rCurrentProcessInfo);
+    }
+#endif
+
     /**
      * determines the condition list of DOFs
      * @param ConditionDofList the list of DOFs
@@ -302,6 +328,32 @@ public:
         KRATOS_ERROR << "Condition " << this->Id() << ", type " << typeid(*this).name() << ": "
                      << __FUNCTION__ << " is not implemented";
     }
+
+#ifdef KRATOS_NONSQUARE_SUPPORT
+    /**
+     * determines the row condition list of DOFs
+     * By default, dof list of the squared version is returned
+     * @param ConditionDofList the list of DOFs
+     * @param rCurrentProcessInfo the current process info instance
+     */
+    virtual void GetRowDofList(DofsVectorType& rConditionDofList,
+                               const ProcessInfo& rCurrentProcessInfo) const
+    {
+        this->GetDofList(rConditionDofList, rCurrentProcessInfo);
+    }
+
+    /**
+     * determines the column condition list of DOFs
+     * By default, dof list of the squared version is returned
+     * @param ConditionDofList the list of DOFs
+     * @param rCurrentProcessInfo the current process info instance
+     */
+    virtual void GetColumnDofList(DofsVectorType& rConditionDofList,
+                                  const ProcessInfo& rCurrentProcessInfo) const
+    {
+        this->GetDofList(rConditionDofList, rCurrentProcessInfo);
+    }
+#endif
 
     /**
      * returns the used integration method. In the general case this is the

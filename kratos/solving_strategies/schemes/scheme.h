@@ -574,6 +574,28 @@ public:
     {
     }
 
+#ifdef KRATOS_NONSQUARE_SUPPORT
+    /**
+     * @brief This function is designed to be called in the builder and solver to introduce the selected time integration scheme.
+     * @details It "asks" the matrix needed to the element and performs the operations needed to introduce the selected time integration scheme. This function calculates at the same time the contribution to the LHS and to the RHS of the system
+     * @param rElement The element to compute
+     * @param LHS_Contribution The LHS matrix contribution
+     * @param RHS_Contribution The RHS vector contribution
+     * @param rRowEquationIdVector The ID's of the row element degrees of freedom
+     * @param rColEquationIdVector The ID's of the column element degrees of freedom
+     * @param rCurrentProcessInfo The current process info instance
+     */
+    virtual void CalculateSystemContributions(
+        ElementType& rElement,
+        LocalSystemMatrixType& LHS_Contribution,
+        LocalSystemVectorType& RHS_Contribution,
+        typename ElementType::EquationIdVectorType& rRowEquationIdVector,
+        typename ElementType::EquationIdVectorType& rColEquationIdVector,
+        const ProcessInfo& rCurrentProcessInfo)
+    {
+    }
+#endif
+
     /**
      * @brief Functions totally analogous to the precedent but applied to the "condition" objects
      * @param rCondition The condition to compute
@@ -590,6 +612,27 @@ public:
         const ProcessInfo& rCurrentProcessInfo)
     {
     }
+
+#ifdef KRATOS_NONSQUARE_SUPPORT
+    /**
+     * @brief Functions totally analogous to the precedent but applied to the "condition" objects
+     * @param rCondition The condition to compute
+     * @param LHS_Contribution The LHS matrix contribution
+     * @param RHS_Contribution The RHS vector contribution
+     * @param rRowEquationIdVector The ID's of the row condition degrees of freedom
+     * @param rColEquationIdVector The ID's of the column condition degrees of freedom
+     * @param rCurrentProcessInfo The current process info instance
+     */
+    virtual void CalculateSystemContributions(
+        ConditionType& rCondition,
+        LocalSystemMatrixType& LHS_Contribution,
+        LocalSystemVectorType& RHS_Contribution,
+        typename ConditionType::EquationIdVectorType& rRowEquationIdVector,
+        typename ConditionType::EquationIdVectorType& rColEquationIdVector,
+        const ProcessInfo& rCurrentProcessInfo)
+    {
+    }
+#endif
 
     /**
      * @brief This function is designed to calculate just the RHS contribution
@@ -636,6 +679,24 @@ public:
     {
     }
 
+#ifdef KRATOS_NONSQUARE_SUPPORT
+    /**
+     * @brief This function is designed to calculate just the LHS contribution
+     * @param rElement The element to compute
+     * @param LHS_Contribution The RHS vector contribution
+     * @param rRowEquationIdVector The ID's of the row element degrees of freedom
+     * @param rCurrentProcessInfo The current process info instance
+     */
+    virtual void CalculateLHSContribution(
+        ElementType& rElement,
+        LocalSystemMatrixType& LHS_Contribution,
+        typename ElementType::EquationIdVectorType& rRowEquationIdVector,
+        typename ElementType::EquationIdVectorType& rColEquationIdVector,
+        const ProcessInfo& rCurrentProcessInfo)
+    {
+    }
+#endif
+
     /**
      * @brief Functions totally analogous to the precedent but applied to the "condition" objects
      * @param rCondition The condition to compute
@@ -651,6 +712,25 @@ public:
     {
     }
 
+#ifdef KRATOS_NONSQUARE_SUPPORT
+    /**
+     * @brief Functions totally analogous to the precedent but applied to the "condition" objects
+     * @param rCondition The condition to compute
+     * @param LHS_Contribution The RHS vector contribution
+     * @param rRowEquationIdVector The ID's of the row condition degrees of freedom
+     * @param rColumnEquationIdVector The ID's of the column condition degrees of freedom
+     * @param rCurrentProcessInfo The current process info instance
+     */
+    virtual void CalculateLHSContribution(
+        ConditionType& rCondition,
+        LocalSystemMatrixType& LHS_Contribution,
+        typename ConditionType::EquationIdVectorType& rRowEquationIdVector,
+        typename ConditionType::EquationIdVectorType& rColEquationIdVector,
+        const ProcessInfo& rCurrentProcessInfo)
+    {
+    }
+#endif
+
     /**
      * @brief This method gets the equation id corresponding to the current element
      * @param rElement The element to compute
@@ -664,6 +744,24 @@ public:
     {
         rElement.EquationIdVector(rEquationId, rCurrentProcessInfo);
     }
+
+#ifdef KRATOS_NONSQUARE_SUPPORT
+    /**
+     * @brief This method gets the equation id corresponding to the current element
+     * @param rElement The element to compute
+     * @param rEquationId The ID's of the element degrees of freedom
+     * @param rCurrentProcessInfo The current process info instance
+     */
+    virtual void EquationId(
+        const ElementType& rElement,
+        typename ElementType::EquationIdVectorType& rRowEquationId,
+        typename ElementType::EquationIdVectorType& rColEquationId,
+        const ProcessInfo& rCurrentProcessInfo)
+    {
+        rElement.RowEquationIdVector(rRowEquationId, rCurrentProcessInfo);
+        rElement.ColumnEquationIdVector(rColEquationId, rCurrentProcessInfo);
+    }
+#endif
 
     /**
      * @brief This method gets the equation id corresponding to the current condition
@@ -679,6 +777,24 @@ public:
         rCondition.EquationIdVector(rEquationId, rCurrentProcessInfo);
     }
 
+#ifdef KRATOS_NONSQUARE_SUPPORT
+    /**
+     * @brief This method gets the equation id corresponding to the current condition
+     * @param rCondition The condition to compute
+     * @param rEquationId The ID's of the condition degrees of freedom
+     * @param rCurrentProcessInfo The current process info instance
+     */
+    virtual void EquationId(
+        const ConditionType& rCondition,
+        typename ConditionType::EquationIdVectorType& rRowEquationId,
+        typename ConditionType::EquationIdVectorType& rColEquationId,
+        const ProcessInfo& rCurrentProcessInfo)
+    {
+        rCondition.RowEquationIdVector(rRowEquationId, rCurrentProcessInfo);
+        rCondition.RowEquationIdVector(rColEquationId, rCurrentProcessInfo);
+    }
+#endif
+
     /**
      * @brief Function that returns the list of Degrees of freedom to be assembled in the system for a Given element
      * @param pCurrentElement The element to compute
@@ -693,6 +809,36 @@ public:
         rElement.GetDofList(rDofList, rCurrentProcessInfo);
     }
 
+#ifdef KRATOS_NONSQUARE_SUPPORT
+    /**
+     * @brief Function that returns the list of Degrees of freedom on the row to be assembled in the system for a Given element
+     * @param pCurrentElement The element to compute
+     * @param rDofList The list containing the element degrees of freedom
+     * @param rCurrentProcessInfo The current process info instance
+     */
+    virtual void GetRowDofList(
+        const ElementType& rElement,
+        typename ElementType::DofsVectorType& rDofList,
+        const ProcessInfo& rCurrentProcessInfo)
+    {
+        rElement.GetRowDofList(rDofList, rCurrentProcessInfo);
+    }
+
+    /**
+     * @brief Function that returns the list of Degrees of freedom on the column to be assembled in the system for a Given element
+     * @param pCurrentElement The element to compute
+     * @param rDofList The list containing the element degrees of freedom
+     * @param rCurrentProcessInfo The current process info instance
+     */
+    virtual void GetColumnDofList(
+        const ElementType& rElement,
+        typename ElementType::DofsVectorType& rDofList,
+        const ProcessInfo& rCurrentProcessInfo)
+    {
+        rElement.GetColumnDofList(rDofList, rCurrentProcessInfo);
+    }
+#endif
+
     /**
      * @brief Function that returns the list of Degrees of freedom to be assembled in the system for a Given condition
      * @param rCondition The condition to compute
@@ -706,6 +852,36 @@ public:
     {
         rCondition.GetDofList(rDofList, rCurrentProcessInfo);
     }
+
+#ifdef KRATOS_NONSQUARE_SUPPORT
+    /**
+     * @brief Function that returns the list of Degrees of freedom on the row to be assembled in the system for a Given condition
+     * @param rCondition The condition to compute
+     * @param rDofList The list containing the condition degrees of freedom
+     * @param rCurrentProcessInfo The current process info instance
+     */
+    virtual void GetRowDofList(
+        const ConditionType& rCondition,
+        typename ConditionType::DofsVectorType& rDofList,
+        const ProcessInfo& rCurrentProcessInfo)
+    {
+        rCondition.GetRowDofList(rDofList, rCurrentProcessInfo);
+    }
+
+    /**
+     * @brief Function that returns the list of Degrees of freedom on the column to be assembled in the system for a Given condition
+     * @param rCondition The condition to compute
+     * @param rDofList The list containing the condition degrees of freedom
+     * @param rCurrentProcessInfo The current process info instance
+     */
+    virtual void GetColumnDofList(
+        const ConditionType& rCondition,
+        typename ConditionType::DofsVectorType& rDofList,
+        const ProcessInfo& rCurrentProcessInfo)
+    {
+        rCondition.GetColumnDofList(rDofList, rCurrentProcessInfo);
+    }
+#endif
 
     ///@}
     ///@name Access

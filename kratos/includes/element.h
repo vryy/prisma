@@ -283,8 +283,7 @@ public:
      */
 
     /**
-     * this determines the elemental equation ID vector for all elemental
-     * DOFs
+     * this determines the elemental equation ID vector for all elemental DOFs
      * @param rResult the elemental equation ID vector
      * @param rCurrentProcessInfo the current process info instance
      */
@@ -294,6 +293,32 @@ public:
         KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
                      << __FUNCTION__ << " is not implemented";
     }
+
+#ifdef KRATOS_NONSQUARE_SUPPORT
+    /**
+     * this determines the row elemental equation ID vector for all elemental DOFs
+     * By default, the equation ID vector of the squared version is returned
+     * @param rResult the elemental equation ID vector
+     * @param rCurrentProcessInfo the current process info instance
+     */
+    virtual void RowEquationIdVector(EquationIdVectorType& rResult,
+                                     const ProcessInfo& rCurrentProcessInfo) const
+    {
+        this->EquationIdVector(rResult, rCurrentProcessInfo);
+    }
+
+    /**
+     * this determines the column elemental equation ID vector for all elemental DOFs
+     * By default, the equation ID vector of the squared version is returned
+     * @param rResult the elemental equation ID vector
+     * @param rCurrentProcessInfo the current process info instance
+     */
+    virtual void ColumnEquationIdVector(EquationIdVectorType& rResult,
+                                       const ProcessInfo& rCurrentProcessInfo) const
+    {
+        this->EquationIdVector(rResult, rCurrentProcessInfo);
+    }
+#endif
 
     /**
      * determines the elemental list of DOFs
@@ -306,6 +331,32 @@ public:
         KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
                      << __FUNCTION__ << " is not implemented";
     }
+
+#ifdef KRATOS_NONSQUARE_SUPPORT
+    /**
+     * determines the row elemental list of DOFs
+     * By default, the elemental list of DOFS of the squared version is returned
+     * @param ElementalDofList the list of DOFs
+     * @param rCurrentProcessInfo the current process info instance
+     */
+    virtual void GetRowDofList(DofsVectorType& rElementalDofList,
+                               const ProcessInfo& rCurrentProcessInfo) const
+    {
+        this->GetDofList(rElementalDofList, rCurrentProcessInfo);
+    }
+
+    /**
+     * determines the column elemental list of DOFs
+     * By default, the elemental list of DOFS of the squared version is returned
+     * @param ElementalDofList the list of DOFs
+     * @param rCurrentProcessInfo the current process info instance
+     */
+    virtual void GetColumnDofList(DofsVectorType& rElementalDofList,
+                                  const ProcessInfo& rCurrentProcessInfo) const
+    {
+        this->GetDofList(rElementalDofList, rCurrentProcessInfo);
+    }
+#endif
 
     /**
      * returns the used integration method. In the general case this is the

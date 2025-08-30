@@ -158,6 +158,14 @@ else()
 endif()
 ################################
 
+option(KRATOS_NONSQUARE_SUPPORT "Enable support for non-square system" ON)
+if(KRATOS_NONSQUARE_SUPPORT MATCHES ON)
+    add_definitions(-DKRATOS_NONSQUARE_SUPPORT)
+    message("Kratos will be compiled with support for non-square system")
+endif()
+
+################################
+
 ##find all dependencies
 
 ##*****************************

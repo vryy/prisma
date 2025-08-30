@@ -63,6 +63,9 @@
 //Builder And Solver
 #include "solving_strategies/builder_and_solvers/builder_and_solver.h"
 #include "solving_strategies/builder_and_solvers/residualbased_elimination_builder_and_solver_deactivation.h"
+#ifdef KRATOS_NONSQUARE_SUPPORT
+#include "solving_strategies/builder_and_solvers/residualbased_elimination_builder_and_solver_deactivation_nonsquare.h"
+#endif
 #include "solving_strategies/builder_and_solvers/residualbased_block_builder_and_solver.h"
 #include "solving_strategies/builder_and_solvers/residualbased_block_builder_and_solver_with_constraints.h"
 #include "solving_strategies/builder_and_solvers/residualbased_block_builder_and_solver_with_constraints_elementwise.h"
@@ -293,6 +296,11 @@ namespace Kratos
 
             typedef ResidualBasedEliminationBuilderAndSolverDeactivation< SparseSpaceType, LocalSpaceType, LinearSolverType, TModelPartType > ResidualBasedEliminationBuilderAndSolverDeactivationType;
             class_< ResidualBasedEliminationBuilderAndSolverDeactivationType, bases<BuilderAndSolverType>, boost::noncopyable > ((Prefix+"ResidualBasedEliminationBuilderAndSolverDeactivation").c_str(), init< typename LinearSolverType::Pointer > ());
+
+#ifdef KRATOS_NONSQUARE_SUPPORT
+            typedef ResidualBasedEliminationBuilderAndSolverDeactivationNonSquare< SparseSpaceType, LocalSpaceType, LinearSolverType, TModelPartType > ResidualBasedEliminationBuilderAndSolverDeactivationNonSquareType;
+            class_< ResidualBasedEliminationBuilderAndSolverDeactivationNonSquareType, bases<BuilderAndSolverType>, boost::noncopyable > ((Prefix+"ResidualBasedEliminationBuilderAndSolverDeactivationNonSquare").c_str(), init< typename LinearSolverType::Pointer > ());
+#endif
 
             typedef ResidualBasedBlockBuilderAndSolver< SparseSpaceType, LocalSpaceType, LinearSolverType, TModelPartType > ResidualBasedBlockBuilderAndSolverType;
             class_< ResidualBasedBlockBuilderAndSolverType, bases<BuilderAndSolverType>, boost::noncopyable > ((Prefix+"ResidualBasedBlockBuilderAndSolver").c_str(), init< typename LinearSolverType::Pointer > ());

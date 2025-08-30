@@ -8,6 +8,7 @@
 //                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Pooyan Dadvand
+//                   Hoang-Giang Bui
 //
 //
 
@@ -142,8 +143,12 @@ public:
         const TVariableType& rThisVariable)
         : IndexedObject(NodeId),
           mIsFixed(false),
-          mEquationId(IndexType()),
-          mLocalEquationId(IndexType()),
+          mRowEquationId(IndexType()),
+          mLocalRowEquationId(IndexType()),
+#ifdef KRATOS_NONSQUARE_SUPPORT
+          mColEquationId(IndexType()),
+          mLocalColEquationId(IndexType()),
+#endif
           mpSolutionStepsData(pThisSolutionStepsData),
           mpVariable(&rThisVariable),
           mpReaction(&msNone),
@@ -158,8 +163,12 @@ public:
         const TReactionType& rThisReaction)
         : IndexedObject(NodeId),
           mIsFixed(false),
-          mEquationId(IndexType()),
-          mLocalEquationId(IndexType()),
+          mRowEquationId(IndexType()),
+          mLocalRowEquationId(IndexType()),
+#ifdef KRATOS_NONSQUARE_SUPPORT
+          mColEquationId(IndexType()),
+          mLocalColEquationId(IndexType()),
+#endif
           mpSolutionStepsData(pThisSolutionStepsData),
           mpVariable(&rThisVariable),
           mpReaction(&rThisReaction),
@@ -172,8 +181,12 @@ public:
     Dof()
         : IndexedObject(0),
           mIsFixed(false),
-          mEquationId(IndexType()),
-          mLocalEquationId(IndexType()),
+          mRowEquationId(IndexType()),
+          mLocalRowEquationId(IndexType()),
+#ifdef KRATOS_NONSQUARE_SUPPORT
+          mColEquationId(IndexType()),
+          mLocalColEquationId(IndexType()),
+#endif
           mpSolutionStepsData(),
           mpVariable(&msNone),
           mpReaction(&msNone),
@@ -186,8 +199,12 @@ public:
     Dof(Dof const& rOther)
         : IndexedObject(rOther),
           mIsFixed(rOther.mIsFixed),
-          mEquationId(rOther.mEquationId),
-          mLocalEquationId(rOther.mLocalEquationId),
+          mRowEquationId(rOther.mRowEquationId),
+          mLocalRowEquationId(rOther.mLocalRowEquationId),
+#ifdef KRATOS_NONSQUARE_SUPPORT
+          mColEquationId(rOther.mColEquationId),
+          mLocalColEquationId(rOther.mLocalColEquationId),
+#endif
           mpSolutionStepsData(rOther.mpSolutionStepsData),
           mpVariable(rOther.mpVariable),
           mpReaction(rOther.mpReaction),
@@ -196,10 +213,8 @@ public:
     {
     }
 
-
     /// Destructor.
-    virtual ~Dof() {}
-
+    ~Dof() override {}
 
     ///@}
     ///@name Operators
@@ -210,8 +225,12 @@ public:
     {
         IndexedObject::operator=(rOther);
         mIsFixed = rOther.mIsFixed;
-        mEquationId = rOther.mEquationId;
-        mLocalEquationId = rOther.mLocalEquationId;
+        mRowEquationId = rOther.mRowEquationId;
+        mLocalRowEquationId = rOther.mLocalRowEquationId;
+#ifdef KRATOS_NONSQUARE_SUPPORT
+        mColEquationId = rOther.mColEquationId;
+        mLocalColEquationId = rOther.mLocalColEquationId;
+#endif
         mpSolutionStepsData = rOther.mpSolutionStepsData;
         mpVariable = rOther.mpVariable;
         mpReaction = rOther.mpReaction;
@@ -313,45 +332,116 @@ public:
         mpReaction = &rReaction;
     }
 
-    /** Return the Equation Id related to this degree eof freedom.
+    /** Return the Equation Id related to this degree of freedom.
+     * By default it returns the Equation Id of the row
      */
     EquationIdType EquationId() const
     {
-        return mEquationId;
+        return mRowEquationId;
     }
 
+#ifdef KRATOS_NONSQUARE_SUPPORT
+    /** Return the (row) Equation Id related to this degree of freedom.
+     */
+    EquationIdType RowEquationId() const
+    {
+        return mRowEquationId;
+    }
+
+    /** Return the (column) Equation Id related to this degree of freedom.
+     */
+    EquationIdType ColumnEquationId() const
+    {
+        return mColEquationId;
+    }
+#endif
+
+    /** Return the local Equation Id related to this degree of freedom.
+     * By default it returns the local Equation Id of the row
+     */
     EquationIdType LocalEquationId() const
     {
-        return mLocalEquationId;
+        return mLocalRowEquationId;
     }
+
+#ifdef KRATOS_NONSQUARE_SUPPORT
+    /** Return the (row) local Equation Id related to this degree of freedom.
+     */
+    EquationIdType LocalRowEquationId() const
+    {
+        return mLocalRowEquationId;
+    }
+
+    /** Return the (column) local Equation Id related to this degree of freedom.
+     */
+    EquationIdType LocalColumnEquationId() const
+    {
+        return mLocalColEquationId;
+    }
+#endif
 
     /** Sets the Equation Id to the desired value
      */
     void SetEquationId(EquationIdType NewEquationId)
     {
-        mEquationId = NewEquationId;
+        mRowEquationId = NewEquationId;
+#ifdef KRATOS_NONSQUARE_SUPPORT
+        mColEquationId = NewEquationId;
+#endif
     }
+
+#ifdef KRATOS_NONSQUARE_SUPPORT
+    void SetRowEquationId(EquationIdType NewEquationId)
+    {
+        mRowEquationId = NewEquationId;
+    }
+
+    void SetColumnEquationId(EquationIdType NewEquationId)
+    {
+        mColEquationId = NewEquationId;
+    }
+#endif
 
     void SetLocalEquationId(EquationIdType NewEquationId)
     {
-        mLocalEquationId = NewEquationId;
+        mLocalRowEquationId = NewEquationId;
+#ifdef KRATOS_NONSQUARE_SUPPORT
+        mLocalColEquationId = NewEquationId;
+#endif
     }
+
+#ifdef KRATOS_NONSQUARE_SUPPORT
+    void SetLocalRowEquationId(EquationIdType NewEquationId)
+    {
+        mLocalRowEquationId = NewEquationId;
+    }
+
+    void SetLocalColumnEquationId(EquationIdType NewEquationId)
+    {
+        mLocalColEquationId = NewEquationId;
+    }
+#endif
 
     /** Fixes the Dof
      */
     void FixDof()
     {
-        mIsFixed=true;
+        mIsFixed = true;
     }
 
     /** Frees the degree of freedom
      */
     void FreeDof()
     {
-        mIsFixed=false;
+        mIsFixed = false;
     }
 
     SolutionStepsDataContainerType* GetSolutionStepsData()
+    {
+        return mpSolutionStepsData;
+    }
+
+    const SolutionStepsDataContainerType* GetSolutionStepsData() const
     {
         return mpSolutionStepsData;
     }
@@ -370,7 +460,6 @@ public:
         return mIsFixed;
     }
 
-
     bool IsFree() const
     {
         return !mIsFixed;
@@ -380,42 +469,44 @@ public:
     ///@name Input and output
     ///@{
 
-
     /// Turn back information as a string.
     virtual std::string Info() const
     {
         std::stringstream buffer;
-
 
         if(IsFixed())
             buffer << "Fix " << GetVariable().Name() << " degree of freedom";
         else
             buffer << "Free " << GetVariable().Name() << " degree of freedom";
 
-
         return buffer.str();
     }
 
-
-
     /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << Info();
     }
 
-
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
-        rOStream << "    Variable               : " << GetVariable().Name() << std::endl;
-        rOStream << "    Reaction               : " << GetReaction().Name() << std::endl;
+        rOStream << "    Variable                 : " << GetVariable().Name() << std::endl;
+        rOStream << "    Reaction                 : " << GetReaction().Name() << std::endl;
         if(IsFixed())
-            rOStream << "    IsFixed                : True" << std::endl;
+            rOStream << "    IsFixed                  : True" << std::endl;
         else
-            rOStream << "    IsFixed                : False" << std::endl;
-        rOStream << "    Equation Id            : " << mEquationId << std::endl;
-        rOStream << "    Local Equation Id            : " << mLocalEquationId << std::endl;
+            rOStream << "    IsFixed                  : False" << std::endl;
+        rOStream << "    Id                       : " << this->Id() << std::endl;
+#ifdef KRATOS_NONSQUARE_SUPPORT
+        rOStream << "    Row Equation Id          : " << mRowEquationId << std::endl;
+        rOStream << "    Column Equation Id       : " << mColEquationId << std::endl;
+        rOStream << "    Local Row Equation Id    : " << mLocalRowEquationId << std::endl;
+        rOStream << "    Local Column Equation Id : " << mLocalColEquationId << std::endl;
+#else
+        rOStream << "    Equation Id              : " << mRowEquationId << std::endl;
+        rOStream << "    Local Equation Id        : " << mLocalRowEquationId << std::endl;
+#endif
     }
 
     ///@}
@@ -467,22 +558,23 @@ private:
 
     static const Variable<TDataType> msNone;
 
-
     ///@}
     ///@name Member Variables
     ///@{
 
-
     /** True is is fixed */
-    bool mIsFixed;
+    int mIsFixed : 1;
 
     /** Equation identificator of the degree of freedom */
-    EquationIdType mEquationId;
-    EquationIdType mLocalEquationId; // this is used for BDDC and FETI, also for the unassembled matrix format
+    EquationIdType mRowEquationId;
+    EquationIdType mLocalRowEquationId;
+#ifdef KRATOS_NONSQUARE_SUPPORT
+    EquationIdType mColEquationId;
+    EquationIdType mLocalColEquationId; // this is used for BDDC and FETI, also for the unassembled matrix format
+#endif
 
     /** A pointer to solutionsteps data stored in node which is corresponded to this dof */
     SolutionStepsDataContainerType* mpSolutionStepsData;
-
 
     /** Variable of the degree of freedom.
      */
@@ -491,7 +583,6 @@ private:
     /** Reaction variable for this degree of freedom.
      */
     const VariableData* mpReaction;
-
 
     int mVariableType;
 
@@ -535,9 +626,13 @@ private:
     virtual void save(Serializer& rSerializer) const
     {
         KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, IndexedObject );
-        rSerializer.save("Is Fixed", mIsFixed);
-        rSerializer.save("Equation Id", mEquationId);
-        rSerializer.save("Local Equation Id", mLocalEquationId);
+        rSerializer.save("Is Fixed", static_cast<bool>(mIsFixed));
+        rSerializer.save("Row Equation Id", mRowEquationId);
+        rSerializer.save("Local Row Equation Id", mLocalRowEquationId);
+#ifdef KRATOS_NONSQUARE_SUPPORT
+        rSerializer.save("Column Equation Id", mColEquationId);
+        rSerializer.save("Local Column Equation Id", mLocalColEquationId);
+#endif
         rSerializer.save("Solution Steps Data", mpSolutionStepsData);
         rSerializer.save("Variable", mpVariable->Name());
         rSerializer.save("Reaction", mpReaction->Name());
@@ -549,9 +644,15 @@ private:
     {
         std::string name;
         KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, IndexedObject );
-        rSerializer.load("Is Fixed", mIsFixed);
-        rSerializer.load("Equation Id", mEquationId);
-        rSerializer.load("Local Equation Id", mLocalEquationId);
+        bool is_fixed;
+        rSerializer.load("Is Fixed", is_fixed);
+        mIsFixed = is_fixed;
+        rSerializer.load("Row Equation Id", mRowEquationId);
+        rSerializer.load("Local Row Equation Id", mLocalRowEquationId);
+#ifdef KRATOS_NONSQUARE_SUPPORT
+        rSerializer.load("Column Equation Id", mColEquationId);
+        rSerializer.load("Local Column Equation Id", mLocalColEquationId);
+#endif
         rSerializer.load("Solution Steps Data", mpSolutionStepsData);
         rSerializer.load("Variable", name);
         mpVariable=KratosComponents<VariableData>::pGet(name);
@@ -578,6 +679,7 @@ private:
     ///@}
 
 }; // Class Dof
+
 template<class TDataType> const Variable<TDataType> Dof<TDataType>::msNone("NONE");
 
 ///@}
@@ -607,10 +709,10 @@ inline std::ostream& operator << (std::ostream& rOStream,
 
     return rOStream;
 }
+
 ///@}
 ///@name Operations
 ///@{
-
 
 /// Greater than operator
 template<class TDataType>
