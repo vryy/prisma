@@ -143,6 +143,9 @@ target_include_directories(KratosCore PUBLIC ${CMAKE_SOURCE_DIR})
 target_include_directories(KratosCore PUBLIC ${CMAKE_SOURCE_DIR}/kratos)
 # expose the applications directory in case the target wants to include like appname_application/custom...
 target_include_directories(KratosCore PUBLIC ${CMAKE_SOURCE_DIR}/applications)
+if(MSVC AND ${KRATOS_USE_INTEL_OPENMP} MATCHES ON)
+    target_link_libraries(KratosCore ${INTEL_OPENMP_LIBRARY})
+endif()
 
 # if(${ADOL_C_FOUND} MATCHES TRUE)
 #     target_link_libraries(KratosCore PRIVATE ${ADOL_C_LIBRARIES} )

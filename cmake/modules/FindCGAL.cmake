@@ -8,6 +8,7 @@ option(CGAL_USE_BOOST_THREAD "Specify if CGAL is compiled with Boost-Thread. Def
 if(CGAL_INCLUDE_DIR AND CGAL_LIBRARIES AND GMP_LIBRARIES AND MPFR_LIBRARIES)
     set(CGAL_FOUND TRUE)
     include_directories(${CGAL_INCLUDE_DIR})
+    message(STATUS "CGAL is found by manual settings")
 else()
     if(NOT(CGAL_ROOT AND GMP_ROOT AND MPFR_ROOT))
         message(ERROR "CGAL_ROOT|GMP_ROOT|MPFR_ROOT is not set")
@@ -19,11 +20,16 @@ else()
 
     set(CGAL_LIBRARIES ${CGAL_LIBRARY} ${CGAL_CORE_LIBRARY})
 
-    find_library(GMP_LIBRARY NAMES gmp PATHS ${GMP_ROOT}/lib NO_DEFAULT_PATH)
-    find_library(GMPXX_LIBRARY NAMES gmpxx PATHS ${GMP_ROOT}/lib NO_DEFAULT_PATH)
+    unset(GMP_LIBRARY CACHE)
+    unset(GMPXX_LIBRARY CACHE)
+    unset(GMP_LIBRARIES CACHE)
+    unset(MPFR_LIBRARIES CACHE)
+
+    find_library(GMP_LIBRARY NAMES gmp gmp-10 PATHS ${GMP_ROOT}/lib NO_DEFAULT_PATH)
+    find_library(GMPXX_LIBRARY NAMES gmpxx gmpxx-4 PATHS ${GMP_ROOT}/lib NO_DEFAULT_PATH)
     set(GMP_LIBRARIES ${GMP_LIBRARY} ${GMPXX_LIBRARY})
     set(GMP_INCLUDE_DIR ${GMP_ROOT}/include)
-    find_library(MPFR_LIBRARIES NAMES mpfr PATHS ${MPFR_ROOT}/lib NO_DEFAULT_PATH)
+    find_library(MPFR_LIBRARIES NAMES mpfr mpfr-4 PATHS ${MPFR_ROOT}/lib NO_DEFAULT_PATH)
     set(MPFR_INCLUDE_DIR ${MPFR_ROOT}/include)
 
     message(STATUS "CGAL_INCLUDE_DIR=${CGAL_INCLUDE_DIR}")

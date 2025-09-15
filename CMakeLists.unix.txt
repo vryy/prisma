@@ -100,6 +100,10 @@ endif()
 #set kratos specific module path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules")
 
+if(WIN32)
+    set(CMAKE_OBJECT_PATH_MAX 200)
+endif()
+
 ######################################################################################
 ######################################################################################
 ######################################################################################
@@ -171,6 +175,7 @@ endif()
 ##*****************************
 #find and include OpenMP if possible
 option(KRATOS_EXCLUDE_OPENMP "Exclude linking with OpenMP" OFF)
+option(KRATOS_USE_INTEL_OPENMP "Use Intel OpenMP instead of the system one" OFF)
 if(${KRATOS_EXCLUDE_OPENMP} MATCHES ON)
     message("**********************************************************")
     message("OpenMP calculation was excluced artificially. Remove the var")
@@ -394,6 +399,12 @@ if(${MPI_NEEDED} MATCHES ON)
     set(CMAKE_C_COMPILE_FLAGS ${CMAKE_C_COMPILE_FLAGS} ${MPI_COMPILE_FLAGS})
     set(CMAKE_CXX_LINK_FLAGS ${CMAKE_CXX_LINK_FLAGS} ${MPI_LINK_FLAGS})
     message("Kratos is compiled with MPI support")
+    if(WIN32) # install MPI dlls on Windows
+        set(MPI_DLL "C:/Windows/System32/msmpi.dll") # in case of Microsoft MPI
+        if(EXISTS "${MPI_DLL}")
+            install(FILES "${MPI_DLL}" DESTINATION libs)
+        endif()
+    endif()
 endif()
 
 ##*****************************

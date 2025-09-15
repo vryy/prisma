@@ -548,8 +548,8 @@ public:
     */
     double Length(const CoordinatesArrayType& rNormal) const
     {
-        double max_dist = -std::numeric_limits<double>::max(),
-               min_dist = std::numeric_limits<double>::max(),
+        double max_dist = -(std::numeric_limits<double>::max)(),
+               min_dist = (std::numeric_limits<double>::max)(),
                dist;
         for (unsigned int i = 0; i < this->PointsNumber(); ++i)
         {
