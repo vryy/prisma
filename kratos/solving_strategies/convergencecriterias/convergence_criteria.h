@@ -189,7 +189,7 @@ public:
         const TSystemVectorType& b
     )
     {
-        return true;
+        return false;
     }
 
     /*Criterias that need to be called after getting the solution */
@@ -201,7 +201,7 @@ public:
         const TSystemVectorType& b
     )
     {
-        return true;
+        return false;
     }
 
     virtual void Initialize(
