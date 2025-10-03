@@ -1201,6 +1201,7 @@ public:
         //resetting to zero the vector of reactions
         TSparseSpace::SetToZero( *(BaseType::mpReactionsVector) );
 
+#ifndef _OPENMP
         //contributions to the system
         LocalSystemVectorType RHS_Contribution = LocalSystemVectorType(0);
 
@@ -1234,9 +1235,138 @@ public:
                 AssembleRHS(b,RHS_Contribution,EquationId);
             }
         }
+#else
+        //create a partition of the element array
+        int number_of_threads = omp_get_max_threads();
 
+        boost::numeric::ublas::vector<unsigned int> element_partition;
+        OpenMPUtils::CreatePartition(number_of_threads, pElements.size(), element_partition);
+
+        unsigned int num_assembled_elements = 0;
+        unsigned int num_computed_elements = 0;
+
+        #pragma omp parallel for reduction(+:num_assembled_elements) reduction(+:num_computed_elements)
+        for(int k = 0; k < number_of_threads; ++k)
+        {
+            //contributions to the system
+            LocalSystemVectorType RHS_Contribution = LocalSystemVectorType(0);
+
+            //vector containing the localization in the system of the different terms
+            typename ElementType::EquationIdVectorType EquationId;
+            const ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
+            typename ElementsContainerType::iterator it_begin = pElements.ptr_begin() + element_partition[k];
+            typename ElementsContainerType::iterator it_end = pElements.ptr_begin() + element_partition[k+1];
+
+            // assemble all elements
+            for (typename ElementsContainerType::iterator it = it_begin; it != it_end; ++it)
+            {
+                if( !it->GetValue( IS_INACTIVE ) || it->Is( ACTIVE ) )
+                {
+                    //calculate elemental Right Hand Side Contribution
+                    pScheme->CalculateRHSContribution(*it,RHS_Contribution,EquationId,CurrentProcessInfo);
+                    // std::cout << "Element " << it->Id() << " is computed"
+                    //           << ", type: " << typeid((*it)).name()
+                    //           << ", rhs: " << norm_2(RHS_Contribution)
+                    //           << std::endl;
+
+                    //assemble the elemental contribution
+                    AssembleRHS(b,RHS_Contribution,EquationId);
+
+                    #ifdef DETECT_NAN_AT_BUILD
+                    double norm_elem_r = norm_2(RHS_Contribution);
+
+                    if (std::isnan(norm_elem_r))
+                    {
+                        KRATOS_WATCH(norm_elem_r)
+                        KRATOS_WATCH(RHS_Contribution)
+                        std::cout << "type of element: " << typeid((*it)).name() << std::endl;
+                        std::cout << "element Properties " << it->GetProperties().Id() << ": " << it->GetProperties() << std::endl;
+                        KRATOS_WATCH((*it))
+                        KRATOS_ERROR << "NaN is detected at element " << it->Id();
+                    }
+                    #endif
+
+                    //update the number of computed and assembled element
+                    num_computed_elements += 1;
+                    #ifdef DETECT_NAN_AT_BUILD
+                    if (!std::isnan(norm_elem_r))
+                    #endif
+                    {
+                        num_assembled_elements += 1;
+                    }
+                }
+            }
+        }
+
+        std::cout << "Element assembly completed"
+                  << ", computed: " << num_computed_elements
+                  << ", assembled: " << num_assembled_elements << std::endl;
+
+        boost::numeric::ublas::vector<unsigned int> condition_partition;
+        OpenMPUtils::CreatePartition(number_of_threads, ConditionsArray.size(), condition_partition);
+
+        unsigned int num_assembled_conditions = 0;
+        unsigned int num_computed_conditions = 0;
+
+        #pragma omp parallel for reduction(+:num_assembled_conditions) reduction(+:num_computed_conditions)
+        for(int k = 0; k < number_of_threads; ++k)
+        {
+            //contributions to the system
+            LocalSystemVectorType RHS_Contribution = LocalSystemVectorType(0);
+
+            //vector containing the localization in the system of the different terms
+            typename ConditionType::EquationIdVectorType EquationId;
+            const ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
+            typename ConditionsContainerType::iterator it_begin = ConditionsArray.ptr_begin() + condition_partition[k];
+            typename ConditionsContainerType::iterator it_end = ConditionsArray.ptr_begin() + condition_partition[k+1];
+
+            // assemble all elements
+            for (typename ConditionsContainerType::iterator it = it_begin; it != it_end; ++it)
+            {
+                if( !it->GetValue( IS_INACTIVE ) || it->Is( ACTIVE ) )
+                {
+                    //calculate conditional contribution
+                    pScheme->CalculateRHSContribution(*it,RHS_Contribution,EquationId,CurrentProcessInfo);
+                    if (it->Id() == 7681)
+                        std::cout << "Condition " << it->Id() << " is computed"
+                                << ", type: " << typeid((*it)).name()
+                                << ", rhs: " << norm_2(RHS_Contribution)
+                                << std::endl;
+
+                    //assemble the conditional contribution
+                    AssembleRHS(b,RHS_Contribution,EquationId);
+
+                    #ifdef DETECT_NAN_AT_BUILD
+                    double norm_elem_r = norm_2(RHS_Contribution);
+
+                    if (std::isnan(norm_elem_r))
+                    {
+                        KRATOS_WATCH(norm_elem_r)
+                        KRATOS_WATCH(RHS_Contribution)
+                        std::cout << "type of condition: " << typeid((*it)).name() << std::endl;
+                        std::cout << "condition Properties " << it->GetProperties().Id() << ": " << it->GetProperties() << std::endl;
+                        KRATOS_WATCH((*it))
+                        KRATOS_ERROR << "NaN is detected at condition " << it->Id();
+                    }
+                    #endif
+
+                    //update the number of computed and assembled condition
+                    num_computed_conditions += 1;
+                    #ifdef DETECT_NAN_AT_BUILD
+                    if (!std::isnan(norm_elem_r))
+                    #endif
+                    {
+                        num_assembled_conditions += 1;
+                    }
+                }
+            }
+        }
+
+        std::cout << "Condition assembly completed"
+                  << ", computed: " << num_computed_conditions
+                  << ", assembled: " << num_assembled_conditions << std::endl;
+#endif
         KRATOS_CATCH("")
-
     }
 
     //**************************************************************************
