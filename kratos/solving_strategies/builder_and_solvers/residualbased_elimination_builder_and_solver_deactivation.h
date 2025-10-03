@@ -38,9 +38,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /* *********************************************************
 *
-*   Last Modified by:    $Author: rrossi $
-*   Date:                $Date: 2008-11-19 16:12:53 $
-*   Revision:            $Revision: 1.10 $
+*   Contributors:   Riccardo Rossi
+*                   Hoang-Giang Bui
 *
 * ***********************************************************/
 
@@ -635,7 +634,7 @@ public:
                     //update the number of computed and assembled element
                     num_computed_elements += 1;
                     #ifdef DETECT_NAN_AT_BUILD
-                    if ((norm_elem_k > 0.0) || (norm_elem_r > 0.0))
+                    if (!std::isnan(norm_elem_k) && !std::isnan(norm_elem_r))
                     #endif
                     {
                         num_assembled_elements += 1;
@@ -738,7 +737,7 @@ public:
                     // update the number of computed and assembled conditions
                     num_computed_conditions += 1;
                     #ifdef DETECT_NAN_AT_BUILD
-                    if ((norm_cond_k > 0.0) || (norm_cond_r > 0.0))
+                    if (!std::isnan(norm_cond_k) && !std::isnan(norm_cond_r))
                     #endif
                     {
                         num_assembled_conditions += 1;
@@ -1203,11 +1202,9 @@ public:
         TSparseSpace::SetToZero( *(BaseType::mpReactionsVector) );
 
         //contributions to the system
-        LocalSystemMatrixType LHS_Contribution = LocalSystemMatrixType(0,0);
         LocalSystemVectorType RHS_Contribution = LocalSystemVectorType(0);
 
-        //vector containing the localization in the system of the different
-        //terms
+        //vector containing the localization in the system of the different terms
         typename ElementType::EquationIdVectorType EquationId;
 
         // assemble all elements
@@ -1223,7 +1220,6 @@ public:
             }
         }
 
-        LHS_Contribution.resize(0,0,false);
         RHS_Contribution.resize(0,false);
 
         // assemble all conditions

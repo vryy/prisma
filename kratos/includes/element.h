@@ -234,7 +234,7 @@ public:
     virtual Pointer Create(IndexType NewId, NodesArrayType const& ThisNodes,
                            PropertiesType::Pointer pProperties) const
     {
-        KRATOS_ERROR << "Please implement the First Create method in your derived Element" << Info() << std::endl;
+        KRATOS_ERROR << "Please implement the First Create method in your derived Element " << Info() << std::endl;
     }
 
     /**
@@ -248,7 +248,7 @@ public:
                            typename GeometryType::Pointer pGeom,
                            PropertiesType::Pointer pProperties) const
     {
-        KRATOS_ERROR << "Please implement the Second Create method in your derived Element" << Info() << std::endl;
+        KRATOS_ERROR << "Please implement the Second Create method in your derived Element " << Info() << std::endl;
     }
 
     /**
@@ -262,7 +262,7 @@ public:
                            std::vector<typename GeometryType::Pointer> pGeom,
                            PropertiesType::Pointer pProperties) const
     {
-        KRATOS_ERROR << "Please implement the Third Create method in your derived Element" << Info() << std::endl;
+        KRATOS_ERROR << "Please implement the Third Create method in your derived Element " << Info() << std::endl;
     }
 
     /**
@@ -274,7 +274,7 @@ public:
      */
     virtual Pointer Clone (IndexType NewId, NodesArrayType const& ThisNodes) const
     {
-        KRATOS_ERROR << "Please implement the Clone method in your derived Element" << Info() << std::endl;
+        KRATOS_ERROR << "Please implement the Clone method in your derived Element " << Info() << std::endl;
     }
 
     /**
