@@ -148,7 +148,7 @@ public:
 
     typedef std::vector<IndexType> PartitionIndicesType;
 
-    typedef matrix<int> GraphType;
+    typedef DenseMatrix<int> GraphType;
 
     ///@}
     ///@name Life Cycle

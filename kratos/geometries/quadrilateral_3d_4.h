@@ -553,8 +553,8 @@ public:
     LocalCoordinatesArrayType& PointLocalCoordinates( LocalCoordinatesArrayType& rResult, const CoordinatesArrayType& rPoint,
         bool force_error = true ) const override
     {
-        boost::numeric::ublas::bounded_matrix<DataType,3,4> X;
-        boost::numeric::ublas::bounded_matrix<DataType,3,2> DN;
+        BoundedMatrix<DataType,3,4> X;
+        BoundedMatrix<DataType,3,2> DN;
         for(unsigned int i=0; i<this->size();i++)
         {
             X(0,i ) = this->GetPoint( i ).X();
@@ -635,8 +635,8 @@ public:
     LocalCoordinatesArrayType& PointLocalCoordinates( LocalCoordinatesArrayType& rResult, const CoordinatesArrayType& rPoint, const MatrixType& DeltaPosition,
         bool force_error = true ) const override
     {
-        boost::numeric::ublas::bounded_matrix<DataType,3,4> X;
-        boost::numeric::ublas::bounded_matrix<DataType,3,2> DN;
+        BoundedMatrix<DataType,3,4> X;
+        BoundedMatrix<DataType,3,2> DN;
         for(unsigned int i=0; i<this->size();i++)
         {
             X(0,i ) = this->GetPoint( i ).X() - DeltaPosition( i, 0 );
@@ -1211,7 +1211,7 @@ public:
 
         for ( IndexType i = 0; i < rResult.size(); i++ )
         {
-            boost::numeric::ublas::vector<Matrix> temp( this->PointsNumber() );
+            DenseVector<Matrix> temp( this->PointsNumber() );
             rResult[i].swap( temp );
         }
 

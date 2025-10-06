@@ -187,7 +187,7 @@ public:
     integration points. Jacobian and InverseOfJacobian functions
     return this type as their result.
     */
-    typedef boost::numeric::ublas::vector<MatrixType> JacobiansType;
+    typedef DenseVector<MatrixType> JacobiansType;
 
     /** A third order tensor to hold shape functions' local gradients at all integration points.
     ShapefunctionsLocalGradients function return this
@@ -213,11 +213,11 @@ public:
      * ShapeFunctionsIntegrationPointsGradients function return this
      * type as its result.
      */
-    typedef boost::numeric::ublas::vector<MatrixType> ShapeFunctionsIntegrationPointsGradientsType;
+    typedef DenseVector<MatrixType> ShapeFunctionsIntegrationPointsGradientsType;
 
     /** Type of the normal vector used for normal to edges in geomety.
      */
-    typedef boost::numeric::ublas::vector<CoordinateType> NormalType;
+    typedef DenseVector<CoordinateType> NormalType;
 
     typedef typename BaseType::iterator                iterator;
     typedef typename BaseType::const_iterator          const_iterator;
@@ -1124,12 +1124,12 @@ public:
     }
 
     //Connectivities of faces required
-    virtual void NumberNodesInFaces (boost::numeric::ublas::vector<unsigned int>& NumberNodesInFaces) const
+    virtual void NumberNodesInFaces (DenseVector<unsigned int>& NumberNodesInFaces) const
     {
         KRATOS_ERROR << "Calling base class NumberNodesInFaces method instead of derived class one. Please check the definition of derived class.";
     }
 
-    virtual void NodesInFaces (boost::numeric::ublas::matrix<unsigned int>& NodesInFaces) const
+    virtual void NodesInFaces (DenseMatrix<unsigned int>& NodesInFaces) const
     {
         KRATOS_ERROR << "Calling base class NodesInFaces method instead of derived class one. Please check the definition of derived class.";
     }
@@ -2205,12 +2205,12 @@ public:
         return rResult;
     }
 
-    boost::numeric::ublas::vector<Matrix> const& MassFactors() const
+    DenseVector<Matrix> const& MassFactors() const
     {
         return mpGeometryData->MassFactors();
     }
 
-    boost::numeric::ublas::vector<Matrix> const& MassFactors( IntegrationMethod ThisMethod ) const
+    DenseVector<Matrix> const& MassFactors( IntegrationMethod ThisMethod ) const
     {
         return mpGeometryData->MassFactors( ThisMethod );
     }

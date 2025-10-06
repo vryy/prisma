@@ -586,7 +586,7 @@ public:
 
 
     //Connectivities of faces required
-    void NumberNodesInFaces (boost::numeric::ublas::vector<unsigned int>& NumberNodesInFaces) const override
+    void NumberNodesInFaces (DenseVector<unsigned int>& NumberNodesInFaces) const override
     {
         if(NumberNodesInFaces.size() != 3 )
             NumberNodesInFaces.resize(3);
@@ -596,7 +596,7 @@ public:
         NumberNodesInFaces[2]=2;
     }
 
-    void NodesInFaces (boost::numeric::ublas::matrix<unsigned int>& NodesInFaces) const override
+    void NodesInFaces (DenseMatrix<unsigned int>& NodesInFaces) const override
     {
         if(NodesInFaces.size1() != 3 || NodesInFaces.size2() != 3)
             NodesInFaces.resize(3,3);
@@ -668,7 +668,7 @@ public:
         const unsigned int integration_points_number =
             msGeometryData.IntegrationPointsNumber( ThisMethod );
 
-        boost::numeric::ublas::bounded_matrix<DataType,3,2> DN_DX;
+        BoundedMatrix<DataType,3,2> DN_DX;
         DataType x10 = this->Points()[1].X() - this->Points()[0].X();
         DataType y10 = this->Points()[1].Y() - this->Points()[0].Y();
 
@@ -709,7 +709,7 @@ public:
         const unsigned int integration_points_number =
             msGeometryData.IntegrationPointsNumber( ThisMethod );
 
-        boost::numeric::ublas::bounded_matrix<DataType,3,2> DN_DX;
+        BoundedMatrix<DataType,3,2> DN_DX;
         DataType x10 = this->Points()[1].X() - this->Points()[0].X();
         DataType y10 = this->Points()[1].Y() - this->Points()[0].Y();
 
@@ -944,7 +944,7 @@ public:
 
         for ( IndexType i = 0; i < rResult.size(); i++ )
         {
-            boost::numeric::ublas::vector<Matrix> temp( this->PointsNumber() );
+            DenseVector<Matrix> temp( this->PointsNumber() );
             rResult[i].swap( temp );
         }
 

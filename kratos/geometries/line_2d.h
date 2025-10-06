@@ -310,7 +310,7 @@ public:
     ///@name Operations
     ///@{
 
-    typename BaseType::Pointer Create(PointsArrayType const& ThisPoints) const
+    typename BaseType::Pointer Create(PointsArrayType const& ThisPoints) const override
     {
         return typename BaseType::Pointer(new Line2D(ThisPoints));
     }

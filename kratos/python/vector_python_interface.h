@@ -258,7 +258,6 @@ public:
         }
     }
 
-
     static void
     append(TContainerType& container, data_type const& v)
     {

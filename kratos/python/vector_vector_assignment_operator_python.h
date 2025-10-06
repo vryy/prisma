@@ -87,7 +87,6 @@ public:
     /// Destructor.
     virtual ~VectorVectorAssignmentOperatorPython() {}
 
-
     ///@}
     ///@name Operators
     ///@{
@@ -163,9 +162,6 @@ private:
         return ThisContainer -= OtherContainer;
     }
 
-
-
-
     ///@}
     ///@name Private  Access
     ///@{
@@ -204,6 +200,4 @@ private:
 
 }  // namespace Kratos.
 
-#endif // KRATOS_VECTOR_VECTOR_ASSIGNMENT_OPERATOR_PYTHON_H_INCLUDED  defined 
-
-
+#endif // KRATOS_VECTOR_VECTOR_ASSIGNMENT_OPERATOR_PYTHON_H_INCLUDED  defined

@@ -123,19 +123,17 @@ namespace Kratos
     typedef boost::numeric::ublas::matrix_range<ComplexMatrix> ComplexMatrixRange;
     typedef boost::numeric::ublas::matrix_slice<ComplexMatrix> ComplexMatrixSlice;
 
-    // declare namespace usage to avoid downstream explosion of compilation errors
-    using namespace boost::numeric::ublas;
-
     // selector for vector and matrix type
     template<typename TDataType>
     struct MatrixVectorTypeSelector
     {
-        typedef boost::numeric::ublas::vector<TDataType> VectorType;
-        typedef boost::numeric::ublas::matrix<TDataType> MatrixType;
-        typedef boost::numeric::ublas::zero_vector<TDataType> ZeroVectorType;
-        typedef boost::numeric::ublas::zero_matrix<TDataType> ZeroMatrixType;
-        typedef boost::numeric::ublas::identity_matrix<TDataType> IdentityMatrixType;
-        typedef boost::numeric::ublas::compressed_matrix<TDataType> CompressedMatrixType;
+        using VectorType = boost::numeric::ublas::vector<TDataType>;
+        using MatrixType = boost::numeric::ublas::matrix<TDataType>;
+        using ZeroVectorType = boost::numeric::ublas::zero_vector<TDataType>;
+        using ZeroMatrixType = boost::numeric::ublas::zero_matrix<TDataType>;
+        using IdentityMatrixType = boost::numeric::ublas::identity_matrix<TDataType>;
+        using SymmetricMatrixType = boost::numeric::ublas::symmetric_matrix<TDataType>;
+        using CompressedMatrixType = boost::numeric::ublas::compressed_matrix<TDataType>;
     };
 
     // more specialization for DataTypeToString
@@ -145,6 +143,9 @@ namespace Kratos
     template<> struct DataTypeToString<boost::numeric::ublas::matrix<double> > { static inline constexpr const char* Get() {return "boost::numeric::ublas::matrix<double>";} };
     template<> struct DataTypeToString<boost::numeric::ublas::matrix<std::complex<double> > > { static inline constexpr const char* Get() {return "boost::numeric::ublas::matrix<std::complex<double>>";} };
 
+
+    // declare namespace usage to avoid downstream explosion of compilation errors
+    using namespace boost::numeric::ublas;
 
 ///@}
 ///@name  Enum's

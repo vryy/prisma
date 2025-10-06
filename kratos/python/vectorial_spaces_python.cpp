@@ -114,7 +114,6 @@ struct UblasSparseVectorModifier
 
 void  AddVectorialSpacesToPython()
 {
-
     ReadonlyVectorPythonInterface<zero_vector<double> >::CreateInterface("ZeroVector")
     .def(init<zero_vector<double>::size_type>())
     .def(VectorScalarOperatorPython<zero_vector<double>, double, vector<double> >())

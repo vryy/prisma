@@ -198,25 +198,25 @@ public:
     /** A fourth order tensor used as shape functions' local
     gradients container in geometry data.
     */
-    typedef boost::array<boost::numeric::ublas::vector<Matrix>, static_cast<int>(IntegrationMethod::NumberOfIntegrationMethods)> ShapeFunctionsLocalGradientsContainerType;
+    typedef boost::array<DenseVector<Matrix>, static_cast<int>(IntegrationMethod::NumberOfIntegrationMethods)> ShapeFunctionsLocalGradientsContainerType;
 
     /** A third order tensor to hold shape functions'
     gradients. ShapefunctionsLocalGradients function return this
     type as its result.
     */
-    typedef boost::numeric::ublas::vector<Matrix> ShapeFunctionsGradientsType;
+    typedef DenseVector<Matrix> ShapeFunctionsGradientsType;
 
-    typedef boost::numeric::ublas::vector<Matrix> ShapeFunctionsSecondDerivativesType;
+    typedef DenseVector<Matrix> ShapeFunctionsSecondDerivativesType;
 
     /**
      * fourth order tensor to hold the third order derivatives of the
      * shape functions
      */
-    typedef boost::numeric::ublas::vector<boost::numeric::ublas::vector<Matrix> > ShapeFunctionsThirdDerivativesType;
+    typedef DenseVector<DenseVector<Matrix> > ShapeFunctionsThirdDerivativesType;
 
-    typedef boost::array<boost::numeric::ublas::vector<Matrix>, static_cast<int>(IntegrationMethod::NumberOfIntegrationMethods)> MassFactorsContainerType;
+    typedef boost::array<DenseVector<Matrix>, static_cast<int>(IntegrationMethod::NumberOfIntegrationMethods)> MassFactorsContainerType;
 
-    typedef boost::array<boost::numeric::ublas::vector<Matrix>, static_cast<int>(IntegrationMethod::NumberOfIntegrationMethods)> LampedMassFactorsContainerType;
+    typedef boost::array<DenseVector<Matrix>, static_cast<int>(IntegrationMethod::NumberOfIntegrationMethods)> LampedMassFactorsContainerType;
     ///@}
     ///@name Life Cycle
     ///@{
@@ -314,7 +314,7 @@ public:
     {
         for ( unsigned int i = 0 ; i < static_cast<int>(IntegrationMethod::NumberOfIntegrationMethods) ; i++ )
         {
-            boost::numeric::ublas::vector<Matrix> temp( mIntegrationPoints[i].size() );
+            DenseVector<Matrix> temp( mIntegrationPoints[i].size() );
 
             for ( unsigned int j = 0 ; j < mIntegrationPoints[i].size() ; j++ )
                 //temp[j]=outer_prod(mShapeFunctionsValues[i][j], mShapeFunctionsValues[i][j]);
@@ -726,12 +726,12 @@ public:
         return mShapeFunctionsLocalGradients[static_cast<int>(ThisMethod)][IntegrationPointIndex];
     }
 
-    boost::numeric::ublas::vector<Matrix> const& MassFactors() const
+    DenseVector<Matrix> const& MassFactors() const
     {
         return mMassFactors[static_cast<int>(mDefaultMethod)];
     }
 
-    boost::numeric::ublas::vector<Matrix> const& MassFactors( IntegrationMethod ThisMethod ) const
+    DenseVector<Matrix> const& MassFactors( IntegrationMethod ThisMethod ) const
     {
         return mMassFactors[static_cast<int>(ThisMethod)];
     }

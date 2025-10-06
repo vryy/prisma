@@ -127,7 +127,7 @@ public:
     get_slice(TContainerType& container, index_type from, index_type to)
     {
         index_type size = to - from;
-        vector<data_type> result(size);
+        DenseVector<data_type> result(size);
         for(index_type i = 0 ; i < size ; i++)
             result(i) = container(i + from);
         return object(result);
@@ -173,7 +173,7 @@ public:
     {
         return class_<TContainerType>(Name.c_str())
                .def(init<TContainerType>())
-// 	  .def("Resize", &TContainerType::resize)
+                // def("Resize", &TContainerType::resize)
                .def("Size", &TContainerType::size)
                .def(indexing_suite<TContainerType, ReadonlyVectorPythonInterface>())
                .def(self_ns::str(self))

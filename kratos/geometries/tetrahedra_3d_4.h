@@ -555,7 +555,7 @@ public:
 
 
     //Connectivities of faces required
-    void NumberNodesInFaces (boost::numeric::ublas::vector<unsigned int>& NumberNodesInFaces) const override
+    void NumberNodesInFaces (DenseVector<unsigned int>& NumberNodesInFaces) const override
     {
         NumberNodesInFaces.resize(4, false);
         // Linear Tetrahedra have elements of 3 nodes as faces
@@ -566,7 +566,7 @@ public:
 
     }
 
-    void NodesInFaces (boost::numeric::ublas::matrix<unsigned int>& NodesInFaces) const override
+    void NodesInFaces (DenseMatrix<unsigned int>& NodesInFaces) const override
     {
         NodesInFaces.resize(4, 4, false);
         NodesInFaces(0,0)=0;//face or other node
@@ -668,7 +668,7 @@ public:
             KRATOS_THROW_ERROR(std::logic_error,
                                "This integration method is not supported" , *this);
 
-        boost::numeric::ublas::bounded_matrix<DataType,4,3> DN_DX;
+        BoundedMatrix<DataType,4,3> DN_DX;
         DataType x10 = this->Points()[1].X() - this->Points()[0].X();
         DataType y10 = this->Points()[1].Y() - this->Points()[0].Y();
         DataType z10 = this->Points()[1].Z() - this->Points()[0].Z();
@@ -718,7 +718,7 @@ public:
             KRATOS_THROW_ERROR(std::logic_error,
                                "This integration method is not supported" , *this);
 
-        boost::numeric::ublas::bounded_matrix<DataType,4,3> DN_DX;
+        BoundedMatrix<DataType,4,3> DN_DX;
         DataType x10 = this->Points()[1].X() - this->Points()[0].X();
         DataType y10 = this->Points()[1].Y() - this->Points()[0].Y();
         DataType z10 = this->Points()[1].Z() - this->Points()[0].Z();

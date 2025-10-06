@@ -470,7 +470,7 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const override
     {
         std::stringstream buffer;
 
@@ -623,7 +623,7 @@ private:
 
     friend class Serializer;
 
-    virtual void save(Serializer& rSerializer) const
+    void save(Serializer& rSerializer) const override
     {
         KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, IndexedObject );
         rSerializer.save("Is Fixed", static_cast<bool>(mIsFixed));
@@ -640,7 +640,7 @@ private:
         rSerializer.save("Reaction Type", mReactionType);
     }
 
-    virtual void load(Serializer& rSerializer)
+    void load(Serializer& rSerializer) override
     {
         std::string name;
         KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, IndexedObject );

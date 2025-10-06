@@ -31,13 +31,14 @@
 
 // External includes
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
-#include "python/readonly_matrix_python_interface.h"
-#include "python/matrix_vector_operator_python.h"
-#include "python/matrix_matrix_operator_python.h"
 
 
 // Project includes
 #include "includes/define.h"
+
+#include "python/readonly_matrix_python_interface.h"
+#include "python/matrix_vector_operator_python.h"
+#include "python/matrix_matrix_operator_python.h"
 
 
 namespace Kratos

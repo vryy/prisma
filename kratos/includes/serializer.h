@@ -30,38 +30,38 @@
 #include "containers/weak_pointer_vector.h"
 
 
-#define KRATOS_SERIALIZATION_DIRECT_LOAD(type)                           \
-    void load(std::string const & rTag, type& rValue)                \
-    {                                                                \
-        load_trace_point(rTag);                                      \
-            read(rValue);                                             \
+#define KRATOS_SERIALIZATION_DIRECT_LOAD(type)                      \
+    void load(std::string const & rTag, type& rValue)               \
+    {                                                               \
+        load_trace_point(rTag);                                     \
+        read(rValue);                                               \
     }                                \
                                      \
-    void load_base(std::string const & rTag, type& rValue)           \
-    {                                                                \
-          load_trace_point(rTag);                                      \
-      read(rValue);                                             \
+    void load_base(std::string const & rTag, type& rValue)          \
+    {                                                               \
+        load_trace_point(rTag);                                     \
+        read(rValue);                                               \
     }
 
-#define KRATOS_SERIALIZATION_DIRECT_SAVE(type)                           \
-    void save(std::string const & rTag, type const & rValue)         \
-    {                                                                \
-      save_trace_point(rTag);                                      \
-      write(rValue);                                             \
-    }                                    \
-                                     \
-    void save_base(std::string const & rTag, type const & rValue)    \
-    {                                                                \
-      save_trace_point(rTag);                                      \
-      write(rValue);                                             \
+#define KRATOS_SERIALIZATION_DIRECT_SAVE(type)                      \
+    void save(std::string const & rTag, type const & rValue)        \
+    {                                                               \
+        save_trace_point(rTag);                                     \
+        write(rValue);                                              \
+    }                               \
+                                    \
+    void save_base(std::string const & rTag, type const & rValue)   \
+    {                                                               \
+        save_trace_point(rTag);                                     \
+        write(rValue);                                              \
     }
 
-#define KRATOS_SERIALIZATION_DIRECT_CREATE(type)                         \
-    void* create(std::string const & rTag, type* prototype)          \
-    {                                                                \
-      type* p_new = new type;                                        \
-      load(rTag, *p_new);                                            \
-      return p_new;                                                  \
+#define KRATOS_SERIALIZATION_DIRECT_CREATE(type)                    \
+    void* create(std::string const & rTag, type* prototype)         \
+    {                                                               \
+        type* p_new = new type;                                     \
+        load(rTag, *p_new);                                         \
+        return p_new;                                               \
     }
 
 #define KRATOS_SERIALIZER_MODE_BINARY \
@@ -167,6 +167,7 @@ public:
     ///@}
     ///@name Operations
     ///@{
+
     template<class TDataType>
     static void* Create()
     {
@@ -313,7 +314,6 @@ public:
 
         for(SizeType i = 0 ; i < size ; i++)
             load("E", rObject[i]);
-//    read(rObject);
     }
 
     template<class TDataType>
@@ -328,7 +328,22 @@ public:
 
         for(SizeType i = 0 ; i < size ; i++)
             load("E", rObject[i]);
-//    read(rObject);
+    }
+
+    template<class TDataType>
+    void load(std::string const & rTag, boost::numeric::ublas::matrix<TDataType>& rObject)
+    {
+        load_trace_point(rTag);
+        SizeType size1, size2;
+
+        load("size1", size1);
+        load("size2", size2);
+
+        rObject.resize(size1,size2,false);
+
+        for(SizeType i = 0 ; i < size1 ; i++)
+            for(SizeType j = 0 ; j < size2 ; j++)
+                load("E", rObject(i, j));
     }
 
     template<class TDataType, std::size_t TDimension>
@@ -338,7 +353,6 @@ public:
         //rObject = array_1d<TDataType, TDimension>(); //it generates a warnning --> commented 23/09/2015 <--
         for(SizeType i = 0 ; i < TDimension ; i++)
             load("E", rObject[i]);
-//    read(rObject);
     }
 
     KRATOS_SERIALIZATION_DIRECT_LOAD(bool)
@@ -381,7 +395,6 @@ public:
 
         for(SizeType i = 0 ; i < size ; i++)
             save("E", rObject[i]);
-//    write(rObject);
     }
 
     template<class TDataType>
@@ -394,7 +407,21 @@ public:
 
         for(SizeType i = 0 ; i < size ; i++)
             save("E", rObject[i]);
-//    write(rObject);
+    }
+
+    template<class TDataType>
+    void save(std::string const & rTag, boost::numeric::ublas::matrix<TDataType> const& rObject)
+    {
+        save_trace_point(rTag);
+        SizeType size1 = rObject.size1();
+        SizeType size2 = rObject.size2();
+
+        save("size1", size1);
+        save("size2", size2);
+
+        for(SizeType i = 0 ; i < size1 ; i++)
+            for(SizeType j = 0 ; j < size2 ; j++)
+                save("E", rObject(i, j));
     }
 
     template<class TDataType, std::size_t TDimension>
@@ -403,8 +430,6 @@ public:
         save_trace_point(rTag);
         for(SizeType i = 0 ; i < TDimension ; i++)
             save("E", rObject[i]);
-
-//    write(rObject);
     }
 
     template<class TDataType>
@@ -420,7 +445,6 @@ public:
         save_trace_point(rTag);
         write(pVariable->Name());
     }
-
 
     template<class TDataType>
     void save(std::string const & rTag, boost::shared_ptr<TDataType> pValue)
@@ -446,7 +470,6 @@ public:
         }
     }
 
-
     template<class TDataType>
     bool IsDerived(TDataType * pValue)
     {
@@ -460,7 +483,6 @@ public:
 //    std::cout << "for TDataType : " << typeid(TDataType).name() << " and *pValue type : " << typeid(*pValue).name() << " is derived : " << is_derived << std::endl;
       //return is_derived;
     }
-
 
     template<class TDataType>
     void save(std::string const & rTag, TDataType * pValue)
@@ -651,9 +673,6 @@ public:
 
     }
 
-
-
-
     ///@}
     ///@name Access
     ///@{
@@ -672,7 +691,6 @@ public:
     {
         return msRegisteredObjectsName;
     }
-
 
     ///@}
     ///@name Inquiry

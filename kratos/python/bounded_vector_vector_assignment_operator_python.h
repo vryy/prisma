@@ -86,7 +86,6 @@ public:
     /// Destructor.
     virtual ~BoundedVectorVectorAssignmentOperatorPython() {}
 
-
     ///@}
     ///@name Operators
     ///@{
@@ -153,7 +152,7 @@ private:
     iadd(TContainerType& ThisContainer, TOtherContainerType const& OtherContainer)
     {
         if(ThisContainer.size()!=OtherContainer.size())
-            KRATOS_THROW_ERROR(std::invalid_argument, "different size of vectors to sum", "");
+            KRATOS_ERROR << "different size of vectors to add";
         for(typename TContainerType::size_type i = 0 ; i < ThisContainer.size() ; i++)
             ThisContainer[i] += OtherContainer[i];
         return ThisContainer;
@@ -164,14 +163,11 @@ private:
     isub(TContainerType& ThisContainer, TOtherContainerType const& OtherContainer)
     {
         if(ThisContainer.size()!=OtherContainer.size())
-            KRATOS_THROW_ERROR(std::invalid_argument, "different size of vectors to subtract", "");
+            KRATOS_ERROR << "different size of vectors to subtract";
         for(typename TContainerType::size_type i = 0 ; i < ThisContainer.size() ; i++)
             ThisContainer[i] -= OtherContainer[i];
         return ThisContainer;
     }
-
-
-
 
     ///@}
     ///@name Private  Access
@@ -211,6 +207,4 @@ private:
 
 }  // namespace Kratos.
 
-#endif // KRATOS_BOUNDED_VECTOR_VECTOR_ASSIGNMENT_OPERATOR_PYTHON_H_INCLUDED  defined 
-
-
+#endif // KRATOS_BOUNDED_VECTOR_VECTOR_ASSIGNMENT_OPERATOR_PYTHON_H_INCLUDED  defined
