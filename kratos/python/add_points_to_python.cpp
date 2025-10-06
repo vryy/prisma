@@ -94,7 +94,9 @@ void AddPointsToPythonImpl(const std::string& Name)
     p.def(init<TDataType>())
     .def(init<TDataType, TDataType>())
     .def(init<TDataType, TDataType, TDataType>())
+#ifdef KRATOS_USE_BOOST_UBLAS_FOR_LINEAR_ALGEBRA
     .def(init<vector_expression<vector<TDataType> > >())
+#endif
     .def(VectorScalarOperatorPython<PointType, TDataType, PointType >())
     .def(VectorVectorOperatorPython<PointType, zero_vector<TDataType>, PointType >())
     .def(VectorVectorOperatorPython<PointType, unit_vector<TDataType>, PointType >())

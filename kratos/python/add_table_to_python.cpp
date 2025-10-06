@@ -29,7 +29,7 @@
 
 // Project includes
 #include "includes/define.h"
-#include "includes/ublas_interface.h"
+#include "includes/linalg_interface.h"
 #include "includes/table.h"
 
 

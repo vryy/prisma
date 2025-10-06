@@ -29,7 +29,7 @@
 
 // Project includes
 #include "includes/define.h"
-#include "includes/ublas_interface.h"
+#include "includes/linalg_interface.h"
 #include "containers/data_value_container.h"
 //#include "containers/hash_data_value_container.h"
 #include "containers/variables_list_data_value_container.h"
@@ -119,7 +119,9 @@ void AddValueContainersToPython(const std::string& Prefix)
     typedef TDataType DataType;
 
     BoundedVectorPythonInterface<array_1d<DataType, 3>, 3>::CreateInterface( Prefix + "Array3" )
+#ifdef KRATOS_USE_BOOST_UBLAS_FOR_LINEAR_ALGEBRA
     .def( init<vector_expression<array_1d<DataType, 3> > >() )
+#endif
     .def( VectorScalarOperatorPython<array_1d<DataType, 3>, DataType, array_1d<DataType, 3> >() )
     .def( VectorVectorOperatorPython<array_1d<DataType, 3>, zero_vector<DataType>, array_1d<DataType, 3> >() )
     .def( VectorVectorOperatorPython<array_1d<DataType, 3>, unit_vector<DataType>, array_1d<DataType, 3> >() )
@@ -128,7 +130,9 @@ void AddValueContainersToPython(const std::string& Prefix)
     ;
 
     BoundedVectorPythonInterface<array_1d<DataType, 2>, 2>::CreateInterface( Prefix + "Array2" )
+#ifdef KRATOS_USE_BOOST_UBLAS_FOR_LINEAR_ALGEBRA
     .def( init<vector_expression<array_1d<DataType, 2> > >() )
+#endif
     .def( VectorScalarOperatorPython<array_1d<DataType, 2>, DataType, array_1d<DataType, 2> >() )
     .def( VectorVectorOperatorPython<array_1d<DataType, 2>, zero_vector<DataType>, array_1d<DataType, 2> >() )
     .def( VectorVectorOperatorPython<array_1d<DataType, 2>, unit_vector<DataType>, array_1d<DataType, 2> >() )

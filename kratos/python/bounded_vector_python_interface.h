@@ -97,7 +97,6 @@ public:
     /// Destructor.
     virtual ~BoundedVectorPythonInterface() {}
 
-
     ///@}
     ///@name Operators
     ///@{
@@ -254,9 +253,10 @@ public:
         }
     }
 
-
     static class_<TContainerType> CreateInterface(std::string const& Name)
     {
+        typedef typename TContainerType::value_type value_type;
+
         boost::python::converter::registry::push_back(
             &convertible,
             &construct,
@@ -267,14 +267,14 @@ public:
                .def(indexing_suite<TContainerType, BoundedVectorPythonInterface>())
                .def("Size", &TContainerType::size)
                .def(VectorVectorOperatorPython<TContainerType, TContainerType, TContainerType>())
-               .def(VectorScalarAssignmentOperatorPython<TContainerType, double>())
-               .def(BoundedVectorVectorAssignmentOperatorPython<TContainerType, zero_vector<double> >())
-               .def(BoundedVectorVectorAssignmentOperatorPython<TContainerType, unit_vector<double> >())
-               .def(BoundedVectorVectorAssignmentOperatorPython<TContainerType, scalar_vector<double> >())
-               .def(BoundedVectorVectorAssignmentOperatorPython<TContainerType, vector<double> >())
-               //	.def(BoundedVectorVectorAssignmentOperatorPython<TContainerType, mapped_vector<double> >())
-               //	.def(BoundedVectorVectorAssignmentOperatorPython<TContainerType, compressed_vector<double> >())
-               //	.def(BoundedVectorVectorAssignmentOperatorPython<TContainerType, coordinate_vector<double> >())
+               .def(VectorScalarAssignmentOperatorPython<TContainerType, value_type>())
+               .def(BoundedVectorVectorAssignmentOperatorPython<TContainerType, zero_vector<value_type> >())
+               .def(BoundedVectorVectorAssignmentOperatorPython<TContainerType, unit_vector<value_type> >())
+               .def(BoundedVectorVectorAssignmentOperatorPython<TContainerType, scalar_vector<value_type> >())
+               .def(BoundedVectorVectorAssignmentOperatorPython<TContainerType, vector<value_type> >())
+               //	.def(BoundedVectorVectorAssignmentOperatorPython<TContainerType, mapped_vector<value_type> >())
+               //	.def(BoundedVectorVectorAssignmentOperatorPython<TContainerType, compressed_vector<value_type> >())
+               //	.def(BoundedVectorVectorAssignmentOperatorPython<TContainerType, coordinate_vector<value_type> >())
                .def(self_ns::str(self))
                ;
     }
@@ -282,6 +282,8 @@ public:
     template <class TBaseType>
     static class_<TContainerType, bases<TBaseType> > CreateInterfaceWithBase(std::string const& Name, TBaseType Dummy)
     {
+        typedef typename TContainerType::value_type value_type;
+
         boost::python::converter::registry::push_back(
             &convertible,
             &construct,
@@ -292,14 +294,14 @@ public:
                //.def(indexing_suite<TContainerType, BoundedVectorPythonInterface>())
                .def("Size", &TContainerType::size)
                .def(VectorVectorOperatorPython<TContainerType, TContainerType, TContainerType>())
-               .def(VectorScalarAssignmentOperatorPython<TContainerType, double>())
-               .def(BoundedVectorVectorAssignmentOperatorPython<TContainerType, zero_vector<double> >())
-               .def(BoundedVectorVectorAssignmentOperatorPython<TContainerType, unit_vector<double> >())
-               .def(BoundedVectorVectorAssignmentOperatorPython<TContainerType, scalar_vector<double> >())
-               .def(BoundedVectorVectorAssignmentOperatorPython<TContainerType, vector<double> >())
-               //.def(BoundedVectorVectorAssignmentOperatorPython<TContainerType, mapped_vector<double> >())
-               //	.def(BoundedVectorVectorAssignmentOperatorPython<TContainerType, compressed_vector<double> >())
-               //	.def(BoundedVectorVectorAssignmentOperatorPython<TContainerType, coordinate_vector<double> >())
+               .def(VectorScalarAssignmentOperatorPython<TContainerType, value_type>())
+               .def(BoundedVectorVectorAssignmentOperatorPython<TContainerType, zero_vector<value_type> >())
+               .def(BoundedVectorVectorAssignmentOperatorPython<TContainerType, unit_vector<value_type> >())
+               .def(BoundedVectorVectorAssignmentOperatorPython<TContainerType, scalar_vector<value_type> >())
+               .def(BoundedVectorVectorAssignmentOperatorPython<TContainerType, vector<value_type> >())
+               //.def(BoundedVectorVectorAssignmentOperatorPython<TContainerType, mapped_vector<value_type> >())
+               //	.def(BoundedVectorVectorAssignmentOperatorPython<TContainerType, compressed_vector<value_type> >())
+               //	.def(BoundedVectorVectorAssignmentOperatorPython<TContainerType, coordinate_vector<value_type> >())
                .def(self_ns::str(self))
                ;
     }
@@ -375,11 +377,8 @@ private:
 
 ///@}
 
-
 }  // namespace Python.
 
 }  // namespace Kratos.
 
-#endif // KRATOS_BOUNDED_VECTOR_PYTHON_INTERFACE_H_INCLUDED defined 
-
-
+#endif // KRATOS_BOUNDED_VECTOR_PYTHON_INTERFACE_H_INCLUDED defined

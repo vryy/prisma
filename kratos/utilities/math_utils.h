@@ -26,6 +26,7 @@
 // Project includes
 #include "includes/define.h"
 #include "includes/ublas_interface.h"
+#include "includes/linalg_interface.h"
 #include "includes/kratos_exception.h"
 
 namespace Kratos
@@ -612,6 +613,7 @@ public:
                 return Det4(rA);
             default:
                 TDataType det = 1.0;
+                #ifdef KRATOS_USE_BOOST_UBLAS_FOR_LINEAR_ALGEBRA
                 using namespace boost::numeric::ublas;
                 typedef permutation_matrix<SizeType> pmatrix;
                 MatrixType Aux(rA);
@@ -627,6 +629,9 @@ public:
                     int sign = (ki % 2 == 0) ? 1 : -1;
                     det *= sign * Aux(i,i);
                 }
+                #elif KRATOS_USE_EIGEN_FOR_LINEAR_ALGEBRA
+                KRATOS_ERROR << "To be implemented";
+                #endif
                 return det;
        }
     }

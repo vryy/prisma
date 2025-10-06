@@ -10,29 +10,17 @@
 //  Main authors:    Hoang-Giang Bui
 //
 
-#if !defined(KRATOS_ARRAY_1D_H_INCLUDED	)
-#define	 KRATOS_ARRAY_1D_H_INCLUDED
 
-// System includes
-
-// External	includes
-
-// Project includes
+#if !defined(KRATOS_LINALG_INTERFACE_H_INCLUDED )
+#define  KRATOS_LINALG_INTERFACE_H_INCLUDED
 
 #ifdef KRATOS_USE_BOOST_UBLAS_FOR_LINEAR_ALGEBRA
 
-    #include "array_1d_boost_ublas_impl.h"
+    #include "ublas_interface.h"
 
 #elif KRATOS_USE_EIGEN_FOR_LINEAR_ALGEBRA
 
-    #include "array_1d_eigen_impl.h"
-
-    // namespace Kratos
-    // {
-
-    //     template <typename TDataType, KRATOS_SIZE_TYPE TSize> using array_1d = BoundedVector<TDataType, TSize>;
-
-    // } // end namespace Kratos
+    #include "eigen_interface.h"
 
 #else
 
@@ -40,5 +28,4 @@
 
 #endif
 
-
-#endif // KRATOS_ARRAY_1D_H_INCLUDED  defined
+#endif // KRATOS_LINALG_INTERFACE_H_INCLUDED  defined

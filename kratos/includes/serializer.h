@@ -26,6 +26,7 @@
 // Project includes
 #include "includes/define.h"
 #include "includes/ublas_interface.h"
+#include "includes/linalg_interface.h"
 #include "containers/array_1d.h"
 #include "containers/weak_pointer_vector.h"
 
@@ -331,6 +332,22 @@ public:
 //    read(rObject);
     }
 
+    #ifdef KRATOS_USE_EIGEN_FOR_LINEAR_ALGEBRA
+    template<class TDataType>
+    void load(std::string const & rTag, Eigen::VectorXt<TDataType>& rObject)
+    {
+        load_trace_point(rTag);
+        SizeType size;
+
+        load("size", size);
+
+        rObject.resize(size,false);
+
+        for(SizeType i = 0 ; i < size ; i++)
+            load("E", rObject[i]);
+    }
+    #endif
+
     template<class TDataType, std::size_t TDimension>
     void load(std::string const & rTag, array_1d<TDataType, TDimension>& rObject)
     {
@@ -396,6 +413,20 @@ public:
             save("E", rObject[i]);
 //    write(rObject);
     }
+
+    #ifdef KRATOS_USE_EIGEN_FOR_LINEAR_ALGEBRA
+    template<class TDataType>
+    void save(std::string const & rTag, Eigen::VectorXt<TDataType> const& rObject)
+    {
+        save_trace_point(rTag);
+        SizeType size = rObject.size();
+
+        save("size", size);
+
+        for(SizeType i = 0 ; i < size ; i++)
+            save("E", rObject[i]);
+    }
+    #endif
 
     template<class TDataType, std::size_t TDimension>
     void save(std::string const & rTag, array_1d<TDataType, TDimension> const& rObject)

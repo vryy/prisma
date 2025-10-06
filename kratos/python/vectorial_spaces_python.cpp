@@ -28,7 +28,7 @@
 
 
 // Project includes
-#include "includes/ublas_interface.h"
+#include "includes/linalg_interface.h"
 #include "python/vector_python_interface.h"
 #include "python/vector_scalar_operator_python.h"
 
@@ -114,7 +114,7 @@ struct UblasSparseVectorModifier
 
 void  AddVectorialSpacesToPython()
 {
-
+#ifdef KRATOS_USE_BOOST_UBLAS_FOR_LINEAR_ALGEBRA
     ReadonlyVectorPythonInterface<zero_vector<double> >::CreateInterface("ZeroVector")
     .def(init<zero_vector<double>::size_type>())
     .def(VectorScalarOperatorPython<zero_vector<double>, double, vector<double> >())
@@ -225,6 +225,7 @@ void  AddVectorialSpacesToPython()
 // 			// 	 .def(self * Vector<double>())
 // 			.def(self_ns::str(self))
 // 			;
+#endif
 }
 
 }  // namespace Python.

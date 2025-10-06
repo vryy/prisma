@@ -55,6 +55,8 @@ namespace Kratos
 ///@name Type Definitions
 ///@{
 
+#ifdef KRATOS_USE_BOOST_UBLAS_FOR_LINEAR_ALGEBRA
+
     /// types for scalar linear algebra
 
     template <typename TDataType> using DenseMatrix = boost::numeric::ublas::matrix<TDataType>;
@@ -145,6 +147,7 @@ namespace Kratos
     template<> struct DataTypeToString<boost::numeric::ublas::matrix<double> > { static inline constexpr const char* Get() {return "boost::numeric::ublas::matrix<double>";} };
     template<> struct DataTypeToString<boost::numeric::ublas::matrix<std::complex<double> > > { static inline constexpr const char* Get() {return "boost::numeric::ublas::matrix<std::complex<double>>";} };
 
+#endif
 
 ///@}
 ///@name  Enum's

@@ -29,7 +29,7 @@
 
 // Project includes
 #include "includes/define.h"
-#include "includes/ublas_interface.h"
+#include "includes/linalg_interface.h"
 #include "python/matrix_python_interface.h"
 #include "python/matrix_scalar_operator_python.h"
 #include "python/matrix_vector_operator_python.h"

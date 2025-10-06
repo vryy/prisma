@@ -25,7 +25,7 @@
 #include "containers/variable_component.h"
 #include "containers/vector_component_adaptor.h"
 #include "includes/kratos_components.h"
-#include "includes/ublas_interface.h"
+#include "includes/linalg_interface.h"
 #include "containers/array_1d.h"
 #include "containers/weak_pointer_vector.h"
 #include "containers/periodic_variables_container.h"
@@ -325,6 +325,10 @@ namespace Kratos
     KRATOS_DEFINE_VARIABLE( vector<int>, NEIGHBOURS_INDICES )
 
     KRATOS_DEFINE_VARIABLE( Matrix, INERTIA )
+
+    //KRATOS_DEFINE_VARIABLE( WeakPointerVector< GeometricalObject >, NEIGHBOUR_EMBEDDED_FACES )
+    //KRATOS_DEFINE_VARIABLE( ConvectionDiffusionSettings::Pointer,  CONVECTION_DIFFUSION_SETTINGS )
+    //KRATOS_DEFINE_VARIABLE( RadiationSettings::Pointer,  RADIATION_SETTINGS )
 
     //ALE Application
     KRATOS_DEFINE_3D_VARIABLE_WITH_COMPONENTS( DETERMINANT )

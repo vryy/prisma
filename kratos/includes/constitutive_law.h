@@ -28,7 +28,7 @@
 #include "includes/properties.h"
 #include "geometries/geometry.h"
 #include "includes/process_info.h"
-#include "includes/ublas_interface.h"
+#include "includes/linalg_interface.h"
 #include "includes/kratos_parameters.h"
 #include "containers/flags.h"
 

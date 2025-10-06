@@ -21,7 +21,7 @@
 
 // Project includes
 #include "includes/serializer.h"
-#include "includes/ublas_interface.h"
+#include "includes/linalg_interface.h"
 
 namespace Kratos
 {

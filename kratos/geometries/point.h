@@ -81,6 +81,13 @@ public:
 
     typedef KRATOS_INDEX_TYPE IndexType;
 
+#ifdef KRATOS_USE_EIGEN_FOR_LINEAR_ALGEBRA
+    using BaseType::operator*;
+    using BaseType::operator/;
+    using BaseType::operator+=;
+    using BaseType::operator-=;
+#endif
+
     ///@}
     ///@name Constants
     ///@{
@@ -126,6 +133,28 @@ public:
         this->operator()(2) = NewZ;
         KRATOS_CATCH_LEVEL_4(*this)
     }
+
+    #ifdef KRATOS_USE_EIGEN_FOR_LINEAR_ALGEBRA
+    Point(const Eigen::VectorXt<TDataType>& NewV) : BaseType(TDimension)
+    {
+        KRATOS_TRY_LEVEL_4
+        assert(NewV.size() >= TDimension);
+        SetAllCoordinates();
+        for (std::size_t i = 0; i < NewV.size(); ++i)
+            this->operator()(i) = NewV[i];
+        KRATOS_CATCH_LEVEL_4(*this)
+    }
+
+    Point(const Eigen::EigenVector<TDataType>& NewV) : BaseType(TDimension)
+    {
+        KRATOS_TRY_LEVEL_4
+        assert(NewV.size() >= TDimension);
+        SetAllCoordinates();
+        for (std::size_t i = 0; i < NewV.size(); ++i)
+            this->operator()(i) = NewV[i];
+        KRATOS_CATCH_LEVEL_4(*this)
+    }
+    #endif
 
     /** Copy constructor. Initialize this point with the coordinates
     of given point.*/

@@ -29,7 +29,7 @@
 
 // Project includes
 #include "includes/define.h"
-#include "includes/ublas_interface.h"
+#include "includes/linalg_interface.h"
 #include "containers/array_1d.h"
 #include "python/add_vector_to_python.h"
 #include "python/vector_python_interface.h"
@@ -105,7 +105,9 @@ void AddVectorToPythonImpl(const std::string& Prefix)
 
     VectorPythonInterface<vector<TDataType>, UblasVectorModifier<vector<TDataType> > >::CreateInterface(Prefix + "Vector")
     .def(init<typename vector<TDataType>::size_type>())
+#ifdef KRATOS_USE_BOOST_UBLAS_FOR_LINEAR_ALGEBRA
     .def(init<vector_expression<vector<TDataType> > >())
+#endif
     .def(init<array_1d<TDataType, 3> >())
     .def(VectorScalarOperatorPython<vector<TDataType>, TDataType, vector<TDataType> >())
 //       .def(VectorVectorOperatorPython<vector<TDataType>, zero_vector<TDataType>, vector<TDataType> >())
@@ -117,12 +119,14 @@ void AddVectorToPythonImpl(const std::string& Prefix)
 
 void AddVectorToPython()
 {
+#ifdef KRATOS_USE_BOOST_UBLAS_FOR_LINEAR_ALGEBRA
     VectorPythonInterface<vector<int>, UblasVectorModifier<vector<int> > >::CreateInterface("IntegerVector")
     .def(init<vector<int>::size_type>())
     ;
 
     AddVectorToPythonImpl<KRATOS_DOUBLE_TYPE>("");
     AddVectorToPythonImpl<KRATOS_COMPLEX_TYPE>("Complex");
+#endif
 }
 
 }  // namespace Python.

@@ -35,7 +35,7 @@
 #include "includes/define.h"
 #include "containers/variable_component.h"
 #include "containers/vector_component_adaptor.h"
-#include "includes/ublas_interface.h"
+#include "includes/linalg_interface.h"
 #include "containers/array_1d.h"
 
 #undef  KRATOS_EXPORT_MACRO
@@ -69,8 +69,8 @@ namespace Kratos
 
     KRATOS_DEFINE_VARIABLE( std::string, ELEMENT_TYPE )
 
-    typedef vector<array_1d<double,3> > VectorArray3Double;
-    KRATOS_DEFINE_VARIABLE( VectorArray3Double, PARTICLE_ROTATE_SPRING_MOMENT )
+    // typedef vector<array_1d<double,3> > VectorArray3Double;
+    // KRATOS_DEFINE_VARIABLE( VectorArray3Double, PARTICLE_ROTATE_SPRING_MOMENT )
 
     // Swimming DEM Application BEGINNING
     KRATOS_DEFINE_VARIABLE( int, COUPLING_TYPE)

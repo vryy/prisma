@@ -56,6 +56,7 @@ double IntegrationPointGetWeight(TIntegrationPointType& ThisIntegrationPoint)
 
 void  AddIntegrationPointsToPython()
 {
+#ifdef KRATOS_USE_BOOST_UBLAS_FOR_LINEAR_ALGEBRA
     BoundedVectorPythonInterface<IntegrationPoint<1>, 1>::CreateInterfaceWithBase("IntegrationPoint1D", Point<1>())
     .def(init<double>())
     .def(init<Point<1>, double>())
@@ -106,6 +107,7 @@ void  AddIntegrationPointsToPython()
     //.def(VectorVectorOperatorPython<IntegrationPoint<3>, compressed_vector<double>, IntegrationPoint<3> >())
     //.def(VectorVectorOperatorPython<IntegrationPoint<3>, coordinate_vector<double>, IntegrationPoint<3> >())
     ;
+#endif
 }
 
 }  // namespace Python.

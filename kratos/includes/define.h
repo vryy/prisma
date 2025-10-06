@@ -403,7 +403,7 @@ VariableIsCompleteHelper<VariableSelector_##name<T> >::value          \
 #undef KRATOS_CREATE_3D_VARIABLE_WITH_THIS_COMPONENTS
 #endif
 #define KRATOS_CREATE_3D_VARIABLE_WITH_THIS_COMPONENTS(name, component1, component2, component3)                                    \
-    /*const*/ Kratos::Variable<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> > name(#name, Kratos::zero_vector<KRATOS_DOUBLE_TYPE>(3));   \
+    /*const*/ Kratos::Variable<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> > name(#name, Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3>(3, 0.0));   \
 \
     /*const*/ Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> > >              \
                   component1(#component1, Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> >(name, 0));   \
@@ -414,7 +414,7 @@ VariableIsCompleteHelper<VariableSelector_##name<T> >::value          \
     /*const*/ Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> > >              \
                   component3(#component3, Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_DOUBLE_TYPE, 3> >(name, 2));   \
 \
-    /*const*/ Kratos::Variable<Kratos::array_1d<KRATOS_COMPLEX_TYPE, 3> > COMPLEX##_##name("COMPLEX_" #name, Kratos::zero_vector<KRATOS_COMPLEX_TYPE>(3));   \
+    /*const*/ Kratos::Variable<Kratos::array_1d<KRATOS_COMPLEX_TYPE, 3> > COMPLEX##_##name("COMPLEX_" #name, Kratos::array_1d<KRATOS_COMPLEX_TYPE, 3>(3, 0.0));   \
 \
     /*const*/ Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_COMPLEX_TYPE, 3> > >              \
                   COMPLEX##_##component1("COMPLEX_" #component1, Kratos::VectorComponentAdaptor<Kratos::array_1d<KRATOS_COMPLEX_TYPE, 3> >(COMPLEX##_##name, 0));   \

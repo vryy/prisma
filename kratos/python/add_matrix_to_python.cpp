@@ -29,7 +29,7 @@
 
 // Project includes
 #include "includes/define.h"
-#include "includes/ublas_interface.h"
+#include "includes/linalg_interface.h"
 #include "python/matrix_python_interface.h"
 #include "python/matrix_scalar_operator_python.h"
 #include "python/matrix_scalar_assignment_operator_python.h"
@@ -46,24 +46,28 @@ using namespace boost::python;
 template<typename TDataType>
 void AddMatrixToPythonImpl(const std::string& Prefix)
 {
-    MatrixPythonInterface<matrix<TDataType> >::CreateInterface(Prefix + "Matrix")
-    .def(init<typename matrix<TDataType>::size_type, typename matrix<TDataType>::size_type>())
-    /*.def(MatrixScalarOperatorPython<matrix<TDataType>, TDataType>())
-      .def(MatrixScalarAssignmentOperatorPython<matrix<TDataType>, TDataType>())
-          .def(MatrixMatrixOperatorPython<matrix<TDataType>, zero_matrix<TDataType>, matrix<TDataType> >())
-          .def(MatrixMatrixOperatorPython<matrix<TDataType>, identity_matrix<TDataType>, matrix<TDataType> >())
-          .def(MatrixMatrixOperatorPython<matrix<TDataType>, scalar_matrix<TDataType>, matrix<TDataType> >())
-          .def(MatrixMatrixOperatorPython<matrix<TDataType>, banded_matrix<TDataType>, matrix<TDataType> >())
-          .def(MatrixMatrixOperatorPython<matrix<TDataType>, triangular_matrix<TDataType, upper>, matrix<TDataType> >())
-          .def(MatrixMatrixOperatorPython<matrix<TDataType>, triangular_matrix<TDataType, lower>, matrix<TDataType> >())
-          .def(MatrixMatrixOperatorPython<matrix<TDataType>, symmetric_matrix<TDataType, upper>, matrix<TDataType> >())
+#ifdef KRATOS_USE_BOOST_UBLAS_FOR_LINEAR_ALGEBRA
+    using upper = boost::numeric::ublas::upper;
+    using lower = boost::numeric::ublas::lower;
+
+    MatrixPythonInterface<DenseMatrix<TDataType> >::CreateInterface(Prefix + "Matrix")
+    .def(init<typename DenseMatrix<TDataType>::size_type, typename DenseMatrix<TDataType>::size_type>())
+    /*.def(MatrixScalarOperatorPython<DenseMatrix<TDataType>, TDataType>())
+      .def(MatrixScalarAssignmentOperatorPython<DenseMatrix<TDataType>, TDataType>())
+          .def(MatrixMatrixOperatorPython<DenseMatrix<TDataType>, zero_DenseMatrix<TDataType>, DenseMatrix<TDataType> >())
+          .def(MatrixMatrixOperatorPython<DenseMatrix<TDataType>, identity_DenseMatrix<TDataType>, DenseMatrix<TDataType> >())
+          .def(MatrixMatrixOperatorPython<DenseMatrix<TDataType>, scalar_DenseMatrix<TDataType>, DenseMatrix<TDataType> >())
+          .def(MatrixMatrixOperatorPython<DenseMatrix<TDataType>, banded_DenseMatrix<TDataType>, DenseMatrix<TDataType> >())
+          .def(MatrixMatrixOperatorPython<DenseMatrix<TDataType>, triangular_matrix<TDataType, upper>, DenseMatrix<TDataType> >())
+          .def(MatrixMatrixOperatorPython<DenseMatrix<TDataType>, triangular_matrix<TDataType, lower>, DenseMatrix<TDataType> >())
+          .def(MatrixMatrixOperatorPython<DenseMatrix<TDataType>, symmetric_matrix<TDataType, upper>, DenseMatrix<TDataType> >())
     #if defined KRATOS_ADD_HERMITIAN_MATRIX_INTERFACE
-          .def(MatrixMatrixOperatorPython<matrix<TDataType>, hermitian_matrix<TDataType, upper>, matrix<TDataType> >())
+          .def(MatrixMatrixOperatorPython<DenseMatrix<TDataType>, hermitian_matrix<TDataType, upper>, DenseMatrix<TDataType> >())
     #endif
-          .def(MatrixMatrixOperatorPython<matrix<TDataType>, mapped_matrix<TDataType>, matrix<TDataType> >())
-          .def(MatrixMatrixOperatorPython<matrix<TDataType>, compressed_matrix<TDataType>, matrix<TDataType> >())
+          .def(MatrixMatrixOperatorPython<DenseMatrix<TDataType>, mapped_DenseMatrix<TDataType>, DenseMatrix<TDataType> >())
+          .def(MatrixMatrixOperatorPython<DenseMatrix<TDataType>, compressed_DenseMatrix<TDataType>, DenseMatrix<TDataType> >())
     #if defined KRATOS_ADD_COORDINATE_MATRIX_INTERFACE
-          .def(MatrixMatrixOperatorPython<matrix<TDataType>, coordinate_matrix<TDataType>, matrix<TDataType> >())
+          .def(MatrixMatrixOperatorPython<DenseMatrix<TDataType>, coordinate_DenseMatrix<TDataType>, DenseMatrix<TDataType> >())
     #endif*/
     ;
 
@@ -100,9 +104,9 @@ void AddMatrixToPythonImpl(const std::string& Prefix)
     .def(MatrixMatrixOperatorPython<coordinate_matrix<TDataType>, triangular_matrix<TDataType, upper>, matrix<TDataType> >())
     .def(MatrixMatrixOperatorPython<coordinate_matrix<TDataType>, triangular_matrix<TDataType, lower>, matrix<TDataType> >())
     .def(MatrixMatrixOperatorPython<coordinate_matrix<TDataType>, symmetric_matrix<TDataType, upper>, matrix<TDataType> >())
-#if defined KRATOS_ADD_HERMITIAN_MATRIX_INTERFACE
+    #if defined KRATOS_ADD_HERMITIAN_MATRIX_INTERFACE
     .def(MatrixMatrixOperatorPython<coordinate_matrix<TDataType>, hermitian_matrix<TDataType, upper>, matrix<TDataType> >())
-#endif
+    #endif
     .def(MatrixMatrixOperatorPython<coordinate_matrix<TDataType>, mapped_matrix<TDataType>, mapped_matrix<TDataType> >())
     .def(MatrixMatrixOperatorPython<coordinate_matrix<TDataType>, compressed_matrix<TDataType>, compressed_matrix<TDataType> >())
     .def(MatrixMatrixOperatorPython<coordinate_matrix<TDataType>, matrix<TDataType>, matrix<TDataType> >())
@@ -290,12 +294,15 @@ void AddMatrixToPythonImpl(const std::string& Prefix)
     // #endif
     ;
     #endif
+#endif // KRATOS_USE_BOOST_UBLAS_FOR_LINEAR_ALGEBRA
 }
 
 void AddMatrixToPython()
 {
+#ifdef KRATOS_USE_BOOST_UBLAS_FOR_LINEAR_ALGEBRA
     AddMatrixToPythonImpl<KRATOS_DOUBLE_TYPE>("");
     AddMatrixToPythonImpl<KRATOS_COMPLEX_TYPE>("Complex");
+#endif
 }
 
 }  // namespace Python.

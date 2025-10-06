@@ -396,7 +396,7 @@ public:
         const ProcessInfo& rCurrentProcessInfo
         ) const override
     {
-        rTransformationMatrix = ZeroMatrix(0);
+        rTransformationMatrix.resize(0, 0);
         rConstantVector = mConstantVector;
     }
 

@@ -27,7 +27,7 @@
 
 // Project includes
 #include "includes/define_python.h"
-#include "includes/ublas_interface.h"
+#include "includes/linalg_interface.h"
 #include "includes/constitutive_law.h"
 #include "includes/variables.h"
 #include "python/add_variables_to_python.h"

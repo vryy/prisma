@@ -23,7 +23,7 @@
 // Project includes
 #include "includes/define.h"
 #include "includes/kratos_components.h"
-#include "includes/ublas_interface.h"
+#include "includes/linalg_interface.h"
 #include "includes/node.h"
 #include "includes/element.h"
 #include "includes/condition.h"

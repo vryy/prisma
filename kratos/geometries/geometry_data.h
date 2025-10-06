@@ -14,7 +14,7 @@
 // External includes
 
 // Project includes
-#include "includes/ublas_interface.h"
+#include "includes/linalg_interface.h"
 #include "integration/integration_point.h"
 
 

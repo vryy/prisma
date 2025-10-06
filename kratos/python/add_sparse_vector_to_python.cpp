@@ -29,7 +29,7 @@
 
 // Project includes
 #include "includes/define.h"
-#include "includes/ublas_interface.h"
+#include "includes/linalg_interface.h"
 #include "python/add_sparse_vector_to_python.h"
 #include "python/vector_python_interface.h"
 #include "python/vector_scalar_operator_python.h"

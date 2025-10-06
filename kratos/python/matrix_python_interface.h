@@ -30,6 +30,7 @@
 
 
 // External includes
+#include <boost/numeric/ublas/matrix.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include "python/readonly_matrix_python_interface.h"
 #include "python/matrix_vector_operator_python.h"
@@ -68,9 +69,7 @@ using namespace boost::python;
 ///@{
 
 /// A sequence converter from python.
-/**
-*/
-template<class TMatrixType, class TFunctorType = row_major>
+template<class TMatrixType, class TFunctorType = boost::numeric::ublas::row_major>
 class MatrixPythonInterface : public ReadonlyMatrixPythonInterface<TMatrixType>
 {
 public:
@@ -86,6 +85,11 @@ public:
     typedef typename TMatrixType::size_type size_type;
     typedef typename TMatrixType::difference_type difference_type;
     typedef ReadonlyMatrixPythonInterface<TMatrixType> BaseType;
+
+    using row_major = boost::numeric::ublas::row_major;
+    using upper = boost::numeric::ublas::upper;
+    using lower = boost::numeric::ublas::lower;
+
 
     ///@}
     ///@name Life Cycle
@@ -313,6 +317,4 @@ private:
 
 }  // namespace Kratos.
 
-#endif // KRATOS_MATRIX_PYTHON_INTERFACE_H_INCLUDED defined 
-
-
+#endif // KRATOS_MATRIX_PYTHON_INTERFACE_H_INCLUDED defined
