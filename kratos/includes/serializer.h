@@ -116,7 +116,9 @@ public:
     /// Pointer definition of Serializer
     KRATOS_CLASS_POINTER_DEFINITION(Serializer);
 
-    typedef std::size_t SizeType;
+    typedef KRATOS_INDEX_TYPE IndexType;
+
+    typedef KRATOS_SIZE_TYPE SizeType;
 
     typedef void* (*ObjectFactoryType)();
 
@@ -317,6 +319,28 @@ public:
     }
 
     template<class TDataType>
+    void load(std::string const & rTag, std::map<IndexType, TDataType>& rObject)
+    {
+        load_trace_point(rTag);
+        SizeType size;
+
+        load("size", size);
+
+        std::vector<IndexType> key(size);
+        for(SizeType i = 0 ; i < size ; i++)
+            load("K", key[i]);
+
+        std::vector<TDataType> value(size);
+        for(SizeType i = 0 ; i < size ; i++)
+            load("V", value[i]);
+
+        for(SizeType i = 0 ; i < size ; i++)
+        {
+            rObject[key[i]] = value[i];
+        }
+    }
+
+    template<class TDataType>
     void load(std::string const & rTag, boost::numeric::ublas::vector<TDataType>& rObject)
     {
         load_trace_point(rTag);
@@ -407,6 +431,21 @@ public:
 
         for(SizeType i = 0 ; i < size ; i++)
             save("E", rObject[i]);
+    }
+
+    template<class TDataType>
+    void save(std::string const & rTag, std::map<IndexType, TDataType> const& rObject)
+    {
+        save_trace_point(rTag);
+        SizeType size = rObject.size();
+
+        save("size", size);
+
+        for(auto it = rObject.begin(); it != rObject.end(); ++it)
+            save("K", it->first);
+
+        for(auto it = rObject.begin(); it != rObject.end(); ++it)
+            save("V", it->second);
     }
 
     template<class TDataType>
