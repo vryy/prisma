@@ -645,6 +645,11 @@ namespace Internals
   for (auto it___ = variable.begin(); it___ != variable.end(); ++it___) std::cout << " " << *it___; \
   std::cout << std::endl;
 
+#define KRATOS_WATCH_STD_MAP(variable) \
+  std::cout << #variable << " : {"; \
+  for (auto it___ = variable.begin(); it___ != variable.end(); ++it___) std::cout << it___->first << ": " << it___->second << ", "; \
+  std::cout << "}" << std::endl;
+
 }  /* namespace Kratos.*/
 
 
