@@ -74,7 +74,7 @@ std::string GetVariableNames(Kernel& rKernel)
 
 void AddKernelToPython()
 {
-    class_<Kernel, Kernel::Pointer, boost::noncopyable >("Kernel")
+    class_<Kernel, Kernel::Pointer, boost::noncopyable >("Kernel", no_init)
     .def("Initialize", &Kernel::Initialize)
     .def("AddApplication", &Kernel::AddApplication,with_custodian_and_ward<1,2>()) // Note: custodian and ward to be checked. Pooyan.
     .def("InitializeApplication", &Kernel::InitializeApplication,with_custodian_and_ward<1,2>()) // Note: custodian and ward to be checked. Pooyan.
@@ -124,6 +124,9 @@ void AddKernelToPython()
     .def("GetVariableComponentVariableNames", GetVariableNames<VariableComponent< VectorComponentAdaptor< array_1d<KRATOS_DOUBLE_TYPE, 3> > > >)
     .def(self_ns::str(self))
     ;
+
+    // export the kernel as singleton
+    def("Kernel", &Kernel::GetInstance, return_value_policy<reference_existing_object>());
 }
 
 }  // namespace Python.

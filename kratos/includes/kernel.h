@@ -42,7 +42,6 @@ namespace Kratos
 
 ///@name Kratos Classes
 ///@{
-
 /// Kernel is in charge of synchronization the whole system of Kratos itself and its appliction.
 /** Kernel is the first component of the Kratos to be created and then used to plug the application into Kratos.
     Kernel takes the list of variables defined in the Variables file in Kratos and then by adding each application
@@ -81,33 +80,35 @@ public:
         by calling the RegisterVariables method of application class.
 
         @see KratosApplication
-
     */
     Kernel();
 
-    /// Copy constructor.
-    /** This constructor is empty
-    */
-    Kernel(Kernel const& rOther) {}
-
+    /// Disable copy constructor
+    Kernel(const Kernel&) = delete;
 
     /// Destructor.
     virtual ~Kernel() {}
-
 
     ///@}
     ///@name Operations
     ///@{
 
+    /// Get the kernel singleton
+    static Kernel& GetInstance()
+    {
+        static Kernel instance;
+        return instance;
+    }
+
     /// Pluging an application into Kratos.
     /** This method first call the register method of the new application in order to create the
         components list of the application and then syncronizes the lists of its components with Kratos ones.
         The synchronized lists are
-      - Variables
-      - Elements
-      - Conditions
+          - Variables
+          - Elements
+          - Conditions
 
-    @param NewApplication The application to be added and synchronized
+        @param NewApplication The application to be added and synchronized
     */
     void AddApplication(KratosApplication& NewApplication);
 
@@ -125,12 +126,10 @@ public:
     /** This method gives the application the list of all variables, elements and condition which is registered
         by kratos and all other added applications.
 
-
         @see AddApplication
         @see Initialize
     */
     void InitializeApplication(KratosApplication& NewApplication);
-
 
     ///@}
     ///@name Input and output
@@ -155,8 +154,8 @@ private:
     ///@}
     ///@name Member Variables
     ///@{
-    KratosApplication mKratosApplication;
 
+    KratosApplication mKratosApplication;
 
     ///@}
     ///@name Private Operations
@@ -169,8 +168,7 @@ private:
     ///@{
 
     /// Assignment operator.
-    Kernel& operator=(Kernel const& rOther);
-
+    Kernel& operator=(const Kernel&) = delete;
 
     ///@}
 
@@ -179,7 +177,6 @@ private:
 ///@}
 ///@name Input and output
 ///@{
-
 
 /// input stream function
 inline std::istream& operator >> (std::istream& rIStream,
@@ -195,8 +192,8 @@ inline std::ostream& operator << (std::ostream& rOStream,
 
     return rOStream;
 }
-///@}
 
+///@}
 
 }  // namespace Kratos.
 
