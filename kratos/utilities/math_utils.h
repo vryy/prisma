@@ -1871,6 +1871,19 @@ public:
         return (AngleInDegrees * Pi()) / 180.0;
     }
 
+    /// Compute a Cartesian frame providing z vector, x and y vector are normalized
+    template<class T>
+    static void ComputeLocalCoordinateSystem(const T& zvec, T& xvec, T& yvec)
+    {
+        T xtemp = T{1, 0, 0};
+        if (Norm(zvec - xtemp) < 1e-10)
+            xtemp = T{0, 1, 0};
+        yvec = CrossProduct(zvec, xtemp);
+        yvec = yvec / Norm(yvec);
+        xvec = CrossProduct(yvec, zvec);
+        xvec = xvec / Norm(xvec);
+    }
+
     ///@}
 
 private:
