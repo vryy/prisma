@@ -13,6 +13,8 @@
 //  Collaborators:   Vicente Mataix Ferrandiz
 //                   Pablo Becker
 //
+//  Contributors:    Hoang-Giang Bui
+//
 
 #if !defined(KRATOS_MATH_UTILS_H_INCLUDED )
 #define  KRATOS_MATH_UTILS_H_INCLUDED
@@ -1863,7 +1865,6 @@ public:
             series_term++;
         }
     }
-
 
     static TDataType DegreesToRadians(TDataType AngleInDegrees)
     {

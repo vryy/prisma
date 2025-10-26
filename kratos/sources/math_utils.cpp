@@ -13,6 +13,8 @@
 //  Collaborators:   Vicente Mataix Ferrandiz
 //                   Pablo Becker
 //
+//  Contributors:    Hoang-Giang Bui
+//
 
 // System includes
 

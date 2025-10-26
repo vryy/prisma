@@ -1,54 +1,20 @@
-/*
-==============================================================================
-Kratos
-A General Purpose Software for Multi-Physics Finite Element Analysis
-Version 1.0 (Released on march 05, 2007).
-
-Copyright 2007
-Pooyan Dadvand, Riccardo Rossi
-pooyan@cimne.upc.edu
-rrossi@cimne.upc.edu
-CIMNE (International Center for Numerical Methods in Engineering),
-Gran Capita' s/n, 08034 Barcelona, Spain
-
-Permission is hereby granted, free  of charge, to any person obtaining
-a  copy  of this  software  and  associated  documentation files  (the
-"Software"), to  deal in  the Software without  restriction, including
-without limitation  the rights to  use, copy, modify,  merge, publish,
-distribute,  sublicense and/or  sell copies  of the  Software,  and to
-permit persons to whom the Software  is furnished to do so, subject to
-the following condition:
-
-Distribution of this code for  any  commercial purpose  is permissible
-ONLY BY DIRECT ARRANGEMENT WITH THE COPYRIGHT OWNER.
-
-The  above  copyright  notice  and  this permission  notice  shall  be
-included in all copies or substantial portions of the Software.
-
-THE  SOFTWARE IS  PROVIDED  "AS  IS", WITHOUT  WARRANTY  OF ANY  KIND,
-EXPRESS OR  IMPLIED, INCLUDING  BUT NOT LIMITED  TO THE  WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT  SHALL THE AUTHORS OR COPYRIGHT HOLDERS  BE LIABLE FOR ANY
-CLAIM, DAMAGES OR  OTHER LIABILITY, WHETHER IN AN  ACTION OF CONTRACT,
-TORT  OR OTHERWISE, ARISING  FROM, OUT  OF OR  IN CONNECTION  WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-==============================================================================
-*/
-
+//    |  /           |
+//    ' /   __| _` | __|  _ \   __|
+//    . \  |   (   | |   (   |\__ `
+//   _|\_\_|  \__,_|\__|\___/ ____/
+//                   Multi-Physics
 //
-//   Project Name:        Kratos
-//   Last Modified by:    $Author: rrossi $
-//   Date:                $Date: 2007-03-06 10:30:34 $
-//   Revision:            $Revision: 1.2 $
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
+//
+//  Main authors:    Pooyan Dadvand
+//                   Riccardo Rossi
+//                   Vicente Mataix Ferrandiz
 //
 //
-
 
 #if !defined(KRATOS_TIMER_H_INCLUDED )
 #define  KRATOS_TIMER_H_INCLUDED
-
-
 
 // System includes
 #include <string>
@@ -62,7 +28,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #endif
 
 // External includes
-#include <boost/array.hpp>
 
 // Project includes
 #include "includes/define.h"
@@ -113,24 +78,30 @@ class KRATOS_API(KRATOS_CORE) Timer
         double mTotalElapsedTime;
         double mMaximumTime;
         double mMinimumTime;
+
     public:
         TimerData() : mRepeatNumber(int()), mStartTime(double()), mTotalElapsedTime(double()), mMaximumTime(double()), mMinimumTime(double()) {}
+
         double GetStartTime()
         {
             return mStartTime;
         }
+
         void SetStartTime(double StartTime)
         {
             mStartTime = StartTime;
         }
+
         double GetTotalElapsedTime()
         {
             return mTotalElapsedTime;
         }
+
         void SetTotalElapsedTime(double TotalElapsedTime)
         {
             mTotalElapsedTime = TotalElapsedTime;
         }
+
         void Update(double StopTime)
         {
             double elapsed = StopTime - mStartTime;
@@ -144,8 +115,8 @@ class KRATOS_API(KRATOS_CORE) Timer
                 mMinimumTime = elapsed;
 
             mRepeatNumber++;
-
         }
+
         /// Print object's data.
         void PrintData(std::ostream& rOStream, double GlobalElapsedTime = -1.00) const
         {
@@ -156,7 +127,6 @@ class KRATOS_API(KRATOS_CORE) Timer
                 else
                     rOStream << mRepeatNumber << " \t" << mTotalElapsedTime << "s     \t" << mMaximumTime << "s     \t" << mMinimumTime << "s     \t" << mTotalElapsedTime/static_cast<double>(mRepeatNumber) << "s     \t" << (mTotalElapsedTime/GlobalElapsedTime)*100.00 << "%" ;
             }
-
         }
     };
 
@@ -183,7 +153,6 @@ public:
     /// Destructor.
     virtual ~Timer()
     {
-
     }
 
     ///@}
@@ -215,7 +184,7 @@ public:
 
             if(i_time_data != msTimeTable.end())
             {
-                /* 	  KRATOS_THROW_ERROR(std::logical_error, "Stopping a not running time interval: ", IntervalName); */
+                /*    KRATOS_THROW_ERROR(std::logical_error, "Stopping a not running time interval: ", IntervalName); */
 
                 i_time_data->second.Update(stop_time);
 
@@ -249,7 +218,6 @@ public:
         return msOutputFile.is_open();
     }
 
-
     static bool GetPrintOnScreen()
     {
         return msPrintOnScreen;
@@ -260,16 +228,21 @@ public:
         msPrintOnScreen = PrintOnScreen;
     }
 
-
     ///@}
     ///@name Inquiry
     ///@{
-
 
     ///@}
     ///@name Input and output
     ///@{
 
+    /**
+     * @brief This method prints the internal information in a given stream
+     * @param rOStream The strem considered
+     * @param rIntervalName The internal name that will store the timing data
+     * @param StartTime The starting time
+     * @param StopTime The stoping time
+     */
     static void PrintIntervalInformation(std::string const& IntervalName, double StartTime, double StopTime)
     {
         if(msOutputFile.is_open())
@@ -292,6 +265,9 @@ public:
         }
     }
 
+    /**
+     * @brief This method prints the timing information
+     */
     static void PrintTimingInformation()
     {
         if(msOutputFile.is_open())
@@ -300,6 +276,10 @@ public:
             PrintTimingInformation(std::cout);
     }
 
+    /**
+     * @brief This method prints the timing information in a giving stream
+     * @param rOStream The strem considered
+     */
     static void PrintTimingInformation(std::ostream& rOStream)
     {
         double global_elapsed_time = GetTime() - msGlobalStart;
@@ -333,11 +313,9 @@ public:
         PrintTimingInformation(rOStream);
     }
 
-
     ///@}
     ///@name Friends
     ///@{
-
 
     ///@}
 
@@ -345,39 +323,31 @@ protected:
     ///@name Protected static Member Variables
     ///@{
 
-
     ///@}
     ///@name Protected member Variables
     ///@{
-
 
     ///@}
     ///@name Protected Operators
     ///@{
 
-
     ///@}
     ///@name Protected Operations
     ///@{
-
 
     ///@}
     ///@name Protected  Access
     ///@{
 
-
     ///@}
     ///@name Protected Inquiry
     ///@{
-
 
     ///@}
     ///@name Protected LifeCycle
     ///@{
 
-
     ///@}
-
 private:
 
     ///@name Static Member Variables
@@ -391,12 +361,9 @@ private:
 
     static double msGlobalStart;
 
-
-
     ///@}
     ///@name Member Variables
     ///@{
-
 
     ///@}
     ///@name Private Operators
@@ -407,16 +374,13 @@ private:
     ///@name Private Operations
     ///@{
 
-
     ///@}
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
-
 
     ///@}
     ///@name Un accessible methods
@@ -431,7 +395,6 @@ private:
     /// Copy constructor.
     /*       Timer(Timer const& rOther); */
 
-
     ///@}
 
 }; // Class Timer
@@ -441,7 +404,6 @@ private:
 ///@name Type Definitions
 ///@{
 
-
 ///@}
 ///@name Input and output
 ///@{
@@ -449,7 +411,7 @@ private:
 
 /// input stream function
 //   inline std::istream& operator >> (std::istream& rIStream,
-// 				    Timer& rThis){}
+//                  Timer& rThis){}
 
 /// output stream function
 inline std::ostream& operator << (std::ostream& rOStream,
@@ -463,9 +425,6 @@ inline std::ostream& operator << (std::ostream& rOStream,
 }
 ///@}
 
-
 }  // namespace Kratos.
 
-#endif // KRATOS_TIMER_H_INCLUDED  defined 
-
-
+#endif // KRATOS_TIMER_H_INCLUDED  defined
