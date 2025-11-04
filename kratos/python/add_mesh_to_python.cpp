@@ -309,7 +309,7 @@ boost::python::list GetValuesOnIntegrationPointsBool( TEntityType& dummy,
     for( unsigned int i=0; i<values.size(); i++ )
     {
         boost::python::list integration_point_value;
-        integration_point_value.append( values[i] );
+        integration_point_value.append( static_cast<bool>(values[i]) );
         values_list.append( integration_point_value );
     }
     return( values_list );

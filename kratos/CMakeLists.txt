@@ -135,6 +135,8 @@ target_compile_definitions(KratosCore PRIVATE KRATOS_STACKTRACE_LEVEL=${KRATOS_S
 if(Backtrace_FOUND)
     target_compile_definitions(KratosCore PRIVATE KRATOS_USE_BACKTRACE)
     target_link_libraries(KratosCore PUBLIC ${Backtrace_LIBRARY})
+else()
+    target_compile_definitions(KratosCore PRIVATE BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED=1)
 endif()
 
 # expose the parent directory to any linking target in case it wants to link with external_libraries

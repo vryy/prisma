@@ -20,9 +20,9 @@ add_definitions( -DTETLIBRARY )
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     add_definitions( -DCPU86 )
     add_definitions( -DNO_TIMER )
-else(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     add_definitions( -DLINUX )
-endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+endif()
 
 add_definitions( -w )
 
