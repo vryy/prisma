@@ -23,6 +23,21 @@ else()
     )
 endif()
 
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    # Enable RPATH usage on macOS
+    set(CMAKE_MACOSX_RPATH ON)
+
+    # Use relative rpath for installed libraries
+    set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
+    # Tell CMake where to look for dependent libs at runtime
+    set(CMAKE_INSTALL_RPATH "@loader_path" "@loader_path/../lib")
+
+    # Optional: Prevent CMake from stripping RPATH on install
+    set(CMAKE_SKIP_BUILD_RPATH FALSE)
+    set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+endif()
+
 #set compiler flags
 if(${CMAKE_COMPILER_IS_GNUCXX})
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -funroll-loops -ffast-math -fno-finite-math-only -Wall -Wno-strict-aliasing ")
@@ -278,6 +293,7 @@ else()
     set(PYTHON_VERSION_PATCH ${Python_VERSION_PATCH})
     add_compile_definitions(PY_MAJOR_VERSION=${Python_VERSION_MAJOR})
 endif()
+message(STATUS "PYTHON_INCLUDE_DIRS: " ${PYTHON_INCLUDE_DIRS})
 include_directories(${PYTHON_INCLUDE_DIRS})
 link_directories(${PYTHON_LIBRARIES})
 message(STATUS "PYTHON_VERSION_MAJOR: " ${PYTHON_VERSION_MAJOR})
@@ -425,6 +441,8 @@ if(${MPI_SEARCH_APPLICATION} MATCHES ON)
 endif()
 
 if(${MPI_NEEDED} MATCHES ON)
+    message(STATUS "MPI_ROOT: " ${MPI_ROOT})
+    message(STATUS "MPIEXEC_EXECUTABLE: " ${MPIEXEC_EXECUTABLE})
     find_package(MPI REQUIRED)
     set(CMAKE_CXX_COMPILE_FLAGS ${CMAKE_CXX_COMPILE_FLAGS} ${MPI_COMPILE_FLAGS})
     set(CMAKE_C_COMPILE_FLAGS ${CMAKE_C_COMPILE_FLAGS} ${MPI_COMPILE_FLAGS})
@@ -517,7 +535,7 @@ install(FILES "${CMAKE_SOURCE_DIR}/kratos/python_interface/kratos_globals.py" DE
 install(FILES "${CMAKE_SOURCE_DIR}/kratos/python_interface/application_importer.py" DESTINATION KratosMultiphysics )
 install(FILES "${CMAKE_SOURCE_DIR}/kratos/python_interface/kratos_unittest.py" DESTINATION KratosMultiphysics RENAME KratosUnittest.py )
 
-# message(STATUS "Boost_PYTHON_LIBRARY: " ${Boost_PYTHON_LIBRARY})
+message(STATUS "Boost_PYTHON_LIBRARY: " ${Boost_PYTHON_LIBRARY})
 # message(STATUS "Boost_PYTHON_LIBRARY_RELEASE: " ${Boost_PYTHON_LIBRARY_RELEASE})
 # message(STATUS "Boost_PYTHON_LIBRARY_DEBUG: " ${Boost_PYTHON_LIBRARY_DEBUG})
 # message(STATUS "Boost_LIBRARIES: " ${Boost_LIBRARIES})
@@ -539,9 +557,9 @@ endif()
 #install blas and lapack runtime librariess
 if(${BLAS_INCLUDE_NEEDED} MATCHES ON)
     message("---- installed blas = " ${BLAS_RUNTIME_LIBRARIES})
-    install(FILES ${BLAS_RUNTIME_LIBRARIES} DESTINATION libs)
+    #install(FILES ${BLAS_RUNTIME_LIBRARIES} DESTINATION libs)
     message("---- installed lapack = " ${LAPACK_RUNTIME_LIBRARIES})
-    install(FILES ${LAPACK_RUNTIME_LIBRARIES} DESTINATION libs)
+    #install(FILES ${LAPACK_RUNTIME_LIBRARIES} DESTINATION libs)
 endif()
 
 ################################################################################
