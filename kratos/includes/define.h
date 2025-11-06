@@ -629,26 +629,33 @@ namespace Internals
 #define KRATOS_QUADRILATERAL_DIFFUSION_CONVECTION_ELEMENT_INCLUDED
 #define KRATOS_TETRAHEDRAL_HEAT_CONDUCTIVITY_ELEMENT_INCLUDED
 
-#define KRATOS_SWATCH(ostream, variable) \
-  ostream << #variable << " : " << variable << std::endl;
+#define KRATOS_SWATCH(os, variable) \
+  os << #variable << " : " << variable << std::endl;
 
-#define KRATOS_SWATCH_STD_CON(ostream, variable) \
-  ostream << #variable << " :"; \
-  for (auto it___ = variable.begin(); it___ != variable.end(); ++it___) ostream << " " << *it___; \
-  ostream << std::endl;
+#define KRATOS_SWATCH_STD_CON(os, variable) \
+  os << #variable << " :"; \
+  for (auto it___ = variable.begin(); it___ != variable.end(); ++it___) os << " " << *it___; \
+  os << std::endl;
 
-#define KRATOS_WATCH(variable) \
-  std::cout << #variable << " : " << variable << std::endl;
+#define KRATOS_SWATCH_STD_MAP(os, variable) \
+  os << #variable << " : {"; \
+  for (auto it___ = variable.begin(); it___ != variable.end(); ++it___) os << it___->first << ": " << it___->second << ", "; \
+  os << "}" << std::endl;
 
-#define KRATOS_WATCH_STD_CON(variable) \
-  std::cout << #variable << " :"; \
-  for (auto it___ = variable.begin(); it___ != variable.end(); ++it___) std::cout << " " << *it___; \
-  std::cout << std::endl;
+#define KRATOS_WATCH(variable) KRATOS_SWATCH(std::cout, variable)
 
-#define KRATOS_WATCH_STD_MAP(variable) \
-  std::cout << #variable << " : {"; \
-  for (auto it___ = variable.begin(); it___ != variable.end(); ++it___) std::cout << it___->first << ": " << it___->second << ", "; \
-  std::cout << "}" << std::endl;
+#define KRATOS_WATCH_STD_CON(variable) KRATOS_SWATCH_STD_CON(std::cout, variable)
+
+#define KRATOS_WATCH_STD_MAP(variable) KRATOS_SWATCH_STD_MAP(std::cout, variable)
+
+#ifdef __FILENAME__
+#undef __FILENAME__
+#endif
+#define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
+#define KRATOS_LSWATCH(os, a) os << __FILENAME__ << ":" << __LINE__ << ":" << __FUNCTION__ \
+                        << " - " << #a << ": " << a << std::endl;
+
+#define KRATOS_LWATCH(a) KRATOS_LSWATCH(std::cout, a)
 
 }  /* namespace Kratos.*/
 
