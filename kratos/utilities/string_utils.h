@@ -58,7 +58,7 @@ public:
             parts.push_back(input.substr(start));
         }
 
-        return std::move(parts);
+        return parts;
     }
 
     /// Check if a string is a valid integer, then one can use std::atoi to convert
