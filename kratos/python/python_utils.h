@@ -213,6 +213,16 @@ struct PythonUtils
             rValues.append(v);
     }
 
+    /// Pack a std::vector to boost::python::list
+    template <typename TInputValueType>
+    static boost::python::list Pack(const std::vector<TInputValueType>& vec)
+    {
+        boost::python::list py_list;
+        for (const auto& v : vec)
+            py_list.append(v);
+        return py_list;
+    }
+
 };
 
 } // namespace Python
