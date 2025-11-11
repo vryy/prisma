@@ -33,6 +33,7 @@ namespace Python
 struct PythonUtils
 {
 
+    /// Unpack a boost::python::list to std::vector
     template<typename TInputValueType, typename TOutputValueType = TInputValueType>
     static void Unpack(const boost::python::list& rValues, std::vector<TOutputValueType>& values)
     {
@@ -44,6 +45,7 @@ struct PythonUtils
         }
     }
 
+    /// Unpack a boost::python::list to std::vector of specific size. The list should have sufficient size.
     template<typename TInputValueType, typename TOutputValueType = TInputValueType>
     static std::size_t Unpack(const boost::python::list& rValues, std::vector<TOutputValueType>& values, std::size_t Dim)
     {
@@ -67,6 +69,7 @@ struct PythonUtils
         return dim;
     }
 
+    /// Unpack a 2D boost::python::list to 2D std::vector
     template<typename TInputValueType, typename TOutputValueType = TInputValueType>
     static void Unpack(const boost::python::list& rValues, std::vector<std::vector<TOutputValueType> >& values)
     {
@@ -89,6 +92,7 @@ struct PythonUtils
         }
     }
 
+    /// Unpack a 2D boost::python::list to 2D std::vector of std::vector of specific size
     template<typename TInputValueType, typename TOutputValueType = TInputValueType>
     static std::size_t Unpack(const boost::python::list& rValues, std::vector<std::vector<TOutputValueType> >& values, std::size_t Dim)
     {
@@ -123,6 +127,7 @@ struct PythonUtils
         return dim;
     }
 
+    /// Unpack a boost::python::dict to 2D std::map with interger key
     template<typename TDataType>
     static void Unpack(const boost::python::dict& rNodalValues,
                        std::map<std::size_t, std::map<std::size_t, TDataType> >& nodal_values)
@@ -155,9 +160,10 @@ struct PythonUtils
         }
     }
 
-    template<typename TDataType>
+    /// Unpack a boost::python::dict to std::map
+    template<typename TKeyType, typename TDataType>
     static void Unpack(const boost::python::dict& rNodalValues,
-                       std::map<TDataType, TDataType>& nodal_values)
+                       std::map<TKeyType, TDataType>& nodal_values)
     {
         boost::python::list keys = rNodalValues.keys();
 
@@ -171,10 +177,19 @@ struct PythonUtils
             // here assumed that the patch_data given as a value
             TDataType v = boost::python::extract<TDataType>(o);
 
-            nodal_values[static_cast<TDataType>(id)] = v;
+            nodal_values[static_cast<TKeyType>(id)] = v;
         }
     }
 
+    /// Unpack a boost::python::dict to std::map
+    template<typename TDataType>
+    static void Unpack(const boost::python::dict& rNodalValues,
+                       std::map<TDataType, TDataType>& nodal_values)
+    {
+        Unpack<TDataType, TDataType>(rNodalValues, nodal_values);
+    }
+
+    /// Unpack a boost::python::list to std::array
     template<typename TInputValueType, typename TOutputValueType, std::size_t TSize>
     static void Unpack(const boost::python::list& rValues, std::array<TOutputValueType, TSize>& values)
     {
@@ -190,6 +205,7 @@ struct PythonUtils
         }
     }
 
+    /// Extend a boost::python::list with std::vector
     template<typename TInputValueType>
     static void Extend(boost::python::list& rValues, const std::vector<TInputValueType>& values)
     {
