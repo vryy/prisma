@@ -630,6 +630,10 @@ if(${INSTALL_PYTHON_FILES} MATCHES ON)
         set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)          # uninstall previous version before installation
         set(CPACK_PACKAGE_INSTALL_DIRECTORY ${CMAKE_PROJECT_NAME})  # do not add version number to the installation folder
         set(CPACK_NSIS_MUI_ICON "${CMAKE_SOURCE_DIR}/packaging_aux/icons8-p-96.ico")    # installer icon
+    elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+        set(CPACK_GENERATOR "DragNDrop")
+        set(CPACK_DMG_VOLUME_NAME ${CMAKE_PROJECT_NAME})
+        set(CPACK_DMG_APPLICATIONS_FOLDER "Applications")  # adds Applications shortcut in dmg
     endif()
     string(TIMESTAMP CURRENT_DATE "%Y.%m.%d")
     string(TIMESTAMP CURRENT_TIME "%H.%M.%S")
