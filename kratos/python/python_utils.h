@@ -223,6 +223,30 @@ struct PythonUtils
         return py_list;
     }
 
+    /// Print the keys of a python object, assuming it's a dictionary
+    static void Print(PyObject* globalDict)
+    {
+        // Get the dictionary keys
+        PyObject* keys = PyDict_Keys(globalDict);
+
+        if (keys && PyList_Check(keys)) {
+            Py_ssize_t n = PyList_Size(keys);
+            for (Py_ssize_t i = 0; i < n; ++i) {
+                PyObject* key = PyList_GetItem(keys, i); // borrowed ref
+                PyObject* keyStr = PyObject_Str(key);
+                if (keyStr) {
+                    const char* cStr = PyUnicode_AsUTF8(keyStr);
+                    if (cStr) {
+                        std::cout << cStr << std::endl;
+                    }
+                    Py_DECREF(keyStr);
+                }
+            }
+        }
+
+        Py_XDECREF(keys);
+    }
+
 };
 
 } // namespace Python
