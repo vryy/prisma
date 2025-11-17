@@ -3,20 +3,16 @@
 | |_) | '__| / __| '_ ` _ \ / _` |
 |  __/| |  | \__ \ | | | | | (_| |
 |_|   |_|  |_|___/_| |_| |_|\__,_|
-                      Macrophysics
 
-Prisma Macrophysics (PM) is a comprehensive software package to perform computational analysis
-of physical problems on the macro scale level that couples many fields. It focuses on the ease
-of usability, backward compatibility and aim to lower the barrier for entry user. Furthermore,
-the scripting interface with both Python 2 and Python 3 are supported. It is compilable and
-runnable on Android systems.
+Prisma is a comprehensive software package to perform computational analysis of physical problems
+on the macro scale level that couples many fields. It focuses on the ease of usability, backward compatibility and aim to lower the barrier for entry user. Furthermore, the scripting interface
+with both Python 2 and Python 3 are supported. It is compilable and runnable on Android systems.
 
-PM comprises of two primary components, namely the kernel and the extensions (applications).
-The kernel of PM is adopted and modifed from Kratos Multi-Physics. On the extension part, PM
-develops its own applications. It is noted that PM does not use any applications developed
-in Kratos Multi-Physics package and hence its applications will not be interoperable with
+Prisma comprises of two primary components, namely the kernel and the extensions (applications).
+The kernel of Prisma is adopted and modifed from Kratos Multi-Physics. On the extension part,
+Prisma develops its own applications. It is noted that Prisma does not use any applications developed
+in Kratos Multi-Physics package and hence Prisma's applications will not be interoperable with
 Kratos Multi-Physics applications.
 
 The license of the kernel for PM can be found in kratos/license.txt.
 Individual license for each application can be found in the corresponding directory.
-
