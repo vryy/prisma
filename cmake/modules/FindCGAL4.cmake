@@ -1,4 +1,6 @@
 # - Find CGAL
+# - This should be used exclusively for CGAL-4.x.x. For later version, the library is header only
+# and can be found by setting CGAL_DIR
 # Find the CGAL includes and client library
 # This module defines
 # CGAL_INCLUDE_DIR, where to find CGAL.h
@@ -40,13 +42,18 @@ else()
     if(CGAL_INCLUDE_DIR AND CGAL_LIBRARIES AND GMP_LIBRARIES AND MPFR_LIBRARIES)
         set(CGAL_FOUND TRUE)
         message(STATUS "Found CGAL: ${CGAL_INCLUDE_DIR}, ${CGAL_LIBRARIES}, ${GMP_LIBRARIES}, ${MPFR_LIBRARIES}")
-#        include_directories(${GMP_INCLUDE_DIR})
-#        include_directories(${MPFR_INCLUDE_DIR})
-        include_directories(${CGAL_INCLUDE_DIR})
     else()
         set(CGAL_FOUND FALSE)
         message(STATUS "CGAL not found.")
     endif()
+
+    # create the target so that importer can be link with CGAL::CGAL (for modern cmake)
+    if(${CGAL_FOUND} MATCHES TRUE)
+        add_library(CGAL::CGAL INTERFACE IMPORTED)
+        target_include_directories(CGAL::CGAL INTERFACE ${CGAL_INCLUDE_DIR} ${GMP_INCLUDE_DIR} ${MPFR_INCLUDE_DIR})
+        target_link_libraries(CGAL::CGAL INTERFACE ${CGAL_LIBRARIES} ${GMP_LIBRARIES} ${MPFR_LIBRARIES})
+    endif()
+
 endif()
 
 # link with Boost thread as needed
@@ -66,6 +73,8 @@ if(${CGAL_USE_BOOST_THREAD} MATCHES ON)
         endif()
         set(BOOST_THREAD_LIBRARIES ${Boost_LIBRARIES})
     endif()
+
+    target_link_libraries(CGAL::CGAL INTERFACE ${BOOST_THREAD_LIBRARIES})
 
     message(STATUS "BOOST_THREAD_LIBRARIES=${BOOST_THREAD_LIBRARIES}")
 endif()
