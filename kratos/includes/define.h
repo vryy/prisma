@@ -642,11 +642,18 @@ namespace Internals
   for (auto it___ = variable.begin(); it___ != variable.end(); ++it___) os << it___->first << ": " << it___->second << ", "; \
   os << "}" << std::endl;
 
-#define KRATOS_WATCH(variable) KRATOS_SWATCH(std::cout, variable)
+#define KRATOS_WATCH(variable) \
+  std::cout << #variable << " : " << variable << std::endl;
 
-#define KRATOS_WATCH_STD_CON(variable) KRATOS_SWATCH_STD_CON(std::cout, variable)
+#define KRATOS_WATCH_STD_CON(variable) \
+  std::cout << #variable << " :"; \
+  for (auto it___ = variable.begin(); it___ != variable.end(); ++it___) std::cout << " " << *it___; \
+  std::cout << std::endl;
 
-#define KRATOS_WATCH_STD_MAP(variable) KRATOS_SWATCH_STD_MAP(std::cout, variable)
+#define KRATOS_WATCH_STD_MAP(variable) \
+  std::cout << #variable << " : {"; \
+  for (auto it___ = variable.begin(); it___ != variable.end(); ++it___) std::cout << it___->first << ": " << it___->second << ", "; \
+  std::cout << "}" << std::endl;
 
 #ifdef __FILENAME__
 #undef __FILENAME__
@@ -655,7 +662,8 @@ namespace Internals
 #define KRATOS_LSWATCH(os, a) os << __FILENAME__ << ":" << __LINE__ << ":" << __FUNCTION__ \
                         << " - " << #a << ": " << a << std::endl;
 
-#define KRATOS_LWATCH(a) KRATOS_LSWATCH(std::cout, a)
+#define KRATOS_LWATCH(a) std::cout << __FILENAME__ << ":" << __LINE__ << ":" << __FUNCTION__ \
+                        << " - " << #a << ": " << a << std::endl;
 
 }  /* namespace Kratos.*/
 
