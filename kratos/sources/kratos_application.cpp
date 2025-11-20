@@ -678,6 +678,11 @@ namespace Kratos
       KRATOS_REGISTER_FLAG(HANGING);
   }
 
+  bool KratosApplication::Has(const std::string& Name) const
+  {
+      return false;
+  }
+
 }  // namespace Kratos.
 
 // This define must be HERE

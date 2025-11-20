@@ -56,7 +56,6 @@ public:
     /// Pointer definition of KratosApplication
     KRATOS_CLASS_POINTER_DEFINITION(KratosApplication);
 
-
     ///@}
     ///@name Life Cycle
     ///@{
@@ -86,8 +85,6 @@ public:
     /// Destructor.
     virtual ~KratosApplication() {}
 
-
-
     ///@}
     ///@name Operations
     ///@{
@@ -96,7 +93,6 @@ public:
     {
         RegisterVariables();
     }
-
 
     virtual void RegisterVariables();
 
@@ -223,6 +219,8 @@ public:
 
     ///@{
 
+    /// Query if the application has certain features
+    virtual bool Has(const std::string& Name) const;
 
     ///@}
 
