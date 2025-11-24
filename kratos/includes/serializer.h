@@ -433,9 +433,8 @@ public:
     KRATOS_SERIALIZATION_DIRECT_LOAD(std::complex<float>)
     KRATOS_SERIALIZATION_DIRECT_LOAD(std::complex<double>)
     KRATOS_SERIALIZATION_DIRECT_LOAD(std::complex<long double>)
-    KRATOS_SERIALIZATION_DIRECT_LOAD(Vector)
+    // KRATOS_SERIALIZATION_DIRECT_LOAD(Vector) // only use KRATOS_SERIALIZATION_DIRECT_LOAD when there is a read method for the respective data type
     KRATOS_SERIALIZATION_DIRECT_LOAD(Matrix)
-    KRATOS_SERIALIZATION_DIRECT_LOAD(ComplexVector)
     KRATOS_SERIALIZATION_DIRECT_LOAD(ComplexMatrix)
     KRATOS_SERIALIZATION_DIRECT_LOAD(SymmetricMatrix)
     KRATOS_SERIALIZATION_DIRECT_LOAD(ComplexSymmetricMatrix)
@@ -693,9 +692,8 @@ public:
     KRATOS_SERIALIZATION_DIRECT_SAVE(std::complex<float>)
     KRATOS_SERIALIZATION_DIRECT_SAVE(std::complex<double>)
     KRATOS_SERIALIZATION_DIRECT_SAVE(std::complex<long double>)
-    KRATOS_SERIALIZATION_DIRECT_SAVE(Vector)
+    // KRATOS_SERIALIZATION_DIRECT_SAVE(Vector) // only use KRATOS_SERIALIZATION_DIRECT_SAVE when there is a write method for the respective data type
     KRATOS_SERIALIZATION_DIRECT_SAVE(Matrix)
-    KRATOS_SERIALIZATION_DIRECT_SAVE(ComplexVector)
     KRATOS_SERIALIZATION_DIRECT_SAVE(ComplexMatrix)
     KRATOS_SERIALIZATION_DIRECT_SAVE(SymmetricMatrix)
     KRATOS_SERIALIZATION_DIRECT_SAVE(ComplexSymmetricMatrix)
