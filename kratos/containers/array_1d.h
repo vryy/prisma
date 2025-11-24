@@ -388,6 +388,18 @@ public:
         return data_;
     }
 
+    BOOST_UBLAS_INLINE
+    T* data2()
+    {
+        return this->data().data();
+    }
+
+    BOOST_UBLAS_INLINE
+    const T* data2() const
+    {
+        return this->data().data();
+    }
+
 #ifndef	BOOST_UBLAS_USE_INDEXED_ITERATOR
     class const_iterator:
         public container_const_reference<array_1d>,
