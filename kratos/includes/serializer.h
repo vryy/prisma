@@ -44,7 +44,7 @@
     void load(std::string const & rTag, type const& rValue)         \
     {                                                               \
         load_trace_point(rTag);                                     \
-            read(const_cast<type&>(rValue));                        \
+        read(const_cast<type&>(rValue));                            \
     }                                                               \
                                                                     \
     void load_base(std::string const & rTag, type& rValue)          \
@@ -86,25 +86,7 @@ namespace Kratos
 
 class VariableData;
 template <class TDataType> class Variable;
-//  template <class TDataType> class KratosComponents;
 
-
-///@name Kratos Globals
-///@{
-
-///@}
-///@name Type Definitions
-///@{
-
-///@}
-///@name  Enum's
-///@{
-
-///@}
-///@name  Functions
-///@{
-
-///@}
 ///@name Kratos Classes
 ///@{
 
@@ -166,15 +148,16 @@ public:
     Serializer(std::string const& Filename, TraceType const& rTrace=SERIALIZER_NO_TRACE)
     : mTrace(rTrace), mNumberOfLines(0)
     {
-        std::fstream* p_file = new std::fstream(std::string(Filename+".rest").c_str(), std::ios::binary|std::ios::in|std::ios::out);
+        std::string FullPath = Filename+".rest";
+        std::fstream* p_file = new std::fstream(FullPath, std::ios::binary|std::ios::in|std::ios::out);
         if(!(*p_file))
         {
             delete p_file;
-            p_file = new std::fstream(std::string(Filename+".rest").c_str(), std::ios::binary|std::ios::out);
+            p_file = new std::fstream(FullPath, std::ios::binary|std::ios::out);
         }
         mpBuffer = p_file;
         if(!(*mpBuffer))
-            KRATOS_THROW_ERROR(std::invalid_argument, "Error opening input file : ", std::string(Filename+".rest"));
+            KRATOS_ERROR << "Error opening input file : " << FullPath;
     }
 
     /// Destructor.
@@ -203,8 +186,6 @@ public:
     {
         msRegisteredObjects.insert(RegisteredObjectsContainerType::value_type(rName,Create<TDataType>));
         msRegisteredObjectsName.insert(RegisteredObjectsNameContainerType::value_type(typeid(TDataType).name(), rName));
-        //std::cout<<" REGISTERED OBJECT "<<rName<<" TypeID "<<typeid (TDataType).name()<<std::endl;
-        //msRegisteredObjects.insert(RegisteredObjectsContainerType::value_type(rName,&pPrototype));
     }
 
     template<class TDataType>
@@ -241,7 +222,7 @@ public:
                     typename RegisteredObjectsContainerType::iterator i_prototype =  msRegisteredObjects.find(object_name);
 
                     if(i_prototype == msRegisteredObjects.end())
-                        KRATOS_THROW_ERROR(std::runtime_error, "There is no object registered in Kratos with name : ", object_name)
+                        KRATOS_ERROR << "There is no object registered in Kratos with name : " << object_name;
 
                         if(!pValue)
                             pValue = boost::shared_ptr<TDataType>(static_cast<TDataType*>((i_prototype->second)()));
@@ -303,17 +284,11 @@ public:
     template<class TDataType>
     void load(std::string const & rTag, boost::weak_ptr<TDataType>& pValue)
     {
-        // This is for testing. I have to change it. Pooyan.
-        //KRATOS_THROW_ERROR(std::logic_error, "The serialization for weak_ptrs is not implemented yet", "")
-//    read(*pValue);
     }
 
     template<class TDataType>
     void load(std::string const & rTag, WeakPointerVector<TDataType>& pValue)
     {
-        // This is for testing. I have to change it. Pooyan.
-        //KRATOS_THROW_ERROR(std::logic_error, "The serialization for weak_ptrs is not implemented yet", "")
-//    read(*pValue);
     }
 
     template<class TDataType>
@@ -361,8 +336,7 @@ public:
         SizeType size;
 
         load("size", size);
-
-        rObject.resize(size,false);
+        rObject.resize(size, false);
 
         for(SizeType i = 0 ; i < size ; i++)
             load("E", rObject[i]);
@@ -631,9 +605,6 @@ public:
       else {
         return false;
       }
-      // bool is_derived = (typeid(TDataType) != typeid(*pValue));
-//    std::cout << "for TDataType : " << typeid(TDataType).name() << " and *pValue type : " << typeid(*pValue).name() << " is derived : " << is_derived << std::endl;
-      //return is_derived;
     }
 
     template<class TDataType>
@@ -661,25 +632,16 @@ public:
     template<class TDataType>
     void save(std::string const & rTag, boost::weak_ptr<TDataType> pValue)
     {
-        // This is for testing. I have to implement it. Pooyan.
-        //KRATOS_THROW_ERROR(std::logic_error, "The serialization for weak_ptrs is not implemented yet", "")
-//    write(*pValue);
     }
 
     template<class TDataType>
     void save(std::string const & rTag, Kratos::WeakPointerVector<TDataType> pValue)
     {
-        // This is for testing. I have to implement it. Pooyan.
-        //KRATOS_THROW_ERROR(std::logic_error, "The serialization for weak_ptrs is not implemented yet", "")
-//    write(*pValue);
     }
 
     template<class TDataType>
     void save(std::string const & rTag, boost::shared_ptr<const TDataType> pValue)
     {
-        // This is for testing. I have to change it. Pooyan.
-//          save_trace_point(rTag);
-//    write(*pValue);
         save(rTag, pValue.get());
     }
 
@@ -848,8 +810,8 @@ public:
                 KRATOS_ERROR << buffer.str() << std::endl;
             }
         }
-        return false;
 
+        return false;
     }
 
     ///@}
@@ -912,7 +874,6 @@ public:
     /// Print object's data.
     virtual void PrintData(std::ostream& rOStream) const
     {}
-
 
     ///@}
     ///@name Friends
@@ -985,7 +946,6 @@ private:
     ///@name Private Operations
     ///@{
 
-
     template<class TDataType>
     void SavePointer(std::string const & rTag, const TDataType * pValue)
     {
@@ -1025,7 +985,6 @@ private:
             rObject.insert(temp);
         }
     }
-
 
     template<class TMapType>
     void save_associative_container(std::string const & rTag, TMapType const& rObject)
@@ -1239,8 +1198,8 @@ private:
         SizeType size1;
         SizeType size2;
 
-        mpBuffer->read((char *)(&size1),sizeof(SizeType));
-        mpBuffer->read((char *)(&size2),sizeof(SizeType));
+        mpBuffer->read((char *)(&size1), sizeof(SizeType));
+        mpBuffer->read((char *)(&size2), sizeof(SizeType));
 
         rData.resize(size1,size2);
 
@@ -1258,7 +1217,7 @@ private:
 
         rData.resize(size1,size2);
 
-        read(rData.data().begin(), rData.data().end(),0);
+        read(rData.data().begin(), rData.data().end(), 0);
 
         KRATOS_SERIALIZER_MODE_END
     }
@@ -1324,6 +1283,7 @@ private:
 
         KRATOS_SERIALIZER_MODE_END
     }
+
     template<class TIteratorType>
     void write(TIteratorType First, TIteratorType Last, SizeType size)
     {
@@ -1383,23 +1343,6 @@ private:
 ///@}
 ///@name Input and output
 ///@{
-
-
-//   template<class TDataType>
-//   inline Serializer& operator >> (Serializer& rThis, TDataType& rObject)
-//   {
-//     rThis.load(rObject);
-
-//     return rThis;
-//   }
-
-//   template<class TDataType>
-//   inline Serializer& operator << (Serializer& rThis, TDataType& rObject)
-//   {
-//     rThis.save(rObject, KRATOS_VERSION);
-
-//     return rThis;
-//   }
 
 /// input stream function
 inline std::istream& operator >> (std::istream& rIStream,
