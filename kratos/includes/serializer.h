@@ -366,21 +366,9 @@ public:
         load_associative_container(rTag, rObject);
     }
 
-    template<class TDataType>
-    void load(std::string const & rTag, DenseMatrix<TDataType>& rObject)
-    {
-        load_trace_point(rTag);
-        SizeType size1, size2;
 
-        load("size1", size1);
-        load("size2", size2);
 
-        rObject.resize(size1,size2,false);
 
-        for(SizeType i = 0 ; i < size1 ; i++)
-            for(SizeType j = 0 ; j < size2 ; j++)
-                load("E", rObject(i, j));
-    }
 
     template<class TDataType, std::size_t TDimension>
     void load(std::string const & rTag, array_1d<TDataType, TDimension>& rObject)
@@ -497,20 +485,8 @@ public:
             save("E", rObject[i]);
     }
 
-    template<class TDataType>
-    void save(std::string const & rTag, DenseMatrix<TDataType> const& rObject)
-    {
-        save_trace_point(rTag);
-        SizeType size1 = rObject.size1();
-        SizeType size2 = rObject.size2();
 
-        save("size1", size1);
-        save("size2", size2);
 
-        for(SizeType i = 0 ; i < size1 ; i++)
-            for(SizeType j = 0 ; j < size2 ; j++)
-                save("E", rObject(i, j));
-    }
 
     template<class TDataType, std::size_t TDimension>
     void save(std::string const & rTag, array_1d<TDataType, TDimension> const& rObject)
