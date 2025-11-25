@@ -75,7 +75,7 @@
     }
 
 #define KRATOS_SERIALIZER_MODE_BINARY                               \
-    if(!mTrace) {
+    if(mTrace == TraceType::SERIALIZER_NO_TRACE) {
 #define KRATOS_SERIALIZER_MODE_ASCII                                \
     } else {
 #define KRATOS_SERIALIZER_MODE_END                                  \
@@ -109,8 +109,9 @@ public:
     ///@name  Enum's
     ///@{
 
-    enum PointerType {SP_INVALID_POINTER, SP_BASE_CLASS_POINTER, SP_DERIVED_CLASS_POINTER};
-    enum TraceType {SERIALIZER_NO_TRACE=0, SERIALIZER_TRACE_ERROR=1, SERIALIZER_TRACE_ALL=2};
+    enum class PointerType {SP_INVALID_POINTER, SP_BASE_CLASS_POINTER, SP_DERIVED_CLASS_POINTER};
+    enum class TraceType {SERIALIZER_NO_TRACE=0, SERIALIZER_TRACE_ERROR=1, SERIALIZER_TRACE_ALL=2};
+    enum class ModeType {SERIALIZER_READ=0, SERIALIZER_WRITE=1, SERIALIZER_READ_WRITE=2};
 
     ///@}
     ///@name Type Definitions
@@ -140,12 +141,14 @@ public:
     ///@{
 
     /// Default constructor.
-    Serializer(TraceType const& rTrace=SERIALIZER_NO_TRACE)
+    Serializer(TraceType const& rTrace=TraceType::SERIALIZER_NO_TRACE)
     : mpBuffer(new std::stringstream(std::ios::binary|std::ios::in|std::ios::out)), mTrace(rTrace), mNumberOfLines(0)
     {
     }
 
-    Serializer(std::string const& Filename, TraceType const& rTrace=SERIALIZER_NO_TRACE)
+    /// Constructor to read/write restart file concurently. The file will be created if it does not exist.
+    /// The file name must not contain ".rest" because it will be appended automatically
+    Serializer(std::string const& Filename, TraceType const& rTrace=TraceType::SERIALIZER_NO_TRACE)
     : mTrace(rTrace), mNumberOfLines(0)
     {
         std::string FullPath = Filename+".rest";
@@ -158,6 +161,41 @@ public:
         mpBuffer = p_file;
         if(!(*mpBuffer))
             KRATOS_ERROR << "Error opening input file : " << FullPath;
+    }
+
+    /// Constructor to specialize in the read/write operation or both.
+    /// The full file name including extension is required
+    Serializer(std::string const& Filename, ModeType const& rMode, TraceType const& rTrace=TraceType::SERIALIZER_NO_TRACE)
+    : mTrace(rTrace), mNumberOfLines(0)
+    {
+        if (rMode == ModeType::SERIALIZER_READ_WRITE)
+        {
+            std::fstream* p_file = new std::fstream(Filename, std::ios::binary|std::ios::in|std::ios::out);
+            if(!(*p_file))
+            {
+                delete p_file;
+                p_file = new std::fstream(Filename, std::ios::binary|std::ios::out);
+            }
+            mpBuffer = p_file;
+            if(!(*mpBuffer))
+                KRATOS_ERROR << "Error opening file : " << Filename;
+        }
+        else if (rMode == ModeType::SERIALIZER_READ)
+        {
+            std::fstream* p_file = new std::fstream(Filename, std::ios::binary|std::ios::in);
+            mpBuffer = p_file;
+            if(!(*mpBuffer))
+                KRATOS_ERROR << "Error opening input file : " << Filename;
+        }
+        else if (rMode == ModeType::SERIALIZER_WRITE)
+        {
+            std::fstream* p_file = new std::fstream(Filename, std::ios::binary|std::ios::out);
+            mpBuffer = p_file;
+            if(!(*mpBuffer))
+                KRATOS_ERROR << "Error opening output file : " << Filename;
+        }
+        else
+            KRATOS_ERROR << "Invalid serialization mode " << static_cast<int>(rMode);
     }
 
     /// Destructor.
@@ -198,24 +236,24 @@ public:
     template<class TDataType>
     void load(std::string const & rTag, boost::shared_ptr<TDataType>& pValue)
     {
-        PointerType pointer_type = SP_INVALID_POINTER;
+        PointerType pointer_type = PointerType::SP_INVALID_POINTER;
         void* p_pointer;
         read(pointer_type);
 
-        if(pointer_type != SP_INVALID_POINTER)
+        if(pointer_type != PointerType::SP_INVALID_POINTER)
         {
             read(p_pointer);
             LoadedPointersContainerType::iterator i_pointer = mLoadedPointers.find(p_pointer);
             if(i_pointer == mLoadedPointers.end())
             {
-                if(pointer_type == SP_BASE_CLASS_POINTER)
+                if(pointer_type == PointerType::SP_BASE_CLASS_POINTER)
                 {
                     if(!pValue)
                         pValue = boost::shared_ptr<TDataType>(new TDataType);
 
                     load(rTag, *pValue);
                 }
-                else if(pointer_type == SP_DERIVED_CLASS_POINTER)
+                else if(pointer_type == PointerType::SP_DERIVED_CLASS_POINTER)
                 {
                     std::string object_name;
                     read(object_name);
@@ -240,24 +278,24 @@ public:
     template<class TDataType>
     void load(std::string const & rTag, TDataType*& pValue)
     {
-        PointerType pointer_type = SP_INVALID_POINTER;
+        PointerType pointer_type = PointerType::SP_INVALID_POINTER;
         void* p_pointer;
         read(pointer_type);
 
-        if(pointer_type != SP_INVALID_POINTER)
+        if(pointer_type != PointerType::SP_INVALID_POINTER)
         {
             read(p_pointer);
             LoadedPointersContainerType::iterator i_pointer = mLoadedPointers.find(p_pointer);
             if(i_pointer == mLoadedPointers.end())
             {
-                if(pointer_type == SP_BASE_CLASS_POINTER)
+                if(pointer_type == PointerType::SP_BASE_CLASS_POINTER)
                 {
                     if(!pValue)
                         pValue = new TDataType;
 
                     load(rTag, *pValue);
                 }
-                else if(pointer_type == SP_DERIVED_CLASS_POINTER)
+                else if(pointer_type == PointerType::SP_DERIVED_CLASS_POINTER)
                 {
                     std::string object_name;
                     read(object_name);
@@ -559,15 +597,15 @@ public:
         if(pValue)
         {
             if(IsDerived(pValue))
-                write(SP_DERIVED_CLASS_POINTER);
+                write(PointerType::SP_DERIVED_CLASS_POINTER);
             else
-                write(SP_BASE_CLASS_POINTER);
+                write(PointerType::SP_BASE_CLASS_POINTER);
 
             SavePointer(rTag,pValue);
         }
         else
         {
-            write(SP_INVALID_POINTER);
+            write(PointerType::SP_INVALID_POINTER);
         }
     }
 
@@ -589,18 +627,18 @@ public:
         {
             if(IsDerived(pValue))
             {
-                write(SP_DERIVED_CLASS_POINTER);
+                write(PointerType::SP_DERIVED_CLASS_POINTER);
             }
             else
             {
-                write(SP_BASE_CLASS_POINTER);
+                write(PointerType::SP_BASE_CLASS_POINTER);
             }
 
             SavePointer(rTag,pValue);
         }
         else
         {
-            write(SP_INVALID_POINTER);
+            write(PointerType::SP_INVALID_POINTER);
         }
     }
 
@@ -740,7 +778,7 @@ public:
 
     void save_trace_point(std::string const & rTag)
     {
-        if(mTrace)
+        if(mTrace != TraceType::SERIALIZER_NO_TRACE)
         {
             write(rTag);
         }
@@ -748,7 +786,7 @@ public:
 
     bool load_trace_point(std::string const & rTag)
     {
-        if(mTrace == SERIALIZER_TRACE_ERROR) // only reporting the errors
+        if(mTrace == TraceType::SERIALIZER_TRACE_ERROR) // only reporting the errors
         {
             std::string read_tag;
             read(read_tag);
@@ -764,7 +802,7 @@ public:
                 KRATOS_ERROR << buffer.str() << std::endl;
             }
         }
-        else if(mTrace == SERIALIZER_TRACE_ALL) // also reporting matched tags.
+        else if(mTrace == TraceType::SERIALIZER_TRACE_ALL) // also reporting matched tags.
         {
             std::string read_tag;
             read(read_tag);

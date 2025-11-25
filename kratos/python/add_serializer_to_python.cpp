@@ -93,12 +93,18 @@ void  AddSerializerToPython()
     ;
 
     enum_<Serializer::TraceType>("SerializerTraceType")
-    .value("SERIALIZER_NO_TRACE", Serializer::SERIALIZER_NO_TRACE)
-    .value("SERIALIZER_TRACE_ERROR", Serializer::SERIALIZER_TRACE_ERROR)
-    .value("SERIALIZER_TRACE_ALL", Serializer::SERIALIZER_TRACE_ALL)
+    .value("SERIALIZER_NO_TRACE", Serializer::TraceType::SERIALIZER_NO_TRACE)
+    .value("SERIALIZER_TRACE_ERROR", Serializer::TraceType::SERIALIZER_TRACE_ERROR)
+    .value("SERIALIZER_TRACE_ALL", Serializer::TraceType::SERIALIZER_TRACE_ALL)
     .export_values()
     ;
 
+    enum_<Serializer::ModeType>("SerializerModeType")
+    .value("SERIALIZER_READ", Serializer::ModeType::SERIALIZER_READ)
+    .value("SERIALIZER_WRITE", Serializer::ModeType::SERIALIZER_WRITE)
+    .value("SERIALIZER_READ_WRITE", Serializer::ModeType::SERIALIZER_READ_WRITE)
+    .export_values()
+    ;
 }
 
 }  // namespace Python.
