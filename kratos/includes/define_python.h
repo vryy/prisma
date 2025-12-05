@@ -19,6 +19,7 @@
 #include <boost/python.hpp>
 
 // Project includes
+#include "includes/serializer.h"
 
 // This function is used to print the ofstream-operator
 // i.e. printing an object will give the same result in Python as in C++
@@ -31,6 +32,20 @@ std::string PrintObject(const T& rObject)
     std::stringstream ss;
     ss << rObject;
     return ss.str();
+}
+
+// Wrapper function to allow the object to invoke the Serializer "save" on itself
+template<class TObjectType>
+void Serializer_save_wrapper(TObjectType& rObject, Kratos::Serializer& rSerializer, const std::string& rName)
+{
+    rSerializer.save(rName, rObject);
+}
+
+// Wrapper function to allow the object to invoke the Serializer "load" on itself
+template<class TObjectType>
+void Serializer_load_wrapper(TObjectType& rObject, Kratos::Serializer& rSerializer, const std::string& rName)
+{
+    rSerializer.load(rName, rObject);
 }
 
 #ifdef KRATOS_REGISTER_IN_PYTHON_FLAG_IMPLEMENTATION

@@ -26,7 +26,7 @@
 
 // Project includes
 #include "add_constitutive_law_to_python.h"
-#include "includes/define.h"
+#include "includes/define_python.h"
 #include "includes/constitutive_law.h"
 #include "includes/node.h"
 #include "includes/variables.h"
@@ -243,6 +243,8 @@ void AddConstitutiveLawToPython()
     .def_readonly("U_P_LAW", &BaseConstitutiveLaw::U_P_LAW)
     .def_readonly("ISOTROPIC", &BaseConstitutiveLaw::ISOTROPIC)
     .def_readonly("ANISOTROPIC", &BaseConstitutiveLaw::ANISOTROPIC)
+    .def("Load", &Serializer_load_wrapper<BaseConstitutiveLaw>)
+    .def("Save", &Serializer_save_wrapper<BaseConstitutiveLaw>)
     .def( self_ns::str( self ) )
     ;
 
