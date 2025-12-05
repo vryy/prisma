@@ -20,15 +20,9 @@
 // THE USE OF THISSOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-
 // System includes
-#include <boost/python.hpp>
-#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
-#include "python/add_constitutive_law_to_python.h"
 
 // External includes
-#include "boost/smart_ptr.hpp"
-
 
 // Project includes
 #include "add_constitutive_law_to_python.h"
@@ -215,20 +209,20 @@ void AddConstitutiveLawToPythonImpl(const std::string& Prefix)
 void AddConstitutiveLawToPython()
 {
     enum_<BaseConstitutiveLaw::StrainMeasure>("StrainMeasure")
-        .value("StrainMeasure_Infinitesimal", BaseConstitutiveLaw::StrainMeasure_Infinitesimal)
-        .value("StrainMeasure_GreenLagrange", BaseConstitutiveLaw::StrainMeasure_GreenLagrange)
-        .value("StrainMeasure_Hencky_Material", BaseConstitutiveLaw::StrainMeasure_Hencky_Material)
-        .value("StrainMeasure_Hencky_Spatial", BaseConstitutiveLaw::StrainMeasure_Hencky_Spatial)
-        .value("StrainMeasure_Deformation_Gradient", BaseConstitutiveLaw::StrainMeasure_Deformation_Gradient)
-        .value("StrainMeasure_Right_CauchyGreen", BaseConstitutiveLaw::StrainMeasure_Right_CauchyGreen)
-        .value("StrainMeasure_Left_CauchyGreen", BaseConstitutiveLaw::StrainMeasure_Left_CauchyGreen)
+    .value("StrainMeasure_Infinitesimal", BaseConstitutiveLaw::StrainMeasure_Infinitesimal)
+    .value("StrainMeasure_GreenLagrange", BaseConstitutiveLaw::StrainMeasure_GreenLagrange)
+    .value("StrainMeasure_Hencky_Material", BaseConstitutiveLaw::StrainMeasure_Hencky_Material)
+    .value("StrainMeasure_Hencky_Spatial", BaseConstitutiveLaw::StrainMeasure_Hencky_Spatial)
+    .value("StrainMeasure_Deformation_Gradient", BaseConstitutiveLaw::StrainMeasure_Deformation_Gradient)
+    .value("StrainMeasure_Right_CauchyGreen", BaseConstitutiveLaw::StrainMeasure_Right_CauchyGreen)
+    .value("StrainMeasure_Left_CauchyGreen", BaseConstitutiveLaw::StrainMeasure_Left_CauchyGreen)
     ;
 
     enum_<BaseConstitutiveLaw::StressMeasure>("StressMeasure")
-        .value("StressMeasure_PK1", BaseConstitutiveLaw::StressMeasure_PK1)
-        .value("StressMeasure_PK2", BaseConstitutiveLaw::StressMeasure_PK2)
-        .value("StressMeasure_Kirchhoff", BaseConstitutiveLaw::StressMeasure_Kirchhoff)
-        .value("StressMeasure_Cauchy", BaseConstitutiveLaw::StressMeasure_Cauchy)
+    .value("StressMeasure_PK1", BaseConstitutiveLaw::StressMeasure_PK1)
+    .value("StressMeasure_PK2", BaseConstitutiveLaw::StressMeasure_PK2)
+    .value("StressMeasure_Kirchhoff", BaseConstitutiveLaw::StressMeasure_Kirchhoff)
+    .value("StressMeasure_Cauchy", BaseConstitutiveLaw::StressMeasure_Cauchy)
     ;
 
     class_< BaseConstitutiveLaw, BaseConstitutiveLaw::Pointer, bases<Flags>, boost::noncopyable >
