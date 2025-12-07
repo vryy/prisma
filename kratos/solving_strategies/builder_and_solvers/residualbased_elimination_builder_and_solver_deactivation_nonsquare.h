@@ -539,11 +539,17 @@ public:
 
         Kratos::progress_display show_progress_elements( pElements.size() );
 
+#if _OPENMP >= 201307
         #pragma omp declare reduction( \
             sum: TDataType: omp_out += omp_in) \
             initializer(omp_priv = TDataType())
+#endif
 
+#if _OPENMP >= 201307
         #pragma omp parallel for reduction(sum:DiagonalSum) reduction(+:num_assembled_elements) reduction(+:num_computed_elements)
+#else
+        #pragma omp parallel for reduction(+:num_assembled_elements) reduction(+:num_computed_elements)
+#endif
         for(int k = 0; k < number_of_threads; ++k)
         {
 //            std::cout << "thread " << k << " is spawned" << std::endl;
@@ -636,7 +642,12 @@ public:
                     }
 
                     //update the global diagonal sum
-                    DiagonalSum += LocalDiagonalSum;
+#if _OPENMP < 201307
+                    #pragma omp critical
+#endif
+                    {
+                        DiagonalSum += LocalDiagonalSum;
+                    }
 
                     //update the number of computed and assembled element
                     num_computed_elements += 1;
@@ -667,7 +678,11 @@ public:
         unsigned int num_computed_conditions = 0;
         unsigned int num_assembled_conditions = 0;
 
+#if _OPENMP >= 201307
         #pragma omp parallel for reduction(sum:DiagonalSum) reduction(+:num_assembled_conditions) reduction(+:num_computed_conditions)
+#else
+        #pragma omp parallel for reduction(+:num_assembled_conditions) reduction(+:num_computed_conditions)
+#endif
         for(int k = 0; k < number_of_threads; ++k)
         {
             //contributions to the system
@@ -732,7 +747,12 @@ public:
                     }
 
                     //update the global diagonal sum
-                    DiagonalSum += LocalDiagonalSum;
+#if _OPENMP < 201307
+                    #pragma omp critical
+#endif
+                    {
+                        DiagonalSum += LocalDiagonalSum;
+                    }
                     // std::cout << "condition " << it->Id() << " LocalDiagonalSum: " << LocalDiagonalSum
                     //           << ", RowEquationId.size(): " << RowEquationId.size()
                     //           << ", type: " << typeid(*it).name()
