@@ -66,6 +66,8 @@ public:
     ///@name Type Definitions
     ///@{
 
+    template <class> struct always_false : std::false_type {};
+
     typedef typename TSparseSpace::DataType TDataType;
     typedef typename DataTypeToValueType<TDataType>::value_type ValueType;
     typedef typename TSparseSpace::MatrixType TSystemMatrixType;
@@ -120,7 +122,9 @@ public:
 
         if constexpr (!std::is_same<TDataType, typename ModelPartType::DataType>::value)
         {
-            #pragma error The data type of sparce space and model part is not the same
+            static_assert(always_false<TDataType>::value,
+                          "TDataType does not match ModelPartType::DataType. "
+                          "See instantiation trace for actual type.");
         }
     }
 
