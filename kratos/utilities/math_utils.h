@@ -224,7 +224,7 @@ public:
         rInputMatrixDet = Det(rInputMatrix);
 
         if constexpr (TDim == 1) {
-            inverted_matrix(0,0) = 1 / rInputMatrix(0,0);
+            inverted_matrix(0,0) = 1.0 / rInputMatrix(0,0);
             rInputMatrixDet = rInputMatrix(0,0);
         } else if constexpr (TDim == 2) {
             InvertMatrix2(rInputMatrix, inverted_matrix, rInputMatrixDet);
@@ -346,7 +346,7 @@ public:
             if(rInvertedMatrix.size1() != 1 || rInvertedMatrix.size2() != 1) {
                 rInvertedMatrix.resize(1,1,false);
             }
-            rInvertedMatrix(0,0) = 1 / rInputMatrix(0,0);
+            rInvertedMatrix(0,0) = 1.0 / rInputMatrix(0,0);
             rInputMatrixDet = rInputMatrix(0,0);
         } else if (size == 2) {
             InvertMatrix2(rInputMatrix, rInvertedMatrix, rInputMatrixDet);
@@ -626,8 +626,10 @@ public:
 
                 for (IndexType i = 0; i < Aux.size1();++i) {
                     IndexType ki = pm[i] == i ? 0 : 1;
-                    int sign = (ki % 2 == 0) ? 1 : -1;
-                    det *= sign * Aux(i,i);
+                    if (ki % 2 == 0)
+                        det *= Aux(i,i);
+                    else
+                        det *= -Aux(i,i);
                 }
                 return det;
        }

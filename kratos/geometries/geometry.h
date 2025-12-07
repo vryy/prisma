@@ -691,7 +691,7 @@ public:
         for ( IndexType i = 1 ; i < points_number ; i++ )
             result += ( *this )[i];
 
-        DataType temp = 1 / static_cast<DataType>( points_number );
+        DataType temp = 1.0 / static_cast<DataType>( points_number );
 
         result *= temp;
 
