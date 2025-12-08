@@ -183,6 +183,13 @@ public:
         return assign (self_type(ae));
     }
 
+    template<typename OT, typename = std::enable_if_t<std::is_arithmetic_v<OT> > >
+    BOOST_UBLAS_INLINE
+    array_1d &operator = (const OT v)
+    {
+        std::fill(data().begin(), data().end(), static_cast<T>(v));
+    }
+
     template<class AE>
     BOOST_UBLAS_INLINE
     array_1d &operator += (const boost::numeric::ublas::vector_expression<AE> &ae)
