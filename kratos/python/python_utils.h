@@ -22,6 +22,7 @@
 
 // Project includes
 #include "includes/define.h"
+#include "containers/array_1d.h"
 
 
 namespace Kratos
@@ -33,15 +34,34 @@ namespace Python
 struct PythonUtils
 {
 
+    template <typename T> struct is_vector_of_arithmetic : std::false_type {};
+    template <typename T> struct is_vector_of_arithmetic<std::vector<T> > : std::is_arithmetic<T> {};
+
+    template<typename T> struct is_array_1d : std::false_type {};
+    template<typename TDataType, std::size_t TSize> struct is_array_1d<array_1d<TDataType, TSize> > : std::true_type {};
+
     /// Unpack a boost::python::list to std::vector
     template<typename TInputValueType, typename TOutputValueType = TInputValueType>
     static void Unpack(const boost::python::list& rValues, std::vector<TOutputValueType>& values)
     {
-        typedef boost::python::stl_input_iterator<TInputValueType> iterator_value_type;
-        BOOST_FOREACH(const typename iterator_value_type::value_type & v,
-                      std::make_pair(iterator_value_type(rValues), iterator_value_type() ) )
+        using namespace boost::python;
+
+        const int n = len(rValues);
+        values.clear();
+        values.reserve(n);
+
+        for (int i = 0; i < n; ++i)
         {
-            values.push_back(static_cast<TOutputValueType>(v));
+            object item = rValues[i];
+            extract<TInputValueType> ex(item);
+
+            if (!ex.check())
+            {
+                KRATOS_ERROR << "List element " << i
+                             << " cannot be converted to " << DataTypeToString<TInputValueType>::Get();
+            }
+
+            values.push_back(static_cast<TOutputValueType>(ex()));
         }
     }
 
@@ -162,22 +182,63 @@ struct PythonUtils
 
     /// Unpack a boost::python::dict to std::map
     template<typename TKeyType, typename TDataType>
-    static void Unpack(const boost::python::dict& rNodalValues,
-                       std::map<TKeyType, TDataType>& nodal_values)
+    static void Unpack(const boost::python::dict& py_dict, std::map<TKeyType, TDataType>& out_map)
     {
-        boost::python::list keys = rNodalValues.keys();
+        using namespace boost::python;
 
-        typedef boost::python::stl_input_iterator<std::string> iterator_type;
-        BOOST_FOREACH(const iterator_type::value_type & id,
-                      std::make_pair(iterator_type(keys), // begin
-                                     iterator_type() ) ) // end
+        list keys = py_dict.keys();
+        const int nkeys = len(keys);
+
+        out_map.clear();
+
+        for (int i = 0; i < nkeys; ++i)
         {
-            boost::python::object o = rNodalValues.get(id);
+            object py_key = keys[i];
 
-            // here assumed that the patch_data given as a value
-            TDataType v = boost::python::extract<TDataType>(o);
+            // ---- extract key ----
+            extract<TKeyType> key_ex(py_key);
+            if (!key_ex.check())
+                KRATOS_ERROR << "Cannot convert Python dict key at index " << i
+                             << " to TKeyType";
 
-            nodal_values[static_cast<TKeyType>(id)] = v;
+            TKeyType key = key_ex();
+
+            // ---- extract value ----
+            object py_val = py_dict.get(py_key);
+
+            TDataType val;
+
+            if constexpr (std::is_arithmetic<TDataType>::value)
+            {
+                extract<TDataType> ex(py_val);
+                if (!ex.check())
+                    KRATOS_ERROR << "Dictionary value for key '" << key
+                                 << "' cannot be converted to arithmetic type";
+
+                val = ex();
+            }
+            else if constexpr (is_vector_of_arithmetic<TDataType>::value)
+            {
+                extract<list> ex_list(py_val);
+                if (!ex_list.check())
+                {
+                    KRATOS_ERROR << "Value for key '" << key
+                                 << "' is expected to be a Python list";
+                }
+
+                // call your existing overload:
+                // Unpack(const list&, vector<T>&)
+                Unpack<typename TDataType::value_type>(
+                    ex_list(),   // input python list
+                    val          // output vector
+                );
+            }
+            else
+            {
+                KRATOS_ERROR << "Unsupported TDataType in Unpack(dict, map)";
+            }
+
+            out_map[key] = std::move(val);
         }
     }
 
@@ -214,13 +275,55 @@ struct PythonUtils
     }
 
     /// Pack a std::vector to boost::python::list
-    template <typename TInputValueType>
+    template<typename TInputValueType>
     static boost::python::list Pack(const std::vector<TInputValueType>& vec)
     {
-        boost::python::list py_list;
-        for (const auto& v : vec)
-            py_list.append(v);
+        using namespace boost::python;
+
+        list py_list;
+
+        if constexpr (std::is_arithmetic<TInputValueType>::value)
+        {
+            for (const auto& v : vec)
+                py_list.append(v);
+        }
+        else if constexpr (is_vector_of_arithmetic<TInputValueType>::value)
+        {
+            for (const auto& subvec : vec)
+                py_list.append(Pack(subvec)); // recursive call for vector<vector<T>>
+        }
+        else if constexpr (is_array_1d<TInputValueType>::value)
+        {
+            // vector of array_1d -> list of lists
+            for (const auto& a : vec)
+            {
+                list inner_list;
+                for (std::size_t i = 0; i < TInputValueType::array_type::static_size; ++i)
+                    inner_list.append(a[i]);
+                py_list.append(inner_list);
+            }
+        }
+        else
+        {
+            KRATOS_ERROR << "Unsupported vector element type in Pack(vector)";
+        }
+
         return py_list;
+    }
+
+    /// Pack a std::map to boost::python::dict
+    template<typename TKeyType, typename TInputValueType>
+    static boost::python::dict Pack(const std::map<TKeyType, TInputValueType>& map)
+    {
+        using namespace boost::python;
+        boost::python::dict py_dict;
+        for (const auto& kv : map)
+        {
+            object py_key(kv.first);
+            object py_val(kv.second);  // fails here if no converter exists
+            py_dict[py_key] = py_val;
+        }
+        return py_dict;
     }
 
     /// Print the keys of a python object, assuming it's a dictionary
