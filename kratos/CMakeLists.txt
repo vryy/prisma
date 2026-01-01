@@ -188,3 +188,6 @@ if(${KRATOS_PYTHON} MATCHES TRUE)
 
     install(TARGETS Kratos DESTINATION libs )
 endif()
+###############################################################
+
+add_subdirectory(tests)

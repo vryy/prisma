@@ -1,0 +1,3 @@
+add_executable(test_kratos_exception ${CMAKE_CURRENT_SOURCE_DIR}/test_kratos_exception.cpp)
+target_link_libraries(test_kratos_exception PRIVATE KratosCore)
+target_compile_definitions(test_kratos_exception PRIVATE KRATOS_CORE=IMPORT)
