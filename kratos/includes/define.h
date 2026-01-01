@@ -124,7 +124,6 @@ KRATOS_CATCH_WITH_BLOCK(MoreInfo,{})
 #define KRATOS_HERE  __FILE__ << ":" << __LINE__ << ":" << KRATOS_CURRENT_FUNCTION
 #endif
 
-
 #define KRATOS_CATCH_AND_THROW(ExceptionType, MoreInfo, Block)  \
 catch(ExceptionType& e)                                         \
 {                                                               \
@@ -139,16 +138,7 @@ KRATOS_ERROR << ErrorMessage << MoreInfo << std::endl;              \
 
 #define KRATOS_CATCH_WITH_BLOCK(MoreInfo,Block) \
 } \
-KRATOS_CATCH_AND_THROW(std::overflow_error,MoreInfo,Block)   \
-KRATOS_CATCH_AND_THROW(std::underflow_error,MoreInfo,Block)  \
-KRATOS_CATCH_AND_THROW(std::range_error,MoreInfo,Block)      \
-KRATOS_CATCH_AND_THROW(std::out_of_range,MoreInfo,Block)     \
-KRATOS_CATCH_AND_THROW(std::length_error,MoreInfo,Block)     \
-KRATOS_CATCH_AND_THROW(std::invalid_argument,MoreInfo,Block) \
-KRATOS_CATCH_AND_THROW(std::domain_error,MoreInfo,Block)     \
-KRATOS_CATCH_AND_THROW(std::logic_error,MoreInfo,Block)      \
-KRATOS_CATCH_AND_THROW(std::runtime_error,MoreInfo,Block)    \
-catch(KratosException& e) { Block throw KratosException(e) << KRATOS_CODE_LOCATION << MoreInfo << std::endl; } \
+catch(Kratos::KratosException& e) { Block throw Kratos::KratosException(e) << KRATOS_CODE_LOCATION << MoreInfo << std::endl; } \
 catch(std::exception& e) { Block KRATOS_THROW_ERROR(std::runtime_error, e.what(), MoreInfo) }   \
 catch(...) { Block KRATOS_THROW_ERROR(std::runtime_error, "Unknown error", MoreInfo) }          \
 

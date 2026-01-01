@@ -69,7 +69,6 @@ public:
     /// Destructor.
     ~KratosException() noexcept override;
 
-
     ///@}
     ///@name Operators
     ///@{
@@ -106,7 +105,6 @@ public:
 
     void add_to_call_stack(CodeLocation const& TheLocation);
 
-
     ///@}
     ///@name Access
     ///@{
@@ -133,7 +131,6 @@ public:
 
     /// Print object's data.
     virtual void PrintData(std::ostream& rOStream) const;
-
 
     ///@}
 
@@ -184,13 +181,11 @@ private:
 ///@name Input and output
 ///@{
 
-
 /// input stream function
 std::istream& operator >> (std::istream& rIStream, KratosException& rThis);
 
 /// output stream function
 KRATOS_API(KRATOS_CORE) std::ostream& operator << (std::ostream& rOStream, const KratosException& rThis);
-
 
 ///@}
 

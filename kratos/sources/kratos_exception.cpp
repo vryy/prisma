@@ -154,7 +154,6 @@ namespace Kratos
         : std::exception(), mMessage(rWhat), mCallStack()
         , pimpl_(new ExceptionImplementation{
             mMessage, boost::stacktrace::stacktrace(skip_frames, /*max_depth=*/-1)})
-
     {
         add_to_call_stack(Location);
         update_what();
@@ -163,10 +162,9 @@ namespace Kratos
     KratosException::KratosException(const KratosException& Other)
         : std::exception(Other), mMessage(Other.mMessage), mWhat(Other.mWhat), mCallStack(Other.mCallStack)
         , pimpl_(new ExceptionImplementation{
-            mMessage, boost::stacktrace::stacktrace(skip_frames, /*max_depth=*/-1)})
+            Other.mMessage, boost::stacktrace::stacktrace(skip_frames, /*max_depth=*/-1)})
     {
     }
-
 
     KratosException::~KratosException() throw()
     {
@@ -187,7 +185,7 @@ namespace Kratos
     void KratosException::update_what()
     {
         std::stringstream buffer;
-        buffer << mMessage << std::endl;
+        buffer << mMessage;
         if(mCallStack.empty())
             buffer << "in Unknown Location";
         else
@@ -232,23 +230,22 @@ namespace Kratos
         return "KratosException";
     }
 
-      /// Print information about this object.
+    /// Print information about this object.
     void KratosException::PrintInfo(std::ostream& rOStream) const
     {
         rOStream << Info();
     }
-      /// Print object's data.
+
+    /// Print object's data.
     void KratosException::PrintData(std::ostream& rOStream) const
     {
         rOStream << "Error: " << mMessage << std::endl;
         rOStream << "   in: " << where();
     }
 
-
     KratosException& KratosException::operator << (CodeLocation const& TheLocation)
     {
         add_to_call_stack(TheLocation);
-
         return *this;
     }
 
@@ -262,7 +259,6 @@ namespace Kratos
     KratosException& KratosException::operator << (const char * rString)
     {
         append_message(rString);
-
         return *this;
     }
 
@@ -270,9 +266,7 @@ namespace Kratos
     {
         std::stringstream buffer;
         pf(buffer);
-
         append_message(buffer.str());
-
         return *this;
     }
 
@@ -281,7 +275,6 @@ namespace Kratos
         rThis.PrintInfo(rOStream);
         rOStream << std::endl;
         rThis.PrintData(rOStream);
-
         return rOStream;
     }
 
