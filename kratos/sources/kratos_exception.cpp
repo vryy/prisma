@@ -167,7 +167,6 @@ namespace Kratos
     {
     }
 
-
     KratosException::~KratosException() throw()
     {
     }
@@ -232,23 +231,22 @@ namespace Kratos
         return "KratosException";
     }
 
-      /// Print information about this object.
+    /// Print information about this object.
     void KratosException::PrintInfo(std::ostream& rOStream) const
     {
         rOStream << Info();
     }
-      /// Print object's data.
+
+    /// Print object's data.
     void KratosException::PrintData(std::ostream& rOStream) const
     {
         rOStream << "Error: " << mMessage << std::endl;
         rOStream << "   in: " << where();
     }
 
-
     KratosException& KratosException::operator << (CodeLocation const& TheLocation)
     {
         add_to_call_stack(TheLocation);
-
         return *this;
     }
 
@@ -262,7 +260,6 @@ namespace Kratos
     KratosException& KratosException::operator << (const char * rString)
     {
         append_message(rString);
-
         return *this;
     }
 
@@ -270,9 +267,7 @@ namespace Kratos
     {
         std::stringstream buffer;
         pf(buffer);
-
         append_message(buffer.str());
-
         return *this;
     }
 

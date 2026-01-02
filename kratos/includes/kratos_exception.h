@@ -69,7 +69,6 @@ public:
     /// Destructor.
     ~KratosException() noexcept override;
 
-
     ///@}
     ///@name Operators
     ///@{
@@ -86,9 +85,7 @@ public:
     {
         std::stringstream buffer;
         buffer << rValue;
-
         append_message(buffer.str());
-
         return *this;
     }
 
@@ -106,7 +103,6 @@ public:
 
     void add_to_call_stack(CodeLocation const& TheLocation);
 
-
     ///@}
     ///@name Access
     ///@{
@@ -114,7 +110,6 @@ public:
     /// The overide of the base class what method
     /** This method returns the entire message with where information
     */
-
     const char* what() const noexcept override;
 
     const std::string& message() const;
@@ -133,7 +128,6 @@ public:
 
     /// Print object's data.
     virtual void PrintData(std::ostream& rOStream) const;
-
 
     ///@}
 
@@ -184,13 +178,11 @@ private:
 ///@name Input and output
 ///@{
 
-
 /// input stream function
 std::istream& operator >> (std::istream& rIStream, KratosException& rThis);
 
 /// output stream function
 KRATOS_API(KRATOS_CORE) std::ostream& operator << (std::ostream& rOStream, const KratosException& rThis);
-
 
 ///@}
 

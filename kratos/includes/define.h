@@ -88,7 +88,6 @@ KRATOS_CATCH_WITH_BLOCK(MoreInfo,{})
 #define KRATOS_CATCH_LEVEL_1(MoreInfo) }
 #endif
 
-
 #if defined(KRATOS_EXCEPTION_LEVEL_2)
 #define KRATOS_TRY_LEVEL_2 try {
 #define KRATOS_CATCH_LEVEL_2(MoreInfo) \
@@ -124,7 +123,6 @@ KRATOS_CATCH_WITH_BLOCK(MoreInfo,{})
 #define KRATOS_HERE  __FILE__ << ":" << __LINE__ << ":" << KRATOS_CURRENT_FUNCTION
 #endif
 
-
 #define KRATOS_CATCH_AND_THROW(ExceptionType, MoreInfo, Block)  \
 catch(ExceptionType& e)                                         \
 {                                                               \
@@ -148,7 +146,7 @@ KRATOS_CATCH_AND_THROW(std::invalid_argument,MoreInfo,Block) \
 KRATOS_CATCH_AND_THROW(std::domain_error,MoreInfo,Block)     \
 KRATOS_CATCH_AND_THROW(std::logic_error,MoreInfo,Block)      \
 KRATOS_CATCH_AND_THROW(std::runtime_error,MoreInfo,Block)    \
-catch(KratosException& e) { Block throw KratosException(e) << KRATOS_CODE_LOCATION << MoreInfo << std::endl; } \
+catch(Kratos::KratosException& e) { Block throw Kratos::KratosException(e) << KRATOS_CODE_LOCATION << MoreInfo << std::endl; } \
 catch(std::exception& e) { Block KRATOS_THROW_ERROR(std::runtime_error, e.what(), MoreInfo) }   \
 catch(...) { Block KRATOS_THROW_ERROR(std::runtime_error, "Unknown error", MoreInfo) }          \
 
@@ -165,11 +163,11 @@ catch(...) { Block KRATOS_THROW_ERROR(std::runtime_error, "Unknown error", MoreI
 
 #define KRATOS_CATCH(MoreInfo) { };
 #endif
+
 //-----------------------------------------------------------------
 //
 // variables
 //
-
 //-----------------------------------------------------------------
 
 #define KRATOS_EXPORT_MACRO KRATOS_NO_EXPORT
@@ -496,8 +494,6 @@ VariableIsCompleteHelper<VariableSelector_##name<T> >::value          \
     KRATOS_ADD_FLAG_TO_KRATOS_COMPONENTS(name);         \
     KRATOS_ADD_FLAG_TO_KRATOS_COMPONENTS(NOT_##name)    \
 
-
-
 #ifdef KRATOS_DEFINE_LOCAL_FLAG
 #undef KRATOS_DEFINE_LOCAL_FLAG
 #endif
@@ -511,7 +507,6 @@ VariableIsCompleteHelper<VariableSelector_##name<T> >::value          \
 #define KRATOS_CREATE_LOCAL_FLAG(class_name, name, position)                            \
   const Kratos::Flags class_name::name(Kratos::Flags::Create(position));                \
   const Kratos::Flags class_name::NOT_##name(Kratos::Flags::Create(position, false))    \
-
 
 //-----------------------------------------------------------------
 //
@@ -546,7 +541,6 @@ VariableIsCompleteHelper<VariableSelector_##name<T> >::value          \
 #define KRATOS_REGISTER_ENTITY(type, name, reference)                 \
     KratosComponents<type>::Add(name, reference);  \
     Serializer::Register(name, reference);                          \
-
 
 namespace Kratos
 {
@@ -667,12 +661,10 @@ namespace Internals
 
 }  /* namespace Kratos.*/
 
-
 #define KRATOS_SERIALIZE_SAVE_BASE_CLASS(Serializer, BaseType) \
     Serializer.save_base("BaseClass", *static_cast<const BaseType*>(this));
 
 #define KRATOS_SERIALIZE_LOAD_BASE_CLASS(Serializer, BaseType) \
     Serializer.load_base("BaseClass", *static_cast<BaseType*>(this));
-
 
 #endif /* KRATOS_DEFINE_H_INCLUDED  defined */
