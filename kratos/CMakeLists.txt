@@ -48,10 +48,16 @@ set( KRATOS_CORE_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/io.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/model_part_io.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/reorder_consecutive_model_part_io.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/utilities/indexed_object.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/utilities/logger.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/utilities/constraint_utilities.cpp
 )
+
+if (MSVC)
+    # for some reason, explicit instantiation is necessary for the Microsoft compiler
+    set(KRATOS_CORE_SOURCES ${KRATOS_CORE_SOURCES}
+        ${CMAKE_CURRENT_SOURCE_DIR}/utilities/indexed_object.cpp
+    )
+endif()
 
 if(${MPI_FOUND})
     set(KRATOS_CORE_SOURCES ${KRATOS_CORE_SOURCES}
@@ -103,6 +109,11 @@ endif()
 ###############################################################
 ## define library KratosCore to be included in all of the others
 add_library(KratosCore SHARED ${KRATOS_CORE_SOURCES})
+if(KRATOS_INDEX_TYPE STREQUAL "int")
+    target_compile_definitions(KratosCore PRIVATE KRATOS_INDEX_TYPE_IS_INT=1)
+else()
+    target_compile_definitions(KratosCore PRIVATE KRATOS_INDEX_TYPE_IS_INT=0)
+endif()
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Android")
     target_compile_definitions(KratosCore PRIVATE KRATOS_CORE=)

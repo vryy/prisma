@@ -23,6 +23,10 @@
 namespace Kratos
 {
 
-template class BaseIndexedObject<KRATOS_INDEX_TYPE>;
+template class KRATOS_API(KRATOS_CORE) BaseIndexedObject<KRATOS_INDEX_TYPE>;
+
+#if KRATOS_INDEX_TYPE_IS_INT==0
+template class KRATOS_API(KRATOS_CORE) BaseIndexedObject<int>;
+#endif
 
 }  // namespace Kratos.
