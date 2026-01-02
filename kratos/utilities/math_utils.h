@@ -108,13 +108,9 @@ public:
     /// Return constant Pi
     static inline constexpr TDataType Pi()
     {
-        #if defined(__clang__)
-        return 3.1415926535897932384626433832795028841971693;
-        #elif defined(__GNUC__) || defined(__GNUG__)
-        return std::atan(1.0)*4;
-        #else
-        return std::atan(1.0)*4;
-        #endif
+        /// We use a consistent highly precision value of Pi to provide consistent calculation
+        /// across compiler rather than depending on compiler optimization such as std::atan(1.0)*4
+        return 3.1415926535897932384626433832795028841971694;
     }
 
     /**
@@ -1313,7 +1309,6 @@ public:
         return (x > 0) ? 1 : ((x < 0) ? -1 : 0);
         KRATOS_CATCH("");
     }
-
 
     /**
      * @brief Transforms a strain vector into a matrix. Strains are assumed to be stored in the following way:
