@@ -119,6 +119,12 @@ if(WIN32)
     set(CMAKE_OBJECT_PATH_MAX 200)
 endif()
 
+if(MSVC)
+    # force use of /MD for linking with external libraries. This allows to use Release-built libraries
+    # to link with Kratos built in Debug mode
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
+endif()
+
 ######################################################################################
 ######################################################################################
 ######################################################################################
