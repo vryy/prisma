@@ -147,7 +147,8 @@ public:
     PointerVectorSet(const TContainerType& rContainer) :  mData(rContainer), mSortedPartSize(size_type()), mMaxBufferSize(1)
     {
         Sort();
-        std::unique(mData.begin(), mData.end(), EqualKeyTo());
+        auto it = std::unique(mData.begin(), mData.end(), EqualKeyTo());
+        mData.erase(it, mData.end());
     }
 
     /// Destructor.
