@@ -174,15 +174,15 @@ public:
         TSystemVectorType& b) override
     {
         KRATOS_TRY
+
         if(!pScheme)
-        {
             KRATOS_ERROR << "No scheme provided!";
-        }
+
         // Getting the elements from the model
-        const int nelements = static_cast<int>(rModelPart.Elements().size());
+        const SizeType nelements = rModelPart.Elements().size();
 
         // Getting the array of the conditions
-        const int nconditions = static_cast<int>(rModelPart.Conditions().size());
+        const SizeType nconditions = rModelPart.Conditions().size();
 
         std::cout << "Total number of elements in assembly: " << nelements << std::endl;
         std::cout << "Total number of conditions in assembly: " << nconditions << std::endl;
@@ -193,36 +193,34 @@ public:
         auto el_begin = rModelPart.ElementsBegin();
         auto cond_begin = rModelPart.ConditionsBegin();
 
-        //contributions to the system
+        // contributions to the system
         LocalSystemMatrixType LHS_Contribution = LocalSystemMatrixType(0, 0);
         LocalSystemVectorType RHS_Contribution = LocalSystemVectorType(0);
 
-        //vector containing the localization in the system of the different
-        //terms
+        // vector containing the localization in the system of the different terms
         typename ElementType::EquationIdVectorType EquationId;
 
-        // assemble all elements
+        // assemble all elements and conditions
         double start_build = OpenMPUtils::GetCurrentTime();
 
-        #pragma omp parallel firstprivate(nelements,nconditions, LHS_Contribution, RHS_Contribution, EquationId )
+        #pragma omp parallel firstprivate(nelements, nconditions, LHS_Contribution, RHS_Contribution, EquationId)
         {
-            # pragma omp for  schedule(guided, 512) nowait
-            for (int k = 0; k < nelements; k++)
+            # pragma omp for schedule(guided, 512) nowait
+            for (IndexType k = 0; k < nelements; k++)
             {
                 auto it = el_begin + k;
 
-                //detect if the element is active or not. If the user did not make any choice the element
-                //is active by default
+                // detect if the element is active or not. If the user did not make any choice the element
+                // is active by default
                 bool element_is_active = true;
                 if ((it)->IsDefined(ACTIVE))
                     element_is_active = (it)->Is(ACTIVE);
 
                 if (element_is_active)
                 {
-                    //calculate elemental contribution
                     pScheme->CalculateSystemContributions(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
 
-                    //assemble the elemental contribution
+                    // assemble the elemental contribution
                     Assemble(A, b, LHS_Contribution, RHS_Contribution, EquationId);
 
                     // clean local elemental memory
@@ -230,23 +228,23 @@ public:
                 }
             }
 
-            #pragma omp for  schedule(guided, 512)
-            for (int k = 0; k < nconditions; k++)
+            #pragma omp for schedule(guided, 512)
+            for (IndexType k = 0; k < nconditions; k++)
             {
                 auto it = cond_begin + k;
 
-                //detect if the element is active or not. If the user did not make any choice the element
-                //is active by default
+                // detect if the condition is active or not. If the user did not make any choice the condition
+                // is active by default
                 bool condition_is_active = true;
                 if ((it)->IsDefined(ACTIVE))
                     condition_is_active = (it)->Is(ACTIVE);
 
                 if (condition_is_active)
                 {
-                    //calculate elemental contribution
+                    // calculate elemental contribution
                     pScheme->CalculateSystemContributions(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
 
-                    //assemble the elemental contribution
+                    // assemble the elemental contribution
                     Assemble(A, b, LHS_Contribution, RHS_Contribution, EquationId);
 
                     // clean local elemental memory
