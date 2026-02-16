@@ -115,6 +115,8 @@ public:
         Kratos_Triangle2D6,
         Kratos_Triangle3D3,
         Kratos_Triangle3D6,
+        Kratos_Line1D2,
+        Kratos_Line1D3,
         Kratos_Line2D2,
         Kratos_Line2D3,
         Kratos_Line3D2,
