@@ -154,7 +154,6 @@ namespace Kratos
         : std::exception(), mMessage(rWhat), mCallStack()
         , pimpl_(new ExceptionImplementation{
             mMessage, boost::stacktrace::stacktrace(skip_frames, /*max_depth=*/-1)})
-
     {
         add_to_call_stack(Location);
         update_what();
@@ -163,7 +162,7 @@ namespace Kratos
     KratosException::KratosException(const KratosException& Other)
         : std::exception(Other), mMessage(Other.mMessage), mWhat(Other.mWhat), mCallStack(Other.mCallStack)
         , pimpl_(new ExceptionImplementation{
-            mMessage, boost::stacktrace::stacktrace(skip_frames, /*max_depth=*/-1)})
+            Other.mMessage, boost::stacktrace::stacktrace(skip_frames, /*max_depth=*/-1)})
     {
     }
 
@@ -186,12 +185,12 @@ namespace Kratos
     void KratosException::update_what()
     {
         std::stringstream buffer;
-        buffer << mMessage << std::endl;
+        buffer << mMessage;
         if(mCallStack.empty())
-            buffer << "in Unknown Location";
+            buffer << " in Unknown Location";
         else
         {
-            buffer << "in " << mCallStack[0] << std::endl;
+            buffer << " in " << mCallStack[0] << std::endl;
             for(auto i = mCallStack.begin() + 1; i!= mCallStack.end(); i++)
                 buffer << "   " << *i << std::endl;
         }
@@ -276,7 +275,6 @@ namespace Kratos
         rThis.PrintInfo(rOStream);
         rOStream << std::endl;
         rThis.PrintData(rOStream);
-
         return rOStream;
     }
 
