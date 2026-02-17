@@ -1081,24 +1081,68 @@ public:
     }
 
     /**
-     * Calculate Mass matrix and add acceleration contribution to RHS
-     * @param rMassMatrix the mass matrix
-     * @param rRightHandSideVector the conditional right hand side matrix
+     * Calculate the contribution of the inertial terms to the RHS and LHS.
+     * The general mass model is assumed as f_inert = f_inert(u, udd).
+     * In structural dynamics, it is f_inert = M(u) x udd.
+     * The contribution to the LHS is considerred as total contribution from both
+     * the mass matrix and the mass-induced stiffness.
+     * @param rLeftHandSideMatrix the left hand side matrix
+     * @param rRightHandSideVector the conditional right hand side vector
      * @param rCurrentProcessInfo the current process info instance
      */
-    virtual void CalculateLocalAccelerationContribution(MatrixType& rMassMatrix,
+    virtual void CalculateLocalAccelerationContribution(MatrixType& rLeftHandSideMatrix,
             VectorType& rRightHandSideVector, const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
     /**
-     * Calculate Damp matrix and add velocity contribution to RHS
-     * @param rDampingMatrix the velocity-proportional "damping" matrix
-     * @param rRightHandSideVector the condition right hand side matrix
+     * Calculate the contribution of the inertial terms to the RHS and the masss matrix,
+     * which is the linearization of the additional contribution against the acceleration.
+     * In the case that the mass matrix depends on the primal variable, e.g., displacement,
+     * the mass induced stiffness matrix shall be computed. The general mass model is
+     * assumed as f_inert = f_inert(u, udd). In structural dynamics, it is f_inert = M(u) x udd.
+     * @param rMassMatrix the linearizarion of inertial forces against the acceleration
+     * @param rMassInducedStiffnessMatrix the linearizarion of inertial forces against the displacement
+     * @param rRightHandSideVector the conditional right hand side matrix
+     * @param rCurrentProcessInfo the current process info instance
+     */
+    virtual void CalculateLocalAccelerationContribution(MatrixType& rMassMatrix,
+            MatrixType& rMassInducedStiffnessMatrix,
+            VectorType& rRightHandSideVector,
+            const ProcessInfo& rCurrentProcessInfo)
+    {
+    }
+
+    /**
+     * Calculate the contribution of the damping terms to the RHS and LHS.
+     * The general damping model is assumed as f_vis = f_vis(u, ud).
+     * In structural dynamics, it is f_vis = C(u, ud) x ud.
+     * The contribution to the LHS is considerred as total contribution from both
+     * the damping matrix and the damping-induced stiffness.
+     * @param rLeftHandSideMatrix the left hand side matrix
+     * @param rRightHandSideVector the conditional right hand side vector
+     * @param rCurrentProcessInfo the current process info instance
+     */
+    virtual void CalculateLocalVelocityContribution(MatrixType& rLeftHandSideMatrix,
+            VectorType& rRightHandSideVector, const ProcessInfo& rCurrentProcessInfo)
+    {
+    }
+
+    /**
+     * Calculate the contribution of the damping terms to the RHS and the damping matrix,
+     * which is the linearization of the additional contribution against the velocity.
+     * In the case that the damping matrix depends on the primal variable, e.g., displacement,
+     * the damping induced stiffness matrix shall be computed. The general damping model is
+     * assumed as f_vis = f_vis(u, ud). In structural dynamics, it is f_vis = C(u, ud) x ud.
+     * @param rDampingMatrix the linearizarion of damping forces against the velocity
+     * @param rDampingInducedStiffnessMatrix the linearizarion of damping forces against the displacement
+     * @param rRightHandSideVector the conditional right hand side matrix
      * @param rCurrentProcessInfo the current process info instance
      */
     virtual void CalculateLocalVelocityContribution(MatrixType& rDampingMatrix,
-            VectorType& rRightHandSideVector, const ProcessInfo& rCurrentProcessInfo)
+            MatrixType& rDampingInducedStiffnessMatrix,
+            VectorType& rRightHandSideVector,
+            const ProcessInfo& rCurrentProcessInfo)
     {
     }
 
