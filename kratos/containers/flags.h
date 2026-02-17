@@ -110,7 +110,7 @@ public:
         Flag28 = BlockType(1) << 28,
         Flag29 = BlockType(1) << 29,
 
-        Flag30 = BlockType(1) << 30//,
+        Flag30 = BlockType(1) << 30 //,
     };
 
     ///@}
@@ -518,6 +518,7 @@ private:
         rSerializer.load("IsDefined",  mIsDefined);
         rSerializer.load("Flags",  mFlags);
     }
+
     ///@}
     ///@name Private  Access
     ///@{
@@ -541,6 +542,8 @@ private:
 ///@name Type Definitions
 ///@{
 
+template<> struct DataTypeToString<Flags> { static inline constexpr const char* Get() {return "Flags";} };
+
 ///@}
 ///@name Input and output
 ///@{
@@ -562,9 +565,8 @@ inline std::ostream& operator << (std::ostream& rOStream,
 
     return rOStream;
 }
-///@}
 
-template<> struct DataTypeToString<Flags> { static inline constexpr const char* Get() {return "Flags";} };
+///@}
 
 }  // namespace Kratos.
 
