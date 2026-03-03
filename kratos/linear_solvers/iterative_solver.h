@@ -206,7 +206,7 @@ public:
             @param rX. Solution vector. it's also the initial guess for iterative linear solvers.
             @param rB. Right hand side vector.
             */
-    virtual void InitializeSolutionStep (SparseMatrixType& rA, VectorType& rX, VectorType& rB)
+    void InitializeSolutionStep (SparseMatrixType& rA, VectorType& rX, VectorType& rB) override
     {
         GetPreconditioner()->InitializeSolutionStep(rA,rX,rB);
     }
@@ -217,7 +217,7 @@ public:
     @param rX. Solution vector. it's also the initial guess for iterative linear solvers.
     @param rB. Right hand side vector.
     */
-    virtual void FinalizeSolutionStep (SparseMatrixType& rA, VectorType& rX, VectorType& rB)
+    void FinalizeSolutionStep (SparseMatrixType& rA, VectorType& rX, VectorType& rB) override
     {
         GetPreconditioner()->FinalizeSolutionStep(rA,rX,rB);
     }
@@ -226,7 +226,7 @@ public:
      * Clear is designed to leave the solver object as if newly created.
      * After a clear a new Initialize is needed
      */
-    virtual void Clear()
+    void Clear() override
     {
         GetPreconditioner()->Clear();
     }
@@ -237,7 +237,7 @@ public:
      * which require knowledge on the spatial position of the nodes associated to a given dof.
      * This function tells if the solver requires such data
      */
-    virtual bool AdditionalPhysicalDataIsNeeded()
+    bool AdditionalPhysicalDataIsNeeded() override
     {
         if (GetPreconditioner()->AdditionalPhysicalDataIsNeeded())
             return true;
@@ -257,7 +257,7 @@ public:
         VectorType& rB,
         typename ModelPartType::DofsArrayType& rdof_set,
         ModelPartType& r_model_part
-    )
+    ) override
     {
         if (GetPreconditioner()->AdditionalPhysicalDataIsNeeded())
             GetPreconditioner()->ProvideAdditionalData(rA,rX,rB,rdof_set,r_model_part);
