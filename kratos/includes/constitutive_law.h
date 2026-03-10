@@ -301,17 +301,17 @@ public:
        * Copy Constructor.
        */
       Parameters (const Parameters & rNewParameters)
-        :mOptions(rNewParameters.mOptions)
-        ,mDeterminantF(rNewParameters.mDeterminantF)
-        ,mpStrainVector(rNewParameters.mpStrainVector)
-        ,mpStressVector(rNewParameters.mpStressVector)
-        ,mpShapeFunctionsValues(rNewParameters.mpShapeFunctionsValues)
-        ,mpShapeFunctionsDerivatives(rNewParameters.mpShapeFunctionsDerivatives)
-        ,mpDeformationGradientF(rNewParameters.mpDeformationGradientF)
-        ,mpConstitutiveMatrix(rNewParameters.mpConstitutiveMatrix)
-        ,mpCurrentProcessInfo(rNewParameters.mpCurrentProcessInfo)
-        ,mpMaterialProperties(rNewParameters.mpMaterialProperties)
-        ,mpElementGeometry(rNewParameters.mpElementGeometry)
+      : mOptions(rNewParameters.mOptions)
+      , mDeterminantF(rNewParameters.mDeterminantF)
+      , mpStrainVector(rNewParameters.mpStrainVector)
+      , mpStressVector(rNewParameters.mpStressVector)
+      , mpShapeFunctionsValues(rNewParameters.mpShapeFunctionsValues)
+      , mpShapeFunctionsDerivatives(rNewParameters.mpShapeFunctionsDerivatives)
+      , mpDeformationGradientF(rNewParameters.mpDeformationGradientF)
+      , mpConstitutiveMatrix(rNewParameters.mpConstitutiveMatrix)
+      , mpCurrentProcessInfo(rNewParameters.mpCurrentProcessInfo)
+      , mpMaterialProperties(rNewParameters.mpMaterialProperties)
+      , mpElementGeometry(rNewParameters.mpElementGeometry)
       {
       }
 
@@ -515,7 +515,7 @@ public:
      * @return The working space dimension of the current constitutive law
      * @note This function HAS TO BE IMPLEMENTED by any derived class
      */
-    virtual SizeType WorkingSpaceDimension();
+    virtual SizeType WorkingSpaceDimension() const;
 
     /**
      * @return The size of the strain vector of the current constitutive law
@@ -528,35 +528,35 @@ public:
      * @param rThisVariable the variable to be checked for
      * @return true if the variable is defined in the constitutive law
      */
-    virtual bool Has(const Variable<bool>& rThisVariable);
+    virtual bool Has(const Variable<bool>& rThisVariable) const;
 
     /**
      * @brief Returns whether this constitutive Law has specified variable (integer)
      * @param rThisVariable the variable to be checked for
      * @return true if the variable is defined in the constitutive law
      */
-    virtual bool Has(const Variable<int>& rThisVariable);
+    virtual bool Has(const Variable<int>& rThisVariable) const;
 
     /**
      * @brief Returns whether this constitutive Law has specified variable (DataType)
      * @param rThisVariable the variable to be checked for
      * @return true if the variable is defined in the constitutive law
      */
-    virtual bool Has(const Variable<DataType>& rThisVariable);
+    virtual bool Has(const Variable<DataType>& rThisVariable) const;
 
     /**
      * @brief Returns whether this constitutive Law has specified variable (Vector)
      * @param rThisVariable the variable to be checked for
      * @return true if the variable is defined in the constitutive law
      */
-    virtual bool Has(const Variable<VectorType>& rThisVariable);
+    virtual bool Has(const Variable<VectorType>& rThisVariable) const;
 
     /**
      * @brief Returns whether this constitutive Law has specified variable (Matrix)
      * @param rThisVariable the variable to be checked for
      * @return true if the variable is defined in the constitutive law
      */
-    virtual bool Has(const Variable<MatrixType>& rThisVariable);
+    virtual bool Has(const Variable<MatrixType>& rThisVariable) const;
 
     /**
      * @brief Returns whether this constitutive Law has specified variable (array of 3 components)
@@ -564,7 +564,7 @@ public:
      * @return true if the variable is defined in the constitutive law
      * @note Fixed size array of 3 DataTypes (e.g. for 2D stresses, plastic strains, ...)
      */
-    virtual bool Has(const Variable<array_1d<DataType, 3 > >& rThisVariable);
+    virtual bool Has(const Variable<array_1d<DataType, 3 > >& rThisVariable) const;
 
     /**
      * @brief Returns whether this constitutive Law has specified variable (array of 6 components)
@@ -572,7 +572,7 @@ public:
      * @return true if the variable is defined in the constitutive law
      * @note Fixed size array of 6 DataTypes (e.g. for stresses, plastic strains, ...)
      */
-    virtual bool Has(const Variable<array_1d<DataType, 6 > >& rThisVariable);
+    virtual bool Has(const Variable<array_1d<DataType, 6 > >& rThisVariable) const;
 
     /**
      * @brief Returns the value of a specified variable (boolean)
@@ -627,7 +627,7 @@ public:
      * @return rValue output: the value of the specified variable
      */
     virtual array_1d<DataType, 3 > & GetValue(const Variable<array_1d<DataType, 3 > >& rThisVariable,
-                                            array_1d<DataType, 3 > & rValue);
+                                              array_1d<DataType, 3 > & rValue);
 
     /**
      * @brief Returns the value of a specified variable (array of 6 components)
@@ -636,7 +636,7 @@ public:
      * @return the value of the specified variable
      */
     virtual array_1d<DataType, 6 > & GetValue(const Variable<array_1d<DataType, 6 > >& rThisVariable,
-                                            array_1d<DataType, 6 > & rValue);
+                                              array_1d<DataType, 6 > & rValue);
 
     /**
      * @brief Sets the value of a specified variable (boolean)
@@ -800,26 +800,26 @@ public:
      * NOTE: this has to be implemented by each constitutive model. Returns false in base class since
      * no valid implementation is contained here.
      */
-    virtual bool ValidateInput(const Properties& rMaterialProperties);
+    virtual bool ValidateInput(const Properties& rMaterialProperties) const;
 
     /**
      * returns the expected strain measure of this constitutive law (by default linear strains)
      * @return the expected strain measure
      */
-    virtual StrainMeasure GetStrainMeasure();
+    virtual StrainMeasure GetStrainMeasure() const;
 
     /**
      * returns the stress measure of this constitutive law (by default 1st Piola-Kirchhoff stress in voigt notation)
      * @return the expected stress measure
      */
-    virtual StressMeasure GetStressMeasure();
+    virtual StressMeasure GetStressMeasure() const;
 
     /**
      * returns whether this constitutive model is formulated in incremental strains/stresses
      * NOTE: by default, all constitutive models should be formulated in total strains
      * @return true, if formulated in incremental strains/stresses, false otherwise
      */
-    virtual bool IsIncremental();
+    virtual bool IsIncremental() const;
 
     /**
      * This is to be called at the very beginning of the calculation
@@ -859,8 +859,6 @@ public:
                                       const Vector& rShapeFunctionsValues,
                                       const ProcessInfo& rCurrentProcessInfo);
 
-
-
     /**
      * to be called at the beginning of each step iteration
      * (e.g. from Element::InitializeNonLinearIteration)
@@ -873,8 +871,6 @@ public:
                           const GeometryType& rElementGeometry,
                           const Vector& rShapeFunctionsValues,
                           const ProcessInfo& rCurrentProcessInfo);
-
-
 
     /**
      * to be called at the end of each step iteration
@@ -889,8 +885,6 @@ public:
                         const Vector& rShapeFunctionsValues,
                         const ProcessInfo& rCurrentProcessInfo);
 
-
-
     /**
      * Computes the material response in terms of stresses and constitutive tensor
      * @see Parameters
@@ -898,14 +892,11 @@ public:
      */
     void CalculateMaterialResponse (Parameters& rValues,const StressMeasure& rStressMeasure);
 
-
-
     /**
      * Computes the material response in terms of 1st Piola-Kirchhoff stresses and constitutive tensor
      * @see Parameters
      */
     virtual void CalculateMaterialResponsePK1 (Parameters& rValues);
-
 
     /**
      * Computes the material response in terms of 2nd Piola-Kirchhoff stresses and constitutive tensor
@@ -913,13 +904,11 @@ public:
      */
     virtual void CalculateMaterialResponsePK2 (Parameters& rValues);
 
-
     /**
      * Computes the material response in terms of Kirchhoff stresses and constitutive tensor
      * @see Parameters
      */
     virtual void CalculateMaterialResponseKirchhoff (Parameters& rValues);
-
 
     /**
      * Computes the material response in terms of Cauchy stresses and constitutive tensor
@@ -930,7 +919,7 @@ public:
     /**
      * @brief If the CL requires to initialize the material response, called by the element in InitializeSolutionStep.
      */
-    virtual bool RequiresInitializeMaterialResponse()
+    virtual bool RequiresInitializeMaterialResponse() const
     {
         return true;
     }
@@ -952,34 +941,30 @@ public:
      * Initialize the material response in terms of 1st Piola-Kirchhoff stresses
      * @see Parameters
      */
-
     virtual void InitializeMaterialResponsePK1 (Parameters& rValues);
 
     /**
      * Initialize the material response in terms of 2nd Piola-Kirchhoff stresses
      * @see Parameters
      */
-
     virtual void InitializeMaterialResponsePK2 (Parameters& rValues);
 
     /**
      * Initialize the material response in terms of Kirchhoff stresses
      * @see Parameters
      */
-
     virtual void InitializeMaterialResponseKirchhoff (Parameters& rValues);
 
     /**
      * Initialize the material response in terms of Cauchy stresses
      * @see Parameters
      */
-
     virtual void InitializeMaterialResponseCauchy (Parameters& rValues);
 
     /**
      * @brief If the CL requires to finalize the material response, called by the element in FinalizeSolutionStep.
      */
-    virtual bool RequiresFinalizeMaterialResponse()
+    virtual bool RequiresFinalizeMaterialResponse() const
     {
         return true;
     }
@@ -991,33 +976,28 @@ public:
      */
     void FinalizeMaterialResponse (Parameters& rValues,const StressMeasure& rStressMeasure);
 
-
     /**
      * Finalize the material response in terms of 1st Piola-Kirchhoff stresses
      * @see Parameters
      */
-
     virtual void FinalizeMaterialResponsePK1 (Parameters& rValues);
 
     /**
      * Finalize the material response in terms of 2nd Piola-Kirchhoff stresses
      * @see Parameters
      */
-
     virtual void FinalizeMaterialResponsePK2 (Parameters& rValues);
 
     /**
      * Finalize the material response in terms of Kirchhoff stresses
      * @see Parameters
      */
-
     virtual void FinalizeMaterialResponseKirchhoff (Parameters& rValues);
 
     /**
      * Finalize the material response in terms of Cauchy stresses
      * @see Parameters
      */
-
     virtual void FinalizeMaterialResponseCauchy (Parameters& rValues);
 
     /**
@@ -1056,7 +1036,7 @@ public:
     virtual VectorType& TransformStrains (VectorType& rStrainVector,
                                           const MatrixType &rF,
                                           StrainMeasure rStrainInitial,
-                                          StrainMeasure rStrainFinal);
+                                          StrainMeasure rStrainFinal) const;
 
     /**
      * Methods to transform stress Matrices:
@@ -1070,7 +1050,7 @@ public:
                                            const MatrixType &rF,
                                            const DataType &rdetF,
                                            StressMeasure rStressInitial,
-                                           StressMeasure rStressFinal);
+                                           StressMeasure rStressFinal) const;
 
     /**
      * Methods to transform stress Vectors:
@@ -1084,7 +1064,7 @@ public:
                                            const MatrixType &rF,
                                            const DataType &rdetF,
                                            StressMeasure rStressInitial,
-                                           StressMeasure rStressFinal);
+                                           StressMeasure rStressFinal) const;
 
     /**
      * Methods to transform stress Vectors specialized with the initial stress Measure PK1:
@@ -1096,7 +1076,7 @@ public:
     VectorType& TransformPK1Stresses (VectorType& rStressVector,
                                       const MatrixType &rF,
                                       const DataType &rdetF,
-                                      StressMeasure rStressFinal);
+                                      StressMeasure rStressFinal) const;
 
     /**
      * Methods to transform stress Vectors specialized with the initial stress Measure PK2:
@@ -1108,7 +1088,7 @@ public:
     VectorType& TransformPK2Stresses (VectorType& rStressVector,
                                       const MatrixType &rF,
                                       const DataType &rdetF,
-                                      StressMeasure rStressFinal);
+                                      StressMeasure rStressFinal) const;
 
     /**
      * Methods to transform stress Vectors specialized with the initial stress Measure Kirchhoff:
@@ -1120,7 +1100,7 @@ public:
     VectorType& TransformKirchhoffStresses (VectorType& rStressVector,
                                             const MatrixType &rF,
                                             const DataType &rdetF,
-                                            StressMeasure rStressFinal);
+                                            StressMeasure rStressFinal) const;
 
     /**
      * Methods to transform stress Vectors specialized with the initial stress Measure Cauchy:
@@ -1132,7 +1112,7 @@ public:
     VectorType& TransformCauchyStresses (VectorType& rStressVector,
                                          const MatrixType &rF,
                                          const DataType &rdetF,
-                                         StressMeasure rStressFinal);
+                                         StressMeasure rStressFinal) const;
 
     /**
      * Methods to transform Constitutive Matrices:
@@ -1143,18 +1123,18 @@ public:
     /**
      * This method performs a pull-back of the constitutive matrix
      */
-    void PullBackConstitutiveMatrix ( MatrixType& rConstitutiveMatrix, const MatrixType& rF );
+    void PullBackConstitutiveMatrix ( MatrixType& rConstitutiveMatrix, const MatrixType& rF ) const;
 
     /**
      * This method performs a push-forward of the constitutive matrix
      */
-    void PushForwardConstitutiveMatrix ( MatrixType& rConstitutiveMatrix, const MatrixType& rF );
+    void PushForwardConstitutiveMatrix ( MatrixType& rConstitutiveMatrix, const MatrixType& rF ) const;
 
     /**
      * This function is designed to be called once to check compatibility with element
      * @param rFeatures
      */
-    virtual void GetLawFeatures(Features& rFeatures);
+    virtual void GetLawFeatures(Features& rFeatures) const;
 
     /**
      * This function is designed to be called once to perform all the checks needed
@@ -1175,7 +1155,6 @@ public:
                                          const MatrixType& F,
                                          const VectorType& PK2_StressVector,
                                          const VectorType& GreenLagrangeStrainVector);
-
 
     //*** OUTDATED METHODS: ***//
 
@@ -1306,7 +1285,6 @@ public:
       rOStream << "ConstitutiveLaw has no data";
     }
 
-
     ///@}
     ///@name Friends
     ///@{
@@ -1330,32 +1308,32 @@ protected:
      * This method performs a contra-variant push-forward between to tensors
      * i.e. 2nd PK stress to Kirchhoff stress
      */
-    void ContraVariantPushForward( MatrixType& rMatrix, const MatrixType& rF );
+    void ContraVariantPushForward( MatrixType& rMatrix, const MatrixType& rF ) const;
 
     /**
      * This method performs a contra-variant pull-back between to tensors
      * i.e. Kirchhoff stress to 2nd PK stress
      */
-    void ContraVariantPullBack( MatrixType& rMatrix, const MatrixType& rF );
+    void ContraVariantPullBack( MatrixType& rMatrix, const MatrixType& rF ) const;
 
     /**
      * This method performs a co-variant push-forward between to tensors
      * i.e. Green-Lagrange strain to Almansi strain
      */
-    void CoVariantPushForward( MatrixType& rMatrix, const MatrixType& rF );
+    void CoVariantPushForward( MatrixType& rMatrix, const MatrixType& rF ) const;
 
     /**
      * This method performs a co-variant pull-back between to tensors
      * i.e. Almansi strain to Green-Lagrange strain
      */
-    void CoVariantPullBack( MatrixType& rMatrix, const MatrixType& rF );
+    void CoVariantPullBack( MatrixType& rMatrix, const MatrixType& rF ) const;
 
     /**
      * This method performs a pull-back or a push-forward between two constitutive matrices
      */
     void ConstitutiveMatrixTransformation ( MatrixType& rConstitutiveMatrix,
                                             const MatrixType& rOriginalConstitutiveMatrix,
-                                            const MatrixType& rF );
+                                            const MatrixType& rF ) const;
 
 
     /**
@@ -1365,7 +1343,7 @@ protected:
                                              const MatrixType & rConstitutiveMatrix,
                                              const MatrixType & rF,
                                              const unsigned int a, const unsigned int b,
-                                             const unsigned int c, const unsigned int d);
+                                             const unsigned int c, const unsigned int d) const;
 
     /**
      * This method gets the constitutive tensor components
@@ -1374,7 +1352,7 @@ protected:
     DataType& GetConstitutiveComponent(DataType & rCabcd,
                                        const MatrixType& rConstitutiveMatrix,
                                        const unsigned int a, const unsigned int b,
-                                       const unsigned int c, const unsigned int d);
+                                       const unsigned int c, const unsigned int d) const;
 
 
     ///@}
