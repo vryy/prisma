@@ -471,30 +471,12 @@ public:
     /**
      * Returns whether given arbitrary point is inside the Geometry
      */
-    bool IsInside( const CoordinatesArrayType& rPoint, LocalCoordinatesArrayType& rResult ) const override
+    bool IsInside( const LocalCoordinatesArrayType& rPoint, const ValueType tol ) const override
     {
-        this->PointLocalCoordinates( rResult, rPoint );
-
-        if ( rResult[0] >= 0.0 - 1.0e-8 && rResult[0] <= 1.0 + 1.0e-8 )
-            if ( rResult[1] >= 0.0 - 1.0e-8 && rResult[1] <= 1.0 + 1.0e-8 )
-                if ( rResult[2] >= 0.0 - 1.0e-8 && rResult[2] <= 1.0 + 1.0e-8 )
-                    if ((( 1.0 - ( rResult[0] + rResult[1] ) ) >= 0.0 - 1.0e-8 ) && (( 1.0 - ( rResult[0] + rResult[1] ) ) <= 1.0 + 1.0e-8 ) )
-                        return true;
-
-        return false;
-    }
-
-    /**
-     * Returns whether given arbitrary point is inside the Geometry
-     */
-    bool IsInside( const CoordinatesArrayType& rPoint, LocalCoordinatesArrayType& rResult, const MatrixType& DeltaPosition ) const override
-    {
-        this->PointLocalCoordinates( rResult, rPoint, DeltaPosition );
-
-        if ( rResult[0] >= 0.0 - 1.0e-8 && rResult[0] <= 1.0 + 1.0e-8 )
-            if ( rResult[1] >= 0.0 - 1.0e-8 && rResult[1] <= 1.0 + 1.0e-8 )
-                if ( rResult[2] >= 0.0 - 1.0e-8 && rResult[2] <= 1.0 + 1.0e-8 )
-                    if ((( 1.0 - ( rResult[0] + rResult[1] ) ) >= 0.0 - 1.0e-8 ) && (( 1.0 - ( rResult[0] + rResult[1] ) ) <= 1.0 + 1.0e-8 ) )
+        if ( rPoint[0] >= 0.0 - tol && rPoint[0] <= 1.0 + tol )
+            if ( rPoint[1] >= 0.0 - tol && rPoint[1] <= 1.0 + tol )
+                if ( rPoint[2] >= 0.0 - tol && rPoint[2] <= 1.0 + tol )
+                    if ((( 1.0 - ( rPoint[0] + rPoint[1] ) ) >= 0.0 - tol ) && (( 1.0 - ( rPoint[0] + rPoint[1] ) ) <= 1.0 + tol ) )
                         return true;
 
         return false;

@@ -333,9 +333,9 @@ public:
     }
 
     //lumping factors for the calculation of the lumped mass matrix
-    virtual Vector& LumpingFactors( Vector& rResult ) const
+    Vector& LumpingFactors( Vector& rResult ) const override
     {
-	if(rResult.size() != 2)
+        if(rResult.size() != 2)
            rResult.resize( 2, false );
         rResult[0] = 0.5;
         rResult[1] = 0.5;
@@ -358,7 +358,7 @@ public:
     @see Volume()
     @see DomainSize()
     */
-    virtual DataType Length() const
+    DataType Length() const override
     {
         const TPointType& point0 = BaseType::GetPoint(0);
         const TPointType& point1 = BaseType::GetPoint(1);
@@ -382,11 +382,10 @@ public:
     @see Volume()
     @see DomainSize()
     */
-    virtual DataType Area() const
+    DataType Area() const override
     {
         return 0.00;
     }
-
 
     /** This method calculate and return length, area or volume of
     this geometry depending to it's dimension. For one dimensional
@@ -398,7 +397,7 @@ public:
     @see Area()
     @see Volume()
     */
-    virtual DataType DomainSize() const
+    DataType DomainSize() const override
     {
         const TPointType& point0 = BaseType::GetPoint(0);
         const TPointType& point1 = BaseType::GetPoint(1);
@@ -410,7 +409,6 @@ public:
 
         return sqrt( length );
     }
-
 
     ///@}
     ///@name Jacobian

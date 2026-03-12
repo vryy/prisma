@@ -541,17 +541,17 @@ public:
     /**
      * Returns whether given local point is inside the Geometry
      */
-    bool IsInside( const LocalCoordinatesArrayType& rPoint ) const override
+    bool IsInside( const LocalCoordinatesArrayType& rPoint, const ValueType tol ) const override
     {
-        if ( std::abs( rPoint[0] ) < 1 + 1.0e-8 )
-            if ( std::abs( rPoint[1] ) < 1 + 1.0e-8 )
+        if ( std::abs( rPoint[0] ) < 1 + tol )
+            if ( std::abs( rPoint[1] ) < 1 + tol )
                 return true;
 
         return false;
     }
 
     LocalCoordinatesArrayType& PointLocalCoordinates( LocalCoordinatesArrayType& rResult, const CoordinatesArrayType& rPoint,
-        bool force_error = true ) const override
+        const bool force_error = true, const ValueType tol = 1.0e-8 ) const override
     {
         BoundedMatrix<DataType,3,4> X;
         BoundedMatrix<DataType,3,2> DN;
@@ -562,7 +562,6 @@ public:
             X(2,i ) = this->GetPoint( i ).Z();
         }
 
-        ValueType tol = 1.0e-8;
         int maxiter = 1000;
 
         MatrixType J = ZeroMatrixType( 2, 2 );
@@ -633,7 +632,7 @@ public:
     }
 
     LocalCoordinatesArrayType& PointLocalCoordinates( LocalCoordinatesArrayType& rResult, const CoordinatesArrayType& rPoint, const MatrixType& DeltaPosition,
-        bool force_error = true ) const override
+        const bool force_error = true, const ValueType tol = 1.0e-8 ) const override
     {
         BoundedMatrix<DataType,3,4> X;
         BoundedMatrix<DataType,3,2> DN;
@@ -644,7 +643,6 @@ public:
             X(2,i ) = this->GetPoint( i ).Z() - DeltaPosition( i, 2 );
         }
 
-        ValueType tol = 1.0e-8;
         int maxiter = 1000;
 
         MatrixType J = ZeroMatrixType( 2, 2 );

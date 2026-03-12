@@ -444,10 +444,10 @@ public:
     /**
      * Returns whether given local point is inside the Geometry
      */
-    bool IsInside( const LocalCoordinatesArrayType& rPoint ) const override
+    bool IsInside( const LocalCoordinatesArrayType& rPoint, const ValueType tol ) const override
     {
-        if ( std::abs( rPoint[0] ) < 1 + 1.0e-8 )
-            if ( std::abs( rPoint[1] ) < 1 + 1.0e-8 )
+        if ( std::abs( rPoint[0] ) < 1 + tol )
+            if ( std::abs( rPoint[1] ) < 1 + tol )
                 return true;
 
         return false;

@@ -358,15 +358,18 @@ public:
     */
     DataType Length() const override
     {
-        const TPointType& point0 = BaseType::GetPoint(0);
-        const TPointType& point1 = BaseType::GetPoint(2);
-        const DataType lx = point0.X() - point1.X();
-        const DataType ly = point0.Y() - point1.Y();
-        const DataType lz = point0.Z() - point1.Z();
+        JacobiansType J;
+        this->Jacobian( J, msGeometryData.DefaultIntegrationMethod() );
+        const IntegrationPointsArrayType& integration_points = this->IntegrationPoints( msGeometryData.DefaultIntegrationMethod() );
 
-        const DataType length = lx * lx + ly * ly + lz * lz;
+        DataType length = 0.00;
+        for ( unsigned int i = 0; i < integration_points.size(); i++ )
+        {
+            length += sqrt(MathUtils<DataType>::Det(MatrixType(prod(trans(J[i]), J[i]))))
+                        * integration_points[i].Weight();
+        }
 
-        return sqrt( length );
+        return length;
     }
 
     /** This method calculate and return area or surface area of
@@ -398,23 +401,15 @@ public:
     */
     DataType DomainSize() const override
     {
-        const TPointType& point0 = BaseType::GetPoint(0);
-        const TPointType& point1 = BaseType::GetPoint(2);
-        const DataType lx = point0.X() - point1.X();
-        const DataType ly = point0.Y() - point1.Y();
-        const DataType lz = point0.Z() - point1.Z();
-
-        const DataType length = lx * lx + ly * ly + lz * lz;
-
-        return sqrt( length );
+        return Length();
     }
 
     /**
      * Returns whether given local point is inside the Geometry
      */
-    bool IsInside( const LocalCoordinatesArrayType& rPoint ) const override
+    bool IsInside( const LocalCoordinatesArrayType& rPoint, const ValueType tol ) const override
     {
-        if ( std::abs( rPoint[0] ) < 1 + 1.0e-8 )
+        if ( std::abs( rPoint[0] ) < 1 + tol )
             return true;
 
         return false;
@@ -545,16 +540,16 @@ public:
 
 
     /** EdgesNumber
-    @return SizeType containes number of this geometry edges.
+    @return SizeType contains number of this geometry edges.
     */
     SizeType EdgesNumber() const override
     {
-        return 2;
+        return 2; // TODO check
     }
 
     SizeType FacesNumber() const override
     {
-        return 2;
+        return 2; // TODO check
     }
 
     ///@}

@@ -780,7 +780,8 @@ public:
      * Returns the local coordinates of a given arbitrary point
      */
     virtual LocalCoordinatesArrayType& PointLocalCoordinates( LocalCoordinatesArrayType& rResult,
-            const CoordinatesArrayType& rPoint, bool force_error = true ) const
+            const CoordinatesArrayType& rPoint,
+            const bool force_error = true, const ValueType tol = 1.0e-8 ) const
     {
         if (this->WorkingSpaceDimension() != this->LocalSpaceDimension())
             KRATOS_ERROR << "Attention, the Point Local Coordinates must be specialized for the current geometry";
@@ -795,8 +796,6 @@ public:
         CoordinatesArrayType CurrentGlobalCoords( ZeroVectorType( 3 ) );
 
         //Newton iteration:
-        constexpr ValueType tol = 1.0e-8;
-
         constexpr int maxiter = 1000;
 
         constexpr ValueType max_norm_xi = 30.0;
@@ -857,7 +856,8 @@ public:
      * Returns the local coordinates of a given arbitrary point
      */
     virtual LocalCoordinatesArrayType& PointLocalCoordinates( LocalCoordinatesArrayType& rResult,
-            const CoordinatesArrayType& rPoint, const MatrixType& DeltaPosition, bool force_error = true ) const
+            const CoordinatesArrayType& rPoint, const MatrixType& DeltaPosition,
+            const bool force_error = true, const ValueType tol = 1.0e-8 ) const
     {
         if (this->WorkingSpaceDimension() != this->LocalSpaceDimension())
             KRATOS_ERROR << "Attention, the Point Local Coordinates must be specialized for the current geometry";
@@ -872,8 +872,6 @@ public:
         CoordinatesArrayType CurrentGlobalCoords( ZeroVectorType( 3 ) );
 
         //Newton iteration:
-        constexpr ValueType tol = 1.0e-8;
-
         constexpr int maxiter = 1000;
 
         constexpr ValueType max_norm_xi = 30.0;
@@ -931,19 +929,27 @@ public:
     }
 
     /**
-     * Returns whether given local point is inside the Geometry
+     * Returns whether given local point is inside the Geometry with tolerance
      */
-    virtual bool IsInside( const LocalCoordinatesArrayType& rLocalPoint ) const
+    virtual bool IsInside( const LocalCoordinatesArrayType& rLocalPoint, const ValueType tol  ) const
     {
         KRATOS_ERROR << "Calling base class IsInside method instead of derived class one. Please check the definition of derived class.";
         return false;
     }
 
     /**
+     * Returns whether given local point is inside the Geometry
+     */
+    bool IsInside( const LocalCoordinatesArrayType& rLocalPoint ) const
+    {
+        return IsInside(rLocalPoint, 1.0e-8);
+    }
+
+    /**
      * Returns whether given arbitrary point is inside the Geometry and the respective
      * local point for the given global point
      */
-    virtual bool IsInside( const CoordinatesArrayType& rPoint, LocalCoordinatesArrayType& rResult ) const
+    bool IsInside( const CoordinatesArrayType& rPoint, LocalCoordinatesArrayType& rResult ) const
     {
         this->PointLocalCoordinates( rResult, rPoint, false );
 
@@ -954,7 +960,7 @@ public:
      * Returns whether given arbitrary point is inside the Geometry and the respective
      * local point for the given global point
      */
-    virtual bool IsInside( const CoordinatesArrayType& rPoint, LocalCoordinatesArrayType& rResult, const MatrixType& DeltaPosition ) const
+    bool IsInside( const CoordinatesArrayType& rPoint, LocalCoordinatesArrayType& rResult, const MatrixType& DeltaPosition ) const
     {
         this->PointLocalCoordinates( rResult, rPoint, DeltaPosition, false );
 
@@ -1811,7 +1817,6 @@ public:
     }
     #endif
 
-
     /** This method gives all non-zero shape functions values
     evaluated at the rCoordinates provided
 
@@ -1825,8 +1830,7 @@ public:
     @see ShapeFunctionsLocalGradients
     @see ShapeFunctionLocalGradient
     */
-
-    virtual Vector& ShapeFunctionsValues (Vector &rResults, const LocalCoordinatesArrayType& rCoordinates) const
+    virtual Vector& ShapeFunctionsValues( Vector &rResults, const LocalCoordinatesArrayType& rCoordinates ) const
     {
         if(rResults.size() != this->PointsNumber())
             rResults.resize(this->PointsNumber(), false);
@@ -1834,7 +1838,6 @@ public:
             rResults[i] = this->ShapeFunctionValue(i, rCoordinates);
         return rResults;
     }
-
 
     /** This method gives all shape functions values evaluated in all
     integration points of given integration method. There is no
