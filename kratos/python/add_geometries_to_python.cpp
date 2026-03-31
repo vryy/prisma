@@ -4,8 +4,8 @@
 //   _|\_\_|  \__,_|\__|\___/ ____/
 //                   Multi-Physics
 //
-//  License:		 BSD License
-//					 Kratos default license: kratos/license.txt
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Riccardo Rossi
 //
@@ -13,13 +13,11 @@
 // System includes
 
 // External includes
-#include <boost/python.hpp>
-
 
 // Project includes
-#include "includes/define.h"
+#include "includes/define_python.h"
+#include "includes/element.h"
 #include "geometries/point.h"
-#include "includes/node.h"
 #include "geometries/geometry.h"
 #include "geometries/triangle_2d_3.h"
 #include "python/add_geometries_to_python.h"
@@ -34,35 +32,40 @@ namespace Python
 {
 
 
-bool Geometry_IsInside1(Geometry<Node<3> >& rDummy, boost::python::list& point)
+template<class TGeometryType>
+bool Geometry_IsInside1(TGeometryType& rDummy, boost::python::list& point)
 {
-    Geometry<Node<3> >::CoordinatesArrayType Point;
+    typename TGeometryType::CoordinatesArrayType Point;
     Point[0] = boost::python::extract<double>(point[0]);
     Point[1] = boost::python::extract<double>(point[1]);
     Point[2] = boost::python::extract<double>(point[2]);
 
-    Geometry<Node<3> >::CoordinatesArrayType Result;
+    typename TGeometryType::CoordinatesArrayType Result;
     return rDummy.IsInside(Point, Result);
 }
 
-bool Geometry_IsInside2(Geometry<Node<3> >& rDummy, Geometry<Node<3> >::CoordinatesArrayType& rPoint)
+template<class TGeometryType>
+bool Geometry_IsInside2(TGeometryType& rDummy, typename TGeometryType::CoordinatesArrayType& rPoint)
 {
-    Geometry<Node<3> >::CoordinatesArrayType Result;
+    typename TGeometryType::CoordinatesArrayType Result;
     return rDummy.IsInside(rPoint, Result);
 }
 
 void  AddGeometriesToPython()
 {
 
-    typedef Geometry<Node<3> > GeometryType;
-    class_<GeometryType, GeometryType::Pointer >("Geometry", init<>())
-    .def(init< GeometryType::PointsArrayType& >())
+    typedef Element::GeometryType GeometryType;
+    typedef typename GeometryType::PointType NodeType;
+
+    class_<GeometryType, typename GeometryType::Pointer>("Geometry", init<>())
+    .def(init< typename GeometryType::PointsArrayType& >())
     // .def("Points", &ConstGetPoints)
-    .def("IsInside", &Geometry_IsInside1)
-    .def("IsInside", &Geometry_IsInside2)
+    .def("IsInside", &Geometry_IsInside1<GeometryType>)
+    .def("IsInside", &Geometry_IsInside2<GeometryType>)
+    .def("Center", &GeometryType::Center)
     ;
 
-    class_<Triangle2D3<Node<3> >, Triangle2D3<Node<3> >::Pointer, bases< GeometryType > >("Triangle2D3", init<Node<3>::Pointer, Node<3>::Pointer, Node<3>::Pointer>())
+    class_<Triangle2D3<NodeType>, Triangle2D3<NodeType>::Pointer, bases< GeometryType > >("Triangle2D3", init<NodeType::Pointer, NodeType::Pointer, NodeType::Pointer>())
     ;
 
 }

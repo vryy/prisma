@@ -679,17 +679,18 @@ public:
 
     @return PointType which is the calculated center of this geometry.
     */
-    virtual PointType Center() const
+    virtual CoordinatesArrayType Center() const
     {
         const SizeType points_number = this->size();
 
         if ( points_number == 0 )
             return PointType();
 
-        PointType result = ( *this )[0];
+        CoordinatesArrayType result;
 
+        noalias( result ) = ( *this )[0];
         for ( IndexType i = 1 ; i < points_number ; i++ )
-            result += ( *this )[i];
+            noalias( result) += ( *this )[i];
 
         DataType temp = 1.0 / static_cast<DataType>( points_number );
 
@@ -2283,28 +2284,10 @@ public:
             rOStream << std::endl;
         }
 
-        rOStream << "    Center\t : ";
-
-        Center().PrintData( rOStream );
-        rOStream << std::endl;
-        rOStream << std::endl;
+        rOStream << "    Center\t : " << Center() << std::endl;
         rOStream << "    Length\t : " << Length() << std::endl;
-        rOStream << "    Area\t : " << Area() << std::endl;
-        rOStream << "    Volume\t : " << Volume();
-//    for(unsigned int i = 0 ; i < mPoints.size() ; ++i)
-//      {
-//        rOStream << "    Point " << i+1 << "\t            : ";
-//        mPoints[i].PrintData(rOStream);
-//        rOStream << std::endl;
-//      }
-
-//    rOStream << "    Center\t            : ";
-//    Center().PrintData(rOStream);
-//    rOStream << std::endl;
-//    rOStream << std::endl;
-//    rOStream << "    Length                  : " << Length() << std::endl;
-//    rOStream << "    Area                    : " << Area() << std::endl;
-//    rOStream << "    Volume                  : " << Volume();
+        rOStream << "    Area\t : "   << Area()   << std::endl;
+        rOStream << "    Volume\t : " << Volume() << std::endl;
     }
 
     ///@}
