@@ -538,7 +538,7 @@ public:
 
     /** This method calculate and return Length or characteristic
     length of this geometry depending on the plane normal. This is
-    inspired by the crack band approach
+    inspired by the crack band approach.
 
     @return double value contains length or Characteristic
     length
@@ -2307,7 +2307,6 @@ public:
 //    rOStream << "    Volume                  : " << Volume();
     }
 
-
     ///@}
     ///@name Friends
     ///@{
@@ -2375,7 +2374,7 @@ private:
     ///@name Static Member Variables
     ///@{
 
-//    static const GeometryData msEmptyGeometryData;
+    // static const GeometryData msEmptyGeometryData;
 
     ///@}
     ///@name Member Variables
@@ -2392,13 +2391,11 @@ private:
     virtual void save( Serializer& rSerializer ) const
     {
         KRATOS_SERIALIZE_SAVE_BASE_CLASS( rSerializer, BaseType );
-//                 rSerializer.save( "Geometry Data", mpGeometryData );
     }
 
     virtual void load( Serializer& rSerializer )
     {
         KRATOS_SERIALIZE_LOAD_BASE_CLASS( rSerializer, BaseType );
-        //rSerializer.load( "Geometry Data", const_cast<GeometryData*>( mpGeometryData ) );
     }
 
     ///@}
@@ -2423,7 +2420,6 @@ private:
                              shape_functions_values,
                              shape_functions_local_gradients );
     }
-
 
     ///@}
     ///@name Private  Access
@@ -2498,10 +2494,6 @@ inline std::ostream& operator << ( std::ostream& rOStream,
 }
 
 ///@}
-
-//        template<class TPointType>
-// /*   const GeometryData Geometry<TPointType>::msEmptyGeometryData = GeometryData(TPointType::Dimension(), TPointType::Dimension(), TPointType::Dimension());  */
-//   const GeometryData Geometry<TPointType>::msEmptyGeometryData = Geometry<TPointType>::GenerateEmptyGeometryData();
 
 }  // namespace Kratos.
 

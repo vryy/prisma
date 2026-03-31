@@ -23,11 +23,11 @@
 
 /* Project includes */
 #include "includes/define.h"
-#include "solving_strategies/builder_and_solvers/builder_and_solver.h"
 #include "includes/model_part.h"
+#include "includes/kratos_flags.h"
+#include "solving_strategies/builder_and_solvers/builder_and_solver.h"
 #include "utilities/timer.h"
 #include "utilities/openmp_utils.h"
-#include "includes/kratos_flags.h"
 #include "utilities/sparse_matrix_multiplication_utility.h"
 
 

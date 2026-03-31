@@ -33,7 +33,6 @@ namespace Kratos
 namespace Python
 {
 
-const PointerVector< Node<3> >& ConstGetPoints( const Geometry<Node<3> >& geom ) { return geom.Points(); }
 
 bool Geometry_IsInside1(Geometry<Node<3> >& rDummy, boost::python::list& point)
 {
@@ -65,11 +64,6 @@ void  AddGeometriesToPython()
 
     class_<Triangle2D3<Node<3> >, Triangle2D3<Node<3> >::Pointer, bases< GeometryType > >("Triangle2D3", init<Node<3>::Pointer, Node<3>::Pointer, Node<3>::Pointer>())
     ;
-
-
-//     class_<GeometryType, GeometryType::Pointer, bases<PointerVector< Node<3> > > >("Geometry", init<>())
-//      .def(init< GeometryType::PointsArrayType& >())
-//      ;
 
 }
 
