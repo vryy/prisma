@@ -312,6 +312,8 @@ public:
     {
         KRATOS_TRY
 
+        int build_status = 0;
+
         double building_time_start = Timer::GetTime();
         Timer::Start("Build");
 
@@ -541,9 +543,9 @@ public:
 #endif
 
 #if _OPENMP >= 201307
-        #pragma omp parallel for reduction(sum:DiagonalSum) reduction(+:num_assembled_elements) reduction(+:num_computed_elements)
+        #pragma omp parallel for reduction(sum:DiagonalSum) reduction(+:num_assembled_elements) reduction(+:num_computed_elements) shared(build_status)
 #else
-        #pragma omp parallel for reduction(+:num_assembled_elements) reduction(+:num_computed_elements)
+        #pragma omp parallel for reduction(+:num_assembled_elements) reduction(+:num_computed_elements) shared(build_status)
 #endif
         for(int k = 0; k < number_of_threads; ++k)
         {
@@ -563,6 +565,8 @@ public:
             // assemble all elements
             for (typename ElementsContainerType::iterator it = it_begin; it != it_end; ++it)
             {
+                if (build_status < 0) continue; // do not do anything further if failure is detected
+
                 #ifdef MEASURE_TIME_CUT_CELL
                 if(it->GetValue(CUT_STATUS_var) == -1)
                     Timer::Start("Build_Cut_Element");
@@ -584,14 +588,12 @@ public:
 
                     if (std::isnan(norm_elem_k) || std::isnan(norm_elem_r))
                     {
-                        KRATOS_WATCH(norm_elem_k)
-                        KRATOS_WATCH(norm_elem_r)
-                        KRATOS_WATCH(LHS_Contribution)
-                        KRATOS_WATCH(RHS_Contribution)
-                        std::cout << "type of element: " << typeid((*it)).name() << std::endl;
-                        std::cout << "element Properties " << it->GetProperties().Id() << ": " << it->GetProperties() << std::endl;
-                        KRATOS_WATCH((*it))
-                        KRATOS_ERROR << "NaN is detected at element " << it->Id();
+                        std::cout << "WARNING!!!NaN is detected at element " << it->Id() << " at " << __FUNCTION__
+                                     << ", type: " << typeid((*it)).name()
+                                     << ", Properties " << it->GetProperties().Id()
+                                     << std::endl;
+                        build_status = -1;
+                        #pragma omp flush(build_status) // Force-push the update to all other threads
                     }
                     #endif
 
@@ -672,9 +674,9 @@ public:
         unsigned int num_assembled_conditions = 0;
 
 #if _OPENMP >= 201307
-        #pragma omp parallel for reduction(sum:DiagonalSum) reduction(+:num_assembled_conditions) reduction(+:num_computed_conditions)
+        #pragma omp parallel for reduction(sum:DiagonalSum) reduction(+:num_assembled_conditions) reduction(+:num_computed_conditions) shared(build_status)
 #else
-        #pragma omp parallel for reduction(+:num_assembled_conditions) reduction(+:num_computed_conditions)
+        #pragma omp parallel for reduction(+:num_assembled_conditions) reduction(+:num_computed_conditions) shared(build_status)
 #endif
         for(int k = 0; k < number_of_threads; ++k)
         {
@@ -692,15 +694,14 @@ public:
             // assemble all conditions
             for (typename ConditionsContainerType::iterator it = it_begin; it != it_end; ++it)
             {
+                if (build_status < 0) continue; // do not do anything further if failure is detected
+
                 if( !it->GetValue( IS_INACTIVE ) || it->Is( ACTIVE ) )
                 {
                     // std::cout << "Condition " << it->Id() << " is considerred, type: " << typeid((*it)).name() << std::endl;
                     //calculate conditional contribution
                     pScheme->CalculateSystemContributions(*it,LHS_Contribution,RHS_Contribution,EquationId,CurrentProcessInfo);
                     // std::cout << "Condition " << it->Id() << " is computed"
-                    //           << ", type: " << typeid((*it)).name()
-                    //           << ", rhs: " << norm_2(RHS_Contribution)
-                    //           << std::endl;
 
                     #ifdef DETECT_NAN_AT_BUILD
                     double norm_cond_k = norm_frobenius(LHS_Contribution);
@@ -708,12 +709,12 @@ public:
 
                     if (std::isnan(norm_cond_k) || std::isnan(norm_cond_r))
                     {
-                        KRATOS_WATCH(norm_cond_k)
-                        KRATOS_WATCH(norm_cond_r)
-                        std::cout << "type of condition: " << typeid((*it)).name() << std::endl;
-                        std::cout << "condition Properties " << it->GetProperties().Id() << ": " << it->GetProperties() << std::endl;
-                        KRATOS_WATCH((*it))
-                        KRATOS_ERROR << "NaN is detected at condition " << it->Id();
+                        std::cout << "WARNING!!!NaN is detected at condition " << it->Id() << " at " << __FUNCTION__
+                                     << ", type: " << typeid((*it)).name()
+                                     << ", Properties " << it->GetProperties().Id()
+                                     << std::endl;
+                        build_status = -2;
+                        #pragma omp flush(build_status) // Force-push the update to all other threads
                     }
                     #endif
 
@@ -914,6 +915,9 @@ public:
         MY_LOG_TRACE << "Build completed, mStepCounter = " << mStepCounter << ", mLocalCounter = " << mLocalCounter << std::endl;
         #endif
         ++mLocalCounter;
+
+        // set the build status flag
+        r_model_part.GetProcessInfo()[BUILD_STATUS] = build_status;
 
         KRATOS_CATCH("")
     }
@@ -1210,6 +1214,8 @@ public:
     {
         KRATOS_TRY
 
+        int build_status = 0;
+
         //Getting the Elements
         ElementsContainerType& pElements = r_model_part.Elements();
 
@@ -1265,7 +1271,7 @@ public:
         unsigned int num_assembled_elements = 0;
         unsigned int num_computed_elements = 0;
 
-        #pragma omp parallel for reduction(+:num_assembled_elements) reduction(+:num_computed_elements)
+        #pragma omp parallel for reduction(+:num_assembled_elements) reduction(+:num_computed_elements) shared(build_status)
         for(int k = 0; k < number_of_threads; ++k)
         {
             //contributions to the system
@@ -1280,6 +1286,8 @@ public:
             // assemble all elements
             for (typename ElementsContainerType::iterator it = it_begin; it != it_end; ++it)
             {
+                if (build_status < 0) continue;
+
                 if( !it->GetValue( IS_INACTIVE ) || it->Is( ACTIVE ) )
                 {
                     //calculate elemental Right Hand Side Contribution
@@ -1297,12 +1305,12 @@ public:
 
                     if (std::isnan(norm_elem_r))
                     {
-                        KRATOS_WATCH(norm_elem_r)
-                        KRATOS_WATCH(RHS_Contribution)
-                        std::cout << "type of element: " << typeid((*it)).name() << std::endl;
-                        std::cout << "element Properties " << it->GetProperties().Id() << ": " << it->GetProperties() << std::endl;
-                        KRATOS_WATCH((*it))
-                        KRATOS_ERROR << "NaN is detected at element " << it->Id();
+                        std::cout << "NaN is detected at element " << it->Id() << " at " << __FUNCTION__
+                                     << ", type: " << typeid((*it)).name()
+                                     << ", Properties " << it->GetProperties().Id()
+                                     << std::endl;
+                        build_status = -1;
+                        #pragma omp flush(build_status) // Force-push the update to all other threads
                     }
                     #endif
 
@@ -1328,7 +1336,7 @@ public:
         unsigned int num_assembled_conditions = 0;
         unsigned int num_computed_conditions = 0;
 
-        #pragma omp parallel for reduction(+:num_assembled_conditions) reduction(+:num_computed_conditions)
+        #pragma omp parallel for reduction(+:num_assembled_conditions) reduction(+:num_computed_conditions) shared(build_status)
         for(int k = 0; k < number_of_threads; ++k)
         {
             //contributions to the system
@@ -1343,15 +1351,12 @@ public:
             // assemble all elements
             for (typename ConditionsContainerType::iterator it = it_begin; it != it_end; ++it)
             {
+                if (build_status < 0) continue;
+
                 if( !it->GetValue( IS_INACTIVE ) || it->Is( ACTIVE ) )
                 {
                     //calculate conditional contribution
                     pScheme->CalculateRHSContribution(*it,RHS_Contribution,EquationId,CurrentProcessInfo);
-                    if (it->Id() == 7681)
-                        std::cout << "Condition " << it->Id() << " is computed"
-                                << ", type: " << typeid((*it)).name()
-                                << ", rhs: " << norm_2(RHS_Contribution)
-                                << std::endl;
 
                     //assemble the conditional contribution
                     AssembleRHS(b,RHS_Contribution,EquationId);
@@ -1361,12 +1366,12 @@ public:
 
                     if (std::isnan(norm_elem_r))
                     {
-                        KRATOS_WATCH(norm_elem_r)
-                        KRATOS_WATCH(RHS_Contribution)
-                        std::cout << "type of condition: " << typeid((*it)).name() << std::endl;
-                        std::cout << "condition Properties " << it->GetProperties().Id() << ": " << it->GetProperties() << std::endl;
-                        KRATOS_WATCH((*it))
-                        KRATOS_ERROR << "NaN is detected at condition " << it->Id();
+                        std::cout << "NaN is detected at condition " << it->Id() << " at " << __FUNCTION__
+                                     << ", type: " << typeid((*it)).name()
+                                     << ", Properties " << it->GetProperties().Id()
+                                     << std::endl;
+                        build_status = -2;
+                        #pragma omp flush(build_status) // Force-push the update to all other threads
                     }
                     #endif
 
@@ -1386,6 +1391,10 @@ public:
                   << ", computed: " << num_computed_conditions
                   << ", assembled: " << num_assembled_conditions << std::endl;
 #endif
+
+        // set the build status flag
+        r_model_part.GetProcessInfo()[BUILD_STATUS] = build_status;
+
         KRATOS_CATCH("")
     }
 

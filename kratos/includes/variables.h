@@ -44,6 +44,7 @@ namespace Kratos
 
     //ints
     KRATOS_DEFINE_VARIABLE( int, DOMAIN_SIZE )
+    KRATOS_DEFINE_VARIABLE( int, BUILD_STATUS )
 
     //for General kratos application:
     KRATOS_DEFINE_VARIABLE( int, LOAD_RESTART )
@@ -53,7 +54,6 @@ namespace Kratos
     //for Structural application
     KRATOS_DEFINE_VARIABLE( int, FIRST_TIME_STEP )
     KRATOS_DEFINE_VARIABLE( int, QUASI_STATIC_ANALYSIS )
-
 
     KRATOS_DEFINE_VARIABLE( int, NL_ITERATION_NUMBER )
     KRATOS_DEFINE_VARIABLE( int, PERIODIC_PAIR_INDEX )
