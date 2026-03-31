@@ -1603,24 +1603,27 @@ int ModelPartImpl<TNodeType>::Check(ProcessInfo& rCurrentProcessInfo) const
 
     int err = 0;
 
+    std::cout << "Checking " << NumberOfElements() << " elements:" << std::endl;
+
     Kratos::progress_display show_progress_elements( NumberOfElements() );
-    std::cout << "Checking elements:" << std::endl;
     for (ElementConstantIterator elem_iterator = ElementsBegin(); elem_iterator != ElementsEnd(); ++elem_iterator)
     {
         err = elem_iterator->Check(rCurrentProcessInfo);
         ++show_progress_elements;
     }
 
+    std::cout << "Checking " << NumberOfConditions() << " conditions:" << std::endl;
+
     Kratos::progress_display show_progress_conditions( NumberOfConditions() );
-    std::cout << "Checking conditions:" << std::endl;
     for (ConditionConstantIterator condition_iterator = ConditionsBegin(); condition_iterator != ConditionsEnd(); ++condition_iterator)
     {
         err = condition_iterator->Check(rCurrentProcessInfo);
         ++show_progress_conditions;
     }
 
+    std::cout << "Checking " << NumberOfMasterSlaveConstraints() << " master-slave constraints:" << std::endl;
+
     Kratos::progress_display show_progress_constraints( NumberOfMasterSlaveConstraints() );
-    std::cout << "Checking constraints:" << std::endl;
     for (MasterSlaveConstraintConstantIteratorType constraint_iterator = MasterSlaveConstraintsBegin();
             constraint_iterator != MasterSlaveConstraintsEnd(); ++constraint_iterator)
     {
