@@ -354,7 +354,74 @@ void ConstraintUtilities<TModelPartType>::PreComputeExplicitConstraintMassAndIne
 /***********************************************************************************/
 /***********************************************************************************/
 
+template<class TModelPartType>
+typename TModelPartType::MasterSlaveConstraintType::Pointer ConstraintUtilities<TModelPartType>::CreateLinearConstraint(
+        TModelPartType& rModelPart,
+        const std::string& r_constraint_name,
+        const typename TModelPartType::IndexType r_constraint_id,
+        typename TModelPartType::NodeType::Pointer pSlaveNode,
+        typename TModelPartType::NodeType::Pointer pMasterNode,
+        const std::vector<VariableData::Pointer>& rSlaveVariables,
+        const std::vector<VariableData::Pointer>& rMasterVariables,
+        const typename TModelPartType::MatrixType& r_relation_matrix,
+        const typename TModelPartType::VectorType& r_constant_vector,
+        const bool unique)
+{
+    pSlaveNode->Set(SLAVE);
+
+    typedef typename TModelPartType::DofType DofType;
+    typedef typename TModelPartType::DoubleVariableType DoubleVariableType;
+    typedef typename TModelPartType::VariableComponentType VariableComponentType;
+
+    std::vector<typename DofType::Pointer> slave_dofs(rSlaveVariables.size());
+    for (std::size_t i = 0; i < rSlaveVariables.size(); ++i)
+    {
+        if (typeid(*rSlaveVariables[i]) == typeid(DoubleVariableType))
+        {
+            typename DoubleVariableType::Pointer var = boost::dynamic_pointer_cast<DoubleVariableType>(rSlaveVariables[i]);
+            slave_dofs[i] = pSlaveNode->pGetDof(*var);
+        }
+        else if (typeid(*rSlaveVariables[i]) == typeid(VariableComponentType))
+        {
+            typename VariableComponentType::Pointer var = boost::dynamic_pointer_cast<VariableComponentType>(rSlaveVariables[i]);
+            slave_dofs[i] = pSlaveNode->pGetDof(*var);
+        }
+        else
+            KRATOS_ERROR << "The slave variable " << *rSlaveVariables[i] << " is not supported";
+    }
+
+    std::vector<typename DofType::Pointer> master_dofs(rMasterVariables.size());
+    for (std::size_t i = 0; i < rMasterVariables.size(); ++i)
+    {
+        if (typeid(*rMasterVariables[i]) == typeid(DoubleVariableType))
+        {
+            typename DoubleVariableType::Pointer var = boost::dynamic_pointer_cast<DoubleVariableType>(rMasterVariables[i]);
+            master_dofs[i] = pMasterNode->pGetDof(*var);
+        }
+        else if (typeid(*rMasterVariables[i]) == typeid(VariableComponentType))
+        {
+            typename VariableComponentType::Pointer var = boost::dynamic_pointer_cast<VariableComponentType>(rMasterVariables[i]);
+            master_dofs[i] = pMasterNode->pGetDof(*var);
+        }
+        else
+            KRATOS_ERROR << "The master variable " << *rMasterVariables[i] << " is not supported";
+    }
+
+    assert(r_constant_vector.size() == rSlaveVariables.size());
+    assert(r_relation_matrix.size1() == rSlaveVariables.size());
+    assert(r_relation_matrix.size2() == rMasterVariables.size());
+
+    if (unique)
+        return rModelPart.CreateNewMasterSlaveConstraint(r_constraint_name, r_constraint_id, master_dofs, slave_dofs, r_relation_matrix, r_constant_vector);
+    else
+        return rModelPart.CreateNewMasterSlaveConstraintNoUnique(r_constraint_name, r_constraint_id, master_dofs, slave_dofs, r_relation_matrix, r_constant_vector);
+}
+
+/***********************************************************************************/
+/***********************************************************************************/
+
 template class ConstraintUtilities<ModelPart>;
 template class ConstraintUtilities<ComplexModelPart>;
+template class ConstraintUtilities<GComplexModelPart>;
 
 } // namespace Kratos

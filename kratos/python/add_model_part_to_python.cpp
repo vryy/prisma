@@ -617,6 +617,26 @@ void CreateNewLinearMasterSlaveConstraint1(TModelPartType& rModelPart,
 }
 
 template<class TModelPartType>
+void CreateNewLinearMasterSlaveConstraint2(TModelPartType& rModelPart,
+    std::string ConstraintName,
+    typename TModelPartType::IndexType Id,
+    typename TModelPartType::NodeType::Pointer pSlaveNode,
+    typename TModelPartType::NodeType::Pointer pMasterNode,
+    const boost::python::list& py_slave_variables,
+    const boost::python::list& py_master_variables,
+    const typename TModelPartType::MatrixType& RelationMatrix,
+    const typename TModelPartType::VectorType& ConstantVector)
+{
+    std::vector<VariableData::Pointer> SlaveVariables;
+    std::vector<VariableData::Pointer> MasterVariables;
+
+    PythonUtils::Unpack<VariableData::Pointer>(py_slave_variables, SlaveVariables);
+    PythonUtils::Unpack<VariableData::Pointer>(py_master_variables, MasterVariables);
+
+    ConstraintUtilities<TModelPartType>::CreateLinearConstraint(rModelPart, ConstraintName, Id, pSlaveNode, pMasterNode, SlaveVariables, MasterVariables, RelationMatrix, ConstantVector);
+}
+
+template<class TModelPartType>
 typename TModelPartType::MasterSlaveConstraintContainerType::Pointer ModelPartGetMasterSlaveConstraints1(TModelPartType& rModelPart)
 {
     return rModelPart.pMasterSlaveConstraints();
@@ -975,7 +995,6 @@ void AddModelPartToPythonImpl(const std::string& Prefix)
     .def("GetLastElementId", &TModelPartType::GetLastElementId )
     .def("GetLastConditionId", &TModelPartType::GetLastConditionId )
     .def("GetLastConstraintId", &TModelPartType::GetLastConstraintId )
-
     .add_property("MasterSlaveConstraints", ModelPartGetMasterSlaveConstraints1<TModelPartType>)
     // .def("GetMasterSlaveConstraint", ModelPartGetMasterSlaveConstraint1<TModelPartType>)
     // .def("GetMasterSlaveConstraints", ModelPartGetMasterSlaveConstraints1<TModelPartType>)
@@ -992,6 +1011,7 @@ void AddModelPartToPythonImpl(const std::string& Prefix)
     .def("CreateNewMasterSlaveConstraint", CreateNewMasterSlaveConstraint3<TModelPartType>)
     .def("CreateNewLinearMasterSlaveConstraint", CreateNewLinearMasterSlaveConstraint1<TModelPartType, typename TModelPartType::VariableComponentType>)
     .def("CreateNewLinearMasterSlaveConstraint", CreateNewLinearMasterSlaveConstraint1<TModelPartType, typename TModelPartType::DoubleVariableType>)
+    .def("CreateNewLinearMasterSlaveConstraint", CreateNewLinearMasterSlaveConstraint2<TModelPartType>)
     .def(self_ns::str(self))
     ;
 

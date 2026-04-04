@@ -140,6 +140,27 @@ public:
     }
 
     /**
+     * Add a complex linear constraint to the model_part. The constraint is of type
+     *   [u11 u12] = T*[u21 u22 u23 ...] + c
+     * @param rModelPart the model_part to add the constraint
+     * @param pSlaveNode the slave node carrying the slave d.o.fs
+     * @param pMasterNode the master node carrying the master d.o.fs
+     * @param rVariable the variable representing the nodal d.o.f
+     * @param r_relation_matrix the relation matrix of size(1, number_of_master_nodes)
+     * @param r_constant_vector the constant vector of size 1
+     */
+    static typename MasterSlaveConstraintType::Pointer CreateLinearConstraint(TModelPartType& rModelPart,
+        const std::string& r_constraint_name,
+        const typename TModelPartType::IndexType r_constraint_id,
+        typename TModelPartType::NodeType::Pointer pSlaveNode,
+        typename TModelPartType::NodeType::Pointer pMasterNode,
+        const std::vector<VariableData::Pointer>& rSlaveVariables,
+        const std::vector<VariableData::Pointer>& rMasterVariables,
+        const typename TModelPartType::MatrixType& r_relation_matrix,
+        const typename TModelPartType::VectorType& r_constant_vector,
+        const bool unique = true);
+
+    /**
      * Print the values associated with the constraint
      */
     static void PrintConstraint(const MasterSlaveConstraintType& rConstraint)
