@@ -47,19 +47,14 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // System includes
 
 // External includes
-#include <boost/foreach.hpp>
-#include <boost/python.hpp>
-#include <boost/python/stl_iterator.hpp>
-#include <boost/python/operators.hpp>
-
-
 
 // Project includes
-#include "includes/define.h"
+#include "includes/define_python.h"
 #include "includes/model_part.h"
+#include "includes/process_info.h"
+#include "python/python_utils.h"
 #include "python/add_model_part_to_python.h"
 #include "python/pointer_vector_set_python_interface.h"
-#include "includes/process_info.h"
 #include "utilities/constraint_utilities.h"
 
 namespace Kratos
@@ -605,22 +600,18 @@ void AddMasterSlaveConstraintsByIds(TModelPartType& rModelPart, std::vector<type
 }
 
 template<class TModelPartType, typename TVariableType>
-void CreateNewLinearMasterSlaveConstraint(TModelPartType& rModelPart,
+void CreateNewLinearMasterSlaveConstraint1(TModelPartType& rModelPart,
     std::string ConstraintName,
     typename TModelPartType::IndexType Id,
     typename TModelPartType::NodeType::Pointer pSlaveNode,
-    boost::python::list py_master_nodes,
+    const boost::python::list& py_master_nodes,
     const TVariableType& rVariable,
     const typename TModelPartType::MatrixType& RelationMatrix,
     const typename TModelPartType::VectorType& ConstantVector)
 {
     std::vector<typename TModelPartType::NodeType::Pointer> pMasterNodes;
 
-    typedef boost::python::stl_input_iterator<typename TModelPartType::NodeType::Pointer> iterator_value_type;
-    BOOST_FOREACH(const typename iterator_value_type::value_type& p_node, std::make_pair(iterator_value_type(py_master_nodes), iterator_value_type() ) )
-    {
-        pMasterNodes.push_back(p_node);
-    }
+    PythonUtils::Unpack<typename TModelPartType::NodeType::Pointer>(py_master_nodes, pMasterNodes);
 
     ConstraintUtilities<TModelPartType>::CreateLinearConstraint(rModelPart, ConstraintName, Id, pSlaveNode, pMasterNodes, rVariable, RelationMatrix, ConstantVector);
 }
@@ -999,8 +990,8 @@ void AddModelPartToPythonImpl(const std::string& Prefix)
     .def("CreateNewMasterSlaveConstraint", CreateNewMasterSlaveConstraint1<TModelPartType>)
     .def("CreateNewMasterSlaveConstraint", CreateNewMasterSlaveConstraint2<TModelPartType>)
     .def("CreateNewMasterSlaveConstraint", CreateNewMasterSlaveConstraint3<TModelPartType>)
-    .def("CreateNewLinearMasterSlaveConstraint", CreateNewLinearMasterSlaveConstraint<TModelPartType, typename TModelPartType::VariableComponentType>)
-    .def("CreateNewLinearMasterSlaveConstraint", CreateNewLinearMasterSlaveConstraint<TModelPartType, typename TModelPartType::DoubleVariableType>)
+    .def("CreateNewLinearMasterSlaveConstraint", CreateNewLinearMasterSlaveConstraint1<TModelPartType, typename TModelPartType::VariableComponentType>)
+    .def("CreateNewLinearMasterSlaveConstraint", CreateNewLinearMasterSlaveConstraint1<TModelPartType, typename TModelPartType::DoubleVariableType>)
     .def(self_ns::str(self))
     ;
 

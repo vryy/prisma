@@ -770,10 +770,10 @@ public:
     {
         //int free_id = 0;
         BaseType::mEquationSystemSize = BaseType::mDofSet.size();
-        int ndofs = static_cast<int>(BaseType::mDofSet.size());
+        std::size_t ndofs = BaseType::mDofSet.size();
 
         #pragma omp parallel for firstprivate(ndofs)
-        for (int i = 0; i < static_cast<int>(ndofs); i++) {
+        for (std::size_t i = 0; i < ndofs; i++) {
             typename DofsArrayType::iterator dof_iterator = BaseType::mDofSet.begin() + i;
             dof_iterator->SetEquationId(i);
 
@@ -916,11 +916,11 @@ public:
         //refresh RHS to have the correct reactions
         BuildRHSNoDirichlet(pScheme, rModelPart, b);
 
-        const int ndofs = static_cast<int>(BaseType::mDofSet.size());
+        const std::size_t ndofs = BaseType::mDofSet.size();
 
         //NOTE: dofs are assumed to be numbered consecutively in the BlockBuilderAndSolver
         #pragma omp parallel for firstprivate(ndofs)
-        for (int k = 0; k<ndofs; k++) {
+        for (std::size_t k = 0; k < ndofs; k++) {
             typename DofsArrayType::iterator dof_iterator = BaseType::mDofSet.begin() + k;
 
             const int i = (dof_iterator)->EquationId();

@@ -727,7 +727,6 @@ public:
                 std::cout << "ATTENTION: no free DOFs!! " << std::endl;
             }
 
-
             //Updating the results stored in the database
             rDofSet = pBuilderAndSolver->GetDofSet();
             pScheme->Update(BaseType::GetModelPart(), rDofSet, mA, mDx, mb);
@@ -741,7 +740,6 @@ public:
 
             if (is_converged == true)
             {
-
                 if (mpConvergenceCriteria->GetActualizeRHSflag() == true)
                 {
                     TSparseSpace::SetToZero(mb);
@@ -949,7 +947,6 @@ protected:
 
         KRATOS_CATCH("")
     }
-
 
     /*@} */
     /**@name Private Operations*/
