@@ -110,12 +110,13 @@ public:
     template<typename TVariableType>
     static typename MasterSlaveConstraintType::Pointer CreateLinearConstraint(TModelPartType& rModelPart,
         const std::string& r_constraint_name,
-        const typename TModelPartType::IndexType& r_constraint_id,
+        const typename TModelPartType::IndexType r_constraint_id,
         typename TModelPartType::NodeType::Pointer pSlaveNode,
-        std::vector<typename TModelPartType::NodeType::Pointer> pMasterNodes,
+        std::vector<typename TModelPartType::NodeType::Pointer>& pMasterNodes,
         const TVariableType& rVariable,
         const typename TModelPartType::MatrixType& r_relation_matrix,
-        const typename TModelPartType::VectorType& r_constant_vector)
+        const typename TModelPartType::VectorType& r_constant_vector,
+        const bool unique = true)
     {
         pSlaveNode->Set(SLAVE);
 
@@ -128,41 +129,14 @@ public:
         for (std::size_t i = 0; i < pMasterNodes.size(); ++i)
             master_dofs[i] = pMasterNodes[i]->pGetDof(rVariable);
 
-        return rModelPart.CreateNewMasterSlaveConstraint(r_constraint_name, r_constraint_id, master_dofs, slave_dofs, r_relation_matrix, r_constant_vector);
-    }
+        assert(r_constant_vector.size() == 1);
+        assert(r_relation_matrix.size1() == 1);
+        assert(r_relation_matrix.size2() == pMasterNodes.size());
 
-    /**
-     * Add a complex linear constraint to the model_part. The constraint is of type
-     *   u1 = a*u2 + b*u3 + c*u4 + ...
-     * @param rModelPart the model_part to add the constraint
-     * @param pSlaveNode the slave node carrying the slave d.o.f
-     * @param pMasterNodes the master nodes carrying the master d.o.fs
-     * @param rVariable the variable representing the nodal d.o.f
-     * @param r_relation_matrix the relation matrix of size(1, number_of_master_nodes)
-     * @param r_constant_vector the constant vector of size 1
-     */
-    template<typename TVariableType>
-    static typename MasterSlaveConstraintType::Pointer CreateLinearConstraintNoUnique(TModelPartType& rModelPart,
-        const std::string& r_constraint_name,
-        const typename TModelPartType::IndexType& r_constraint_id,
-        typename TModelPartType::NodeType::Pointer pSlaveNode,
-        std::vector<typename TModelPartType::NodeType::Pointer> pMasterNodes,
-        const TVariableType& rVariable,
-        const typename TModelPartType::MatrixType& r_relation_matrix,
-        const typename TModelPartType::VectorType& r_constant_vector)
-    {
-        pSlaveNode->Set(SLAVE);
-
-        typedef typename TModelPartType::DofType DofType;
-
-        std::vector<typename DofType::Pointer> slave_dofs(1);
-        slave_dofs[0] = pSlaveNode->pGetDof(rVariable);
-
-        std::vector<typename DofType::Pointer> master_dofs(pMasterNodes.size());
-        for (std::size_t i = 0; i < pMasterNodes.size(); ++i)
-            master_dofs[i] = pMasterNodes[i]->pGetDof(rVariable);
-
-        return rModelPart.CreateNewMasterSlaveConstraintNoUnique(r_constraint_name, r_constraint_id, master_dofs, slave_dofs, r_relation_matrix, r_constant_vector);
+        if (unique)
+            return rModelPart.CreateNewMasterSlaveConstraint(r_constraint_name, r_constraint_id, master_dofs, slave_dofs, r_relation_matrix, r_constant_vector);
+        else
+            return rModelPart.CreateNewMasterSlaveConstraintNoUnique(r_constraint_name, r_constraint_id, master_dofs, slave_dofs, r_relation_matrix, r_constant_vector);
     }
 
     /**
