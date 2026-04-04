@@ -142,6 +142,18 @@ public:
     */
     /*@{ */
 
+    /*Criterias that need to be called before getting the solution */
+    bool PreCriteria(
+        ModelPartType& r_model_part,
+        DofsArrayType& rDofSet,
+        const TSystemMatrixType& A,
+        const TSystemVectorType& Dx,
+        const TSystemVectorType& b
+    ) override
+    {
+        return true;
+    }
+
     /*Criterias that need to be called after getting the solution */
     bool PostCriteria(
         ModelPartType& r_model_part,
