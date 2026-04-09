@@ -865,7 +865,7 @@ void ConstitutiveLawImpl<TNodeType>::RewindMaterial(const Properties& rMaterialP
                                                     const GeometryType& rElementGeometry,
                                                     const Vector& rShapeFunctionsValues)
 {
-    KRATOS_ERROR << "Calling virtual function for RewindMaterial";
+    KRATOS_ERROR << "Constitutive law " << typeid(*this).name() << " tries to call virtual function for RewindMaterial";
 }
 
 /**
