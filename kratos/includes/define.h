@@ -16,6 +16,7 @@
 /* System includes */
 #include <stdexcept>
 #include <sstream>
+#include <string>
 #include <complex>
 
 
@@ -636,8 +637,25 @@ namespace Internals
   for (auto it___ = variable.begin(); it___ != variable.end(); ++it___) os << it___->first << ": " << it___->second << ", "; \
   os << "}" << std::endl;
 
-#define KRATOS_WATCH(variable) \
-  std::cout << #variable << " : " << variable << std::endl;
+template<typename... Args>
+void kratos_watch_impl(const char* names, Args&&... args) {
+    if constexpr (sizeof...(Args) == 1) {
+        std::stringstream ss(names);
+        std::string name;
+        ((std::getline(ss, name, ','),
+            std::cout << name << ": " << args << std::endl), ...);
+    }
+    else {
+        std::stringstream ss(names);
+        std::string name;
+
+        ((std::getline(ss, name, ','),
+            std::cout << name << ": " << args << " |"), ...);
+        std::cout << std::endl;
+    }
+}
+
+#define KRATOS_WATCH(...) kratos_watch_impl(#__VA_ARGS__, __VA_ARGS__);
 
 #define KRATOS_WATCH_STD_CON(variable) \
   std::cout << #variable << " :"; \
