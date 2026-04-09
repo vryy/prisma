@@ -40,6 +40,16 @@ namespace Kratos
             rDummy.PrintConstraint(rConstraint);
         }
 
+        template<class TConstraintUtilitiesType>
+        void ConstraintUtilities_CreateKinematicCouplingConstraints2D(TConstraintUtilitiesType& rDummy,
+                typename TConstraintUtilitiesType::ModelPartType& rModelPart,
+                const typename TConstraintUtilitiesType::ModelPartType::IndexType last_constraint_id,
+                std::vector<typename TConstraintUtilitiesType::ModelPartType::NodeType::Pointer> pSlaveNodes,
+                typename TConstraintUtilitiesType::ModelPartType::NodeType::Pointer pMasterNode)
+        {
+            rDummy.CreateKinematicCouplingConstraints2D(rModelPart, last_constraint_id, pSlaveNodes, pMasterNode);
+        }
+
         void AddUtilitiesToPython()
         {
             using namespace boost::python;
@@ -67,6 +77,7 @@ namespace Kratos
 
             class_<ConstraintUtilities<ModelPart>, boost::noncopyable > ("ConstraintUtilities", init< >())
                     .def("PrintConstraint", &ConstraintUtilities_PrintConstraint<ConstraintUtilities<ModelPart> >)
+                    .def("CreateKinematicCouplingConstraints2D", &ConstraintUtilities_CreateKinematicCouplingConstraints2D<ConstraintUtilities<ModelPart> >)
                     ;
 
             class_<ConstraintUtilities<ComplexModelPart>, boost::noncopyable > ("ComplexConstraintUtilities", init< >())

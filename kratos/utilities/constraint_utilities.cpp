@@ -420,6 +420,50 @@ typename TModelPartType::MasterSlaveConstraintType::Pointer ConstraintUtilities<
 /***********************************************************************************/
 /***********************************************************************************/
 
+template<class TModelPartType>
+void ConstraintUtilities<TModelPartType>::CreateKinematicCouplingConstraints2D(TModelPartType& rModelPart,
+        const typename TModelPartType::IndexType last_constraint_id,
+        std::vector<typename TModelPartType::NodeType::Pointer> pSlaveNodes,
+        typename TModelPartType::NodeType::Pointer pMasterNode)
+{
+    const std::string constraint_name = "LinearMasterSlaveConstraint";
+
+    typedef typename TModelPartType::DofType DofType;
+
+    typename TModelPartType::IndexType constraint_id = last_constraint_id;
+
+    typename TModelPartType::VectorType constant_vector(2);
+    constant_vector(0) = 0.0;
+    constant_vector(1) = 0.0;
+
+    for (std::size_t i = 0; i < pSlaveNodes.size(); ++i)
+    {
+        std::vector<typename DofType::Pointer> slave_dofs(2);
+        slave_dofs[0] = pSlaveNodes[i]->pGetDof(DISPLACEMENT_X);
+        slave_dofs[1] = pSlaveNodes[i]->pGetDof(DISPLACEMENT_Y);
+
+        std::vector<typename DofType::Pointer> master_dofs(3);
+        master_dofs[0] = pMasterNode->pGetDof(DISPLACEMENT_X);
+        master_dofs[1] = pMasterNode->pGetDof(DISPLACEMENT_Y);
+        master_dofs[2] = pMasterNode->pGetDof(ROTATION_Z);
+
+        typename TModelPartType::MatrixType relation_matrix(2, 3);
+        relation_matrix(0, 0) = 1.0;
+        relation_matrix(0, 1) = 0.0;
+        relation_matrix(0, 2) = -(pSlaveNodes[i]->Y0() - pMasterNode->Y0());
+        relation_matrix(1, 0) = 0.0;
+        relation_matrix(1, 1) = 1.0;
+        relation_matrix(1, 2) = pSlaveNodes[i]->X0() - pMasterNode->X0();
+
+        rModelPart.CreateNewMasterSlaveConstraintNoUnique(constraint_name, ++constraint_id, master_dofs, slave_dofs, relation_matrix, constant_vector);
+    }
+
+    rModelPart.MasterSlaveConstraints().Unique();
+}
+
+/***********************************************************************************/
+/***********************************************************************************/
+
 template class ConstraintUtilities<ModelPart>;
 template class ConstraintUtilities<ComplexModelPart>;
 template class ConstraintUtilities<GComplexModelPart>;

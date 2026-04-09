@@ -52,6 +52,8 @@ class ConstraintUtilities
 {
 public:
 
+    typedef TModelPartType ModelPartType;
+
     typedef typename TModelPartType::DataType DataType;
 
     typedef typename TModelPartType::MasterSlaveConstraintType MasterSlaveConstraintType;
@@ -159,6 +161,20 @@ public:
         const typename TModelPartType::MatrixType& r_relation_matrix,
         const typename TModelPartType::VectorType& r_constant_vector,
         const bool unique = true);
+
+    /**
+     * Add kinematic coupling constraints to the model_part. The constraint is meant to keep the displacement
+     * of the slave nodes rotating around the master node. By that enforcing the surface, comprising of slave
+     * and master node, deforms like a rigid body. By default, the dofs [DISPLACEMENT_X, DISPLACEMENT_Y] of
+     * the slave nodes will be coupled with [DISPLACEMENT_X, DISPLACEMENT_Y, ROTATION_Z] of the master node.
+     * @param rModelPart the model_part to add the constraint
+     * @param pSlaveNodes the slave nodes carrying the slave d.o.fs
+     * @param pMasterNode the master node carrying the master d.o.f
+     */
+    static void CreateKinematicCouplingConstraints2D(TModelPartType& rModelPart,
+        const typename TModelPartType::IndexType last_constraint_id,
+        std::vector<typename TModelPartType::NodeType::Pointer> pSlaveNodes,
+        typename TModelPartType::NodeType::Pointer pMasterNode);
 
     /**
      * Print the values associated with the constraint
