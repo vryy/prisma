@@ -40,15 +40,13 @@ struct PythonUtils
     template<typename T> struct is_array_1d : std::false_type {};
     template<typename TDataType, std::size_t TSize> struct is_array_1d<array_1d<TDataType, TSize> > : std::true_type {};
 
-    /// Unpack a boost::python::list to std::vector
+    /// Unpack a boost::python::list and append to std::vector
     template<typename TInputValueType, typename TOutputValueType = TInputValueType>
-    static void Unpack(const boost::python::list& rValues, std::vector<TOutputValueType>& values)
+    static void UnpackAndAppend(const boost::python::list& rValues, std::vector<TOutputValueType>& values)
     {
         using namespace boost::python;
 
         const int n = len(rValues);
-        values.clear();
-        values.reserve(n);
 
         for (int i = 0; i < n; ++i)
         {
@@ -63,6 +61,19 @@ struct PythonUtils
 
             values.push_back(static_cast<TOutputValueType>(ex()));
         }
+    }
+
+    /// Unpack a boost::python::list to std::vector
+    template<typename TInputValueType, typename TOutputValueType = TInputValueType>
+    static void Unpack(const boost::python::list& rValues, std::vector<TOutputValueType>& values)
+    {
+        using namespace boost::python;
+
+        const int n = len(rValues);
+        values.clear();
+        values.reserve(n);
+
+        UnpackAndAppend<TInputValueType, TOutputValueType>(rValues, values);
     }
 
     /// Unpack a boost::python::list to std::vector of specific size. The list should have sufficient size.
