@@ -48,7 +48,7 @@ namespace Kratos
  * @author Vicente Mataix Ferrandiz
  */
 template<class TModelPartType = ModelPart>
-class ConstraintUtilities
+class KRATOS_API(KRATOS_CORE) ConstraintUtilities
 {
 public:
 
@@ -62,13 +62,13 @@ public:
      * @brief This method resets the values of the slave dofs
      * @param rModelPart The model of the problem to solve
      */
-    static void KRATOS_API(KRATOS_CORE) ResetSlaveDofs(TModelPartType& rModelPart);
+    static void ResetSlaveDofs(TModelPartType& rModelPart);
 
     /**
      * @brief This method resets the values of the slave dofs
      * @param rModelPart The model of the problem to solve
      */
-    static void KRATOS_API(KRATOS_CORE) ApplyConstraints(TModelPartType& rModelPart);
+    static void ApplyConstraints(TModelPartType& rModelPart);
 
     /**
      * @brief This method precomputes the contribution of the explicit MPC over nodal residual forces
@@ -76,7 +76,7 @@ public:
      * @param rDofVariableNames The name of the Dof variables to check
      * @param rResidualDofVariableNames The name name of the corresponding residual variables
      */
-    static void KRATOS_API(KRATOS_CORE) PreComputeExplicitConstraintConstribution(
+    static void PreComputeExplicitConstraintConstribution(
         TModelPartType& rModelPart,
         const std::vector<std::string>& rDofVariableNames,
         const std::vector<std::string>& rResidualDofVariableNames
@@ -91,7 +91,7 @@ public:
      * @param DofRotationVariableName The name of the rotational variable name
      * @param InertiaVariableName The inertia variable to be considered
      */
-    static void KRATOS_API(KRATOS_CORE) PreComputeExplicitConstraintMassAndInertia(
+    static void PreComputeExplicitConstraintMassAndInertia(
         TModelPartType& rModelPart,
         const std::string& DofDisplacementVariableName = "DISPLACEMENT",
         const std::string& MassVariableName = "NODAL_MASS",
