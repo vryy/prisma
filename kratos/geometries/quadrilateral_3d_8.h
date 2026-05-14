@@ -29,11 +29,11 @@ namespace Kratos
 template<class TPointType> class Quadrilateral3D8 : public Geometry<TPointType>
 {
 public:
+    ///@name Type Definitions
+    ///@{
+
     /**
-     * Type Definitions
-     */
-    /**
-     * Base Type: Geometry
+     * Geometry as base class.
      */
     typedef Geometry<TPointType> BaseType;
 
@@ -47,151 +47,58 @@ public:
      */
     KRATOS_CLASS_POINTER_DEFINITION( Quadrilateral3D8 );
 
-    /**
-     * Integration methods implemented in geometry.
-     */
-    typedef GeometryData::IntegrationMethod IntegrationMethod;
+    typedef typename BaseType::IntegrationMethod IntegrationMethod;
 
-    /**
-     * A Vector of counted pointers to Geometries. Used for
-     * returning edges of the geometry.
-     */
     typedef typename BaseType::GeometriesArrayType GeometriesArrayType;
 
-    /**
-     * Type used for coordinate value.
-     */
     typedef typename BaseType::DataType DataType;
 
-    /**
-     * Type used for shape function value.
-     */
     typedef typename BaseType::ValueType ValueType;
 
-    /**
-     * Type used for indexing in geometry class.std::size_t used for indexing
-     * point or integration point access methods and also all other
-     * methods which need point or integration point index.
-     */
     typedef typename BaseType::IndexType IndexType;
 
-    /**
-     * This typed used to return size or dimension in
-     * geometry. Dimension, WorkingDimension, PointsNumber and
-     * ... return this type as their results.
-     */
     typedef typename BaseType::SizeType SizeType;
 
-    /**
-     * Redefinition of template parameter TPointType.
-     */
     typedef typename BaseType::PointType PointType;
 
-    /**
-     * Array of counted pointers to point. This type used to hold
-     * geometry's points.
-     */
     typedef typename BaseType::PointsArrayType PointsArrayType;
 
-    /**
-     * This type used for representing an integration point in
-     * geometry. This integration point is a point with an
-     * additional weight component.
-     */
     typedef typename BaseType::IntegrationPointType IntegrationPointType;
 
-    /**
-     * A Vector of IntegrationPointType which used to hold
-     * integration points related to an integration
-     * method. IntegrationPoints functions used this type to return
-     * their results.
-     */
     typedef typename BaseType::IntegrationPointsArrayType IntegrationPointsArrayType;
 
-    /**
-     * A Vector of IntegrationPointsArrayType which used to hold
-     * integration points related to different integration method
-     * implemented in geometry.
-     */
     typedef typename BaseType::IntegrationPointsContainerType IntegrationPointsContainerType;
 
-    /**
-     * A third order tensor used as shape functions' values
-     * container.
-     */
     typedef typename BaseType::ShapeFunctionsValuesContainerType ShapeFunctionsValuesContainerType;
 
-    /**
-     * A fourth order tensor used as shape functions' local
-     * gradients container in geometry.
-     */
     typedef typename BaseType::ShapeFunctionsLocalGradientsContainerType ShapeFunctionsLocalGradientsContainerType;
 
-    /**
-     * A third order tensor to hold jacobian matrices evaluated at
-     * integration points. Jacobian and InverseOfJacobian functions
-     * return this type as their result.
-     */
     typedef typename BaseType::JacobiansType JacobiansType;
 
-    /**
-     * A third order tensor to hold shape functions' local gradients at all integration points.
-     * ShapefunctionsLocalGradients function return this
-     * type as its result.
-     */
     typedef typename BaseType::ShapeFunctionsGradientsType ShapeFunctionsGradientsType;
 
-    /**
-     * A third order tensor to hold shape functions' gradients at all integration points.
-     * ShapeFunctionsIntegrationPointsGradients function return this
-     * type as its result.
-    */
     typedef typename BaseType::ShapeFunctionsIntegrationPointsGradientsType ShapeFunctionsIntegrationPointsGradientsType;
 
-    /**
-     * A third order tensor to hold shape functions' local second derivatives at a point.
-     * ShapeFunctionsSecondDerivatives function return this
-     * type as its result.
-     */
     typedef typename BaseType::ShapeFunctionsSecondDerivativesType ShapeFunctionsSecondDerivativesType;
 
-    /**
-    * A fourth order tensor to hold shape functions' local third derivatives at a point.
-    * ShapeFunctionsThirdDerivatives function return this
-    * type as its result.
-    */
     typedef typename BaseType::ShapeFunctionsThirdDerivativesType ShapeFunctionsThirdDerivativesType;
 
-    /**
-     * Type of the normal vector used for normal to edges in geomety.
-     */
     typedef typename BaseType::NormalType NormalType;
 
-    /**
-     * Type of coordinates array
-     */
     typedef typename BaseType::CoordinatesArrayType CoordinatesArrayType;
 
-    /** This type used for representing the local coordinates of
-    an integration point
-    */
     typedef typename BaseType::LocalCoordinatesArrayType LocalCoordinatesArrayType;
 
-    /**
-     * Type of Matrix
-     */
     typedef typename BaseType::MatrixType MatrixType;
     typedef typename BaseType::ZeroMatrixType ZeroMatrixType;
 
-    /**
-     * Type of Vector
-     */
     typedef typename BaseType::VectorType VectorType;
     typedef typename BaseType::ZeroVectorType ZeroVectorType;
 
-    /**
-     * Life Cycle
-     */
+    ///@}
+    ///@name Life Cycle
+    ///@{
+
     Quadrilateral3D8( const PointType& Point1, const PointType& Point2,
                       const PointType& Point3, const PointType& Point4,
                       const PointType& Point5, const PointType& Point6,
@@ -264,9 +171,6 @@ public:
     {
     }
 
-    /**
-     * Destructor. Does nothing!!!
-     */
     ~Quadrilateral3D8() override {}
 
     GeometryData::KratosGeometryFamily GetGeometryFamily() const final
@@ -279,9 +183,9 @@ public:
         return GeometryData::KratosGeometryType::Kratos_Quadrilateral3D8;
     }
 
-    /**
-     * Operators
-     */
+    ///@}
+    ///@name Operators
+    ///@{
 
     /**
      * Assignment operator.
@@ -320,9 +224,10 @@ public:
         return *this;
     }
 
-    /**
-     * Operations
-     */
+    ///@}
+    ///@name Operations
+    ///@{
+
     typename BaseType::Pointer Create( PointsArrayType const& ThisPoints ) const override
     {
         return typename BaseType::Pointer( new Quadrilateral3D8( ThisPoints ) );
@@ -344,12 +249,6 @@ public:
         return p_clone;
     }
 
-    /**
-     * :TODO: the lumpig factors need to be reviewed and
-     * probably reimplemented
-     * (comment by janosch)
-     */
-    //lumping factors for the calculation of the lumped mass matrix
     Vector& LumpingFactors( Vector& rResult ) const override
     {
         if(rResult.size() != 8)
@@ -362,47 +261,15 @@ public:
         return rResult;
     }
 
-    /**
-     * Information
-     */
-    /**
-     * This method calculates and returns Length or charactereistic
-     * length of this geometry depending on it's dimension. For one
-     * dimensional geometry for example Line it returns length of it
-     * and for the other geometries it gives Characteristic length
-     * otherwise.
-     *
-     * @return DataType value contains length or Characteristic
-     * length
-     * @see Area()
-     * @see Volume()
-     * @see DomainSize()
-     */
-    /**
-     * :TODO: the characteristic length is to be reviewed
-     * (comment by janosch)
-     */
+    ///@}
+    ///@name Information
+    ///@{
+
     DataType Length() const override
     {
         return std::sqrt( Area() );
     }
 
-    /**
-     * This method calculates and returns area or surface area of
-     * this geometry depending to it's dimension. For one dimensional
-     * geometry it returns zero, for two dimensional it gives area
-     * and for three dimensional geometries it gives surface area.
-     *
-     * @return DataType value contains area or surface
-     * area.
-     * @see Length()
-     * @see Volume()
-     * @see DomainSize()
-     */
-    /**
-     * :TODO: the characteristic area is to be reviewed
-     * (comment by janosch)
-     */
     DataType Area() const override
     {
         JacobiansType J;
@@ -419,34 +286,16 @@ public:
         return Area;
     }
 
-
     DataType Volume() const override
     {
         return Area();
     }
 
-    /**
-     * This method calculates and returns length, area or volume of
-     * this geometry depending to it's dimension. For one dimensional
-     * geometry it returns its length, for two dimensional it gives area
-     * and for three dimensional geometries it gives its volume.
-     * @return DataType value contains length, area or volume.
-     * @see Length()
-     * @see Area()
-     * @see Volume()
-     */
-    /**
-     * :TODO: the characteristic domain size is to be reviewed
-     * (comment by janosch)
-     */
     DataType DomainSize() const override
     {
         return Area();
     }
 
-    /**
-     * Returns whether given local point is inside the Geometry
-     */
     bool IsInside( const LocalCoordinatesArrayType& rPoint, const ValueType tol ) const override
     {
         if ( std::abs( rPoint[0] ) < 1 + tol )
@@ -724,192 +573,52 @@ public:
         return( rResult );
     }
 
-    /**
-     * Jacobian
-     */
+    ///@}
+    ///@name Jacobian
+    ///@{
 
-    /**
-     * TODO: implemented but not yet tested
-     */
-    /**
-     * Determinant of jacobians for given integration method.
-     * This method calculate determinant of jacobian in all
-     * integrations points of given integration method.
-     *
-     * @return Vector of DataType which is vector of determinants of
-     * jacobians \f$ |J|_i \f$ where \f$ i=1,2,...,n \f$ is the
-     * integration point index of given integration method.
-     *
-     * @see Jacobian
-     * @see InverseOfJacobian
-     */
     VectorType& DeterminantOfJacobian( VectorType& rResult, IntegrationMethod ThisMethod ) const override
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Quadrilateral3D8::DeterminantOfJacobian", "Jacobian is not square" );
+        KRATOS_ERROR << "Jacobian is not square";
         return rResult;
     }
 
-    /**
-     * TODO: implemented but not yet tested
-     */
-    /**
-     * Determinant of jacobian in specific integration point of
-     * given integration method. This method calculate determinant
-     * of jacobian in given integration point of given integration
-     * method.
-     *
-     * @param IntegrationPointIndex index of integration point which jacobians has to
-     * be calculated in it.
-     *
-     * @param IntegrationPointIndex index of integration point
-     * which determinant of jacobians has to be calculated in it.
-     *
-     * @return Determinamt of jacobian matrix \f$ |J|_i \f$ where \f$
-     * i \f$ is the given integration point index of given
-     * integration method.
-     *
-     * @see Jacobian
-     * @see InverseOfJacobian
-     */
     DataType DeterminantOfJacobian( IndexType IntegrationPointIndex, IntegrationMethod ThisMethod ) const override
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Quadrilateral3D8::DeterminantOfJacobian", "Jacobian is not square" );
+        KRATOS_ERROR << "Jacobian is not square";
         return 0.0;
     }
 
-    /**
-     * TODO: implemented but not yet tested
-     */
-    /**
-     * Determinant of jacobian in given point.
-     * This method calculate determinant of jacobian
-     * matrix in given point.
-     *
-     * @param rPoint point which determinant of jacobians has to
-     * be calculated in it.
-     *
-     * @return Determinamt of jacobian matrix \f$ |J| \f$ in given
-     * point.
-     *
-     * @see DeterminantOfJacobian
-     * @see InverseOfJacobian
-     *
-     * KLUDGE: PointType needed for proper functionality
-     * KLUDGE: works only with explicitly generated Matrix object
-     */
     DataType DeterminantOfJacobian( const LocalCoordinatesArrayType& rPoint ) const override
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Quadrilateral3D8::DeterminantOfJacobian", "Jacobian is not square" );
+        KRATOS_ERROR << "Jacobian is not square";
         return 0.0;
     }
 
-    /**
-     * :TODO: implemented but not yet tested
-     */
-    /**
-     * Inverse of jacobians for given integration method. This method
-     * calculate inverse of jacobians matrices in all integrations points of
-     * given integration method.
-     *
-     * @param ThisMethod integration method which inverse of jacobians has to
-     * be calculated in its integration points.
-     *
-     * @return Inverse of jacobian
-     * matrices \f$ J^{-1}_i \f$ where \f$ i=1,2,...,n \f$ is the integration
-     * point index of given integration method.
-     *
-     * @see Jacobian
-     * @see DeterminantOfJacobian
-     *
-     * KLUDGE: works only with explicitly generated Matrix object
-     */
     JacobiansType& InverseOfJacobian( JacobiansType& rResult, IntegrationMethod ThisMethod ) const override
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Quadrilateral3D8::DeterminantOfJacobian", "Jacobian is not square" );
+        KRATOS_ERROR << "Jacobian is not square";
         return rResult;
     }
 
-    /**
-     * :TODO: implemented but not yet tested
-     */
-    /**
-     * Inverse of jacobian in specific integration point of given integration
-     * method. This method calculate Inverse of jacobian matrix in given
-     * integration point of given integration method.
-     *
-     * @param IntegrationPointIndex index of integration point which
-     * inverse of jacobians has to
-     * be calculated in it.
-     *
-     * @param ThisMethod integration method which inverse of jacobians has to
-     * be calculated in its integration points.
-     *
-     * @return Inverse of jacobian matrix \f$ J^{-1}_i \f$ where \f$
-     * i \f$ is the given integration point index of given
-     * integration method.
-     *
-     * @see Jacobian
-     * @see DeterminantOfJacobian
-     *
-     * KLUDGE: works only with explicitly generated Matrix object
-     */
     MatrixType& InverseOfJacobian( MatrixType& rResult, IndexType IntegrationPointIndex, IntegrationMethod ThisMethod ) const override
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Quadrilateral3D8::DeterminantOfJacobian", "Jacobian is not square" );
+        KRATOS_ERROR << "Jacobian is not square";
         return rResult;
     }
 
-    /**
-     * :TODO: implemented but not yet tested
-     */
-    /**
-     * Inverse of jacobian in given point.
-     * This method calculate inverse of jacobian
-     * matrix in given point.
-     *
-     * @param rPoint point which inverse of jacobians has to
-     * be calculated in it.
-     *
-     * @return Inverse of jacobian matrix \f$ J^{-1} \f$ in given point.
-     *
-     * @see DeterminantOfJacobian
-     * @see InverseOfJacobian
-     *
-     * KLUDGE: works only with explicitly generated Matrix object
-     */
     MatrixType& InverseOfJacobian( MatrixType& rResult, const LocalCoordinatesArrayType& rPoint ) const override
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Quadrilateral3D8::DeterminantOfJacobian", "Jacobian is not square" );
+        KRATOS_ERROR << "Jacobian is not square";
         return rResult;
     }
 
-    /** This method gives you number of all edges of this
-    geometry. This method will gives you number of all the edges
-    with one dimension less than this geometry. for example a
-    triangle would return three or a tetrahedral would return
-    four but won't return nine related to its six edge lines.
-
-    @return SizeType containes number of this geometry edges.
-    @see Edges()
-    @see Edge()
-     */
     SizeType EdgesNumber() const override
     {
         return 4;
     }
 
-    /** This method gives you all edges of this geometry. This
-     * method will gives you all the edges with one dimension less
-     * than this geometry. for example a triangle would return
-     * three lines as its edges or a tetrahedral would return four
-     * triangle as its edges but won't return its six edge
-     * lines by this method.
-     *
-     * @return GeometriesArrayType containes this geometry edges.
-     * @see EdgesNumber()
-     * @see Edge()
-     */
-    GeometriesArrayType Edges( void ) const override
+    GeometriesArrayType Edges() const override
     {
         GeometriesArrayType edges = GeometriesArrayType();
         edges.push_back( EdgeType( this->pGetPoint( 0 ), this->pGetPoint( 4 ), this->pGetPoint( 1 ) ) );
@@ -919,22 +628,20 @@ public:
         return edges;
     }
 
-    /**
-     * Shape Function
-     */
+    SizeType FacesNumber() const override
+    {
+        return 4;
+    }
 
-    /**
-     * :TODO: implemented but not yet tested
-     */
-    /**
-     * Calculates the value of a given shape function at a given point.
-     *
-     * @param ShapeFunctionIndex The number of the desired shape function
-     * @param rPoint the given point in local coordinates at which the
-     * value of the shape function is calculated
-     *
-     * @return the value of the shape function at the given point
-     */
+    GeometriesArrayType Faces() const override
+    {
+        return Edges();
+    }
+
+    ///@}
+    ///@name Shape Function
+    ///@{
+
     ValueType ShapeFunctionValue( IndexType ShapeFunctionIndex, const LocalCoordinatesArrayType& rPoint ) const override
     {
         switch ( ShapeFunctionIndex )
@@ -975,24 +682,6 @@ public:
         return 0;
     }
 
-    /**
-     * :TODO: implemented but not yet tested
-     */
-    /**
-     * Calculates the Gradients of the shape functions.
-     * Calculates the gradients of the shape functions with regard to the global
-     * coordinates in all
-     * integration points (\f$ \frac{\partial N^i}{\partial X_j} \f$)
-     *
-     * @param rResult a container which takes the calculated gradients
-     * @param ThisMethod the given IntegrationMethod
-     *
-     * @return the gradients of all shape functions with regard to the
-     * global coordinates
-     *
-     * KLUDGE: method call only works with explicit JacobiansType
-     * rather than creating JacobiansType within argument list
-     */
     ShapeFunctionsIntegrationPointsGradientsType& ShapeFunctionsIntegrationPointsGradients(
         ShapeFunctionsIntegrationPointsGradientsType& rResult, IntegrationMethod ThisMethod ) const override
     {
@@ -1040,41 +729,20 @@ public:
         return rResult;
     }
 
-    /**
-     * Input and Output
-     */
+    ///@}
+    ///@name Input and Output
+    ///@{
 
-    /**
-     * Turn back information as a string.
-     * @return String contains information about this geometry.
-     * @see PrintData()
-     * @see PrintInfo()
-     */
     std::string Info() const override
     {
         return "2 dimensional quadrilateral with eight nodes in 3D space";
     }
 
-    /**
-     * Print information about this object.
-     * @param rOStream Stream to print into it.
-     * @see PrintData()
-     * @see Info()
-     */
     void PrintInfo( std::ostream& rOStream ) const override
     {
         rOStream << "2 dimensional quadrilateral with eight nodes in 3D space";
     }
 
-    /**
-     * Print geometry's data into given stream.
-     * Prints it's points by the order they stored in
-     * the geometry and then center point of geometry.
-     *
-     * @param rOStream Stream to print into it.
-     * @see PrintInfo()
-     * @see Info()
-     */
     void PrintData( std::ostream& rOStream ) const override
     {
         BaseType::PrintData( rOStream );
@@ -1084,55 +752,6 @@ public:
         rOStream << "    Jacobian in the origin\t : " << jacobian;
     }
 
-    /**
-     * Calculates the local gradients for all integration points for
-     * given integration method
-     */
-    // ShapeFunctionsGradientsType ShapeFunctionsLocalGradients( IntegrationMethod ThisMethod ) const override
-    // {
-    //     ShapeFunctionsGradientsType localGradients
-    //     = CalculateShapeFunctionsIntegrationPointsLocalGradients( ThisMethod );
-    //     const int integration_points_number
-    //     = msGeometryData.IntegrationPointsNumber( ThisMethod );
-    //     ShapeFunctionsGradientsType Result( integration_points_number );
-
-    //     for ( int pnt = 0; pnt < integration_points_number; pnt++ )
-    //     {
-    //         Result[pnt] = localGradients[pnt];
-    //     }
-
-    //     return Result;
-    // }
-
-    /**
-     * Calculates the local gradients for all integration points for the
-     * default integration method
-     */
-    // ShapeFunctionsGradientsType ShapeFunctionsLocalGradients() const override
-    // {
-    //     IntegrationMethod ThisMethod = msGeometryData.DefaultIntegrationMethod();
-    //     ShapeFunctionsGradientsType localGradients
-    //     = CalculateShapeFunctionsIntegrationPointsLocalGradients( ThisMethod );
-    //     const int integration_points_number
-    //     = msGeometryData.IntegrationPointsNumber( ThisMethod );
-    //     ShapeFunctionsGradientsType Result( integration_points_number );
-
-    //     for ( int pnt = 0; pnt < integration_points_number; pnt++ )
-    //     {
-    //         Result[pnt] = localGradients[pnt];
-    //     }
-
-    //     return Result;
-    // }
-
-    /**
-    * Calculates the gradients in terms of local coordinates
-    * of all shape functions in a given point.
-    *
-    * @param rPoint the current point at which the gradients are calculated
-    * @return the gradients of all shape functions
-    * \f$ \frac{\partial N^i}{\partial \xi_j} \f$
-     */
     Matrix& ShapeFunctionsLocalGradients( Matrix& rResult, const LocalCoordinatesArrayType& rPoint ) const override
     {
         //setting up result matrix
@@ -1174,11 +793,6 @@ public:
         return( rResult );
     }
 
-    /**
-     * returns the local coordinates of all nodes of the current geometry
-     * @param rResult a Matrix object that will be overwritten by the result
-     * @return the local coordinates of all nodes
-     */
     Matrix& PointsLocalCoordinates( Matrix& rResult ) const override
     {
         if (rResult.size1() != 8 || rResult.size2() != 2)
@@ -1202,61 +816,6 @@ public:
         return rResult;
     }
 
-    /**
-     * returns the shape function gradients in an arbitrary point,
-     * given in local coordinates
-     * @param rResult the matrix of gradients, will be overwritten
-     * with the gradients for all
-     * shape functions in given point
-     * @param rPoint the given point the gradients are calculated in
-     */
-    // Matrix& ShapeFunctionsGradients( Matrix& rResult, PointType& rPoint ) const override
-    // {
-    //     rResult.resize( 8, 2, false );
-    //     noalias( rResult ) = ZeroMatrix( 8, 2 );
-
-    //     rResult( 0, 0 ) = (( -1.0 + rPoint.Y() ) * ( -2.0 ) * ( 1.0 + 2.0
-    //                        * rPoint.X() + rPoint.Y() - 1.0 ) ) / 8.0;
-    //     rResult( 0, 1 ) = (( -1.0 + rPoint.X() ) * ( -2.0 ) * ( 1.0 + rPoint.X() + 2.0
-    //                        * rPoint.Y() - 1.0 ) ) / 8.0;
-
-    //     rResult( 1, 0 ) = -(( -1.0 + rPoint.Y() ) * ( -2.0 ) * ( 1.0 - 2.0
-    //                         * rPoint.X() + rPoint.Y() - 1.0 ) ) / 8.0;
-    //     rResult( 1, 1 ) = (( 1.0 + rPoint.X() ) * ( -1.0 + rPoint.X() - 2.0
-    //                        * rPoint.Y() + 1.0 ) * ( -2.0 ) ) / 8.0;
-
-    //     rResult( 2, 0 ) = -(( 1.0 + rPoint.Y() ) * ( -1.0 + 2.0
-    //                         * rPoint.X() + rPoint.Y() + 1.0 ) * ( -2.0 ) ) / 8.0;
-    //     rResult( 2, 1 ) = -(( 1.0 + rPoint.X() ) * ( -1.0 + rPoint.X() + 2.0
-    //                         * rPoint.Y() + 1.0 ) * ( -2.0 ) ) / 8.0;
-
-    //     rResult( 3, 0 ) = (( 1.0 + rPoint.Y() ) * ( -1.0 - 2.0
-    //                        * rPoint.X() + rPoint.Y() + 1.0 ) * ( -2.0 ) ) / 8.0;
-    //     rResult( 3, 1 ) = -(( -1.0 + rPoint.X() ) * ( -2.0 ) * ( 1.0 + rPoint.X() - 2.0
-    //                         * rPoint.Y() - 1.0 ) ) / 8.0;
-
-    //     rResult( 4, 0 ) = -( rPoint.X() * ( -1.0 + rPoint.Y() ) * ( -2.0 ) ) / 2.0;
-    //     rResult( 4, 1 ) = -(( -1.0 + rPoint.X() * rPoint.X() ) * ( -2.0 ) ) / 4.0;
-
-    //     rResult( 5, 0 ) = (( -1.0 + rPoint.Y() * rPoint.Y() ) * ( -2.0 ) ) / 4.0;
-    //     rResult( 5, 1 ) = (( 1.0 + rPoint.X() ) * rPoint.Y() * ( -2.0 ) ) / 2.0;
-
-    //     rResult( 6, 0 ) = ( rPoint.X() * ( 1.0 + rPoint.Y() ) * ( -2.0 ) ) / 2.0;
-    //     rResult( 6, 1 ) = (( -1.0 + rPoint.X() * rPoint.X() ) * ( -2.0 ) ) / 4.0;
-
-    //     rResult( 7, 0 ) = -(( -1.0 + rPoint.Y() * rPoint.Y() ) * ( -2.0 ) ) / 4.0;
-    //     rResult( 7, 1 ) = -(( -1.0 + rPoint.X() ) * rPoint.Y() * ( -2.0 ) ) / 2.0;
-
-    //     return rResult;
-    // }
-
-    /**
-     * returns the second order derivatives of all shape functions
-     * in given arbitrary points
-     *
-     * @param rResult a third order tensor which contains the second derivatives
-     * @param rPoint the given point the second order derivatives are calculated in
-     */
     ShapeFunctionsSecondDerivativesType& ShapeFunctionsSecondDerivatives( ShapeFunctionsSecondDerivativesType& rResult, const LocalCoordinatesArrayType& rPoint ) const override
     {
         if ( rResult.size() != this->PointsNumber() )
@@ -1325,20 +884,12 @@ public:
         return rResult;
     }
 
-    /**
-    * returns the third order derivatives of all shape functions
-    * in given arbitrary points
-    *
-    * @param rResult a fourth order tensor which contains the third derivatives
-    * @param rPoint the given point the third order derivatives are calculated in
-     */
     ShapeFunctionsThirdDerivativesType& ShapeFunctionsThirdDerivatives( ShapeFunctionsThirdDerivativesType& rResult, const LocalCoordinatesArrayType& rPoint ) const override
     {
         if ( rResult.size() != this->PointsNumber() )
         {
             // KLUDGE: While there is a bug in
             // ublas vector resize, I have to put this beside resizing!!
-//                 ShapeFunctionsGradientsType
             ShapeFunctionsThirdDerivativesType temp( this->PointsNumber() );
             rResult.swap( temp );
         }
@@ -1426,20 +977,23 @@ public:
         return rResult;
     }
 
-protected:
+    ///@}
+    ///@name Friends
+    ///@{
 
+    ///@}
+
+protected:
     /**
     * there are no protected class members
      */
 
 private:
 
-    /**
-    * Static Member Variables
-     */
+    ///@name Static Member Variables
+    ///@{
 
     static const GeometryData msGeometryData;
-
 
     ///@}
     ///@name Serialization
@@ -1459,13 +1013,10 @@ private:
 
     Quadrilateral3D8(): BaseType( PointsArrayType(), &msGeometryData ) {}
 
-    /**
-     * Private Operations
-     */
+    ///@}
+    ///@name Private Operations
+    ///@{
 
-    /**
-     * :TODO: implemented but not yet tested
-     */
     /**
      * Calculates the values of all shape function in all integration points.
      * Integration points are expected to be given in local coordinates
@@ -1529,9 +1080,6 @@ private:
         return shape_function_values;
     }
 
-    /**
-     * :TODO: implemented but not yet tested
-     */
     /**
      * Calculates the local gradients of all shape functions in all integration points.
      * Integration points are expected to be given in local coordinates
@@ -1710,15 +1258,18 @@ private:
         return shape_functions_local_gradients;
     }
 
-    /**
-     * Private Friends
-     */
+    ///@}
+    ///@name Private Friends
+    ///@{
 
     template<class TOtherPointType> friend class Quadrilateral3D8;
 
-    /**
-     * Un accessible methods
-     */
+    ///@}
+    ///@name Un accessible methods
+    ///@{
+
+
+    ///@}
 
 }; // Class Quadrilateral3D8
 

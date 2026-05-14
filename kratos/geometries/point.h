@@ -176,7 +176,6 @@ public:
     /// Destructor.
     virtual ~Point() {}
 
-
     ///@}
     ///@name Operators
     ///@{
@@ -211,7 +210,6 @@ public:
 
         KRATOS_CATCH_LEVEL_4(*this)
     }
-
 
     ///@}
     ///@name Operations
@@ -274,8 +272,6 @@ public:
         KRATOS_CATCH_LEVEL_4(*this)
     }
 
-
-
     /** This is an access method to point's coordinate by indices. For example this
     function return x, y and z coordinate whith 1, 2 and 3 as input
     respectively.
@@ -307,7 +303,6 @@ public:
     {
         return *this;
     }
-
 
     ///@}
     ///@name Inquiry
@@ -344,7 +339,6 @@ public:
             rOStream << " , " << this->operator[](i);
         rOStream << ")";
     }
-
 
     ///@}
     ///@name Friends
@@ -423,7 +417,6 @@ private:
 
     friend class Serializer;
 
-
     virtual void save(Serializer& rSerializer) const
     {
         rSerializer.save_base("BaseClass",*static_cast<const array_1d<TDataType, TDimension> *>(this));
@@ -466,7 +459,6 @@ private:
 ///@name Input and output
 ///@{
 
-
 /// input stream function
 template<std::size_t TDimension, class TDataType>
 inline std::istream& operator >> (std::istream& rIStream,
@@ -485,8 +477,8 @@ inline std::ostream& operator << (std::ostream& rOStream,
 
     return rOStream;
 }
-///@}
 
+///@}
 
 }  // namespace Kratos.
 

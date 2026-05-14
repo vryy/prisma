@@ -40,13 +40,10 @@ namespace Kratos
 ///@name Kratos Classes
 ///@{
 
-/**
-*/
 template<class TPointType>
 class Line1D3 : public Geometry<TPointType>
 {
 public:
-    ///@}
     ///@name Type Definitions
     ///@{
 
@@ -56,145 +53,51 @@ public:
     /// Pointer definition of Line1D3
     KRATOS_CLASS_POINTER_DEFINITION( Line1D3 );
 
-    /**
-     * Integration methods implemented in geometry.
-     */
-    typedef GeometryData::IntegrationMethod IntegrationMethod;
+    typedef typename BaseType::IntegrationMethod IntegrationMethod;
 
-    /**
-     * A Vector of counted pointers to Geometries. Used for
-     * returning edges of the geometry.
-     */
     typedef typename BaseType::GeometriesArrayType GeometriesArrayType;
 
-    /**
-     * Type used for coordinate value.
-     */
     typedef typename BaseType::DataType DataType;
 
-    /**
-     * Type used for shape function value.
-     */
     typedef typename BaseType::ValueType ValueType;
 
-    /**
-     * Type used for indexing in geometry class.std::size_t used for indexing
-     * point or integration point access methods and also all other
-     * methods which need point or integration point index.
-     */
     typedef typename BaseType::IndexType IndexType;
 
-    /**
-     * This typed used to return size or dimension in
-     * geometry. Dimension, WorkingDimension, PointsNumber and
-     * ... return this type as their results.
-     */
     typedef typename BaseType::SizeType SizeType;
 
-    /**
-     * Redefinition of template parameter TPointType.
-     */
     typedef typename BaseType::PointType PointType;
 
-    /**
-     * Array of counted pointers to point. This type used to hold
-     * geometry's points.
-     */
     typedef typename BaseType::PointsArrayType PointsArrayType;
 
-    /**
-     * This type used for representing an integration point in
-     * geometry. This integration point is a point with an
-     * additional weight component.
-     */
     typedef typename BaseType::IntegrationPointType IntegrationPointType;
 
-    /**
-     * A Vector of IntegrationPointType which used to hold
-     * integration points related to an integration
-     * method. IntegrationPoints functions used this type to return
-     * their results.
-     */
     typedef typename BaseType::IntegrationPointsArrayType IntegrationPointsArrayType;
 
-    /**
-     * A Vector of IntegrationPointsArrayType which used to hold
-     * integration points related to different integration method
-     * implemented in geometry.
-     */
     typedef typename BaseType::IntegrationPointsContainerType IntegrationPointsContainerType;
 
-    /**
-     * A third order tensor used as shape functions' values
-     * container.
-     */
     typedef typename BaseType::ShapeFunctionsValuesContainerType ShapeFunctionsValuesContainerType;
 
-    /**
-     * A fourth order tensor used as shape functions' local
-     * gradients container in geometry.
-     */
     typedef typename BaseType::ShapeFunctionsLocalGradientsContainerType ShapeFunctionsLocalGradientsContainerType;
 
-    /**
-     * A third order tensor to hold jacobian matrices evaluated at
-     * integration points. Jacobian and InverseOfJacobian functions
-     * return this type as their result.
-     */
     typedef typename BaseType::JacobiansType JacobiansType;
 
-    /**
-     * A third order tensor to hold shape functions' local gradients at all integration points.
-     * ShapefunctionsLocalGradients function return this
-     * type as its result.
-     */
     typedef typename BaseType::ShapeFunctionsGradientsType ShapeFunctionsGradientsType;
 
-    /**
-     * A third order tensor to hold shape functions' local second derivatives at a point.
-     * ShapeFunctionsSecondDerivatives function return this
-     * type as its result.
-     */
     typedef typename BaseType::ShapeFunctionsSecondDerivativesType ShapeFunctionsSecondDerivativesType;
 
-    /**
-    * A fourth order tensor to hold shape functions' local third derivatives at a point.
-    * ShapeFunctionsThirdDerivatives function return this
-    * type as its result.
-    */
     typedef typename BaseType::ShapeFunctionsThirdDerivativesType ShapeFunctionsThirdDerivativesType;
 
-    /**
-     * A third order tensor to hold shape functions' gradients at all integration points.
-     * ShapeFunctionsIntegrationPointsGradients function return this
-     * type as its result.
-    */
     typedef typename BaseType::ShapeFunctionsIntegrationPointsGradientsType ShapeFunctionsIntegrationPointsGradientsType;
 
-    /**
-     * Type of the normal vector used for normal to edges in geomety.
-     */
     typedef typename BaseType::NormalType NormalType;
 
-    /**
-     * Type of coordinates array
-     */
     typedef typename BaseType::CoordinatesArrayType CoordinatesArrayType;
 
-    /** This type used for representing the local coordinates of
-    an integration point
-    */
     typedef typename BaseType::LocalCoordinatesArrayType LocalCoordinatesArrayType;
 
-    /**
-     * Type of Matrix
-     */
     typedef typename BaseType::MatrixType MatrixType;
     typedef typename BaseType::ZeroMatrixType ZeroMatrixType;
 
-    /**
-     * Type of Vector
-     */
     typedef typename BaseType::VectorType VectorType;
     typedef typename BaseType::ZeroVectorType ZeroVectorType;
 
@@ -254,7 +157,6 @@ public:
     {
     }
 
-    /// Destructor. Do nothing!!!
     ~Line1D3() override {}
 
     GeometryData::KratosGeometryFamily GetGeometryFamily() const final
@@ -328,7 +230,6 @@ public:
         return p_clone;
     }
 
-    //lumping factors for the calculation of the lumped mass matrix
     Vector& LumpingFactors( Vector& rResult ) const override
     {
         if(rResult.size() != 3)
@@ -343,18 +244,6 @@ public:
     ///@name Informations
     ///@{
 
-    /** This method calculate and return Length or charactereistic
-    length of this geometry depending to it's dimension. For one
-    dimensional geometry for example Line it returns length of it
-    and for the other geometries it gives Characteristic length
-    otherwise.
-
-    @return double value contains length or Characteristic
-    length
-    @see Area()
-    @see Volume()
-    @see DomainSize()
-    */
     DataType Length() const override
     {
         const TPointType& point0 = BaseType::GetPoint(0);
@@ -367,32 +256,11 @@ public:
         return sqrt( length );
     }
 
-    /** This method calculate and return area or surface area of
-    this geometry depending to it's dimension. For one dimensional
-    geometry it returns zero, for two dimensional it gives area
-    and for three dimensional geometries it gives surface area.
-
-    @return double value contains area or surface
-    area.
-    @see Length()
-    @see Volume()
-    @see DomainSize()
-    */
     DataType Area() const override
     {
         return 0.00;
     }
 
-    /** This method calculate and return length, area or volume of
-    this geometry depending to it's dimension. For one dimensional
-    geometry it returns its length, for two dimensional it gives area
-    and for three dimensional geometries it gives its volume.
-
-    @return double value contains length, area or volume.
-    @see Length()
-    @see Area()
-    @see Volume()
-    */
     DataType DomainSize() const override
     {
         const TPointType& point0 = BaseType::GetPoint(0);
@@ -402,9 +270,6 @@ public:
         return std::abs( lx );
     }
 
-    /**
-     * Returns whether given local point is inside the Geometry
-     */
     bool IsInside( const LocalCoordinatesArrayType& rPoint, const ValueType tol ) const override
     {
         if ( std::abs( rPoint[0] ) < 1 + tol )
@@ -417,20 +282,6 @@ public:
     ///@name Jacobian
     ///@{
 
-    /** Jacobians for given  method. This method
-    calculate jacobians matrices in all integrations points of
-    given integration method.
-
-    @param ThisMethod integration method which jacobians has to
-    be calculated in its integration points.
-
-    @return JacobiansType a Vector of jacobian
-    matrices \f$ J_i \f$ where \f$ i=1,2,...,n \f$ is the integration
-    point index of given integration method.
-
-    @see DeterminantOfJacobian
-    @see InverseOfJacobian
-    */
     JacobiansType& Jacobian( JacobiansType& rResult, IntegrationMethod ThisMethod ) const override
     {
         //getting derivatives of shape functions
@@ -465,23 +316,6 @@ public:
         return rResult;
     }
 
-    /** Jacobians for given  method. This method
-    calculate jacobians matrices in all integrations points of
-    given integration method.
-
-    @param ThisMethod integration method which jacobians has to
-    be calculated in its integration points.
-
-    @return JacobiansType a Vector of jacobian
-    matrices \f$ J_i \f$ where \f$ i=1,2,...,n \f$ is the integration
-    point index of given integration method.
-
-    @param DeltaPosition Matrix with the nodes position increment which describes
-    the configuration where the jacobian has to be calculated.
-
-    @see DeterminantOfJacobian
-    @see InverseOfJacobian
-    */
     JacobiansType& Jacobian( JacobiansType& rResult, IntegrationMethod ThisMethod, const MatrixType& DeltaPosition ) const override
     {
         //getting derivatives of shape functions
@@ -516,23 +350,6 @@ public:
         return rResult;
     }
 
-    /** Jacobian in specific integration point of given integration
-    method. This method calculate jacobian matrix in given
-    integration point of given integration method.
-
-    @param IntegrationPointIndex index of integration point which jacobians has to
-    be calculated in it.
-
-    @param ThisMethod integration method which jacobians has to
-    be calculated in its integration points.
-
-    @return Matrix<double> Jacobian matrix \f$ J_i \f$ where \f$
-    i \f$ is the given integration point index of given
-    integration method.
-
-    @see DeterminantOfJacobian
-    @see InverseOfJacobian
-    */
     MatrixType& Jacobian( MatrixType& rResult, IndexType IntegrationPointIndex, IntegrationMethod ThisMethod ) const override
     {
         //setting up size of jacobian matrix
@@ -561,17 +378,6 @@ public:
         return rResult;
     }
 
-    /** Jacobian in given point. This method calculate jacobian
-    matrix in given point.
-
-    @param rPoint point which jacobians has to
-    be calculated in it.
-
-    @return Matrix of double which is jacobian matrix \f$ J \f$ in given point.
-
-    @see DeterminantOfJacobian
-    @see InverseOfJacobian
-    */
     MatrixType& Jacobian( MatrixType& rResult, const LocalCoordinatesArrayType& rPoint ) const override
     {
         //setting up size of jacobian matrix
@@ -595,9 +401,6 @@ public:
         return rResult;
     }
 
-    /** EdgesNumber
-    @return SizeType containes number of this geometry edges.
-    */
     SizeType EdgesNumber() const override
     {
         return 2;
@@ -619,9 +422,7 @@ public:
         case 2:
             return( 1.0 -rPoint[0]*rPoint[0] );
         default:
-            KRATOS_THROW_ERROR( std::logic_error,
-                          "Wrong index of shape function!" ,
-                          *this );
+            KRATOS_ERROR << "Wrong index of shape function!";
         }
 
         return 0;
@@ -637,36 +438,16 @@ public:
     ///@name Input and output
     ///@{
 
-    /** Turn back information as a string.
-
-    @return String contains information about this geometry.
-    @see PrintData()
-    @see PrintInfo()
-    */
     std::string Info() const override
     {
         return "1 dimensional line with 3 nodes in 1D space";
     }
 
-    /** Print information about this object.
-
-    @param rOStream Stream to print into it.
-    @see PrintData()
-    @see Info()
-    */
     void PrintInfo( std::ostream& rOStream ) const override
     {
         rOStream << "1 dimensional line with 3 nodes in 1D space";
     }
 
-    /** Print geometry's data into given stream. Prints it's points
-    by the order they stored in the geometry and then center
-    point of geometry.
-
-    @param rOStream Stream to print into it.
-    @see PrintInfo()
-    @see Info()
-    */
     void PrintData( std::ostream& rOStream ) const override
     {
         BaseType::PrintData( rOStream );
@@ -676,55 +457,6 @@ public:
         rOStream << "    Jacobian\t : " << jacobian;
     }
 
-    /**
-     * Calculates the local gradients for all integration points for
-     * given integration method
-     */
-    // ShapeFunctionsGradientsType ShapeFunctionsLocalGradients( IntegrationMethod ThisMethod ) const override
-    // {
-    //     ShapeFunctionsGradientsType localGradients
-    //     = CalculateShapeFunctionsIntegrationPointsLocalGradients( ThisMethod );
-    //     const int integration_points_number
-    //     = msGeometryData.IntegrationPointsNumber( ThisMethod );
-    //     ShapeFunctionsGradientsType Result( integration_points_number );
-
-    //     for ( int pnt = 0; pnt < integration_points_number; pnt++ )
-    //     {
-    //         Result[pnt] = localGradients[pnt];
-    //     }
-
-    //     return Result;
-    // }
-
-    /**
-     * Calculates the local gradients for all integration points for the
-     * default integration method
-     */
-    // ShapeFunctionsGradientsType ShapeFunctionsLocalGradients() const override
-    // {
-    //     IntegrationMethod ThisMethod = msGeometryData.DefaultIntegrationMethod();
-    //     ShapeFunctionsGradientsType localGradients
-    //     = CalculateShapeFunctionsIntegrationPointsLocalGradients( ThisMethod );
-    //     const int integration_points_number
-    //     = msGeometryData.IntegrationPointsNumber( ThisMethod );
-    //     ShapeFunctionsGradientsType Result( integration_points_number );
-
-    //     for ( int pnt = 0; pnt < integration_points_number; pnt++ )
-    //     {
-    //         Result[pnt] = localGradients[pnt];
-    //     }
-
-    //     return Result;
-    // }
-
-    /**
-     * Calculates the gradients in terms of local coordinates
-     * of all shape functions in a given point.
-     *
-     * @param rPoint the current point at which the gradients are calculated
-     * @return the gradients of all shape functions
-     * \f$ \frac{\partial N^i}{\partial \xi_j} \f$
-     */
     Matrix& ShapeFunctionsLocalGradients( Matrix& rResult, const LocalCoordinatesArrayType& rPoint ) const override
     {
         //setting up result matrix
@@ -736,12 +468,6 @@ public:
         return( rResult );
     }
 
-    /**
-     * returns the second order derivatives of all shape functions
-     * in given arbitrary pointers
-     * @param rResult a third order tensor which contains the second derivatives
-     * @param rPoint the given point the second order derivatives are calculated in
-     */
     ShapeFunctionsSecondDerivativesType& ShapeFunctionsSecondDerivatives( ShapeFunctionsSecondDerivativesType& rResult, const LocalCoordinatesArrayType& rPoint ) const override
     {
         if ( rResult.size() != this->PointsNumber() )
@@ -763,12 +489,6 @@ public:
         return rResult;
     }
 
-    /**
-     * returns the third order derivatives of all shape functions
-     * in given arbitrary pointers
-     * @param rResult a fourth order tensor which contains the third derivatives
-     * @param rPoint the given point the third order derivatives are calculated in
-     */
     ShapeFunctionsThirdDerivativesType& ShapeFunctionsThirdDerivatives( ShapeFunctionsThirdDerivativesType& rResult, const LocalCoordinatesArrayType& rPoint ) const override
     {
         if ( rResult.size() != this->PointsNumber() )
@@ -798,11 +518,6 @@ public:
         return rResult;
     }
 
-    /**
-     * returns the local coordinates of all nodes of the current geometry
-     * @param rResult a Matrix object that will be overwritten by the result
-     * @return the local coordinates of all nodes
-     */
     Matrix& PointsLocalCoordinates( Matrix& rResult ) const override
     {
         if (rResult.size1() != 3 || rResult.size2() != 1)
@@ -812,25 +527,6 @@ public:
         rResult( 1, 0 ) =  1.0;
         return rResult;
     }
-
-    /**
-     * returns the shape function gradients in an arbitrary point,
-     * given in local coordinates
-     * @param rResult the matrix of gradients, will be overwritten
-     * with the gradients for all
-     * shape functions in given point
-     * @param rPoint the given point the gradients are calculated in
-     */
-    // Matrix& ShapeFunctionsGradients( Matrix& rResult, LocalCoordinatesArrayType& rPoint ) const override
-    // {
-    //     rResult.resize( 3, 1 );
-    //     noalias( rResult ) = ZeroMatrix( 3, 1 );
-
-    //     rResult( 0, 0 ) = rPoint[0] - 0.5;
-    //     rResult( 2, 0 ) = -2.0 * rPoint[0];
-    //     rResult( 1, 0 ) = rPoint[0] + 0.5;
-    //     return rResult;
-    // }
 
     ///@}
     ///@name Friends
@@ -1024,7 +720,6 @@ private:
     ///@}
     ///@name Un accessible methods
     ///@{
-
 
 
     ///@}

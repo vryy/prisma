@@ -47,9 +47,8 @@ namespace Kratos
 template<class TPointType> class Hexahedra3D8 : public Geometry<TPointType>
 {
 public:
-    /**
-     * Type Definitions
-     */
+    ///@name Type Definitions
+    ///@{
 
     /**
      * Geometry as base class.
@@ -67,144 +66,56 @@ public:
      */
     KRATOS_CLASS_POINTER_DEFINITION( Hexahedra3D8 );
 
-    /**
-     * Integration methods implemented in geometry.
-     */
-    typedef GeometryData::IntegrationMethod IntegrationMethod;
+    typedef typename BaseType::IntegrationMethod IntegrationMethod;
 
-    /**
-     * A Vector of counted pointers to Geometries. Used for
-     * returning edges of the geometry.
-     */
     typedef typename BaseType::GeometriesArrayType GeometriesArrayType;
 
-    /**
-     * Type used for coordinate value.
-     */
     typedef typename BaseType::DataType DataType;
 
-    /**
-     * Type used for shape function value.
-     */
     typedef typename BaseType::ValueType ValueType;
 
-    /**
-     * Type used for indexing in geometry class.std::size_t used for indexing
-     * point or integration point access methods and also all other
-     * methods which need point or integration point index.
-     */
     typedef typename BaseType::IndexType IndexType;
 
-    /**
-     * This typed used to return size or dimension in
-     * geometry. Dimension, WorkingDimension, PointsNumber and
-     * ... return this type as their results.
-     */
     typedef typename BaseType::SizeType SizeType;
 
-    /**
-     * Redefinition of template parameter TPointType.
-     */
     typedef typename BaseType::PointType PointType;
 
-    /**
-     * Array of counted pointers to point. This type used to hold
-     * geometry's points.
-     */
     typedef typename BaseType::PointsArrayType PointsArrayType;
 
-    /**
-     * This type used for representing an integration point in
-     * geometry. This integration point is a point with an
-     * additional weight component.
-     */
     typedef typename BaseType::IntegrationPointType IntegrationPointType;
 
-    /**
-     * A Vector of IntegrationPointType which used to hold
-     * integration points related to an integration
-     * method. IntegrationPoints functions used this type to return
-     * their results.
-     */
     typedef typename BaseType::IntegrationPointsArrayType IntegrationPointsArrayType;
 
-    /**
-     * A Vector of IntegrationPointsArrayType which used to hold
-     * integration points related to different integration method
-     * implemented in geometry.
-     */
     typedef typename BaseType::IntegrationPointsContainerType IntegrationPointsContainerType;
 
-    /**
-     * A third order tensor used as shape functions' values
-     * container.
-     */
     typedef typename BaseType::ShapeFunctionsValuesContainerType ShapeFunctionsValuesContainerType;
 
-    /**
-     * A fourth order tensor used as shape functions' local
-     * gradients container in geometry.
-     */
     typedef typename BaseType::ShapeFunctionsLocalGradientsContainerType ShapeFunctionsLocalGradientsContainerType;
 
-    /**
-     * A third order tensor to hold jacobian matrices evaluated at
-     * integration points. Jacobian and InverseOfJacobian functions
-     * return this type as their result.
-     */
     typedef typename BaseType::JacobiansType JacobiansType;
 
-    /**
-     * A third order tensor to hold shape functions' local gradients at all integration points.
-     * ShapefunctionsLocalGradients function return this
-     * type as its result.
-     */
     typedef typename BaseType::ShapeFunctionsGradientsType ShapeFunctionsGradientsType;
 
-    /**
-     * A third order tensor to hold shape functions' local second derivatives at a point.
-     * ShapeFunctionsSecondDerivatives function return this
-     * type as its result.
-     */
     typedef typename BaseType::ShapeFunctionsSecondDerivativesType ShapeFunctionsSecondDerivativesType;
 
-    /**
-    * A fourth order tensor to hold shape functions' local third derivatives at a point.
-    * ShapeFunctionsThirdDerivatives function return this
-    * type as its result.
-    */
     typedef typename BaseType::ShapeFunctionsThirdDerivativesType ShapeFunctionsThirdDerivativesType;
 
-    /**
-     * Type of the normal vector used for normal to edges in geomety.
-     */
     typedef typename BaseType::NormalType NormalType;
 
-    /**
-     * Type of coordinates array
-     */
     typedef typename BaseType::CoordinatesArrayType CoordinatesArrayType;
 
-    /** This type used for representing the local coordinates of
-    an integration point
-    */
     typedef typename BaseType::LocalCoordinatesArrayType LocalCoordinatesArrayType;
 
-    /**
-     * Type of Matrix
-     */
     typedef typename BaseType::MatrixType MatrixType;
     typedef typename BaseType::ZeroMatrixType ZeroMatrixType;
 
-    /**
-     * Type of Vector
-     */
     typedef typename BaseType::VectorType VectorType;
     typedef typename BaseType::ZeroVectorType ZeroVectorType;
 
-    /**
-     * Life Cycle
-     */
+    ///@}
+    ///@name Life Cycle
+    ///@{
+
     Hexahedra3D8( const PointType& Point1, const PointType& Point2,
                   const PointType& Point3, const PointType& Point4,
                   const PointType& Point5, const PointType& Point6,
@@ -281,7 +192,6 @@ public:
     {
     }
 
-    /// Destructor. Does nothing!!!
     ~Hexahedra3D8() override {}
 
     GeometryData::KratosGeometryFamily GetGeometryFamily() const final
@@ -294,9 +204,9 @@ public:
         return GeometryData::KratosGeometryType::Kratos_Hexahedra3D8;
     }
 
-    /**
-     * Operators
-     */
+    ///@}
+    ///@name Operators
+    ///@{
 
     /**
      * Assignment operator.
@@ -334,9 +244,9 @@ public:
         return *this;
     }
 
-    /**
-     * Operations
-     */
+    ///@}
+    ///@name Operations
+    ///@{
 
     typename BaseType::Pointer Create( PointsArrayType const& ThisPoints ) const override
     {
@@ -359,7 +269,6 @@ public:
         return p_clone;
     }
 
-    //lumping factors for the calculation of the lumped mass matrix
     Vector& LumpingFactors( Vector& rResult ) const override
     {
         if(rResult.size() != 8)
@@ -368,26 +277,10 @@ public:
         return rResult;
     }
 
+    ///@}
+    ///@name Information
+    ///@{
 
-    /**
-     * Information
-     */
-
-    /**
-     * This method calculates and returns Length or charactereistic
-     * length of this geometry depending on it's dimension. For one
-     * dimensional geometry for example Line it returns length of it
-     * and for the other geometries it gives Characteristic length
-     * otherwise.
-     *
-     * @return DataType value contains length or Characteristic
-     * length
-     * @see Area()
-     * @see Volume()
-     * @see DomainSize()
-     *
-     * :TODO: might be necessary to reimplement
-     */
     DataType Length() const override
     {
         DataType length = 0.000;
@@ -395,20 +288,6 @@ public:
         return length;
     }
 
-    /**
-     * This method calculates and returns area or surface area of
-     * this geometry depending to it's dimension. For one dimensional
-     * geometry it returns zero, for two dimensional it gives area
-     * and for three dimensional geometries it gives surface area.
-     *
-     *
-     * @return DataType value contains area or surface area.
-     * @see Length()
-     * @see Volume()
-     * @see DomainSize()
-     *
-     * :TODO: might be necessary to reimplement
-     */
     DataType Area() const override
     {
         return Volume();
@@ -429,30 +308,11 @@ public:
         return Volume;
     }
 
-
-    /**
-     * This method calculate and return length, area or volume of
-     * this geometry depending to it's dimension. For one dimensional
-     * geometry it returns its length, for two dimensional it gives area
-     * and for three dimensional geometries it gives its volume.
-     *
-     * @return DataType value contains length, area or volume.
-     * @see Length()
-     * @see Area()
-     * @see Volume()
-     *
-     * :TODO: might be necessary to reimplement
-     */
     DataType DomainSize() const override
     {
         return Volume();
     }
 
-    /**
-     * Returns a matrix of the local coordinates of all points
-     * @param rResult a Matrix that will be overwritten by the results
-     * @return the coordinates of all points of the current geometry
-     */
     Matrix& PointsLocalCoordinates( Matrix& rResult ) const override
     {
         if ( rResult.size1() != 8 || rResult.size2() != 3 )
@@ -493,9 +353,6 @@ public:
         return rResult;
     }
 
-    /**
-     * Returns whether given local point is inside the Geometry
-     */
     bool IsInside( const LocalCoordinatesArrayType& rPoint, const ValueType tol ) const override
     {
         if ( std::abs( rPoint[0] ) < 1 + tol )
@@ -506,13 +363,6 @@ public:
         return false;
     }
 
-    /** This method gives you number of all edges of this
-    geometry.
-    @return SizeType containes number of this geometry edges.
-    @see Edges()
-    @see Edge()
-     */
-    // will be used by refinement algorithm, thus uncommented. janosch.
     SizeType EdgesNumber() const override
     {
         return 12;
@@ -523,13 +373,7 @@ public:
         return 6;
     }
 
-    /** This method gives you all edges of this geometry.
-
-    @return GeometriesArrayType containes this geometry edges.
-    @see EdgesNumber()
-    @see Edge()
-     */
-    GeometriesArrayType Edges( void ) const override
+    GeometriesArrayType Edges() const override
     {
         GeometriesArrayType edges = GeometriesArrayType();
         typedef typename Geometry<TPointType>::Pointer EdgePointerType;
@@ -572,7 +416,7 @@ public:
         return edges;
     }
 
-    GeometriesArrayType Faces( void ) const override
+    GeometriesArrayType Faces() const override
     {
         GeometriesArrayType faces = GeometriesArrayType();
         typedef typename Geometry<TPointType>::Pointer FacePointerType;
@@ -609,20 +453,10 @@ public:
         return faces;
     }
 
-    /**
-     * Shape Function
-     */
+    ///@}
+    ///@name Shape Function
+    ///@{
 
-    /**
-     * Calculates the value of a given shape function at a given point.
-     *
-     * @param ShapeFunctionIndex The number of the desired shape function
-     * @param rPoint the given point in local coordinates at which the
-     * value of the shape function is calculated
-     *
-     * @return the value of the shape function at the given point
-     * TODO: TO BE VERIFIED
-     */
     ValueType ShapeFunctionValue( IndexType ShapeFunctionIndex, const LocalCoordinatesArrayType& rPoint ) const override
     {
         switch ( ShapeFunctionIndex )
@@ -651,15 +485,6 @@ public:
         return 0;
     }
 
-
-    /**
-     * Calculates the gradients in terms of local coordinateds
-     * of all shape functions in a given point.
-     *
-     * @param rPoint the current point at which the gradients are calculated
-     * @return the gradients of all shape functions
-     * \f$ \frac{\partial N^i}{\partial \xi_j} \f$
-     */
     Matrix& ShapeFunctionsLocalGradients( Matrix& rResult, const LocalCoordinatesArrayType& rPoint ) const override
     {
         if ( rResult.size1() != 8 || rResult.size2() != 3 )
@@ -693,14 +518,6 @@ public:
         return rResult;
     }
 
-    /**
-     * Calculates the second derivatives in terms of local coordinateds
-     * of all shape functions in a given point.
-     *
-     * @param rResult the given container will be overwritten by the results
-     * @param rPoint the given local coordinates the derivatives will be evaluated for.
-     * @return a third order tensor containing the second order derivatives for each shape function
-     */
     ShapeFunctionsSecondDerivativesType& ShapeFunctionsSecondDerivatives( ShapeFunctionsSecondDerivativesType& rResult, const LocalCoordinatesArrayType& rPoint ) const override
     {
         if ( rResult.size() != this->PointsNumber() )
@@ -799,44 +616,20 @@ public:
         return rResult;
     }
 
+    ///@}
+    ///@name Input and Output
+    ///@{
 
-    /**
-     * Input and output
-     */
-
-    /**
-     * Turn back information as a string.
-     *
-     * @return String contains information about this geometry.
-     * @see PrintData()
-     * @see PrintInfo()
-     */
     std::string Info() const override
     {
         return "3 dimensional hexahedra with eight nodes in 3D space";
     }
 
-    /**
-     * Print information about this object.
-     *
-     * @param rOStream Stream to print into it.
-     * @see PrintData()
-     * @see Info()
-     */
     void PrintInfo( std::ostream& rOStream ) const override
     {
         rOStream << "3 dimensional hexahedra with eight nodes in 3D space";
     }
 
-    /**
-     * Print geometry's data into given stream.
-     * Prints it's points by the order they stored in the geometry
-     * and then center point of geometry.
-     *
-     * @param rOStream Stream to print into it.
-     * @see PrintInfo()
-     * @see Info()
-     */
     void PrintData( std::ostream& rOStream ) const override
     {
         BaseType::PrintData( rOStream );
@@ -846,19 +639,23 @@ public:
         rOStream << "    Jacobian in the origin\t : " << jacobian;
     }
 
-protected:
+    ///@}
+    ///@name Friends
+    ///@{
 
+    ///@}
+
+protected:
     /**
      * there are no protected class members
      */
 
 private:
 
-    /**
-     * Static Member Variables
-     */
-    static const GeometryData msGeometryData;
+    ///@name Static Member Variables
+    ///@{
 
+    static const GeometryData msGeometryData;
 
     ///@}
     ///@name Serialization
@@ -878,13 +675,10 @@ private:
 
     Hexahedra3D8(): BaseType( PointsArrayType(), &msGeometryData ) {}
 
-    /**
-     * Private Operations
-     */
+    ///@}
+    ///@name Private Operations
+    ///@{
 
-    /**
-     * TODO: TO BE VERIFIED
-     */
     /**
      * Calculates the gradients in terms of local coordinateds
      * of all shape functions in a given point.
@@ -923,10 +717,6 @@ private:
         return result;
     }
 
-
-    /**
-     * TODO: TO BE VERIFIED
-     */
     /**
      * Calculates the values of all shape function in all integration points.
      * Integration points are expected to be given in local coordinates
@@ -988,9 +778,6 @@ private:
         return shape_function_values;
     }
 
-    /**
-     * TODO: TO BE VERIFIED
-     */
     /**
      * Calculates the local gradients of all shape functions in all integration points.
      * Integration points are expected to be given in local coordinates
@@ -1139,16 +926,18 @@ private:
         return shape_functions_local_gradients;
     }
 
-    /**
-     * Private Friends
-     */
+    ///@}
+    ///@name Private Friends
+    ///@{
 
     template<class TOtherPointType> friend class Hexahedra3D8;
 
-    /**
-     * Un accessible methods
-     */
+    ///@}
+    ///@name Un accessible methods
+    ///@{
 
+
+    ///@}
 }; // Class Hexahedra3D8
 
 template<class TPointType> const
@@ -1159,6 +948,6 @@ GeometryData Hexahedra3D8<TPointType>::msGeometryData(
     AllShapeFunctionsLocalGradients()
 );
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #endif // KRATOS_HEXAHEDRA_3D_8_H_INCLUDED  defined
