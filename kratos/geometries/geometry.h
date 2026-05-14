@@ -565,6 +565,27 @@ public:
         return max_dist - min_dist;
     }
 
+    /** This method calculate and return the diameter of an element.
+    It is defined as the largest distance between two points in the element.
+
+    @return CoordinateType value contains the diameter
+    */
+    virtual CoordinateType Diameter() const
+    {
+        ValueType max_dist = -(std::numeric_limits<ValueType>::max)(),
+                  dist;
+        for (unsigned int i = 0; i < this->PointsNumber(); ++i)
+        {
+            for (unsigned int j = i+1; j < this->PointsNumber(); ++j)
+            {
+                dist = norm_2( (( *this )[i]) - (( *this )[j]) );
+
+                if (std::abs(dist) > max_dist) max_dist = dist;
+            }
+        }
+        return max_dist;
+    }
+
     /** This method calculate and return area or surface area of
     this geometry depending to it's dimension. For one dimensional
     geometry it returns zero, for two dimensional it gives area
