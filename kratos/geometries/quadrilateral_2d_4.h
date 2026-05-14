@@ -79,7 +79,7 @@ public:
     /**
      * Integration methods implemented in geometry.
      */
-    typedef GeometryData::IntegrationMethod IntegrationMethod;
+    typedef typename BaseType::IntegrationMethod IntegrationMethod;
 
     /**
      * A Vector of counted pointers to Geometries. Used for
@@ -243,8 +243,7 @@ public:
         : BaseType( ThisPoints, &msGeometryData )
     {
         if ( this->PointsNumber() != 4 )
-            KRATOS_THROW_ERROR( std::invalid_argument,
-                                "Invalid points number. Expected 4, given " , this->PointsNumber() );
+            KRATOS_ERROR << "Invalid points number. Expected 4, given " << this->PointsNumber();
     }
 
     /**
@@ -506,7 +505,7 @@ public:
     @see EdgesNumber()
     @see Edge()
     */
-    GeometriesArrayType Edges( void ) const override
+    GeometriesArrayType Edges() const override
     {
         GeometriesArrayType edges = GeometriesArrayType();
         edges.push_back( EdgeType( this->pGetPoint( 0 ), this->pGetPoint( 1 ) ) );
@@ -545,9 +544,7 @@ public:
         case 3:
             return( 0.25*( 1.0 - rPoint[0] )*( 1.0 + rPoint[1] ) );
         default:
-            KRATOS_THROW_ERROR( std::logic_error,
-                                "Wrong index of shape function!" ,
-                                *this );
+            KRATOS_ERROR << "Invalid index " << ShapeFunctionIndex << " of shape function!";
         }
 
         return 0;
@@ -661,12 +658,12 @@ public:
         noalias( rResult ) = ZeroMatrix( 4, 2 );
         rResult( 0, 0 ) = -0.25 * ( 1.0 - rPoint[1] );
         rResult( 0, 1 ) = -0.25 * ( 1.0 - rPoint[0] );
-        rResult( 1, 0 ) = 0.25 * ( 1.0 - rPoint[1] );
+        rResult( 1, 0 ) =  0.25 * ( 1.0 - rPoint[1] );
         rResult( 1, 1 ) = -0.25 * ( 1.0 + rPoint[0] );
-        rResult( 2, 0 ) = 0.25 * ( 1.0 + rPoint[1] );
-        rResult( 2, 1 ) = 0.25 * ( 1.0 + rPoint[0] );
+        rResult( 2, 0 ) =  0.25 * ( 1.0 + rPoint[1] );
+        rResult( 2, 1 ) =  0.25 * ( 1.0 + rPoint[0] );
         rResult( 3, 0 ) = -0.25 * ( 1.0 + rPoint[1] );
-        rResult( 3, 1 ) = 0.25 * ( 1.0 - rPoint[0] );
+        rResult( 3, 1 ) =  0.25 * ( 1.0 - rPoint[0] );
         return rResult;
     }
 
@@ -1029,6 +1026,6 @@ GeometryData Quadrilateral2D4<TPointType>::msGeometryData(
     AllShapeFunctionsLocalGradients()
 );
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #endif // KRATOS_QUADRILATERAL_2D_4_H_INCLUDED  defined

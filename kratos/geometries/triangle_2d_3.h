@@ -80,7 +80,7 @@ public:
     /**
      * Integration methods implemented in geometry.
      */
-    typedef GeometryData::IntegrationMethod IntegrationMethod;
+    typedef typename BaseType::IntegrationMethod IntegrationMethod;
 
     /**
      * A Vector of counted pointers to Geometries. Used for
@@ -572,7 +572,7 @@ public:
     @see EdgesNumber()
     @see Edge()
      */
-    GeometriesArrayType Edges( void ) const override
+    GeometriesArrayType Edges() const override
     {
         GeometriesArrayType edges = GeometriesArrayType();
 
@@ -584,8 +584,7 @@ public:
 
 
 
-    //Connectivities of faces required
-    void NumberNodesInFaces (DenseVector<unsigned int>& NumberNodesInFaces) const override
+    void NumberNodesInFaces(DenseVector<unsigned int>& NumberNodesInFaces) const override
     {
         if(NumberNodesInFaces.size() != 3 )
             NumberNodesInFaces.resize(3);
@@ -595,7 +594,7 @@ public:
         NumberNodesInFaces[2]=2;
     }
 
-    void NodesInFaces (DenseMatrix<unsigned int>& NodesInFaces) const override
+    void NodesInFaces(DenseMatrix<unsigned int>& NodesInFaces) const override
     {
         if(NodesInFaces.size1() != 3 || NodesInFaces.size2() != 3)
             NodesInFaces.resize(3,3);
@@ -1004,7 +1003,7 @@ private:
         KRATOS_SERIALIZE_LOAD_BASE_CLASS( rSerializer, PointsArrayType );
     }
 
-    Triangle2D3():BaseType( PointsArrayType(), &msGeometryData ) {}
+    Triangle2D3() : BaseType( PointsArrayType(), &msGeometryData ) {}
 
     ///@}
     ///@name Member Variables
@@ -1020,9 +1019,6 @@ private:
     ///@name Private Operations
     ///@{
 
-    /**
-     * TODO: implemented but not yet tested
-     */
     /**
      * Calculates the values of all shape function in all integration points.
      * Integration points are expected to be given in local coordinates
@@ -1057,9 +1053,6 @@ private:
         return shape_function_values;
     }
 
-    /**
-     * TODO: implemented but not yet tested
-     */
     /**
      * Calculates the local gradients of all shape functions
      * in all integration points.
@@ -1167,7 +1160,7 @@ private:
                            const Point<3,DataType>& V2,
                            const Point<3,DataType>& U0,
                            const Point<3,DataType>& U1,
-                           const Point<3,DataType>& U2) const
+                           const Point<3,DataType>& U2 ) const
     {
         short index;
         DataType d1,d2;

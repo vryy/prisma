@@ -20,12 +20,12 @@
 
 // Project includes
 #include "includes/define.h"
-#include "python/add_utilities_to_python.h"
 #include "utilities/openmp_utils.h"
 #include "utilities/constraint_utilities.h"
 #include "utilities/timer.h"
 #include "utilities/geometry_tester.h"
 
+#include "python/add_utilities_to_python.h"
 
 namespace Kratos
 {

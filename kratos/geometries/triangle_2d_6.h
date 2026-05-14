@@ -77,7 +77,7 @@ public:
     /**
      * Integration methods implemented in geometry.
      */
-    typedef GeometryData::IntegrationMethod IntegrationMethod;
+    typedef typename BaseType::IntegrationMethod IntegrationMethod;
 
     /**
      * A Vector of counted pointers to Geometries. Used for

@@ -348,11 +348,15 @@ public:
     /// Destructor. Do nothing!!!
     virtual ~Geometry() {}
 
+    /** Returns the family type of this geometry
+    */
     virtual GeometryData::KratosGeometryFamily GetGeometryFamily() const
     {
         return GeometryData::KratosGeometryFamily::Kratos_generic_family;
     }
 
+    /** Returns the geometry type of this geometry
+    */
     virtual GeometryData::KratosGeometryType GetGeometryType() const
     {
         return GeometryData::KratosGeometryType::Kratos_generic_type;
@@ -525,7 +529,7 @@ public:
     and for the other geometries it gives Characteristic length
     otherwise.
 
-    @return double value contains length or Characteristic
+    @return DataType value contains length or Characteristic
     length
     @see Area()
     @see Volume()
@@ -540,23 +544,23 @@ public:
     length of this geometry depending on the plane normal. This is
     inspired by the crack band approach.
 
-    @return double value contains length or Characteristic
+    @return CoordinateType value contains length or Characteristic
     length
     @see Area()
     @see Volume()
     @see DomainSize()
     */
-    double Length(const CoordinatesArrayType& rNormal) const
+    CoordinateType Length(const CoordinatesArrayType& rNormal) const
     {
-        double max_dist = -(std::numeric_limits<double>::max)(),
-               min_dist = (std::numeric_limits<double>::max)(),
-               dist;
+        ValueType max_dist = -(std::numeric_limits<ValueType>::max)(),
+                  min_dist = (std::numeric_limits<ValueType>::max)(),
+                  dist;
         for (unsigned int i = 0; i < this->PointsNumber(); ++i)
         {
-            dist = inner_prod((( *this )[i]).GetInitialPosition(), rNormal);
+            dist = inner_prod((( *this )[i]), rNormal);
 
-            if (dist > max_dist) max_dist = dist;
-            if (dist < min_dist) min_dist = dist;
+            if (std::abs(dist) > max_dist) max_dist = dist;
+            if (std::abs(dist) < min_dist) min_dist = dist;
         }
         return max_dist - min_dist;
     }
@@ -1075,7 +1079,7 @@ public:
     @see Edge()
     */
     // will be used by refinement algorithm, thus uncommented. janosch.
-    virtual GeometriesArrayType Edges( void ) const
+    virtual GeometriesArrayType Edges() const
     {
         KRATOS_ERROR << "Calling base class Edges method instead of derived class one. Please check the definition of derived class.";
 
@@ -1123,14 +1127,13 @@ public:
      * @see Edges
      * @see FacesNumber
      */
-    virtual GeometriesArrayType Faces( void ) const
+    virtual GeometriesArrayType Faces() const
     {
         KRATOS_ERROR << "Calling base class Faces method instead of derived class one. Please check the definition of derived class.";
 
         return GeometriesArrayType();
     }
 
-    //Connectivities of faces required
     virtual void NumberNodesInFaces (DenseVector<unsigned int>& NumberNodesInFaces) const
     {
         KRATOS_ERROR << "Calling base class NumberNodesInFaces method instead of derived class one. Please check the definition of derived class.";

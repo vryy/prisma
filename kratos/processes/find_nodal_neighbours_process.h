@@ -1,24 +1,23 @@
+//    |  /           |
+//    ' /   __| _` | __|  _ \   __|
+//    . \  |   (   | |   (   |\__ `
+//   _|\_\_|  \__,_|\__|\___/ ____/
+//                   Multi-Physics
 //
-//   Project Name:        Kratos
-//   Last Modified by:    $Author: rrossi $
-//   Date:                $Date: 2007-03-06 10:30:33 $
-//   Revision:            $Revision: 1.3 $
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
+//  Main authors:    Riccardo Rossi
 //
-
 
 #if !defined(KRATOS_FIND_NODAL_NEIGHBOURS_PROCESS_H_INCLUDED )
 #define  KRATOS_FIND_NODAL_NEIGHBOURS_PROCESS_H_INCLUDED
-
-
 
 // System includes
 #include <string>
 #include <iostream>
 
-
 // External includes
-
 
 // Project includes
 #include "includes/define.h"
@@ -26,7 +25,6 @@
 #include "includes/node.h"
 #include "includes/element.h"
 #include "includes/model_part.h"
-
 
 namespace Kratos
 {
@@ -50,10 +48,12 @@ namespace Kratos
 ///@name Kratos Classes
 ///@{
 
-/// Short class definition.
-/** Detail class definition.
-*/
-class FindNodalNeighboursProcess
+/**
+ * @class FindNodalNeighboursProcess
+ * @brief This process looks for neighbours of the node in a finite element mesh.
+ *          This fill the NEIGHBOUR_NODES value field of a node
+ */
+class KRATOS_API(KRATOS_CORE) FindNodalNeighboursProcess
     : public Process
 {
 public:
@@ -70,10 +70,12 @@ public:
     ///@name Life Cycle
     ///@{
 
-    /// Default constructor.
-    /// avg_elems ------ expected number of neighbour elements per node.,
-    /// avg_nodes ------ expected number of neighbour Nodes
-    /// the better the guess for the quantities above the less memory occupied and the fastest the algorithm
+    /**
+     * @brief Default constructor
+     * @param rModelPart The modelpart to be processed
+     * @param AverageElements Expected number of neighbour elements per node.
+     * @param AverageNodes Expected number of neighbour Nodes
+    */
     FindNodalNeighboursProcess(ModelPart& model_part, unsigned int avg_elems = 10, unsigned int avg_nodes = 10)
         : mr_model_part(model_part)
     {
@@ -96,6 +98,9 @@ public:
     ///@name Operations
     ///@{
 
+    /**
+     * @brief This method esxecutes the neighbour search
+     */
     void Execute() override
     {
         NodesContainerType& rNodes = mr_model_part.Nodes();
@@ -103,7 +108,7 @@ public:
 
         //first of all the neighbour nodes and elements array are initialized to the guessed size
         //and empties the old entries
-        for(NodesContainerType::iterator in = rNodes.begin(); in!=rNodes.end(); in++)
+        for(NodesContainerType::iterator in = rNodes.begin(); in != rNodes.end(); in++)
         {
             (in->GetValue(NEIGHBOUR_NODES)).reserve(mavg_nodes);
             WeakPointerVector<Node<3> >& rN = in->GetValue(NEIGHBOUR_NODES);
@@ -146,6 +151,9 @@ public:
         }
     }
 
+    /**
+     * @brief This method clears the neighbours found
+     */
     void ClearNeighbours()
     {
         NodesContainerType& rNodes = mr_model_part.Nodes();

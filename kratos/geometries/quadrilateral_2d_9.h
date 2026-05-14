@@ -488,7 +488,7 @@ public:
      * @see EdgesNumber()
      * @see Edge()
      */
-    GeometriesArrayType Edges( void ) const override
+    GeometriesArrayType Edges() const override
     {
         GeometriesArrayType edges = GeometriesArrayType();
         edges.push_back( EdgeType( this->pGetPoint( 0 ), this->pGetPoint( 4 ), this->pGetPoint( 1 ) ) );
