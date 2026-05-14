@@ -582,7 +582,10 @@ public:
         return edges;
     }
 
-
+    GeometriesArrayType Faces() const override
+    {
+        return Edges();
+    }
 
     void NumberNodesInFaces(DenseVector<unsigned int>& NumberNodesInFaces) const override
     {

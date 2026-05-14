@@ -598,6 +598,11 @@ public:
         return 3;
     }
 
+    SizeType FacesNumber() const override
+    {
+        return 3;
+    }
+
     /** This method gives you all edges of this geometry. This
     method will gives you all the edges with one dimension less
     than this geometry. for example a triangle would return
@@ -617,6 +622,11 @@ public:
         edges.push_back( EdgeType( this->pGetPoint( 1 ), this->pGetPoint( 4 ), this->pGetPoint( 2 ) ) );
         edges.push_back( EdgeType( this->pGetPoint( 2 ), this->pGetPoint( 5 ), this->pGetPoint( 0 ) ) );
         return edges;
+    }
+
+    GeometriesArrayType Faces() const override
+    {
+        return Edges();
     }
 
 //    /**

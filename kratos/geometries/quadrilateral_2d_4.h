@@ -515,6 +515,16 @@ public:
         return edges;
     }
 
+    SizeType FacesNumber() const override
+    {
+        return 4;
+    }
+
+    GeometriesArrayType Faces() const override
+    {
+        return Edges();
+    }
+
     ///@}
     ///@name Shape Function
     ///@{
