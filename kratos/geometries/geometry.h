@@ -2188,25 +2188,6 @@ public:
         return rResult;
     }
 
-    DenseVector<Matrix> const& MassFactors() const
-    {
-        return mpGeometryData->MassFactors();
-    }
-
-    DenseVector<Matrix> const& MassFactors( IntegrationMethod ThisMethod ) const
-    {
-        return mpGeometryData->MassFactors( ThisMethod );
-    }
-
-    Matrix const& MassFactors( IndexType IntegrationPointIndex ) const
-    {
-        return mpGeometryData->MassFactors( IntegrationPointIndex );
-    }
-
-    Matrix const& MassFactors( IndexType IntegrationPointIndex, IntegrationMethod ThisMethod ) const
-    {
-        return mpGeometryData->MassFactors( IntegrationPointIndex, ThisMethod );
-    }
 
     ///@}
     ///@name Input and output

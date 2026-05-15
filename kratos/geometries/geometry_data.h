@@ -314,16 +314,8 @@ public:
         , mShapeFunctionsValues( ThisShapeFunctionsValues )
         , mShapeFunctionsLocalGradients( ThisShapeFunctionsLocalGradients )
     {
-        for ( unsigned int i = 0 ; i < static_cast<int>(IntegrationMethod::NumberOfIntegrationMethods) ; i++ )
-        {
-            DenseVector<Matrix> temp( mIntegrationPoints[i].size() );
 
-            for ( unsigned int j = 0 ; j < mIntegrationPoints[i].size() ; j++ )
-                //temp[j]=outer_prod(mShapeFunctionsValues[i][j], mShapeFunctionsValues[i][j]);
-                temp[j] = outer_prod( row( mShapeFunctionsValues[i], j ), row( mShapeFunctionsValues[i], j ) );
 
-            mMassFactors[i] = temp;
-        }
     }
 
     /** Copy constructor.
@@ -337,15 +329,11 @@ public:
         , mIntegrationPoints( rOther.mIntegrationPoints )
         , mShapeFunctionsValues( rOther.mShapeFunctionsValues )
         , mShapeFunctionsLocalGradients( rOther.mShapeFunctionsLocalGradients )
-        , mMassFactors( rOther.mMassFactors )
     {
     }
 
-
-
     /// Destructor. Do nothing!!!
     virtual ~GeometryData() {}
-
 
     ///@}
     ///@name Operators
@@ -370,7 +358,6 @@ public:
         mIntegrationPoints = rOther.mIntegrationPoints;
         mShapeFunctionsValues = rOther.mShapeFunctionsValues;
         mShapeFunctionsLocalGradients = rOther.mShapeFunctionsLocalGradients;
-        mMassFactors = rOther.mMassFactors;
 
         return *this;
     }
@@ -728,25 +715,6 @@ public:
         return mShapeFunctionsLocalGradients[static_cast<int>(ThisMethod)][IntegrationPointIndex];
     }
 
-    DenseVector<Matrix> const& MassFactors() const
-    {
-        return mMassFactors[static_cast<int>(mDefaultMethod)];
-    }
-
-    DenseVector<Matrix> const& MassFactors( IntegrationMethod ThisMethod ) const
-    {
-        return mMassFactors[static_cast<int>(ThisMethod)];
-    }
-
-    Matrix const& MassFactors( IndexType IntegrationPointIndex ) const
-    {
-        return mMassFactors[static_cast<int>(mDefaultMethod)][IntegrationPointIndex];
-    }
-
-    Matrix const& MassFactors( IndexType IntegrationPointIndex, IntegrationMethod ThisMethod ) const
-    {
-        return mMassFactors[static_cast<int>(ThisMethod)][IntegrationPointIndex];
-    }
 
     ///@}
     ///@name Input and output
@@ -856,9 +824,7 @@ private:
 
     ShapeFunctionsLocalGradientsContainerType mShapeFunctionsLocalGradients;
 
-    MassFactorsContainerType mMassFactors;
 
-    LampedMassFactorsContainerType mLampedMassFactors;
 
     ///@}
     ///@name Serialization
