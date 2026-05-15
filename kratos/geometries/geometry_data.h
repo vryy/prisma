@@ -576,10 +576,10 @@ public:
     double ShapeFunctionValue( IndexType IntegrationPointIndex, IndexType ShapeFunctionIndex ) const
     {
         if ( mShapeFunctionsValues[static_cast<int>(mDefaultMethod)].size1() <= IntegrationPointIndex )
-            KRATOS_THROW_ERROR( std::invalid_argument, "No existing integration point", "" );
+            KRATOS_ERROR << "No existing integration point";
 
         if ( mShapeFunctionsValues[static_cast<int>(mDefaultMethod)].size2() <= ShapeFunctionIndex )
-            KRATOS_THROW_ERROR( std::invalid_argument, "No existing shape function value", "" );
+            KRATOS_ERROR << "No existing shape function value";
 
         return mShapeFunctionsValues[static_cast<int>(mDefaultMethod)]( IntegrationPointIndex, ShapeFunctionIndex );
     }
@@ -609,10 +609,10 @@ public:
     double ShapeFunctionValue( IndexType IntegrationPointIndex, IndexType ShapeFunctionIndex, IntegrationMethod ThisMethod ) const
     {
         if ( mShapeFunctionsValues[static_cast<int>(ThisMethod)].size1() <= IntegrationPointIndex )
-            KRATOS_THROW_ERROR( std::invalid_argument, "No existing integration point", "" );
+            KRATOS_ERROR << "No existing integration point";
 
         if ( mShapeFunctionsValues[static_cast<int>(ThisMethod)].size2() <= ShapeFunctionIndex )
-            KRATOS_THROW_ERROR( std::invalid_argument, "No existing shape function value", "" );
+            KRATOS_ERROR << "No existing shape function value";
 
         return mShapeFunctionsValues[static_cast<int>(ThisMethod)]( IntegrationPointIndex, ShapeFunctionIndex );
     }
@@ -692,7 +692,7 @@ public:
     const Matrix& ShapeFunctionLocalGradient( IndexType IntegrationPointIndex ) const
     {
         if ( mShapeFunctionsLocalGradients[static_cast<int>(mDefaultMethod)].size() <= IntegrationPointIndex )
-            KRATOS_THROW_ERROR( std::invalid_argument, "No existing integration point", "" );
+            KRATOS_ERROR << "No existing integration point";
 
         return mShapeFunctionsLocalGradients[static_cast<int>(mDefaultMethod)][IntegrationPointIndex];
     }
@@ -723,7 +723,7 @@ public:
     const Matrix& ShapeFunctionLocalGradient( IndexType IntegrationPointIndex, IndexType ShapeFunctionIndex, IntegrationMethod ThisMethod ) const
     {
         if ( mShapeFunctionsLocalGradients[static_cast<int>(ThisMethod)].size() <= IntegrationPointIndex )
-            KRATOS_THROW_ERROR( std::invalid_argument, "No existing integration point", "" );
+            KRATOS_ERROR << "No existing integration point";
 
         return mShapeFunctionsLocalGradients[static_cast<int>(ThisMethod)][IntegrationPointIndex];
     }
@@ -788,7 +788,6 @@ public:
         rOStream << "    working space dimension : " << mWorkingSpaceDimension << std::endl;
         rOStream << "    Local space dimension   : " << mLocalSpaceDimension;
     }
-
 
     ///@}
     ///@name Friends
@@ -872,12 +871,6 @@ private:
         rSerializer.save( "Dimension", mDimension );
         rSerializer.save( "Working Space Dimension", mWorkingSpaceDimension );
         rSerializer.save( "Local Space Dimension", mLocalSpaceDimension );
-//    rSerializer.save("Default Method", mDefaultMethod);
-//    rSerializer.save("Integration Points", mIntegrationPoints);
-//    rSerializer.save("Shape Functions Values", mShapeFunctionsValues);
-//    rSerializer.save("Shape Functions Local Gradients", mShapeFunctionsLocalGradients);
-//    rSerializer.save("Mass Factors", mMassFactors);
-//    rSerializer.save("Lamped Mass Factors", mLampedMassFactors);
     }
 
     virtual void load( Serializer& rSerializer )
@@ -885,19 +878,12 @@ private:
         rSerializer.load( "Dimension", mDimension );
         rSerializer.load( "Working Space Dimension", mWorkingSpaceDimension );
         rSerializer.load( "Local Space Dimension", mLocalSpaceDimension );
-//    rSerializer.load("Default Method", mDefaultMethod);
-//    rSerializer.load("Integration Points", mIntegrationPoints);
-//    rSerializer.load("Shape Functions Values", mShapeFunctionsValues);
-//    rSerializer.load("Shape Functions Local Gradients", mShapeFunctionsLocalGradients);
-//    rSerializer.load("Mass Factors", mMassFactors);
-//    rSerializer.load("Lamped Mass Factors", mLampedMassFactors);
     }
 
     // Private default constructor for serialization
     GeometryData()
     {
     }
-
 
     ///@}
     ///@name Private Operators
@@ -941,7 +927,6 @@ private:
 ///@}
 ///@name Input and output
 ///@{
-
 
 /// input stream function
 inline std::istream& operator >> ( std::istream& rIStream,

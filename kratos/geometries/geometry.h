@@ -467,7 +467,7 @@ public:
     #endif
 
     //lumping factors for the calculation of the lumped mass matrix
-    virtual Vector& LumpingFactors( Vector& rResult )  const
+    virtual Vector& LumpingFactors( Vector& rResult ) const
     {
         KRATOS_ERROR << "Called the virtual function for LumpingFactors";
         return rResult;
@@ -1426,9 +1426,9 @@ public:
         rResult.clear();
         for ( unsigned int i = 0; i < this->PointsNumber(); i++ )
         {
-            for(unsigned int k=0; k<this->WorkingSpaceDimension(); k++)
+            for(unsigned int k = 0; k < this->WorkingSpaceDimension(); k++)
             {
-                for(unsigned int m=0; m<this->LocalSpaceDimension(); m++)
+                for(unsigned int m = 0; m < this->LocalSpaceDimension(); m++)
                 {
                     rResult(k,m) += (( *this )[i]).Coordinates()[k]*ShapeFunctionsGradientInIntegrationPoint(i,m);
                 }
@@ -1468,9 +1468,9 @@ public:
         rResult.clear();
         for ( unsigned int i = 0; i < this->PointsNumber(); i++ )
         {
-            for(unsigned int k=0; k<this->WorkingSpaceDimension(); k++)
+            for(unsigned int k = 0; k < this->WorkingSpaceDimension(); k++)
             {
-                for(unsigned int m=0; m<this->LocalSpaceDimension(); m++)
+                for(unsigned int m = 0; m < this->LocalSpaceDimension(); m++)
                 {
                     rResult(k,m) += ( (( *this )[i]).Coordinates()[k]  - DeltaPosition(i,k)  )*ShapeFunctionsGradientInIntegrationPoint(i,m);
                 }
@@ -1502,9 +1502,9 @@ public:
         rResult.clear();
         for ( unsigned int i = 0; i < this->PointsNumber(); i++ )
         {
-            for(unsigned int k=0; k<this->WorkingSpaceDimension(); k++)
+            for(unsigned int k = 0; k < this->WorkingSpaceDimension(); k++)
             {
-                for(unsigned int m=0; m<this->LocalSpaceDimension(); m++)
+                for(unsigned int m = 0; m < this->LocalSpaceDimension(); m++)
                 {
                     rResult(k,m) += (( *this )[i]).Coordinates()[k]*shape_functions_gradients(i,m);
                 }
@@ -1539,9 +1539,9 @@ public:
         rResult.clear();
         for ( unsigned int i = 0; i < this->PointsNumber(); i++ )
         {
-            for(unsigned int k=0; k<this->WorkingSpaceDimension(); k++)
+            for(unsigned int k = 0; k < this->WorkingSpaceDimension(); k++)
             {
-                for(unsigned int m=0; m<this->LocalSpaceDimension(); m++)
+                for(unsigned int m = 0; m < this->LocalSpaceDimension(); m++)
                 {
                     rResult(k,m) += (  (( *this )[i]).Coordinates()[k] - DeltaPosition(i,k)  )*shape_functions_gradients(i,m);
                 }
@@ -1640,7 +1640,6 @@ public:
         return MathUtils<DataType>::Det(J);
     }
 
-
     /** Determinant of jacobian in given point. This method calculate determinant of jacobian
     matrix in given point.
 
@@ -1659,7 +1658,6 @@ public:
         this->Jacobian( J, rPoint);
         return MathUtils<DataType>::Det(J);
     }
-
 
     /** Inverse of jacobians for default integration method. This method just
     call InverseOfJacobian(enum IntegrationMethod ThisMethod) with

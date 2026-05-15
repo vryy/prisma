@@ -220,9 +220,7 @@ public:
         : BaseType( ThisPoints, &msGeometryData )
     {
         if ( this->PointsNumber() != 27 )
-            KRATOS_THROW_ERROR( std::invalid_argument,
-                                "Invalid points number. Expected 27, given " ,
-                                this->PointsNumber() );
+            KRATOS_ERROR << "Invalid points number. Expected 27, given " << this->PointsNumber();
     }
 
     /**
@@ -607,8 +605,7 @@ public:
             return( fx3*fy3*fz3 );
 
         default:
-            KRATOS_THROW_ERROR( std::logic_error,
-                                "Wrong index of shape function!" , *this );
+            KRATOS_ERROR << "Wrong index of shape function!";
         }
 
         return 0;

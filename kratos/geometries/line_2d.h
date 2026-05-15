@@ -123,8 +123,7 @@ public:
         : BaseType(ThisPoints, &msGeometryData)
     {
         if( BaseType::PointsNumber() != 2)
-            KRATOS_THROW_ERROR(std::invalid_argument,
-                         "Invalid points number. Expected 2, given " , BaseType::PointsNumber());
+            KRATOS_ERROR << "Invalid points number. Expected 2, given " << BaseType::PointsNumber();
     }
 
     /** Copy constructor.

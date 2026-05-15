@@ -137,9 +137,7 @@ public:
         : BaseType(ThisPoints, &msGeometryData)
     {
         if( this->PointsNumber() != 4)
-            KRATOS_THROW_ERROR(std::invalid_argument,
-                               "Invalid points number. Expected 4, given " ,
-                               this->PointsNumber());
+            KRATOS_ERROR << "Invalid points number. Expected 4, given " << this->PointsNumber();
     }
 
     /**
@@ -442,8 +440,7 @@ public:
         case 3:
             return( rPoint[2] );
         default:
-            KRATOS_THROW_ERROR(std::logic_error,
-                               "Wrong index of shape function!" , *this);
+            KRATOS_ERROR << "Wrong index of shape function!";
         }
         return 0;
     }
@@ -464,8 +461,7 @@ public:
         const unsigned int integration_points_number =
             msGeometryData.IntegrationPointsNumber(ThisMethod);
         if(integration_points_number == 0)
-            KRATOS_THROW_ERROR(std::logic_error,
-                               "This integration method is not supported" , *this);
+            KRATOS_ERROR << "This integration method is not supported";
 
         BoundedMatrix<DataType,4,3> DN_DX;
         DataType x10 = this->Points()[1].X() - this->Points()[0].X();
@@ -514,8 +510,7 @@ public:
         const unsigned int integration_points_number =
             msGeometryData.IntegrationPointsNumber(ThisMethod);
         if(integration_points_number == 0)
-            KRATOS_THROW_ERROR(std::logic_error,
-                               "This integration method is not supported" , *this);
+            KRATOS_ERROR << "This integration method is not supported";
 
         BoundedMatrix<DataType,4,3> DN_DX;
         DataType x10 = this->Points()[1].X() - this->Points()[0].X();

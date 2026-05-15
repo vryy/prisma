@@ -124,8 +124,7 @@ public:
         : BaseType( ThisPoints, &msGeometryData )
     {
         if ( BaseType::PointsNumber() != 2 )
-            KRATOS_THROW_ERROR( std::invalid_argument,
-                          "Invalid points number. Expected 2, given " , BaseType::PointsNumber() );
+            KRATOS_ERROR << "Invalid points number. Expected 2, given " << BaseType::PointsNumber();
     }
 
     /** Copy constructor.
@@ -344,37 +343,37 @@ public:
 
     VectorType& DeterminantOfJacobian( VectorType& rResult, IntegrationMethod ThisMethod ) const override
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square" , "" );
+        KRATOS_ERROR << "Jacobian is not square";
         return rResult;
     }
 
     DataType DeterminantOfJacobian( IndexType IntegrationPointIndex, IntegrationMethod ThisMethod ) const override
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square" , "" );
+        KRATOS_ERROR << "Jacobian is not square";
         return 0.0;
     }
 
     DataType DeterminantOfJacobian( const LocalCoordinatesArrayType& rPoint ) const override
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square" , "" );
+        KRATOS_ERROR << "Jacobian is not square";
         return 0.0;
     }
 
     JacobiansType& InverseOfJacobian( JacobiansType& rResult, IntegrationMethod ThisMethod ) const override
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square" , "" );
+        KRATOS_ERROR << "Jacobian is not square";
         return rResult;
     }
 
     MatrixType& InverseOfJacobian( MatrixType& rResult, IndexType IntegrationPointIndex, IntegrationMethod ThisMethod ) const override
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square" , "" );
+        KRATOS_ERROR << "Jacobian is not square";
         return rResult;
     }
 
     MatrixType& InverseOfJacobian( MatrixType& rResult, const LocalCoordinatesArrayType& rPoint ) const override
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square" , "" );
+        KRATOS_ERROR << "Jacobian is not square";
         return rResult;
     }
 
@@ -404,7 +403,7 @@ public:
 
     ShapeFunctionsIntegrationPointsGradientsType& ShapeFunctionsIntegrationPointsGradients( ShapeFunctionsIntegrationPointsGradientsType& rResult, IntegrationMethod ThisMethod ) const override
     {
-        KRATOS_ERROR << "Jacobian is not square";
+        KRATOS_ERROR << "Not yet implemented";
         return rResult;
     }
 

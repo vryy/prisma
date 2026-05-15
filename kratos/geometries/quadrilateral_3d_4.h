@@ -144,8 +144,7 @@ public:
         : BaseType( ThisPoints, &msGeometryData )
     {
         if ( this->PointsNumber() != 4 )
-            KRATOS_THROW_ERROR( std::invalid_argument,
-                          "Invalid points number. Expected 4, given " , this->PointsNumber() );
+            KRATOS_ERROR << "Invalid points number. Expected 4, given " << this->PointsNumber();
     }
 
     /**
@@ -461,7 +460,6 @@ public:
                     KRATOS_ERROR << "detJ =" << det_j << "DeltaX = " << DeltaXi << " stopping calculation at iteration " << k;
                 }
                 break;
-                //KRATOS_THROW_ERROR(std::logic_error,"computation of local coordinates failed at iteration",k)
             }
 
             if ( norm_2( DeltaXi ) < tol )
@@ -542,7 +540,6 @@ public:
                     KRATOS_ERROR << "detJ =" << det_j << "DeltaX = " << DeltaXi << " stopping calculation at iteration " << k;
                 }
                 break;
-                //KRATOS_THROW_ERROR(std::logic_error,"computation of local coordinates failed at iteration",k)
             }
 
             if ( norm_2( DeltaXi ) < tol )
@@ -637,9 +634,7 @@ public:
         case 3:
             return( 0.25*( 1.0 - rPoint[0] )*( 1.0 + rPoint[1] ) );
         default:
-            KRATOS_THROW_ERROR( std::logic_error,
-                          "Wrong index of shape function!" ,
-                          *this );
+            KRATOS_ERROR << "Wrong index of shape function!";
         }
 
         return 0;
@@ -652,8 +647,7 @@ public:
             msGeometryData.IntegrationPointsNumber( ThisMethod );
 
         if ( integration_points_number == 0 )
-            KRATOS_THROW_ERROR( std::logic_error,
-                          "This integration method is not supported" , *this );
+            KRATOS_ERROR << "This integration method is not supported";
 
         //workaround by riccardo
         if ( rResult.size() != integration_points_number )
