@@ -333,7 +333,7 @@ public:
 
     SizeType EdgesNumber() const override
     {
-        return 2;
+        return 1;
     }
 
     ///@}

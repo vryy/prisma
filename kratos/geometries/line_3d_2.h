@@ -379,12 +379,12 @@ public:
 
     SizeType EdgesNumber() const override
     {
-        return 2; // TODO check
+        return 1;
     }
 
     SizeType FacesNumber() const override
     {
-        return 2; // TODO check
+        return 1;
     }
 
     ///@}
