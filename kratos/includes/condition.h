@@ -423,7 +423,7 @@ public:
 
     /**
      * is called to rewind the constitutive law parameters and the material properties
-     * REMARK: EXPERIMENTAL METHOD
+     * the condition variables will be rewinded using this method
      */
     virtual void RewindConstitutiveLaw()
     {

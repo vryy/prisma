@@ -434,7 +434,7 @@ public:
 
     /**
      * is called to rewind the constitutive law parameters and the material properties
-     * REMARK: EXPERIMENTAL METHOD
+     * the elemental variables will be rewinded using this method
      */
     virtual void RewindConstitutiveLaw()
     {
@@ -641,7 +641,6 @@ public:
      * CalculateSecondDerivativesLHS, CalculateSecondDerivativesRHS methods are : OPTIONAL
      */
 
-
    /**
      * this is called during the assembling process in order
      * to calculate the second derivative contributions for the LHS and RHS
@@ -726,7 +725,6 @@ public:
         KRATOS_ERROR << "Element " << this->Id() << ", type " << typeid(*this).name() << ": "
                      << __FUNCTION__ << " is not implemented";
     }
-
 
     /**
      * ELEMENTS inherited from this class must implement this methods
