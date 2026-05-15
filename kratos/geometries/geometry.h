@@ -31,6 +31,11 @@
 
 #include "utilities/math_utils.h"
 
+#ifdef ENABLE_BEZIER_GEOMETRY
+    #define MARK_BEZIER_VIRTUAL virtual
+#else
+    #define MARK_BEZIER_VIRTUAL
+#endif
 
 namespace Kratos
 {
@@ -1828,17 +1833,10 @@ public:
     @see ShapeFunctionsLocalGradients
     @see ShapeFunctionLocalGradient
     */
-    #ifdef ENABLE_BEZIER_GEOMETRY
-    virtual const Matrix& ShapeFunctionsValues() const
+    MARK_BEZIER_VIRTUAL const Matrix& ShapeFunctionsValues() const
     {
         return mpGeometryData->ShapeFunctionsValues();
     }
-    #else
-    const Matrix& ShapeFunctionsValues() const
-    {
-        return mpGeometryData->ShapeFunctionsValues();
-    }
-    #endif
 
     /** This method gives all non-zero shape functions values
     evaluated at the rCoordinates provided
@@ -1882,17 +1880,10 @@ public:
     @see ShapeFunctionsLocalGradients
     @see ShapeFunctionLocalGradient
     */
-    #ifdef ENABLE_BEZIER_GEOMETRY
-    virtual const Matrix& ShapeFunctionsValues( IntegrationMethod ThisMethod )  const
+    MARK_BEZIER_VIRTUAL const Matrix& ShapeFunctionsValues( IntegrationMethod ThisMethod ) const
     {
         return mpGeometryData->ShapeFunctionsValues( ThisMethod );
     }
-    #else
-    const Matrix& ShapeFunctionsValues( IntegrationMethod ThisMethod )  const
-    {
-        return mpGeometryData->ShapeFunctionsValues( ThisMethod );
-    }
-    #endif
 
     /** This method gives value of given shape function evaluated in
     given integration point of default integration method. It just
@@ -1916,17 +1907,10 @@ public:
     @see ShapeFunctionsLocalGradients
     @see ShapeFunctionLocalGradient
     */
-    #ifdef ENABLE_BEZIER_GEOMETRY
-    virtual ValueType ShapeFunctionValue( IndexType IntegrationPointIndex, IndexType ShapeFunctionIndex ) const
+    MARK_BEZIER_VIRTUAL ValueType ShapeFunctionValue( IndexType IntegrationPointIndex, IndexType ShapeFunctionIndex ) const
     {
         return mpGeometryData->ShapeFunctionValue( IntegrationPointIndex, ShapeFunctionIndex );
     }
-    #else
-    ValueType ShapeFunctionValue( IndexType IntegrationPointIndex, IndexType ShapeFunctionIndex ) const
-    {
-        return mpGeometryData->ShapeFunctionValue( IntegrationPointIndex, ShapeFunctionIndex );
-    }
-    #endif
 
     /** This method gives value of given shape function evaluated in given
     integration point of given integration method. There is no
@@ -1950,17 +1934,10 @@ public:
     @see ShapeFunctionsLocalGradients
     @see ShapeFunctionLocalGradient
     */
-    #ifdef ENABLE_BEZIER_GEOMETRY
-    virtual ValueType ShapeFunctionValue( IndexType IntegrationPointIndex, IndexType ShapeFunctionIndex, IntegrationMethod ThisMethod ) const
+    MARK_BEZIER_VIRTUAL ValueType ShapeFunctionValue( IndexType IntegrationPointIndex, IndexType ShapeFunctionIndex, IntegrationMethod ThisMethod ) const
     {
         return mpGeometryData->ShapeFunctionValue( IntegrationPointIndex, ShapeFunctionIndex, ThisMethod );
     }
-    #else
-    ValueType ShapeFunctionValue( IndexType IntegrationPointIndex, IndexType ShapeFunctionIndex, IntegrationMethod ThisMethod ) const
-    {
-        return mpGeometryData->ShapeFunctionValue( IntegrationPointIndex, ShapeFunctionIndex, ThisMethod );
-    }
-    #endif
 
     /** This method gives value of given shape function evaluated in given
     point.
@@ -2003,17 +1980,10 @@ public:
     @see ShapeFunctionValue
     @see ShapeFunctionLocalGradient
     */
-    #ifdef ENABLE_BEZIER_GEOMETRY
-    virtual const ShapeFunctionsGradientsType& ShapeFunctionsLocalGradients() const
+    MARK_BEZIER_VIRTUAL const ShapeFunctionsGradientsType& ShapeFunctionsLocalGradients() const
     {
         return mpGeometryData->ShapeFunctionsLocalGradients();
     }
-    #else
-    const ShapeFunctionsGradientsType& ShapeFunctionsLocalGradients() const
-    {
-        return mpGeometryData->ShapeFunctionsLocalGradients();
-    }
-    #endif
 
     /** This method gives all shape functions gradients evaluated in
     all integration points of given integration method. There is
@@ -2036,17 +2006,10 @@ public:
     @see ShapeFunctionValue
     @see ShapeFunctionLocalGradient
     */
-    #ifdef ENABLE_BEZIER_GEOMETRY
-    virtual const ShapeFunctionsGradientsType& ShapeFunctionsLocalGradients( IntegrationMethod ThisMethod ) const
+    MARK_BEZIER_VIRTUAL const ShapeFunctionsGradientsType& ShapeFunctionsLocalGradients( IntegrationMethod ThisMethod ) const
     {
         return mpGeometryData->ShapeFunctionsLocalGradients( ThisMethod );
     }
-    #else
-    const ShapeFunctionsGradientsType& ShapeFunctionsLocalGradients( IntegrationMethod ThisMethod ) const
-    {
-        return mpGeometryData->ShapeFunctionsLocalGradients( ThisMethod );
-    }
-    #endif
 
     /** This method gives gradient of given shape function evaluated in
     given integration point of default integration method. It just
@@ -2070,17 +2033,10 @@ public:
     @see ShapeFunctionValue
     @see ShapeFunctionsLocalGradients
     */
-    #ifdef ENABLE_BEZIER_GEOMETRY
-    virtual const Matrix& ShapeFunctionLocalGradient( IndexType IntegrationPointIndex )  const
+    MARK_BEZIER_VIRTUAL const Matrix& ShapeFunctionLocalGradient( IndexType IntegrationPointIndex ) const
     {
         return mpGeometryData->ShapeFunctionLocalGradient( IntegrationPointIndex );
     }
-    #else
-    const Matrix& ShapeFunctionLocalGradient( IndexType IntegrationPointIndex )  const
-    {
-        return mpGeometryData->ShapeFunctionLocalGradient( IntegrationPointIndex );
-    }
-    #endif
 
     /** This method gives gradient of given shape function evaluated
     in given integration point of given integration
@@ -2105,9 +2061,10 @@ public:
     @see ShapeFunctionValue
     @see ShapeFunctionsLocalGradients
     */
-//     Matrix& ShapeFunctionLocalGradient(IndexType IntegrationPointIndex, IndexType ShapeFunctionIndex, IntegrationMethod ThisMethod)  const
-// {return mpGeometryData->ShapeFunctionLocalGradient(IntegrationPointIndex, ThisMethod);}
-
+    MARK_BEZIER_VIRTUAL const Matrix& ShapeFunctionLocalGradient(IndexType IntegrationPointIndex, IndexType ShapeFunctionIndex, IntegrationMethod ThisMethod) const
+    {
+        return mpGeometryData->ShapeFunctionLocalGradient(IntegrationPointIndex, ShapeFunctionIndex, ThisMethod);
+    }
 
     /** This method gives gradient of all shape functions evaluated
      * in given point.
