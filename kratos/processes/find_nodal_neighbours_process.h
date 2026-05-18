@@ -53,8 +53,7 @@ namespace Kratos
  * @brief This process looks for neighbours of the node in a finite element mesh.
  *          This fill the NEIGHBOUR_NODES value field of a node
  */
-class KRATOS_API(KRATOS_CORE) FindNodalNeighboursProcess
-    : public Process
+class FindNodalNeighboursProcess : public Process
 {
 public:
     ///@name Type Definitions
