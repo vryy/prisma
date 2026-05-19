@@ -38,6 +38,7 @@
 #include "containers/fix_data_value_container.h"
 #include "containers/vector_component_adaptor.h"
 #include "containers/flags.h"
+#include "containers/interface_container.h"
 #include "python/variable_indexing_python.h"
 #include "python/vector_python_interface.h"
 #include "python/vector_scalar_operator_python.h"
@@ -351,6 +352,11 @@ void AddContainersToPython()
     .def("Clear", &Flags::Clear)
     .def("__or__", FlagsOr)
     .def("__and__", FlagsOr) // this is not an error, the and and or are considered both as add. Pooyan.
+    .def( self_ns::str( self ) )
+    ;
+
+    class_<InterfaceContainer, InterfaceContainer::Pointer, boost::noncopyable>("InterfaceContainer", init<>())
+    .def(init<const ModelPart&>())
     .def( self_ns::str( self ) )
     ;
 
