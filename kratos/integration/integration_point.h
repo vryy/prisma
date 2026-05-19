@@ -20,7 +20,6 @@
 #include <vector>
 
 // External includes
-#include <boost/array.hpp>
 
 // Project includes
 #include "includes/define.h"
@@ -49,8 +48,8 @@ namespace Kratos
 ///@name Kratos Classes
 ///@{
 
-/// Short class definition.
-/** Detail class definition.
+/// Integration point class.
+/** Define an integration point in 3D with weight.
 */
 template<std::size_t TDimension, class TDataType = KRATOS_DOUBLE_TYPE, class TWeightType = KRATOS_DOUBLE_TYPE>
 class IntegrationPoint : public Point<TDimension, TDataType>
@@ -154,8 +153,7 @@ public:
         : BaseType(rOtherCoordinates), mWeight(NewWeight) {}
 
     /// Destructor.
-    virtual ~IntegrationPoint() {}
-
+    ~IntegrationPoint() override {}
 
     ///@}
     ///@name Operators
@@ -234,7 +232,7 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const override
     {
         std::stringstream buffer;
         buffer << TDimension << " dimensional integration point";
@@ -242,15 +240,15 @@ public:
     }
 
     /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << TDimension << " dimensional integration point";
     }
 
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
-        if(!TDimension)
+        if constexpr (!TDimension)
             return;
 
         rOStream << "("  << this->operator[](0);
@@ -260,8 +258,6 @@ public:
 
         rOStream << "), weight = " << mWeight;
     }
-
-
 
     ///@}
     ///@name Friends
@@ -357,7 +353,6 @@ private:
 ///@name Input and output
 ///@{
 
-
 /// input stream function
 template<std::size_t TDimension, class TDataType, class TWeightType>
 inline std::istream& operator >> (std::istream& rIStream,
@@ -386,9 +381,6 @@ inline TStream& operator << (TStream& rOStream,
 
 ///@}
 
-
 }  // namespace Kratos.
 
-#endif // KRATOS_INTEGRATION_POINT_H_INCLUDED  defined 
-
-
+#endif // KRATOS_INTEGRATION_POINT_H_INCLUDED  defined

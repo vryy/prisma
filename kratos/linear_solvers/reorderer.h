@@ -92,7 +92,6 @@ public:
     /// Destructor.
     virtual ~Reorderer() {}
 
-
     ///@}
     ///@name Operators
     ///@{
@@ -102,7 +101,6 @@ public:
     {
         return *this;
     }
-
 
     ///@}
     ///@name Operations
@@ -169,7 +167,6 @@ public:
     {
     }
 
-
     ///@}
     ///@name Friends
     ///@{
@@ -224,7 +221,6 @@ private:
     ///@{
 
     IndexVectorType mIndexPermutation;
-
 
     ///@}
     ///@name Private Operators

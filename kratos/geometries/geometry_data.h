@@ -98,19 +98,19 @@ public:
 
     enum class KratosGeometryType
     {
+        Kratos_Hexahedra3D8,
         Kratos_Hexahedra3D20,
         Kratos_Hexahedra3D27,
-        Kratos_Hexahedra3D8,
-        Kratos_Prism3D15,
         Kratos_Prism3D6,
+        Kratos_Prism3D15,
         Kratos_Quadrilateral2D4,
         Kratos_Quadrilateral2D8,
         Kratos_Quadrilateral2D9,
         Kratos_Quadrilateral3D4,
         Kratos_Quadrilateral3D8,
         Kratos_Quadrilateral3D9,
-        Kratos_Tetrahedra3D10,
         Kratos_Tetrahedra3D4,
+        Kratos_Tetrahedra3D10,
         Kratos_Triangle2D3,
         Kratos_Triangle2D6,
         Kratos_Triangle3D3,
@@ -130,23 +130,23 @@ public:
         Kratos_Bezier2D,
         Kratos_Bezier2D3,
         Kratos_Bezier3D,
-        Kratos_Tritagon, //3 // it's not a real name but need to avoid clashing with Kratos_Triangle
-        Kratos_Tetragon, // 4
-        Kratos_Pentagon, // 5
-        Kratos_Hexagon, // 6
-        Kratos_Heptagon, // 7
-        Kratos_Octagon, // 8
-        Kratos_Nonagon, // 9
-        Kratos_Decagon, // 10
-        Kratos_Hendecagon, // 11
-        Kratos_Dodecagon, // 12
-        Kratos_Triskaidecagon, // 13
-        Kratos_Tetrakaidecagon, // 14
-        Kratos_Pentadecagon, // 15
-        Kratos_Hexakaidecagon, // 16
-        Kratos_Heptadecagon, // 17
-        Kratos_Octakaidecagon, // 18
-        Kratos_Enneadecagon, // 19
+        Kratos_Tritagon,    //3 // it's not a real name but need to avoid clashing with Kratos_Triangle
+        Kratos_Tetragon,    // 4-gon
+        Kratos_Pentagon,    // 5-gon
+        Kratos_Hexagon,     // 6-gon
+        Kratos_Heptagon,    // 7-gon
+        Kratos_Octagon,     // 8-gon
+        Kratos_Nonagon,     // 9-gon
+        Kratos_Decagon,     // 10-gon
+        Kratos_Hendecagon,  // 11-gon
+        Kratos_Dodecagon,   // 12-gon
+        Kratos_Triskaidecagon,  // 13-gon
+        Kratos_Tetrakaidecagon, // 14-gon
+        Kratos_Pentadecagon,    // 15-gon
+        Kratos_Hexakaidecagon,  // 16-gon
+        Kratos_Heptadecagon,    // 17-gon
+        Kratos_Octakaidecagon,  // 18-gon
+        Kratos_Enneadecagon,    // 19-gon
         Kratos_Octahedron,
         Kratos_Dodecahedron,
         Kratos_Icosahedron,

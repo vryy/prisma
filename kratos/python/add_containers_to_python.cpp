@@ -30,16 +30,14 @@
 // Project includes
 #include "includes/define.h"
 #include "includes/ublas_interface.h"
+#include "includes/kratos_flags.h"
+#include "includes/variables.h"
+#include "includes/constitutive_law.h"
 #include "containers/data_value_container.h"
-//#include "containers/hash_data_value_container.h"
 #include "containers/variables_list_data_value_container.h"
 #include "containers/fix_data_value_container.h"
 #include "containers/vector_component_adaptor.h"
 #include "containers/flags.h"
-//#include "containers/all_variables_data_value_container.h"
-#include "includes/kratos_flags.h"
-#include "includes/variables.h"
-#include "includes/constitutive_law.h"
 #include "python/variable_indexing_python.h"
 #include "python/vector_python_interface.h"
 #include "python/vector_scalar_operator_python.h"
@@ -340,7 +338,7 @@ void AddContainersToPython()
     AddValueContainersToPython<KRATOS_DOUBLE_TYPE>("");
     AddValueContainersToPython<KRATOS_COMPLEX_TYPE>("Complex");
 
-    class_<Flags, Flags::Pointer>("Flags",init<>())
+    class_<Flags, Flags::Pointer>("Flags", init<>())
     .def(init<Flags>())
     .def("Is", &Flags::Is)
     .def("IsNot", &Flags::IsNot)

@@ -1,8 +1,7 @@
 //
 //   Project Name:        Kratos
 //   Last Modified by:    $Author: pooyan $
-//   Date:                $Date: 2004/02/02 16:51:26 $
-//   Revision:            $Revision: 1.3 $
+//   Last Modified by:    $Author: hbui $
 //
 //
 
@@ -65,13 +64,15 @@ public:
 
     typedef Reorderer<TSparseSpaceType, TDenseSpaceType> BaseType;
 
-    typedef typename TSparseSpaceType::MatrixType SparseMatrixType;
+    typedef typename BaseType::SparseMatrixType SparseMatrixType;
 
-    typedef typename TSparseSpaceType::VectorType VectorType;
+    typedef typename BaseType::VectorType VectorType;
 
-    typedef typename TDenseSpaceType::MatrixType DenseMatrixType;
+    typedef typename BaseType::DenseMatrixType DenseMatrixType;
 
-    typedef BaseType::IndexType IndexType;
+    typedef typename BaseType::IndexType IndexType;
+
+    typedef typename BaseType::SizeType SizeType;
 
     typedef typename BaseType::IndexVectorType IndexVectorType;
 
@@ -82,9 +83,12 @@ public:
     /// Default constructor.
     CuthillMcKeeReorderer() {}
 
-    /// Destructor.
-    virtual ~CuthillMcKeeReorderer() {}
+    /// Copy constructor.
+    CuthillMcKeeReorderer(const CuthillMcKeeReorderer& Other)
+    : BaseType(Other) {}
 
+    /// Destructor.
+    ~CuthillMcKeeReorderer() override {}
 
     ///@}
     ///@name Operators
@@ -95,28 +99,22 @@ public:
     ///@name Operations
     ///@{
 
-    virtual void Initialize(SparseMatrixType& rA, VectorType& rX, VectorType& rB)
+    void Initialize(SparseMatrixType& rA, VectorType& rX, VectorType& rB) override
     {
         CalculateIndexPermutation(rA);
     }
 
-    virtual void Reorder(SparseMatrixType& rA, VectorType& rX, VectorType& rB)
-    {
-    }
-
-    virtual void Reorder(SparseMatrixType& rA, DenseMatrixType& rX, DenseMatrixType& rB)
+    void Reorder(SparseMatrixType& rA, VectorType& rX, VectorType& rB) override
     {
     }
 
     template<class TMatrixType>
-    void WriteMatrixForGid(TMatrixType& rM, std::string MatrixFileName, std::string MatrixName)
+    void WriteMatrixForGid(TMatrixType& rM, std::string MatrixFileName, std::string MatrixName) const
     {
         KRATOS_TRY
 
         unsigned int size_1 = rM.size1();
         unsigned int size_2 = rM.size2();
-
-
 
         //GiD_FILE matrix_file = GiD_fOpenPostMeshFile("matricesA.post.msh", GiD_PostAscii);
         std::ofstream matrix_file(MatrixFileName.c_str());
@@ -130,10 +128,9 @@ public:
         int index = 1;
         double SolutionTag=0;
 
-
         // Creating a node for each nonzero of matrix
-        for (TMatrixType::iterator1 i1 = rM.begin1(); i1 != rM.end1(); ++i1)
-            for (TMatrixType::iterator2 i2 = i1.begin(); i2 != i1.end(); ++i2)
+        for (typename TMatrixType::iterator1 i1 = rM.begin1(); i1 != rM.end1(); ++i1)
+            for (typename TMatrixType::iterator2 i2 = i1.begin(); i2 != i1.end(); ++i2)
             {
                 //GiD_fWriteCoordinates(matrix_file, index++, i2.index1(), i2.index2(), 0);
                 matrix_file << index++ << "  " << i2.index1() << "  " << size_1 - i2.index2() << "  0" << std::endl;
@@ -159,8 +156,6 @@ public:
         //GiD_fEndMesh(matrix_file);
         //GiD_fClosePostMeshFile(matrix_file);
 
-
-
         //GiD_OpenPostResultFile("matrices.post.bin", GiD_PostBinary);
         //GiD_BeginResult( "Matrix", "Kratos",
         //                       SolutionTag, GiD_Scalar,
@@ -169,7 +164,6 @@ public:
         //
         //for( int i = 1 ; i < index ; i++)
         //{
-        //	GiD_WriteScalar( i, results[i-1]);
         //}
         //
         //GiD_EndResult();
@@ -178,98 +172,40 @@ public:
         KRATOS_CATCH("")
 
     }
-    template<class TMatrixType>
-    void WritePermutedMatrixForGid(TMatrixType& rM, std::string MatrixFileName, std::string MatrixName)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    IndexVectorType& CalculateIndexPermutation(SparseMatrixType& rA, IndexType InitialIndex = IndexType()) override
     {
-        KRATOS_TRY
-
-        unsigned int size_1 = rM.size1();
-        unsigned int size_2 = rM.size2();
-
-        IndexVectorType& r_index_permutation = GetIndexPermutation();
-        IndexVectorType invperm(size_1);
-
-        //GiD_FILE matrix_file = GiD_fOpenPostMeshFile("matricesA.post.msh", GiD_PostAscii);
-        std::ofstream matrix_file(MatrixFileName.c_str());
-
-        //GiD_fBeginMesh(matrix_file, "Kratos Matrix",GiD_2D,GiD_Point,1);
-        matrix_file << "MESH \"" << MatrixName << "\" dimension 2 ElemType Point Nnode 1" << std::endl;
-        //GiD_fBeginCoordinates(matrix_file);
-        matrix_file << "Coordinates" << std::endl;
-
-        std::vector<double> results;
-        int index = 1;
-        double SolutionTag=0;
-
-        for(unsigned int i = 0 ; i < size_1 ; i++) invperm[r_index_permutation[i]]=i;
-
-
-
-        // Creating a node for each nonzero of matrix
-        for (TMatrixType::iterator1 i1 = rM.begin1(); i1 != rM.end1(); ++i1)
-            for (TMatrixType::iterator2 i2 = i1.begin(); i2 != i1.end(); ++i2)
-            {
-                //GiD_fWriteCoordinates(matrix_file, index++, i2.index1(), i2.index2(), 0);
-                //matrix_file << index++ << "  " << r_index_permutation[i2.index1()] << "  " << size_1 - r_index_permutation[i2.index2()] << "  0" << std::endl;
-                matrix_file << index++ << "  " << invperm[i2.index1()] << "  " << size_1 - invperm[i2.index2()] << "  0" << std::endl;
-                results.push_back(*i2);
-            }
-
-        //GiD_fEndCoordinates(matrix_file);
-        matrix_file << "End Coordinates" << std::endl;
-
-        // Creating an element for each nonzero of matrix
-        int nodes_id[1];
-        //GiD_fBeginElements(matrix_file);
-        matrix_file << "Elements" << std::endl;
-        for(  int i = 1 ; i < index ; i++)
-        {
-            nodes_id[0] = i;
-            //GiD_fWriteElement(matrix_file, i,nodes_id);
-            matrix_file << i << "  " << i << std::endl;
-        }
-
-        //GiD_fEndElements(matrix_file);
-        matrix_file << "End Elements" << std::endl;
-        //GiD_fEndMesh(matrix_file);
-        //GiD_fClosePostMeshFile(matrix_file);
-
-
-
-        //GiD_OpenPostResultFile("matrices.post.bin", GiD_PostBinary);
-        //GiD_BeginResult( "Matrix", "Kratos",
-        //                       SolutionTag, GiD_Scalar,
-        //                       GiD_OnNodes, NULL, NULL, 0, NULL );
-
-        //
-        //for( int i = 1 ; i < index ; i++)
-        //{
-        //	GiD_WriteScalar( i, results[i-1]);
-        //}
-        //
-        //GiD_EndResult();
-        //GiD_ClosePostResultFile();
-
-        KRATOS_CATCH("")
-
-    }
-    virtual IndexVectorType& CalculateIndexPermutation(SparseMatrixType& rA, IndexType InitialIndex = IndexType())
-    {
-
-        typedef std::multimap<SizeType,IndexType, std::greater<SizeType> > level_set_type;
+        typedef std::multimap<SizeType, IndexType, std::greater<SizeType> > level_set_type;
 
         const unsigned int size = TSparseSpaceType::Size1(rA);
 
-        IndexVectorType& r_index_permutation = GetIndexPermutation();
+        IndexVectorType& r_index_permutation = BaseType::GetIndexPermutation();
 
         r_index_permutation.resize(size);
 
         std::vector<bool> is_marked(size, false);
         level_set_type level_set;
-        IndexVectorType connectivity;
+        std::vector<typename TSparseSpaceType::IndexType> connectivity;
         //IndexVectorType next_level_set;
         level_set_type next_level_set;
-
 
         r_index_permutation[0] = InitialIndex;
         is_marked[InitialIndex] = true;
@@ -278,7 +214,7 @@ public:
 
         unsigned int next = 1 ;
 
-        level_set.insert(level_set_type::value_type(TSparseSpaceType::GraphDegree(InitialIndex, rA), InitialIndex));
+        level_set.insert(typename level_set_type::value_type(TSparseSpaceType::GraphDegree(InitialIndex, rA), InitialIndex));
         while(next < size)
         {
             //std::cout << "LevelSet" << level_set << std::endl;
@@ -293,23 +229,18 @@ public:
             // for(IndexVectorType::iterator j = connectivity.begin() ; j != connectivity.end() ; ++j)
             //  if(is_marked[*j] == false)
             //  {
-            //	  r_index_permutation[next++] = *j;
-            //	  is_marked[*j] = true;
             //
-            //	  SizeType degree = TSparseSpaceType::GraphDegree(*j, rA);
-            //	  if(degree != 0)
-            //		level_set.insert(level_set_type::value_type(degree,*j));
             //  }
 
             // level_set.erase(level_set.begin());
             //}
-            for(level_set_type::iterator i = level_set.begin() ; i != level_set.end() ; ++i)
+            for(auto i = level_set.begin() ; i != level_set.end() ; ++i)
             {
                 TSparseSpaceType::GraphNeighbors(i->second, rA, connectivity);
 
                 //std::cout << "Connectivity" << connectivity << std::endl;
 
-                for(IndexVectorType::iterator j = connectivity.begin() ; j != connectivity.end() ; ++j)
+                for(auto j = connectivity.begin() ; j != connectivity.end() ; ++j)
                     if(is_marked[*j] == false)
                     {
                         r_index_permutation[next++] = *j;
@@ -317,9 +248,8 @@ public:
 
                         SizeType degree = TSparseSpaceType::GraphDegree(*j, rA);
                         if(degree != 0)
-                            next_level_set.insert(level_set_type::value_type(degree,*j));
+                            next_level_set.insert(typename level_set_type::value_type(degree,*j));
                     }
-
             }
 
             //std::cout << "NextLevelSet" << next_level_set << std::endl;
@@ -331,25 +261,24 @@ public:
                 SizeType k = 0;
                 while(is_marked[k])
                     k++;
-                level_set.insert(level_set_type::value_type(TSparseSpaceType::GraphDegree(k, rA), k));
+                level_set.insert(typename level_set_type::value_type(TSparseSpaceType::GraphDegree(k, rA), k));
                 r_index_permutation[next++] = k;
                 is_marked[k] = true;
                 //next_level_set.push_back(*j);
 
             }
         }
+
         // for testing reverse cuthill mckee
         //IndexVectorType temp(size);
         //for(int i = 0 ; i < size ; i++) temp[size - i - 1] = r_index_permutation[i];
         //r_index_permutation = temp;
-
 
         //std::cout << "r_index_permutation : ";
         //for(int i = 0 ; i < r_index_permutation.size() ; i++)
         // std::cout << r_index_permutation[i] << ",";
         //std::cout << std::endl;
 
-        WritePermutedMatrixForGid(rA, "matrixApermuted.post.msh", "unordered_matrix");
 
         return r_index_permutation;
     }
@@ -445,10 +374,6 @@ private:
 
     /// Assignment operator.
     CuthillMcKeeReorderer& operator=(const CuthillMcKeeReorderer& Other);
-
-    /// Copy constructor.
-    CuthillMcKeeReorderer(const CuthillMcKeeReorderer& Other);
-
 
     ///@}
 

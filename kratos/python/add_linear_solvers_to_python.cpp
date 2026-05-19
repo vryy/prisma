@@ -39,6 +39,7 @@
 #include "spaces/parallel_ublas_space.h"
 #endif
 
+#include "linear_solvers/cuthill_mckee_reorderer.h"
 #include "linear_solvers/reorderer.h"
 #include "linear_solvers/direct_solver.h"
 #include "linear_solvers/skyline_lu_factorization_solver.h"
@@ -68,15 +69,18 @@ void AddReorderersToPythonImpl(const std::string& Prefix)
     typedef TLocalSpaceType LocalSpaceType;
 
     typedef Reorderer<SparseSpaceType, LocalSpaceType> ReordererType;
+    typedef CuthillMcKeeReorderer<SparseSpaceType, LocalSpaceType> CuthillMcKeeReordererType;
 
     using namespace boost::python;
 
-    class_<ReordererType, typename ReordererType::Pointer >((Prefix + "Reorderer").c_str())
-    .def( init< >() )
+    class_<ReordererType, typename ReordererType::Pointer>((Prefix + "Reorderer").c_str())
+    .def("Initialize",&ReordererType::Initialize)
+    .def("Reorder",&ReordererType::Reorder)
+    .def("InverseReorder",&ReordererType::InverseReorder)
     .def(self_ns::str(self))
-    .def( "Initialize",&ReordererType::Initialize)
-    .def( "Reorder",&ReordererType::Reorder)
-    .def( "InverseReorder",&ReordererType::InverseReorder)
+    ;
+
+    class_<CuthillMcKeeReordererType, typename CuthillMcKeeReordererType::Pointer, bases<ReordererType> >((Prefix + "CuthillMcKeeReorderer").c_str())
     ;
 }
 
