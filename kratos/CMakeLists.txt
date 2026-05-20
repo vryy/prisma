@@ -161,9 +161,11 @@ if(MSVC AND ${KRATOS_USE_INTEL_OPENMP} MATCHES ON)
 endif()
 # cotire(KratosCore)
 
-# if(${ADOL_C_FOUND} MATCHES TRUE)
-#     target_link_libraries(KratosCore PRIVATE ${ADOL_C_LIBRARIES} )
-# endif()
+if(ADOL_C_FOUND)
+    target_link_libraries(KratosCore PUBLIC ADOLC::lib)
+    target_compile_definitions(KratosCore PUBLIC KRATOS_USE_ADOL_C)
+    message(STATUS "Kratos is linked with ADOLC")
+endif()
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Android")
     # DO NOT INSTALL ON ANDROID

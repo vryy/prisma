@@ -24,6 +24,9 @@
 #include "utilities/constraint_utilities.h"
 #include "utilities/timer.h"
 #include "utilities/geometry_tester.h"
+#ifdef KRATOS_USE_ADOL_C
+#include "utilities/adolc_tape_utility.h"
+#endif
 
 #include "python/add_utilities_to_python.h"
 
@@ -83,6 +86,8 @@ namespace Kratos
             class_<ConstraintUtilities<ComplexModelPart>, boost::noncopyable > ("ComplexConstraintUtilities", init< >())
                     .def("PrintConstraint", &ConstraintUtilities_PrintConstraint<ConstraintUtilities<ComplexModelPart> >)
                     ;
+
+            class_<AdolCTapeUtility, AdolCTapeUtility::Pointer, boost::noncopyable>("AdolCTapeUtility", init<>());
         }
 
     } // namespace Python.
