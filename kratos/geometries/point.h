@@ -98,7 +98,7 @@ public:
     }
 
     /// 1d constructor.
-    Point(TDataType const& NewX) : BaseType(TDimension)
+    Point(TDataType NewX) : BaseType(TDimension)
     {
         KRATOS_TRY_LEVEL_4
         SetAllCoordinates();
@@ -107,7 +107,7 @@ public:
     }
 
     /// 2d constructor.
-    Point(TDataType const& NewX, TDataType const& NewY) : BaseType(TDimension)
+    Point(TDataType NewX, TDataType NewY) : BaseType(TDimension)
     {
         KRATOS_TRY_LEVEL_4
         SetAllCoordinates();
@@ -117,7 +117,7 @@ public:
     }
 
     /// 3d constructor.
-    Point(TDataType const& NewX, TDataType const& NewY, TDataType const& NewZ) : BaseType(TDimension)
+    Point(TDataType NewX, TDataType NewY, TDataType NewZ) : BaseType(TDimension)
     {
         KRATOS_TRY_LEVEL_4
         SetAllCoordinates();

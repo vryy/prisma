@@ -436,7 +436,7 @@ public:
         //making a copy of the nodes TO POINTS (not Nodes!!!)
 
         for ( IndexType i = 0 ; i < this->size() ; i++ )
-            NewPoints.push_back(( *this )[i] );
+            NewPoints.push_back((*this)[i] );
 
         //creating a geometry with the new points
         typename Geometry< Point<3, DataType> >::Pointer p_clone( new Geometry< Point<3, DataType> >( NewPoints ) );
@@ -562,7 +562,7 @@ public:
                   dist;
         for (unsigned int i = 0; i < this->PointsNumber(); ++i)
         {
-            dist = inner_prod((( *this )[i]), rNormal);
+            dist = inner_prod(((*this)[i]), rNormal);
 
             if (std::abs(dist) > max_dist) max_dist = dist;
             if (std::abs(dist) < min_dist) min_dist = dist;
@@ -583,7 +583,7 @@ public:
         {
             for (unsigned int j = i+1; j < this->PointsNumber(); ++j)
             {
-                dist = norm_2( (( *this )[i]) - (( *this )[j]) );
+                dist = norm_2( ((*this)[i]) - ((*this)[j]) );
 
                 if (std::abs(dist) > max_dist) max_dist = dist;
             }
@@ -718,9 +718,9 @@ public:
 
         CoordinatesArrayType result;
 
-        noalias( result ) = ( *this )[0];
+        noalias( result ) = (*this)[0];
         for ( IndexType i = 1 ; i < points_number ; i++ )
-            noalias( result) += ( *this )[i];
+            noalias( result) += (*this)[i];
 
         DataType temp = 1.0 / static_cast<DataType>( points_number );
 
@@ -753,8 +753,8 @@ public:
     const typename PointType::Pointer pGetPoint( const int Index ) const
     {
         KRATOS_TRY_LEVEL_3
-        return ( *this )( Index );
-        KRATOS_CATCH_LEVEL_3( *this )
+        return (*this)( Index );
+        KRATOS_CATCH_LEVEL_3(*this)
     }
 
     /** An access method to the i'th points stored in
@@ -766,8 +766,8 @@ public:
     typename PointType::Pointer pGetPoint( const int Index )
     {
         KRATOS_TRY_LEVEL_3
-        return ( *this )( Index );
-        KRATOS_CATCH_LEVEL_3( *this );
+        return (*this)( Index );
+        KRATOS_CATCH_LEVEL_3(*this);
     }
 
     /** A constant access method to the i'th points stored in
@@ -779,8 +779,8 @@ public:
     PointType const& GetPoint( const int Index ) const
     {
         KRATOS_TRY_LEVEL_3
-        return ( *this )[Index];
-        KRATOS_CATCH_LEVEL_3( *this )
+        return (*this)[Index];
+        KRATOS_CATCH_LEVEL_3(*this)
     }
 
     /** An access method to the i'th points stored in
@@ -792,8 +792,8 @@ public:
     PointType& GetPoint( const int Index )
     {
         KRATOS_TRY_LEVEL_3
-        return ( *this )[Index];
-        KRATOS_CATCH_LEVEL_3( *this );
+        return (*this)[Index];
+        KRATOS_CATCH_LEVEL_3(*this);
     }
 
     /**
@@ -1304,7 +1304,7 @@ public:
         for ( IndexType i = 0 ; i < this->size() ; i++ )
         {
             for(unsigned int k=0; k<this->WorkingSpaceDimension(); k++)
-                rResult(k) += N[i] * ( (( *this )[i]).Coordinates()[k]  - DeltaPosition(i,k) );
+                rResult(k) += N[i] * ( ((*this)[i]).Coordinates()[k]  - DeltaPosition(i,k) );
         }
 
         return rResult;
@@ -1435,7 +1435,7 @@ public:
             {
                 for(unsigned int m = 0; m < this->LocalSpaceDimension(); m++)
                 {
-                    rResult(k,m) += (( *this )[i]).Coordinates()[k]*ShapeFunctionsGradientInIntegrationPoint(i,m);
+                    rResult(k,m) += ((*this)[i]).Coordinates()[k]*ShapeFunctionsGradientInIntegrationPoint(i,m);
                 }
             }
         }
@@ -1477,7 +1477,7 @@ public:
             {
                 for(unsigned int m = 0; m < this->LocalSpaceDimension(); m++)
                 {
-                    rResult(k,m) += ( (( *this )[i]).Coordinates()[k]  - DeltaPosition(i,k)  )*ShapeFunctionsGradientInIntegrationPoint(i,m);
+                    rResult(k,m) += ( ((*this)[i]).Coordinates()[k]  - DeltaPosition(i,k)  )*ShapeFunctionsGradientInIntegrationPoint(i,m);
                 }
             }
         }
@@ -1511,7 +1511,7 @@ public:
             {
                 for(unsigned int m = 0; m < this->LocalSpaceDimension(); m++)
                 {
-                    rResult(k,m) += (( *this )[i]).Coordinates()[k]*shape_functions_gradients(i,m);
+                    rResult(k,m) += ((*this)[i]).Coordinates()[k]*shape_functions_gradients(i,m);
                 }
             }
         }
@@ -1548,7 +1548,7 @@ public:
             {
                 for(unsigned int m = 0; m < this->LocalSpaceDimension(); m++)
                 {
-                    rResult(k,m) += (  (( *this )[i]).Coordinates()[k] - DeltaPosition(i,k)  )*shape_functions_gradients(i,m);
+                    rResult(k,m) += (  ((*this)[i]).Coordinates()[k] - DeltaPosition(i,k)  )*shape_functions_gradients(i,m);
                 }
             }
         }
@@ -2240,7 +2240,7 @@ public:
         for ( unsigned int i = 0 ; i < this->size() ; ++i )
         {
             rOStream << "    Point " << i + 1 << "\t : ";
-            ( *this )[i].PrintData( rOStream );
+            (*this)[i].PrintData( rOStream );
             rOStream << std::endl;
         }
 
