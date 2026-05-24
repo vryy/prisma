@@ -519,16 +519,6 @@ public:
         return edges;
     }
 
-    SizeType FacesNumber() const override
-    {
-        return 3;
-    }
-
-    GeometriesArrayType Faces() const override
-    {
-        return Edges();
-    }
-
     ///@}
     ///@name Shape Function
     ///@{

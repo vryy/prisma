@@ -654,16 +654,6 @@ public:
         return edges;
     }
 
-    SizeType FacesNumber() const override
-    {
-        return 3;
-    }
-
-    GeometriesArrayType Faces() const override
-    {
-        return Edges();
-    }
-
     Matrix& ShapeFunctionsLocalGradients( Matrix& rResult, const LocalCoordinatesArrayType& rPoint ) const override
     {
         rResult.resize( 6, 2 );

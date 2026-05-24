@@ -322,11 +322,6 @@ public:
         return 4;
     }
 
-    SizeType FacesNumber() const override
-    {
-        return 4;
-    }
-
     GeometriesArrayType Edges() const override
     {
         GeometriesArrayType edges = GeometriesArrayType();
@@ -335,11 +330,6 @@ public:
         edges.push_back( EdgeType( this->pGetPoint( 2 ), this->pGetPoint( 6 ), this->pGetPoint( 3 ) ) );
         edges.push_back( EdgeType( this->pGetPoint( 3 ), this->pGetPoint( 7 ), this->pGetPoint( 0 ) ) );
         return edges;
-    }
-
-    GeometriesArrayType Faces() const override
-    {
-        return Edges();
     }
 
     ///@}
