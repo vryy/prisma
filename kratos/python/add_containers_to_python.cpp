@@ -33,6 +33,7 @@
 #include "includes/kratos_flags.h"
 #include "includes/variables.h"
 #include "includes/constitutive_law.h"
+#include "includes/model_part.h"
 #include "containers/data_value_container.h"
 #include "containers/variables_list_data_value_container.h"
 #include "containers/fix_data_value_container.h"
@@ -355,8 +356,24 @@ void AddContainersToPython()
     .def( self_ns::str( self ) )
     ;
 
-    class_<InterfaceContainer, InterfaceContainer::Pointer, boost::noncopyable>("InterfaceContainer", init<>())
-    .def(init<const ModelPart&>())
+    typedef InterfaceContainer<ModelPart> InterfaceContainerType;
+    class_<InterfaceContainerType, typename InterfaceContainerType::Pointer, boost::noncopyable>("InterfaceContainer", init<>())
+    .def("ConstructEdgeInterfaces", &InterfaceContainerType::ConstructInterfaces<2>)
+    .def("ConstructFaceInterfaces", &InterfaceContainerType::ConstructInterfaces<3>)
+    .def( self_ns::str( self ) )
+    ;
+
+    typedef InterfaceContainer<ComplexModelPart> ComplexInterfaceContainerType;
+    class_<ComplexInterfaceContainerType, typename ComplexInterfaceContainerType::Pointer, boost::noncopyable>("ComplexInterfaceContainer", init<>())
+    .def("ConstructEdgeInterfaces", &ComplexInterfaceContainerType::ConstructInterfaces<2>)
+    .def("ConstructFaceInterfaces", &ComplexInterfaceContainerType::ConstructInterfaces<3>)
+    .def( self_ns::str( self ) )
+    ;
+
+    typedef InterfaceContainer<GComplexModelPart> GComplexInterfaceContainerType;
+    class_<GComplexInterfaceContainerType, typename GComplexInterfaceContainerType::Pointer, boost::noncopyable>("GComplexInterfaceContainer", init<>())
+    .def("ConstructEdgeInterfaces", &GComplexInterfaceContainerType::ConstructInterfaces<2>)
+    .def("ConstructFaceInterfaces", &GComplexInterfaceContainerType::ConstructInterfaces<3>)
     .def( self_ns::str( self ) )
     ;
 

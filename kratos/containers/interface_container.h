@@ -18,7 +18,6 @@
 
 // Project includes
 #include "includes/define.h"
-#include "includes/model_part.h"
 
 
 namespace Kratos
@@ -28,6 +27,7 @@ namespace Kratos
  * A naive container to provide interfaces for computations requiring interfaces,
  * such as error estimator or discontinuous Galerkin element.
  */
+template<class TModelPartType>
 class InterfaceContainer
 {
 public:
@@ -37,17 +37,19 @@ public:
 
     KRATOS_CLASS_POINTER_DEFINITION(InterfaceContainer);
 
-    typedef Element::GeometryType GeometryType;
+    typedef typename TModelPartType::ElementType ElementType;
 
-    typedef ModelPart::ElementsContainerType ElementsContainerType;
+    typedef typename ElementType::GeometryType GeometryType;
+
+    typedef typename TModelPartType::ElementsContainerType ElementsContainerType;
 
     struct Interface
     {
-        GeometryType face;                      // the representative geometry of the face, used for searching, indexing
-        GeometryType::Pointer left  = nullptr;  // the real geometry interface (relatively left)
-        GeometryType::Pointer right = nullptr;  // the real geometry interface (relatively right)
-        Element::Pointer first  = nullptr;      // the element on the left side
-        Element::Pointer second = nullptr;      // the element on the right side
+        GeometryType face;      // the representative geometry of the face, used for searching, indexing
+        typename GeometryType::Pointer left  = nullptr;  // the real geometry interface (relatively left)
+        typename GeometryType::Pointer right = nullptr;  // the real geometry interface (relatively right)
+        typename ElementType::Pointer first  = nullptr;  // the element on the left side
+        typename ElementType::Pointer second = nullptr;  // the element on the right side
         // mutable double jump = 0.0;
     };
 
@@ -68,11 +70,6 @@ public:
     InterfaceContainer()
     {}
 
-    InterfaceContainer(const ModelPart& r_model_part)
-    {
-        mInterfaces = ConstructInterfaces(r_model_part.Elements());
-    }
-
     ///@}
     ///@name Access
     ///@{
@@ -82,12 +79,17 @@ public:
         return mInterfaces;
     }
 
+    typename InterfaceSet::iterator begin() {return mInterfaces.begin();}
+    typename InterfaceSet::iterator end() {return mInterfaces.end();}
+    typename InterfaceSet::const_iterator begin() const {return mInterfaces.begin();}
+    typename InterfaceSet::const_iterator end() const {return mInterfaces.end();}
+
     ///@}
     ///@name Operations
     ///@{
 
-    void AddInterface(const GeometryType& face, GeometryType::Pointer left, GeometryType::Pointer right,
-        Element::Pointer first, Element::Pointer second)
+    void AddInterface(const GeometryType& face, typename GeometryType::Pointer left, typename GeometryType::Pointer right,
+        typename ElementType::Pointer first, typename ElementType::Pointer second)
     {
         Interface hf;
         hf.face = face;
@@ -96,6 +98,13 @@ public:
         hf.first = first;
         hf.second = second;
         mInterfaces.insert(hf);
+    }
+
+    /// Construct the interfaces
+    template<int TDim>
+    void ConstructInterfaces(const TModelPartType& rModelPart)
+    {
+        mInterfaces = ConstructInterfacesImpl<TDim>(rModelPart.Elements());
     }
 
     ///@}
@@ -141,23 +150,33 @@ private:
     ///@{
 
     /// Construct the interfaces
-    static InterfaceSet ConstructInterfaces(const ElementsContainerType& rElements)
+    template<int TDim>
+    static InterfaceSet ConstructInterfacesImpl(const ElementsContainerType& rElements)
     {
         InterfaceSet interface_set;
 
         for (auto it = rElements.ptr_begin(); it != rElements.ptr_end(); ++it)
         {
-            auto faces = (*it)->GetGeometry().Faces();
+            typename GeometryType::GeometriesArrayType geoms;
 
-            for (std::size_t i = 0; i < faces.size(); ++i)
+            if constexpr (TDim == 2)
+            {
+                geoms = (*it)->GetGeometry().Edges();
+            }
+            else if constexpr (TDim == 3)
+            {
+                geoms = (*it)->GetGeometry().Faces();
+            }
+
+            for (std::size_t i = 0; i < geoms.size(); ++i)
             {
                 Interface hf;
-                hf.face = faces[i];
+                hf.face = geoms[i];
 
                 auto itf = interface_set.find(hf);
                 if (itf == interface_set.end())
                 {
-                    hf.left = faces(i);
+                    hf.left = geoms(i);
                     hf.first = *it;
                     interface_set.insert(hf);
                 }
@@ -165,7 +184,7 @@ private:
                 {
                     hf.left = itf->left;
                     hf.first = itf->first;
-                    hf.right = faces(i);
+                    hf.right = geoms(i);
                     hf.second = *it;
                     interface_set.erase(itf);
                     interface_set.insert(hf);
@@ -184,8 +203,9 @@ private:
 ///@{
 
 /// output stream function
+template<class TModelPartType>
 inline std::ostream& operator << (std::ostream& rOStream,
-                                  const InterfaceContainer& rThis)
+                                  const InterfaceContainer<TModelPartType>& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;
