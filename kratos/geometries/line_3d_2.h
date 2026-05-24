@@ -376,16 +376,6 @@ public:
         return( rResult );
     }
 
-    SizeType EdgesNumber() const override
-    {
-        return 1;
-    }
-
-    SizeType FacesNumber() const override
-    {
-        return 1;
-    }
-
     ///@}
     ///@name Shape Function
     ///@{

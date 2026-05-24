@@ -535,20 +535,6 @@ public:
         return( rResult );
     }
 
-
-    /** EdgesNumber
-    @return SizeType containes number of this geometry edges.
-    */
-    SizeType EdgesNumber() const override
-    {
-        return 2;
-    }
-
-    SizeType FacesNumber() const override
-    {
-        return 2;
-    }
-
     ///@}
     ///@name Shape Function
     ///@{
