@@ -91,24 +91,6 @@ bool NodeSolutionStepsDataHas(TNodeType& rThisNode, const TVariableType& rThisVa
 }
 
 template<class TNodeType>
-void PointSetX0(TNodeType& ThisPoint, typename TNodeType::CoordinateType Value)
-{
-    ThisPoint.X0() = Value;
-}
-
-template<class TNodeType>
-void PointSetY0(TNodeType& ThisPoint, typename TNodeType::CoordinateType Value)
-{
-    ThisPoint.Y0() = Value;
-}
-
-template<class TNodeType>
-void PointSetZ0(TNodeType& ThisPoint, typename TNodeType::CoordinateType Value)
-{
-    ThisPoint.Z0() = Value;
-}
-
-template<class TNodeType>
 typename TNodeType::CoordinateType PointGetX0(TNodeType& ThisPoint)
 {
     return ThisPoint.X0();
@@ -160,7 +142,7 @@ void AddNodeToPythonImpl(const std::string& Name)
 
     typedef typename NodeType::CoordinateType CoordinateType;
 
-    class_<NodeType, typename NodeType::Pointer, bases<typename NodeType::BaseType, IndexedObject, Flags > >
+    class_<NodeType, typename NodeType::Pointer, bases<typename NodeType::BaseType, IndexedObject, Flags> >
     (Name.c_str(), init<int, CoordinateType, CoordinateType, CoordinateType>())
     .def(init<int, const typename NodeType::PointType&>())
     .def(VariableIndexingPython<NodeType, Variable<bool> >())
@@ -199,9 +181,9 @@ void AddNodeToPythonImpl(const std::string& Name)
     .def("SolutionStepsDataHas", &NodeSolutionStepsDataHas<NodeType, Variable<matrix<DataType> > >)
     .def("SolutionStepsDataHas", &NodeSolutionStepsDataHas<NodeType, VariableComponent<VectorComponentAdaptor<array_1d<DataType, 3> > > >)
     .def("OverwriteSolutionStepData", &NodeType::OverwriteSolutionStepData)
-    .add_property("X0", PointGetX0<NodeType>, PointSetX0<NodeType>)
-    .add_property("Y0", PointGetY0<NodeType>, PointSetY0<NodeType>)
-    .add_property("Z0", PointGetZ0<NodeType>, PointSetZ0<NodeType>)
+    .add_property("X0", PointGetX0<NodeType>)
+    .add_property("Y0", PointGetY0<NodeType>)
+    .add_property("Z0", PointGetZ0<NodeType>)
     .def(self_ns::str(self))
     ;
 }

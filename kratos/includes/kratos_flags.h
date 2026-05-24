@@ -78,6 +78,7 @@ KRATOS_CREATE_FLAG(MARKER,          35);
 KRATOS_CREATE_FLAG(PERIODIC,        34);
 KRATOS_CREATE_FLAG(WALL,            33);
 KRATOS_CREATE_FLAG(HANGING,         32);
+KRATOS_CREATE_FLAG(FREEZE,          31);
 
 ///@}
 ///@name Type Definitions

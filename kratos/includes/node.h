@@ -25,13 +25,14 @@
 
 // Project includes
 #include "includes/define.h"
-#include "geometries/point.h"
 #include "includes/dof.h"
+#include "includes/kratos_flags.h"
+#include "geometries/point.h"
 #include "containers/pointer_vector_set.h"
 #include "containers/data_value_container.h"
 #include "containers/variables_list_data_value_container.h"
-#include "utilities/indexed_object.h"
 #include "containers/flags.h"
+#include "utilities/indexed_object.h"
 
 #include "containers/weak_pointer_vector.h"
 
@@ -63,7 +64,7 @@ namespace Kratos
 ///@{
 
 /// This class defines the node
-/** The node class from Kratos is defined in this class
+/** The node is a dimensionalized object inherited from point, but carrying the dofs with it and associated historical values
 */
 template<std::size_t TDimension, typename TCoordinateType = KRATOS_DOUBLE_TYPE, class TDofType = Dof<KRATOS_DOUBLE_TYPE> >
 class Node : public Point<TDimension, TCoordinateType>,  public IndexedObject, public Flags
@@ -125,12 +126,14 @@ public:
         , mInitialPosition()
     {
         CreateSolutionStepData();
+        this->Set(FREEZE, false);
 
 #ifdef _OPENMP
         omp_init_lock(&mnode_lock);
 #endif
     }
 
+    /// Constructor with id
     Node(IndexType NewId )
         : BaseType()
         , IndexedObject(NewId)
@@ -140,42 +143,8 @@ public:
         , mSolutionStepsNodalData()
         , mInitialPosition()
     {
-        KRATOS_ERROR <<  "Calling the default constructor for the node ... illegal operation!!" << std::endl;
         CreateSolutionStepData();
-
-#ifdef _OPENMP
-        omp_init_lock(&mnode_lock);
-#endif
-    }
-
-    /// 1d constructor.
-    Node(IndexType NewId, const CoordinateType NewX)
-        : BaseType(NewX)
-        , IndexedObject(NewId)
-        , Flags()
-        , mDofs()
-        , mData()
-        , mSolutionStepsNodalData()
-        , mInitialPosition(NewX)
-    {
-        CreateSolutionStepData();
-
-#ifdef _OPENMP
-        omp_init_lock(&mnode_lock);
-#endif
-    }
-
-    /// 2d constructor.
-    Node(IndexType NewId, const CoordinateType NewX, const CoordinateType NewY)
-        : BaseType(NewX, NewY)
-        , IndexedObject(NewId)
-        , Flags()
-        , mDofs()
-        , mData()
-        , mSolutionStepsNodalData()
-        , mInitialPosition(NewX, NewY)
-    {
-        CreateSolutionStepData();
+        this->Set(FREEZE, false);
 
 #ifdef _OPENMP
         omp_init_lock(&mnode_lock);
@@ -193,6 +162,7 @@ public:
         , mInitialPosition(NewX, NewY, NewZ)
     {
         CreateSolutionStepData();
+        this->Set(FREEZE, true); // freeze the initial position after the node is created
 
 #ifdef _OPENMP
         omp_init_lock(&mnode_lock);
@@ -210,6 +180,7 @@ public:
         , mInitialPosition(rThisPoint)
     {
         CreateSolutionStepData();
+        this->Set(FREEZE, true); // freeze the initial position after the node is created
 
 #ifdef _OPENMP
         omp_init_lock(&mnode_lock);
@@ -292,8 +263,6 @@ public:
 #endif
     }
 
-
-
     /** Constructor using coordinates stored in given std::vector. Initialize
     this point with the coordinates in the array. */
     Node(IndexType NewId, std::vector<CoordinateType> const& rOtherCoordinates)
@@ -326,7 +295,6 @@ public:
         omp_init_lock(&mnode_lock);
 #endif
     }
-
 
     /// Destructor.
     ~Node() override
@@ -581,7 +549,8 @@ public:
     {
         return mSolutionStepsNodalData.FastGetCurrentValue(rThisVariable, ThisPosition);
     }
-//*******************************************************************************************
+
+    //*******************************************************************************************
 
     template<class TVariableType> typename TVariableType::Type& GetValue(const TVariableType& rThisVariable)
     {
@@ -658,23 +627,6 @@ public:
     {
         return mInitialPosition;
     }
-    PointType& GetInitialPosition()
-    {
-        return mInitialPosition;
-    }
-
-    CoordinateType& X0()
-    {
-        return mInitialPosition.X();
-    }
-    CoordinateType& Y0()
-    {
-        return mInitialPosition.Y();
-    }
-    CoordinateType& Z0()
-    {
-        return mInitialPosition.Z();
-    }
 
     CoordinateType X0() const
     {
@@ -691,6 +643,8 @@ public:
 
     void SetInitialPosition(const PointType& NewInitialPosition)
     {
+        if (Is(FREEZE))
+            KRATOS_ERROR << "A freezed node cannot change its initial position. Consider to change FREEZE flag first.";
         mInitialPosition.X() = NewInitialPosition.X();
         mInitialPosition.Y() = NewInitialPosition.Y();
         mInitialPosition.Z() = NewInitialPosition.Z();
@@ -698,6 +652,8 @@ public:
 
     void SetInitialPosition(CoordinateType X, CoordinateType Y, CoordinateType Z)
     {
+        if (Is(FREEZE))
+            KRATOS_ERROR << "A freezed node cannot change its initial position. Consider to change FREEZE flag first.";
         mInitialPosition.X() = X;
         mInitialPosition.Y() = Y;
         mInitialPosition.Z() = Z;
