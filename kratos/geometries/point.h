@@ -127,6 +127,17 @@ public:
         KRATOS_CATCH_LEVEL_4(*this)
     }
 
+    /// nd constructor.
+    Point(const std::vector<TDataType> NewC) : BaseType(TDimension)
+    {
+        KRATOS_TRY_LEVEL_4
+        SetAllCoordinates();
+        assert(NewC.size() == TDimension);
+        for (std::size_t i = 0; i < TDimension; ++i)
+            this->operator()(i) = NewC[i];
+        KRATOS_CATCH_LEVEL_4(*this)
+    }
+
     /** Copy constructor. Initialize this point with the coordinates
     of given point.*/
     Point(Point const& rOtherPoint)
