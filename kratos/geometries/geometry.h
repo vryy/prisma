@@ -238,6 +238,19 @@ public:
     typedef typename MatrixVectorTypeSelector<DataType>::ZeroVectorType ZeroVectorType;
     typedef typename MatrixVectorTypeSelector<DataType>::ZeroMatrixType ZeroMatrixType;
 
+    /// Helper class to extract the initial position of the node
+    template<typename TOtherPointType>
+    struct InitialPositionHelper
+    {
+        static const typename TOtherPointType::PointType& Get(const TOtherPointType& P) {return P.GetInitialPosition();}
+    };
+
+    template<>
+    struct InitialPositionHelper<Point<3, DataType> >
+    {
+        static const Point<3, DataType>& Get(const Point<3, DataType>& P) {return P;}
+    };
+
     ///@}
     ///@name Life Cycle
     ///@{
@@ -1549,6 +1562,76 @@ public:
                 for(unsigned int m = 0; m < this->LocalSpaceDimension(); m++)
                 {
                     rResult(k,m) += (  ((*this)[i]).Coordinates()[k] - DeltaPosition(i,k)  )*shape_functions_gradients(i,m);
+                }
+            }
+        }
+
+        return rResult;
+    }
+
+    /** Jacobians for given  method. This method
+    calculate jacobians matrices in all integrations points of
+    given integration method in the reference configuration
+    (using the initial position of the node).
+
+    @param ThisMethod integration method which jacobians has to
+    be calculated in its integration points.
+
+    @return JacobiansType a vector of jacobian
+    matrices \f$ J_i \f$ where \f$ i=1,2,...,n \f$ is the integration
+    point index of given integration method.
+
+    @see DeterminantOfJacobian
+    @see InverseOfJacobian
+    */
+    virtual JacobiansType& Jacobian0( JacobiansType& rResult,
+                                      IntegrationMethod ThisMethod ) const
+    {
+        if( rResult.size() != this->IntegrationPointsNumber( ThisMethod ) )
+            rResult.resize( this->IntegrationPointsNumber( ThisMethod ), false );
+
+        for ( unsigned int pnt = 0; pnt < this->IntegrationPointsNumber( ThisMethod ); pnt++ )
+        {
+            this->Jacobian0( rResult[pnt], pnt, ThisMethod);
+        }
+
+        return rResult;
+    }
+
+    /** Jacobian in specific integration point of given integration
+    method. This method calculate jacobian matrix in given
+    integration point of given integration method in the reference configuration
+    (using initial position of the node).
+
+    @param IntegrationPointIndex index of integration point which jacobians has to
+    be calculated in it.
+
+    @param ThisMethod integration method which jacobians has to
+    be calculated in its integration points.
+
+    @return Matrix<double> Jacobian matrix \f$ J_i \f$ where \f$
+    i \f$ is the given integration point index of given
+    integration method.
+
+    @see DeterminantOfJacobian
+    @see InverseOfJacobian
+    */
+    virtual MatrixType& Jacobian0( MatrixType& rResult, IndexType IntegrationPointIndex, IntegrationMethod ThisMethod ) const
+    {
+        if(rResult.size1() != this->WorkingSpaceDimension() || rResult.size2() != this->LocalSpaceDimension())
+            rResult.resize( this->WorkingSpaceDimension(), this->LocalSpaceDimension(), false );
+
+        const Matrix& ShapeFunctionsGradientInIntegrationPoint = ShapeFunctionsLocalGradients( ThisMethod )[ IntegrationPointIndex ];
+
+        rResult.clear();
+        for ( unsigned int i = 0; i < this->PointsNumber(); i++ )
+        {
+            const auto& pos = InitialPositionHelper<TPointType>::Get((*this)[i]);
+            for(unsigned int k = 0; k < this->WorkingSpaceDimension(); k++)
+            {
+                for(unsigned int m = 0; m < this->LocalSpaceDimension(); m++)
+                {
+                    rResult(k,m) += pos[k]*ShapeFunctionsGradientInIntegrationPoint(i,m);
                 }
             }
         }
