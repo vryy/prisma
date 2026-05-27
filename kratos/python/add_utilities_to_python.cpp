@@ -87,7 +87,9 @@ namespace Kratos
                     .def("PrintConstraint", &ConstraintUtilities_PrintConstraint<ConstraintUtilities<ComplexModelPart> >)
                     ;
 
+            #ifdef KRATOS_USE_ADOL_C
             class_<AdolCTapeUtility, AdolCTapeUtility::Pointer, boost::noncopyable>("AdolCTapeUtility", init<>());
+            #endif
         }
 
     } // namespace Python.
