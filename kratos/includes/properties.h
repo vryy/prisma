@@ -19,22 +19,16 @@
 // THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THISSOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
-
 #if !defined(KRATOS_PROPERTIES_H_INCLUDED )
 #define  KRATOS_PROPERTIES_H_INCLUDED
-
-
 
 // System includes
 #include <string>
 #include <iostream>
 #include <cstddef>
-#include <map> // This is a provisional implmentation and should be changed to hash. Pooyan.
-
+#include <unordered_map>
 
 // External includes
-
 
 // Project includes
 #include "includes/define.h"
@@ -66,9 +60,18 @@ namespace Kratos
 ///@name Kratos Classes
 ///@{
 
-/// Short class definition.
-/** Detail class definition.
-*/
+/**
+ * @class Properties
+ * @ingroup KratosCore
+ * @brief Properties encapsulates data shared by different Elements or Conditions. It can store any type of data and provides a variable base access to them.
+ * @details These are all parameters that can be shared between Element. Usually material parameters are common for a set of element, so this category of data is referred as properties.
+ * But in general it can be any common parameter for a group of Elements. Sharing these data as properties reduces the memory used by the application and also helps updating them if necessary.
+ * As mentioned before Properties is a shared data container between Elements or Conditions. In finite element problems there are several parameters which are the same for a set of elements and conditions.
+ * Thermal conductivity, elasticity of the material and viscosity of the fluid are examples of these parameters. Properties holds these data and is shared by elements or Conditions. This eliminates memory overhead due to redundant copies of these data for each element and Condition. Properties also can be used to access nodal data if it is necessary.
+ * It is important to mention that accessing the nodal data via Properties is not the same as accessing it via Node. When user asks Properties for a variable data in a Node, the process starts with finding the variable in the Properties data container and if it does not exist then get it from Node.
+ * This means that the priority of data is with the one stored in Properties and then in Node.
+ * @author Pooyan Dadvand
+ */
 class Properties : public IndexedObject
 {
 public:
@@ -85,28 +88,28 @@ public:
 
     typedef DataValueContainer ContainerType;
 
-    typedef Node<3> NodeType;
+    typedef RealNode NodeType;
 
     typedef NodeType::IndexType IndexType;
 
     typedef Table<KRATOS_DOUBLE_TYPE> TableType;
 
-    typedef std::map<int64_t, TableType> TablesContainerType; // This is a provisional implmentation and should be changed to hash. Pooyan.
-
+    typedef std::unordered_map<int64_t, TableType> TablesContainerType;
 
     ///@}
     ///@name Life Cycle
     ///@{
 
     /// Default constructor.
-    Properties(IndexType NewId = 0) : BaseType(NewId), mData(), mTables() {}
+    Properties(IndexType NewId = 0) : BaseType(NewId), mData(), mTables()
+    {}
 
     /// Copy constructor.
-    Properties(const Properties& rOther) : BaseType(rOther), mData(rOther.mData), mTables(rOther.mTables) {}
+    Properties(const Properties& rOther) : BaseType(rOther), mData(rOther.mData), mTables(rOther.mTables)
+    {}
 
     /// Destructor.
-    virtual ~Properties() {}
-
+    ~Properties() override {}
 
     ///@}
     ///@name Operators
@@ -117,6 +120,7 @@ public:
     {
         BaseType::operator=(rOther);
         mData = rOther.mData;
+        mTables = rOther.mTables;
         return *this;
     }
 
@@ -278,8 +282,6 @@ public:
         return mData;
     }
 
-
-
     ///@}
     ///@name Inquiry
     ///@{
@@ -290,35 +292,32 @@ public:
         return mData.Has(rThisVariable);
     }
 
-
     ///@}
     ///@name Input and output
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const override
     {
         return "Properties";
     }
 
     /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
-        rOStream <<  "Properties";
+        rOStream <<  "Properties #" << Id();
     }
 
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
         mData.PrintData(rOStream);
         rOStream << "This properties contains " << mTables.size() << " tables";
     }
 
-
     ///@}
     ///@name Friends
     ///@{
-
 
     ///@}
 
@@ -326,43 +325,35 @@ protected:
     ///@name Protected static Member Variables
     ///@{
 
-
     ///@}
     ///@name Protected member Variables
     ///@{
-
 
     ///@}
     ///@name Protected Operators
     ///@{
 
-
     ///@}
     ///@name Protected Operations
     ///@{
-
 
     ///@}
     ///@name Protected  Access
     ///@{
 
-
     ///@}
     ///@name Protected Inquiry
     ///@{
 
-
     ///@}
     ///@name Protected LifeCycle
     ///@{
-
 
     ///@}
 
 private:
     ///@name Static Member Variables
     ///@{
-
 
     ///@}
     ///@name Member Variables
@@ -375,7 +366,6 @@ private:
     ///@name Private Operators
     ///@{
 
-
     ///@}
     ///@name Private Operations
     ///@{
@@ -387,32 +377,31 @@ private:
 
     friend class Serializer;
 
-    void save(Serializer& rSerializer) const
+    void save(Serializer& rSerializer) const override
     {
         KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, IndexedObject );
         rSerializer.save("Data", mData);
+        rSerializer.save("Tables", mTables);
     }
 
-    void load(Serializer& rSerializer)
+    void load(Serializer& rSerializer) override
     {
         KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, IndexedObject );
         rSerializer.load("Data", mData);
+        rSerializer.load("Tables", mTables);
     }
 
     ///@}
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
 
-
     ///@}
     ///@name Un accessible methods
     ///@{
-
 
     ///@}
 
@@ -423,15 +412,16 @@ private:
 ///@name Type Definitions
 ///@{
 
-
 ///@}
 ///@name Input and output
 ///@{
 
-
 /// input stream function
 inline std::istream& operator >> (std::istream& rIStream,
-                                  Properties& rThis);
+                                  Properties& rThis)
+{
+    return rIStream;
+}
 
 /// output stream function
 inline std::ostream& operator << (std::ostream& rOStream,
@@ -443,11 +433,9 @@ inline std::ostream& operator << (std::ostream& rOStream,
 
     return rOStream;
 }
-///@}
 
+///@}
 
 }  // namespace Kratos.
 
-#endif // KRATOS_PROPERTIES_H_INCLUDED  defined 
-
-
+#endif // KRATOS_PROPERTIES_H_INCLUDED  defined
