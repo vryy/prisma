@@ -17,7 +17,6 @@
 // External includes
 #include <boost/python.hpp>
 
-
 // Project includes
 #include "includes/define.h"
 #include "utilities/openmp_utils.h"
@@ -57,7 +56,7 @@ namespace Kratos
         {
             using namespace boost::python;
 
-            class_<Timer> ("Timer", init<>())
+            class_<Timer>("Timer", init<>())
                     .add_property("PrintOnScreen", &Timer::GetPrintOnScreen, &Timer::SetPrintOnScreen)
                     .def("Start", &Timer::Start)
                     .def("Stop", &Timer::Stop)
@@ -67,23 +66,23 @@ namespace Kratos
                     .def(self_ns::str(self))
                     ;
 
-            class_<OpenMPUtils> ("OpenMPUtils", init<>())
+            class_<OpenMPUtils>("OpenMPUtils", init<>())
                     .def("SetNumThreads", &OpenMPUtils::SetNumThreads)
                     .staticmethod("SetNumThreads")
                     .def("PrintOMPInfo", &OpenMPUtils::PrintOMPInfo)
                     .staticmethod("PrintOMPInfo")
                     ;
 
-            class_<GeometryTesterUtility, boost::noncopyable> ("GeometryTesterUtility", init< >())
+            class_<GeometryTesterUtility, boost::noncopyable>("GeometryTesterUtility", init< >())
                     .def("RunTest", &GeometryTesterUtility::RunTest)
                     ;
 
-            class_<ConstraintUtilities<ModelPart>, boost::noncopyable > ("ConstraintUtilities", init< >())
+            class_<ConstraintUtilities<ModelPart>, boost::noncopyable>("ConstraintUtilities", init< >())
                     .def("PrintConstraint", &ConstraintUtilities_PrintConstraint<ConstraintUtilities<ModelPart> >)
                     .def("CreateKinematicCouplingConstraints2D", &ConstraintUtilities_CreateKinematicCouplingConstraints2D<ConstraintUtilities<ModelPart> >)
                     ;
 
-            class_<ConstraintUtilities<ComplexModelPart>, boost::noncopyable > ("ComplexConstraintUtilities", init< >())
+            class_<ConstraintUtilities<ComplexModelPart>, boost::noncopyable>("ComplexConstraintUtilities", init< >())
                     .def("PrintConstraint", &ConstraintUtilities_PrintConstraint<ConstraintUtilities<ComplexModelPart> >)
                     ;
 
@@ -95,4 +94,3 @@ namespace Kratos
     } // namespace Python.
 
 } // Namespace Kratos
-
