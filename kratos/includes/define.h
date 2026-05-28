@@ -685,4 +685,7 @@ void kratos_watch_impl(const char* names, Args&&... args) {
 #define KRATOS_SERIALIZE_LOAD_BASE_CLASS(Serializer, BaseType) \
     Serializer.load_base("BaseClass", *static_cast<BaseType*>(this));
 
+#define KRATOS_DATA_SIZE_DEFINITION() \
+    SizeType DataSize() const override { return sizeof(*this); }
+
 #endif /* KRATOS_DEFINE_H_INCLUDED  defined */

@@ -1649,6 +1649,43 @@ void ModelPartImpl<TNodeType>::PrintData(std::ostream& rOStream) const
         rOStream  << "    Buffer Size : " << mBufferSize << std::endl;
     rOStream << "    Number of tables : " << NumberOfTables() << std::endl;
     rOStream << "    Number of sub model parts : " << NumberOfSubModelParts() << std::endl;
+    //
+    rOStream << "    Nodal solution data size :";
+    SizeType total_nodal_size = 0;
+    for (SizeType i = 0; i < this->NumberOfMeshes(); ++i)
+    {
+        if (this->GetMesh(i).NumberOfNodes() > 0)
+        {
+            std::size_t data_size = this->GetMesh(i).NodesBegin()->SolutionStepData().TotalDataSize();
+            total_nodal_size += data_size * this->GetMesh(i).NumberOfNodes();
+            rOStream << " mesh " << i << " :" << data_size;
+        }
+    }
+    rOStream << std::endl;
+    std::size_t nodal_solution_data_block_size = sizeof(typename NodeType::SolutionStepsNodalDataContainerType::BlockType);
+    //
+    constexpr double gb_to_bytes = 1024*1024*1024;
+    rOStream << "    Nodal solution memory size : " << total_nodal_size * nodal_solution_data_block_size / gb_to_bytes << " GB"
+             << std::endl;
+    //
+    SizeType total_element_mem_size = 0;
+    for (SizeType i = 0; i < this->NumberOfMeshes(); ++i)
+    {
+        for (auto it = this->GetMesh(i).ElementsBegin(); it != this->GetMesh(i).ElementsEnd(); ++it)
+            total_element_mem_size += it->DataSize();
+    }
+    rOStream << "    Elemental memory size : " << total_element_mem_size / gb_to_bytes << " GB"
+             << std::endl;
+    //
+    SizeType total_condition_mem_size = 0;
+    for (SizeType i = 0; i < this->NumberOfMeshes(); ++i)
+    {
+        for (auto it = this->GetMesh(i).ConditionsBegin(); it != this->GetMesh(i).ConditionsEnd(); ++it)
+            total_condition_mem_size += it->DataSize();
+    }
+    rOStream << "    Conditional memory size : " << total_condition_mem_size / gb_to_bytes << " GB"
+             << std::endl;
+    //
     if (!IsSubModelPart())
         mpProcessInfo->PrintData(rOStream);
     rOStream << std::endl;
@@ -1686,6 +1723,12 @@ void ModelPartImpl<TNodeType>::PrintData(std::ostream& rOStream, std::string con
     {
         rOStream << PrefixString << "    Mesh " << i << " : " << std::endl;
         GetMesh(i).PrintData(rOStream, PrefixString + "    ");
+        if (GetMesh(i).NumberOfNodes() > 0)
+        {
+            std::size_t data_size = GetMesh(i).NodesBegin()->SolutionStepData().TotalDataSize();
+            rOStream << PrefixString << "    "
+                     << "Nodal Solution Data Size: " << data_size << std::endl;
+        }
     }
 
     for (SubModelPartConstantIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)

@@ -1263,6 +1263,17 @@ public:
 
     ///@name Inquiry
     ///@{
+
+    /**
+     * Returns the data size occupied in the memory of this element. For an accurate measurement
+     * of element data size in the memory, it is suggested to derive this function in the sub-class.
+     * This can be done by adding KRATOS_DATA_SIZE_DEFINITION(); to the sub-class declaration.
+     */
+    virtual SizeType DataSize() const
+    {
+        return sizeof(*this);
+    }
+
     ///@}
     ///@name Input and output
     ///@{
