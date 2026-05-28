@@ -108,6 +108,15 @@ typename TNodeType::CoordinateType PointGetZ0(TNodeType& ThisPoint)
     return ThisPoint.Z0();
 }
 
+template<class TNodeType> inline
+void NodeSetPosition(TNodeType& rThisNode, typename TNodeType::CoordinateType NewX,
+    typename TNodeType::CoordinateType NewY, typename TNodeType::CoordinateType NewZ)
+{
+    rThisNode.X() = NewX;
+    rThisNode.Y() = NewY;
+    rThisNode.Z() = NewZ;
+}
+
 template<class TDofType>
 void AddDofToPythonImpl(const std::string& Name)
 {
@@ -141,6 +150,8 @@ void AddNodeToPythonImpl(const std::string& Name)
     typedef typename DofType::DataType DataType;
 
     typedef typename NodeType::CoordinateType CoordinateType;
+
+    void(NodeType::*pointer_to_SetInitialPosition)(CoordinateType, CoordinateType, CoordinateType) = &NodeType::SetInitialPosition;
 
     class_<NodeType, typename NodeType::Pointer, bases<typename NodeType::BaseType, IndexedObject, Flags> >
     (Name.c_str(), init<int, CoordinateType, CoordinateType, CoordinateType>())
@@ -181,6 +192,8 @@ void AddNodeToPythonImpl(const std::string& Name)
     .def("SolutionStepsDataHas", &NodeSolutionStepsDataHas<NodeType, Variable<matrix<DataType> > >)
     .def("SolutionStepsDataHas", &NodeSolutionStepsDataHas<NodeType, VariableComponent<VectorComponentAdaptor<array_1d<DataType, 3> > > >)
     .def("OverwriteSolutionStepData", &NodeType::OverwriteSolutionStepData)
+    .def("SetPosition", NodeSetPosition<NodeType>)
+    .def("SetInitialPosition", pointer_to_SetInitialPosition)
     .add_property("X0", PointGetX0<NodeType>)
     .add_property("Y0", PointGetY0<NodeType>)
     .add_property("Z0", PointGetZ0<NodeType>)
