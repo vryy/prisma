@@ -272,11 +272,19 @@ public:
     ///@name Access
     ///@{
 
+    /**
+     * @brief This method returns the whole data container
+     * @return Data container
+     */
     ContainerType& Data()
     {
         return mData;
     }
 
+    /**
+     * @brief This method returns the whole data container (constant)
+     * @return Data container
+     */
     ContainerType const& Data() const
     {
         return mData;
@@ -312,7 +320,7 @@ public:
     void PrintData(std::ostream& rOStream) const override
     {
         mData.PrintData(rOStream);
-        rOStream << "This properties contains " << mTables.size() << " tables";
+        rOStream << "  This properties contains " << mTables.size() << " tables";
     }
 
     ///@}

@@ -100,14 +100,12 @@ public:
     {
     }
 
-
     /// Assignment operator.
     Table& operator=(Table const& rOther)
     {
         mData = rOther.mData;
         return *this;
     }
-
 
     ///@}
     ///@name Operators
@@ -152,7 +150,6 @@ public:
     ///@}
     ///@name Operations
     ///@{
-
 
     // Get the nesrest value for the given argument
     TResultType& GetNearestRow(TArgumentType const& X)
@@ -235,7 +232,6 @@ public:
                 }
     }
 
-
     // assumes that the X is the greater than the last argument and put the row at the end.
     // faster than insert.
     void PushBack(TArgumentType const& X, TResultType const& Y)
@@ -276,7 +272,6 @@ public:
     ///@name Access
     ///@{
 
-
     TableContainerType& Data()
     {
         return mData;
@@ -286,7 +281,6 @@ public:
     {
         return mData;
     }
-
 
     ///@}
     ///@name Inquiry
@@ -396,7 +390,6 @@ private:
     ///@{
 
 
-
     ///@}
     ///@name Private Operations
     ///@{
@@ -434,7 +427,6 @@ private:
                 rSerializer.load("Column", j);
         }
     }
-
 
     ///@}
     ///@name Private  Access
@@ -488,7 +480,6 @@ public:
     {
     }
 
-
     /// Copy constructor.
     ScalarTable(ScalarTable const& rOther): mData(rOther.mData)
     {
@@ -507,14 +498,12 @@ public:
     {
     }
 
-
     /// Assignment operator.
     ScalarTable& operator=(ScalarTable const& rOther)
     {
         mData = rOther.mData;
         return *this;
     }
-
 
     ///@}
     ///@name Operators
@@ -655,7 +644,6 @@ public:
         insert(X,a);
     }
 
-
     // inserts a row in a sorted position where Xi-1 < X < Xi+1
     void insert(TArgumentType const& X, result_row_type const& Y)
     {
@@ -734,7 +722,6 @@ public:
     ///@name Access
     ///@{
 
-
     TableContainerType& Data()
     {
         return mData;
@@ -744,7 +731,6 @@ public:
     {
         return mData;
     }
-
 
     ///@}
     ///@name Inquiry
@@ -801,7 +787,6 @@ public:
 
     ///@}
 
-
 private:
     ///@name Static Member Variables
     ///@{
@@ -820,7 +805,6 @@ private:
     ///@{
 
 
-
     ///@}
     ///@name Private Operations
     ///@{
@@ -831,7 +815,7 @@ private:
 
     friend class Serializer;
 
-    void save(Serializer& rSerializer) const
+    virtual void save(Serializer& rSerializer) const
     {
         std::size_t  local_size = mData.size();
 
@@ -844,7 +828,7 @@ private:
         }
     }
 
-    void load(Serializer& rSerializer)
+    virtual void load(Serializer& rSerializer)
     {
         std::size_t local_size;
 
@@ -858,7 +842,6 @@ private:
                 rSerializer.load("Column", *j);
         }
    }
-
 
     ///@}
     ///@name Private  Access
@@ -915,7 +898,10 @@ public:
 /// input stream function
 template<class TArgumentType, class TResultType>
 inline std::istream& operator >> (std::istream& rIStream,
-                                  Table<TArgumentType, TResultType>& rThis);
+                                  Table<TArgumentType, TResultType>& rThis)
+{
+    return rIStream;
+}
 
 /// output stream function
 template<class TArgumentType, class TResultType>

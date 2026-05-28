@@ -870,7 +870,6 @@ public:
             }
             rOStream << std::endl;
         }
-
     }
 
     ///@}
@@ -878,6 +877,7 @@ public:
     ///@{
 
     ///@}
+
 protected:
     ///@name Protected static Member Variables
     ///@{
@@ -907,6 +907,7 @@ protected:
     ///@{
 
     ///@}
+
 private:
     ///@name Static Member Variables
     ///@{
@@ -931,7 +932,6 @@ private:
     ///@}
     ///@name Private Operations
     ///@{
-
 
     inline void Allocate()
     {
@@ -974,7 +974,6 @@ private:
             }
         }
     }
-
 
     void AssignData(BlockType* Source, BlockType* Destination)
     {
@@ -1101,7 +1100,6 @@ private:
 ///@}
 ///@name Input and output
 ///@{
-
 
 /// input stream function
 template<typename TBlockType>

@@ -1384,7 +1384,7 @@ public:
 
     void SetProcessInfo(ProcessInfo& NewProcessInfo);
 
-    SizeType NumberOfMeshes()
+    SizeType NumberOfMeshes() const
     {
         return mMeshes.size();
     }
