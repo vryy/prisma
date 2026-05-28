@@ -290,6 +290,24 @@ public:
         return mData;
     }
 
+    /**
+     * @brief This method returns the tables
+     * @return The whole lis of tables
+     */
+    TablesContainerType& Tables()
+    {
+        return mTables;
+    }
+
+    /**
+     * @brief This method returns the tables (constant)
+     * @return The whole lis of tables
+     */
+    TablesContainerType const& Tables() const
+    {
+        return mTables;
+    }
+
     ///@}
     ///@name Inquiry
     ///@{
