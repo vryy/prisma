@@ -130,7 +130,6 @@ public:
     /// Destructor.
     virtual ~PointerVector() {}
 
-
     ///@}
     ///@name Operators
     ///@{
@@ -241,7 +240,6 @@ public:
     {
         return mData.rend();
     }
-
     reference        front()       /* nothrow */
     {
         assert( !empty() );
@@ -317,7 +315,6 @@ public:
         for(; First != Last; ++First)
             insert(*First);
     }
-
 
     iterator erase(iterator pos)
     {
@@ -398,7 +395,6 @@ public:
     {
         std::copy(begin(), end(), std::ostream_iterator<TDataType>(rOStream, "\n "));
     }
-
 
     ///@}
     ///@name Friends
@@ -493,7 +489,6 @@ private:
             rSerializer.load("E", mData[i]);
     }
 
-
     ///@}
     ///@name Private  Access
     ///@{
@@ -529,7 +524,10 @@ template<class TDataType,
          class TPointerType,
          class TContainerType>
 inline std::istream& operator >> (std::istream& rIStream,
-                                  PointerVector<TDataType, TPointerType, TContainerType>& rThis);
+                                  PointerVector<TDataType, TPointerType, TContainerType>& rThis)
+{
+    return rIStream;
+}
 
 /// output stream function
 template<class TDataType,
@@ -544,8 +542,8 @@ inline std::ostream& operator << (std::ostream& rOStream,
 
     return rOStream;
 }
-///@}
 
+///@}
 
 }  // namespace Kratos.
 

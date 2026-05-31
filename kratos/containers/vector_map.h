@@ -91,7 +91,6 @@ namespace Kratos
     but using a vector to store data.
  */
 template<class TKeyType,class TDataType,
-
          class TCompareType = std::less<TKeyType>,
          class TContainerType = std::vector<std::pair<TKeyType, TDataType> > >
 class VectorMap
@@ -142,7 +141,6 @@ public:
 
     /// Destructor.
     virtual ~VectorMap() {}
-
 
     ///@}
     ///@name Operators
@@ -214,7 +212,6 @@ public:
         return (i->second);
     }
 
-
     ///@}
     ///@name Operations
     ///@{
@@ -283,7 +280,6 @@ public:
     {
         return mData.rend();
     }
-
     reference        front()       /* nothrow */
     {
         assert( !empty() );
@@ -439,7 +435,6 @@ public:
         return mData;
     }
 
-
     /** Set the maximum size of buffer used in the container.
 
     This container uses a buffer which keep data unsorted. After
@@ -451,7 +446,6 @@ public:
     {
         mMaxBufferSize = NewSize;
     }
-
 
     ///@}
     ///@name Inquiry
@@ -492,7 +486,6 @@ public:
         for(typename TContainerType::const_iterator i = mData.begin() ; i != mData.end() ; i++)
             rOStream << "(" << i->first << " , " << (i->second) << ")" << std::endl;
     }
-
 
     ///@}
     ///@name Friends
@@ -630,14 +623,16 @@ private:
 ///@name Input and output
 ///@{
 
-
 /// input stream function
 template<class TDataType,
          class TGetKeyType,
          class TCompareType,
          class TContainerType>
 inline std::istream& operator >> (std::istream& rIStream,
-                                  VectorMap<TDataType, TGetKeyType, TCompareType, TContainerType>& rThis);
+                                  VectorMap<TDataType, TGetKeyType, TCompareType, TContainerType>& rThis)
+{
+    return rIStream;
+}
 
 /// output stream function
 template<class TDataType,
@@ -653,9 +648,9 @@ inline std::ostream& operator << (std::ostream& rOStream,
 
     return rOStream;
 }
-///@}
 
+///@}
 
 }  // namespace Kratos.
 
-#endif // KRATOS_VECTOR_MAP_H_INCLUDED  defined 
+#endif // KRATOS_VECTOR_MAP_H_INCLUDED  defined

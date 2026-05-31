@@ -2,14 +2,14 @@
 //    ' /   __| _` | __|  _ \   __|
 //    . \  |   (   | |   (   |\__ `
 //   _|\_\_|  \__,_|\__|\___/ ____/
-//                   Multi-Physics 
+//                   Multi-Physics
 //
-//  License:		 BSD License 
-//					 Kratos default license: kratos/license.txt
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Pooyan Dadvand
 //                   Riccardo Rossi
-//                    
+//
 //
 
 
@@ -100,7 +100,6 @@ public:
         return this->base()->first;
     }
 
-
     ///@}
     ///@name Access
     ///@{
@@ -124,7 +123,9 @@ public:
     ///@}
 
 private:
+
     friend class boost::iterator_core_access;
+
     ///@name Static Member Variables
     ///@{
 
@@ -187,6 +188,4 @@ private:
 
 }  // namespace Kratos.
 
-#endif // KRATOS_POINTER_VECTOR_MAP_ITERATOR_H_INCLUDED  defined 
-
-
+#endif // KRATOS_POINTER_VECTOR_MAP_ITERATOR_H_INCLUDED  defined

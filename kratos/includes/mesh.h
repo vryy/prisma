@@ -145,7 +145,6 @@ public:
     /// Const iterator for master-slave constraints in the container. Provides direct references to constraints.
     typedef typename MasterSlaveConstraintContainerType::const_iterator MasterSlaveConstraintConstantIteratorType;
 
-
     ///@}
     ///@name Life Cycle
     ///@{
@@ -172,8 +171,12 @@ public:
          typename ElementsContainerType::Pointer NewElements,
          typename ConditionsContainerType::Pointer NewConditions,
          typename MasterSlaveConstraintContainerType::Pointer NewMasterSlaveConditions)
-        : Flags(), mpNodes(NewNodes), mpProperties(NewProperties) , mpElements(NewElements), mpConditions(NewConditions), mpMasterSlaveConstraints(NewMasterSlaveConditions) {}
-
+        : Flags()
+        , mpNodes(NewNodes)
+        , mpProperties(NewProperties)
+        , mpElements(NewElements)
+        , mpConditions(NewConditions)
+        , mpMasterSlaveConstraints(NewMasterSlaveConditions) {}
 
     /// Destructor.
     ~Mesh() override {}
@@ -215,7 +218,6 @@ public:
     /** Dimensional space of the mesh geometries
         @return SizeType, working space dimension of this geometry.
     */
-
     SizeType WorkingSpaceDimension() const
     {
         SizeType dimension = 3;
@@ -930,7 +932,6 @@ private:
 
     typename MasterSlaveConstraintContainerType::Pointer mpMasterSlaveConstraints;
 
-
     ///@}
     ///@name Private Operators
     ///@{
@@ -967,7 +968,6 @@ private:
         rSerializer.load("Constraints",mpMasterSlaveConstraints);
     }
 
-
     ///@}
     ///@name Private  Access
     ///@{
@@ -990,7 +990,6 @@ private:
         mpConditions = rOther.mpConditions;
         mpMasterSlaveConstraints = rOther.mpMasterSlaveConstraints;
     }
-
 
     ///@}
 
@@ -1023,8 +1022,8 @@ inline std::ostream& operator << (std::ostream& rOStream,
 
     return rOStream;
 }
-///@}
 
+///@}
 
 }  // namespace Kratos.
 

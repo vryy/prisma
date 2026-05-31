@@ -92,6 +92,7 @@ public:
     /// @}
     /// @name Iterators
     /// @{
+
     using iterator = boost::indirect_iterator<typename TContainerType::iterator>;
     using const_iterator = boost::indirect_iterator<typename TContainerType::const_iterator>;
     using const_deref_iterator = ConstDerefIterator<typename TContainerType::const_iterator>;
@@ -102,6 +103,7 @@ public:
     /// @}
     /// @name Other definitions
     /// @{
+
     using size_type = typename TContainerType::size_type;
     using ptr_iterator = typename TContainerType::iterator;
     using ptr_const_iterator = typename TContainerType::const_iterator;
@@ -1038,7 +1040,6 @@ public:
         return buffer.str();
     }
 
-
     /// Print information about this object.
     virtual void PrintInfo(std::ostream& rOStream) const
     {
@@ -1407,7 +1408,10 @@ template<class TDataType,
          class TPointerType,
          class TContainerType>
 inline std::istream& operator >> (std::istream& rIStream,
-                                  PointerVectorSet<TDataType, TGetKeyType, TCompareType, TEqualType, TPointerType, TContainerType>& rThis);
+                                  PointerVectorSet<TDataType, TGetKeyType, TCompareType, TEqualType, TPointerType, TContainerType>& rThis)
+{
+    return rIStream;
+}
 
 /// output stream function
 template<class TDataType,
@@ -1425,8 +1429,9 @@ inline std::ostream& operator << (std::ostream& rOStream,
 
     return rOStream;
 }
+
 ///@}
 
 }  // namespace Kratos.
 
-#endif // KRATOS_POINTER_VECTOR_SET_H_INCLUDED  defined 
+#endif // KRATOS_POINTER_VECTOR_SET_H_INCLUDED  defined

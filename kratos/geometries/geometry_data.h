@@ -223,19 +223,6 @@ public:
     ///@name Life Cycle
     ///@{
 
-//    GeometryData(SizeType ThisDimension = 0,
-//          SizeType ThisWorkingSpaceDimension = 0,
-//          SizeType ThisLocalSpaceDimension = 0)
-//  : mDimension(ThisDimension)
-//  , mWorkingSpaceDimension(ThisWorkingSpaceDimension)
-//  , mLocalSpaceDimension(ThisLocalSpaceDimension)
-//  , mDefaultMethod(GI_GAUSS_1)
-//  , mIntegrationPoints()
-//  , mShapeFunctionsValues()
-//  , mShapeFunctionsLocalGradients()
-//  {
-//  }
-
     /** Complete argument constructor. This constructor gives a
     complete set of arguments to pass all the initial value of
     all the member variables of geometry class. Also it has
@@ -427,7 +414,7 @@ public:
     ///@name Integration
     ///@{
 
-    /** Number of integtation points for default integration
+    /** Number of integration points for default integration
     method. This method just call IntegrationPointsNumber(enum
     IntegrationMethod ThisMethod) with default integration
     method.
@@ -446,7 +433,7 @@ public:
         return mIntegrationPoints[static_cast<int>(mDefaultMethod)].size();
     }
 
-    /** Number of integtation points for given integration
+    /** Number of integration points for given integration
     method. This method use integration points data base to
     obtain size of the integration points Vector respected to
     given method.
@@ -459,8 +446,7 @@ public:
         return mIntegrationPoints[static_cast<int>(ThisMethod)].size();
     }
 
-
-    /** Integtation points for default integration
+    /** Integration points for default integration
     method. This method just call IntegrationPoints(enum
     IntegrationMethod ThisMethod) with default integration
     method.
@@ -473,7 +459,7 @@ public:
         return mIntegrationPoints[static_cast<int>(mDefaultMethod)];
     }
 
-    /** Integtation points for given integration
+    /** Integration points for given integration
     method. This method use integration points data base to
     obtain integration points Vector respected to
     given method.

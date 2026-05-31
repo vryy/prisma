@@ -2,14 +2,14 @@
 //    ' /   __| _` | __|  _ \   __|
 //    . \  |   (   | |   (   |\__ `
 //   _|\_\_|  \__,_|\__|\___/ ____/
-//                   Multi-Physics 
+//                   Multi-Physics
 //
-//  License:		 BSD License 
-//					 Kratos default license: kratos/license.txt
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
 //  Main authors:    Pooyan Dadvand
 //                   Riccardo Rossi
-//                    
+//
 //
 
 #if !defined(KRATOS_POINTER_VECTOR_MAP_H_INCLUDED )
@@ -140,7 +140,7 @@ public:
             sorted_part_end = mData.end();
         }
         else
-            sorted_part_end	= mData.begin() + mSortedPartSize;
+            sorted_part_end = mData.begin() + mSortedPartSize;
 
         pair_iterator i(std::lower_bound(mData.begin(), sorted_part_end, Key, CompareKey()));
         if (i == sorted_part_end)
@@ -169,7 +169,7 @@ public:
             sorted_part_end = mData.end();
         }
         else
-            sorted_part_end	= mData.begin() + mSortedPartSize;
+            sorted_part_end = mData.begin() + mSortedPartSize;
 
         pair_iterator i(std::lower_bound(mData.begin(), sorted_part_end, Key, CompareKey()));
         if (i == sorted_part_end)
@@ -314,7 +314,7 @@ public:
             sorted_part_end = mData.end();
         }
         else
-            sorted_part_end	= mData.begin() + mSortedPartSize;
+            sorted_part_end = mData.begin() + mSortedPartSize;
 
         pair_iterator i(std::lower_bound(mData.begin(), sorted_part_end, Key, CompareKey()));
         if (i == sorted_part_end)
@@ -343,7 +343,7 @@ public:
             sorted_part_end = mData.end();
         }
         else
-            sorted_part_end	= mData.begin() + mSortedPartSize;
+            sorted_part_end = mData.begin() + mSortedPartSize;
 
         pair_iterator i(std::lower_bound(mData.begin(), sorted_part_end, Key, CompareKey()));
         if (i == sorted_part_end)
@@ -393,7 +393,7 @@ public:
             sorted_part_end = mData.end();
         }
         else
-            sorted_part_end	= mData.begin() + mSortedPartSize;
+            sorted_part_end = mData.begin() + mSortedPartSize;
 
         pair_iterator i(std::lower_bound(mData.begin(), sorted_part_end, Key, CompareKey()));
         if (i == sorted_part_end || (Key != i->first))
@@ -431,7 +431,7 @@ public:
             sorted_part_end = mData.end();
         }
         else
-            sorted_part_end	= mData.begin() + mSortedPartSize;
+            sorted_part_end = mData.begin() + mSortedPartSize;
 
         pair_iterator i(std::lower_bound(mData.begin(), sorted_part_end, Key, CompareKey()));
         if (i == sorted_part_end){
@@ -447,7 +447,7 @@ public:
     TDataType& at(const key_type& Key) const
     {
         pair_iterator sorted_part_end;
-        sorted_part_end	= mData.begin() + mSortedPartSize;
+        sorted_part_end = mData.begin() + mSortedPartSize;
 
         pair_iterator i(std::lower_bound(mData.begin(), sorted_part_end, Key, CompareKey()));
         if (i == sorted_part_end){
@@ -486,15 +486,15 @@ public:
     /**
      * @brief Get the maximum size of buffer used in the container.
      */
-    size_type GetMaxBufferSize() const 
+    size_type GetMaxBufferSize() const
     {
         return mMaxBufferSize;
     }
 
-    /** 
+    /**
      * @brief Set the maximum size of buffer used in the container.
      * @details This container uses a buffer which keep data unsorted. After buffer size arrived to the MaxBufferSize it will sort all container and empties buffer.
-     * @param NewSize Is the new buffer maximum size. 
+     * @param NewSize Is the new buffer maximum size.
      */
     void SetMaxBufferSize(const size_type NewSize)
     {
@@ -504,14 +504,14 @@ public:
     /**
      * @brief Get the sorted part size of buffer used in the container.
      */
-    size_type GetSortedPartSize() const 
+    size_type GetSortedPartSize() const
     {
         return mSortedPartSize;
     }
 
-    /** 
+    /**
      * @brief Set the sorted part size of buffer used in the container.
-     * @param NewSize Is the new buffer maximum size. 
+     * @param NewSize Is the new buffer maximum size.
      */
     void SetSortedPartSize(const size_type NewSize)
     {
@@ -730,7 +730,6 @@ private:
 ///@name Input and output
 ///@{
 
-
 /// input stream function
 template<class TDataType,
          class TGetKeyType,
@@ -738,7 +737,10 @@ template<class TDataType,
          class TPointerType,
          class TContainerType>
 inline std::istream& operator >> (std::istream& rIStream,
-                                  PointerVectorMap<TDataType, TGetKeyType, TCompareType, TPointerType, TContainerType>& rThis);
+                                  PointerVectorMap<TDataType, TGetKeyType, TCompareType, TPointerType, TContainerType>& rThis)
+{
+    return rIStream;
+}
 
 /// output stream function
 template<class TDataType,
@@ -755,9 +757,9 @@ inline std::ostream& operator << (std::ostream& rOStream,
 
     return rOStream;
 }
-///@}
 
+///@}
 
 }  // namespace Kratos.
 
-#endif // KRATOS_POINTER_VECTOR_MAP_H_INCLUDED  defined 
+#endif // KRATOS_POINTER_VECTOR_MAP_H_INCLUDED  defined

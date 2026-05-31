@@ -117,7 +117,6 @@ public:
     //template<class TOtherIteratorType>
     //VectorMapIterator(VectorMapIterator<TIteratorType> const & NewIterator) :BaseType(NewIterator.base()) {}
 
-
     ///@}
     ///@name Operators
     ///@{
@@ -131,7 +130,6 @@ public:
     {
         return this->base()->first;
     }
-
 
     ///@}
     ///@name Access
@@ -157,6 +155,7 @@ public:
 
 private:
     friend class boost::iterator_core_access;
+
     ///@name Static Member Variables
     ///@{
 
@@ -216,9 +215,6 @@ private:
 
 ///@}
 
-
 }  // namespace Kratos.
 
-#endif // KRATOS_VECTOR_MAP_ITERATOR_H_INCLUDED  defined 
-
-
+#endif // KRATOS_VECTOR_MAP_ITERATOR_H_INCLUDED  defined
