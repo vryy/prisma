@@ -100,7 +100,7 @@ public:
     typedef typename DofType::DataType DataType;
 
     /// The DoF pointer vector type definition
-    typedef std::vector< typename DofType::Pointer > DofPointerVectorType;
+    typedef std::vector<typename DofType::Pointer> DofPointerVectorType;
 
     /// The equation Id vector type definition
     typedef std::vector<std::size_t> EquationIdVectorType;
@@ -556,7 +556,7 @@ public:
      * @brief Check if the Data exists with Has(..) methods:
      * @param rThisVariable The variable to be check
      */
-    template<class TDataType> 
+    template<class TDataType>
     bool Has(const Variable<TDataType>& rThisVariable) const
     {
         return mData.Has(rThisVariable);

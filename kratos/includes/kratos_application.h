@@ -67,7 +67,6 @@ public:
     /// Constructor with application name
     KratosApplication(const std::string& Name);
 
-
     /// Copy constructor.
     KratosApplication(KratosApplication const& rOther) :
         mApplicationName(rOther.mApplicationName),
@@ -86,8 +85,6 @@ public:
     /// Destructor.
     virtual ~KratosApplication() {}
 
-
-
     ///@}
     ///@name Operations
     ///@{
@@ -96,7 +93,6 @@ public:
     {
         RegisterVariables();
     }
-
 
     virtual void RegisterVariables();
 
@@ -291,10 +287,10 @@ protected:
 
     ///@{
 
-    //general conditions must be defined
-    const Condition  mCondition;
-    const Condition  mCondition3D;
-    const Condition  mCondition2D;
+    // General conditions must be defined
+    const Condition mCondition;
+    const Condition mCondition3D;
+    const Condition mCondition2D;
 
     // Master-Slave base constraint
     const MasterSlaveConstraint mMasterSlaveConstraint;
@@ -306,11 +302,10 @@ protected:
     const PeriodicCondition mPeriodicConditionEdge;
     const PeriodicCondition mPeriodicConditionCorner;
 
-
-    //general elements must be defined
-    const Element  mElement;
-    const Element  mElement3D4N;
-    const Element  mElement2D3N;
+    // General elements must be defined
+    const Element mElement;
+    const Element mElement3D4N;
+    const Element mElement2D3N;
 
     KratosComponents<VariableData>::ComponentsContainerType* mpVariableData;
 

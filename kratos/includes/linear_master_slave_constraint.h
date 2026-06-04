@@ -445,12 +445,6 @@ public:
             master_dofs_values[i] = mMasterDofsVector[i]->GetSolutionStepValue();
         }
 
-        // std::cout << "master dofs:";
-        // for (IndexType i = 0; i < mMasterDofsVector.size(); ++i)
-        //     std::cout << " (" << mMasterDofsVector[i]->Id() << ", " << mMasterDofsVector[i]->GetVariable().Name()
-        //           << ", " << mMasterDofsVector[i]->GetSolutionStepValue() << ")";
-        // std::cout << std::endl;
-
         // Apply the constraint to the slave dofs
         for (IndexType i = 0; i < mRelationMatrix.size1(); ++i) {
             DataType aux = mConstantVector[i];
@@ -461,12 +455,6 @@ public:
             #pragma omp atomic
             mSlaveDofsVector[i]->GetSolutionStepValue() += aux;
         }
-
-        // std::cout << "slave dofs:";
-        // for (IndexType i = 0; i < mSlaveDofsVector.size(); ++i)
-        // std::cout << " (" << mSlaveDofsVector[i]->Id() << ", " << mSlaveDofsVector[i]->GetVariable().Name()
-        //           << ", " << mSlaveDofsVector[i]->GetSolutionStepValue() << ")";
-        // std::cout << std::endl;
     }
 
     /**

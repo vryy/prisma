@@ -68,7 +68,7 @@
 namespace Kratos
 {
 
-  KratosApplication::KratosApplication() : // DEPRECATED
+  KratosApplication::KratosApplication() :
     mApplicationName("ApplicationName"),
     mCondition3D( 0, Element::GeometryType::Pointer( new Triangle3D3<Node<3> >( Element::GeometryType::PointsArrayType( 3, Node<3>() ) ) ) ),
     mCondition2D( 0, Element::GeometryType::Pointer( new Geometry<Node<3> >( Element::GeometryType::PointsArrayType( 2, Node<3>() ) ) ) ),
@@ -89,12 +89,10 @@ namespace Kratos
     mpConditions( KratosComponents<Condition>::pGetComponents() ),
     mpRegisteredObjects( &( Serializer::GetRegisteredObjects() ) ),
     mpRegisteredObjectsName( &( Serializer::GetRegisteredObjectsName() ) ),
-
     // Master-Slave Constraint
     mMasterSlaveConstraint(),
     mLinearConstraint(),
     mLinearMasterSlaveConstraint()
-
   {}
 
   KratosApplication::KratosApplication(const std::string& Name) :
@@ -118,12 +116,10 @@ namespace Kratos
     mpConditions( KratosComponents<Condition>::pGetComponents() ),
     mpRegisteredObjects( &( Serializer::GetRegisteredObjects() ) ),
     mpRegisteredObjectsName( &( Serializer::GetRegisteredObjectsName() ) ),
-
     // Master-Slave Constraint
     mMasterSlaveConstraint(),
     mLinearConstraint(),
     mLinearMasterSlaveConstraint()
-
   {}
 
   void KratosApplication::RegisterVariables()
