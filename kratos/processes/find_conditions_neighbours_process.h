@@ -53,8 +53,8 @@ namespace Kratos
 /// Short class definition.
 /** Detail class definition.
 */
-class FindConditionsNeighboursProcess
-    : public Process
+template<class TModelPartType>
+class FindConditionsNeighboursProcess : public Process
 {
 public:
     ///@name Type Definitions
@@ -63,8 +63,9 @@ public:
     /// Pointer definition of FindConditionsNeighboursProcess
     KRATOS_CLASS_POINTER_DEFINITION(FindConditionsNeighboursProcess);
 
-    typedef ModelPart::NodesContainerType NodesContainerType;
-    typedef ModelPart::ConditionsContainerType ConditionsContainerType;
+    typedef typename TModelPartType::NodesContainerType NodesContainerType;
+    typedef typename TModelPartType::ConditionsContainerType ConditionsContainerType;
+    typedef typename TModelPartType::ConditionType ConditionType;
 
     ///@}
     ///@name Life Cycle
@@ -74,19 +75,17 @@ public:
     /// avg_elems ------ expected number of neighbour elements per node.,
     /// avg_nodes ------ expected number of neighbour Nodes
     /// the better the guess for the quantities above the less memory occupied and the fastest the algorithm
-    FindConditionsNeighboursProcess(ModelPart& model_part, int TDim, unsigned int avg_conds = 10)
+    FindConditionsNeighboursProcess(TModelPartType& model_part, int TDim, unsigned int avg_conds = 10)
         : mr_model_part(model_part)
     {
         mavg_conds = avg_conds;
-        mTDim=TDim;
-// 	mavg_nodes = avg_nodes;
+        mTDim = TDim;
     }
 
     /// Destructor.
     ~FindConditionsNeighboursProcess() override
     {
     }
-
 
     ///@}
     ///@name Operators
@@ -102,30 +101,28 @@ public:
         NodesContainerType& rNodes = mr_model_part.Nodes();
         ConditionsContainerType& rConds = mr_model_part.Conditions();
 
-        //first of all the neighbour nodes and conditions array are initialized to the guessed size
-        //and empties the old entries
-        for(NodesContainerType::iterator in = rNodes.begin(); in!=rNodes.end(); in++)
+        // first of all the neighbour nodes and conditions array are initialized to the guessed size
+        // and empties the old entries
+        for (auto in = rNodes.begin(); in!=rNodes.end(); in++)
         {
             (in->GetValue(NEIGHBOUR_CONDITIONS)).reserve(mavg_conds);
-            WeakPointerVector<Condition >& rC = in->GetValue(NEIGHBOUR_CONDITIONS);
-            rC.erase(rC.begin(),rC.end() );
+            auto& rC = in->GetValue(NEIGHBOUR_CONDITIONS);
+            rC.erase(rC.begin(), rC.end());
         }
-        for(ConditionsContainerType::iterator ic = rConds.begin(); ic!=rConds.end(); ic++)
+        for (auto ic = rConds.begin(); ic!=rConds.end(); ic++)
         {
             (ic->GetValue(NEIGHBOUR_CONDITIONS)).reserve(3);
-            WeakPointerVector<Condition >& rC = ic->GetValue(NEIGHBOUR_CONDITIONS);
-            rC.erase(rC.begin(),rC.end() );
+            auto& rC = ic->GetValue(NEIGHBOUR_CONDITIONS);
+            rC.erase(rC.begin(), rC.end());
         }
 
-        //add the neighbour conditions to all the nodes in the mesh
-        for(ConditionsContainerType::iterator ic = rConds.begin(); ic!=rConds.end(); ic++)
+        // add the neighbour conditions to all the nodes in the mesh
+        for (auto ic = rConds.begin(); ic!=rConds.end(); ic++)
         {
-            Condition::GeometryType& pGeom = ic->GetGeometry();
-            for(unsigned int i = 0; i < pGeom.size(); i++)
+            auto& pGeom = ic->GetGeometry();
+            for (unsigned int i = 0; i < pGeom.size(); i++)
             {
-                //KRATOS_WATCH( pGeom[i] );
                 (pGeom[i].GetValue(NEIGHBOUR_CONDITIONS)).push_back( Condition::WeakPointer( *(ic.base()) ) );
-                //KRATOS_WATCH( (pGeom[i].GetValue(NEIGHBOUR_CONDITIONS)).size() );
             }
         }
 
@@ -133,13 +130,13 @@ public:
         //loop over faces
         if (mTDim==3)
         {
-            for(ConditionsContainerType::iterator ic = rConds.begin(); ic!=rConds.end(); ic++)
+            for(auto ic = rConds.begin(); ic!=rConds.end(); ic++)
             {
                 //face nodes
-                Geometry<Node<3> >& geom = (ic)->GetGeometry();
+                auto& geom = (ic)->GetGeometry();
                 //vector of the 3 faces around the given face
                 (ic->GetValue(NEIGHBOUR_CONDITIONS)).resize(3);
-                WeakPointerVector< Condition >& neighb_faces = ic->GetValue(NEIGHBOUR_CONDITIONS);
+                auto& neighb_faces = ic->GetValue(NEIGHBOUR_CONDITIONS);
                 //neighb_face is the vector containing pointers to the three faces around ic
                 //neighb_face[0] = neighbour face over edge 1-2 of element ic;
                 //neighb_face[1] = neighbour face over edge 2-0 of element ic;
@@ -155,18 +152,17 @@ public:
     void ClearNeighbours()
     {
         NodesContainerType& rNodes = mr_model_part.Nodes();
-        for(NodesContainerType::iterator in = rNodes.begin(); in!=rNodes.end(); in++)
+        for (auto in = rNodes.begin(); in != rNodes.end(); in++)
         {
-            WeakPointerVector<Condition >& rC = in->GetValue(NEIGHBOUR_CONDITIONS);
-            rC.erase(rC.begin(),rC.end());
+            auto& rC = in->GetValue(NEIGHBOUR_CONDITIONS);
+            rC.erase(rC.begin(), rC.end());
         }
         ConditionsContainerType& rConds = mr_model_part.Conditions();
-        for(ConditionsContainerType::iterator ic = rConds.begin(); ic!=rConds.end(); ic++)
+        for(auto ic = rConds.begin(); ic != rConds.end(); ic++)
         {
-            WeakPointerVector<Condition >& rC = ic->GetValue(NEIGHBOUR_CONDITIONS);
-            rC.erase(rC.begin(),rC.end());
+            auto& rC = ic->GetValue(NEIGHBOUR_CONDITIONS);
+            rC.erase(rC.begin(), rC.end());
         }
-
     }
 
     ///@}
@@ -241,11 +237,11 @@ private:
     ///@}
     ///@name Member Variables
     ///@{
-    ModelPart& mr_model_part;
+
+    TModelPartType& mr_model_part;
     unsigned int mavg_conds;
     int mTDim;
 // 	unsigned int mavg_nodes;
-
 
     ///@}
     ///@name Private Operators
@@ -253,8 +249,8 @@ private:
 
     //******************************************************************************************
     //******************************************************************************************
-    template< class TDataType > void  AddUniqueWeakPointer
-    (WeakPointerVector< TDataType >& v, const typename TDataType::WeakPointer candidate)
+    template<class TDataType>
+    void AddUniqueWeakPointer(WeakPointerVector<TDataType>& v, const typename TDataType::WeakPointer candidate)
     {
         typename WeakPointerVector< TDataType >::iterator i = v.begin();
         typename WeakPointerVector< TDataType >::iterator endit = v.end();
@@ -269,13 +265,13 @@ private:
 
     }
 
-    Condition::WeakPointer CheckForNeighbourFaces (unsigned int Id_1, unsigned int Id_2, WeakPointerVector< Condition >& neighbour_face, unsigned int face)
+    typename ConditionType::WeakPointer CheckForNeighbourFaces (unsigned int Id_1, unsigned int Id_2, WeakPointerVector< Condition >& neighbour_face, unsigned int face)
     {
         //look for the faces around node Id_1
-        for( WeakPointerVector< Condition >::iterator i =neighbour_face.begin(); i != neighbour_face.end(); i++)
+        for (auto i = neighbour_face.begin(); i != neighbour_face.end(); i++)
         {
             //look for the nodes of the neighbour faces
-            Geometry<Node<3> >& neigh_face_geometry = (i)->GetGeometry();
+            auto& neigh_face_geometry = (i)->GetGeometry();
             for( unsigned int node_i = 0 ; node_i < neigh_face_geometry.size(); node_i++)
             {
                 if (neigh_face_geometry[node_i].Id() == Id_2)
@@ -287,8 +283,10 @@ private:
                 }
             }
         }
-        return Condition::WeakPointer();
+
+        return typename ConditionType::WeakPointer();
     }
+
     ///@}
     ///@name Private Operations
     ///@{
@@ -313,7 +311,6 @@ private:
 
     /// Copy constructor.
     //FindConditionsNeighboursProcess(FindConditionsNeighboursProcess const& rOther);
-
 
     ///@}
 

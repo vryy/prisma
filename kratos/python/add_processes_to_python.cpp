@@ -47,19 +47,20 @@ void  AddProcessesToPython()
     .def(self_ns::str(self))
     ;
 
-    class_<FindNodalNeighboursProcess, bases<Process> >("FindNodalNeighboursProcess",
-            init<ModelPart&, int, int>())
-    .def("ClearNeighbours",&FindNodalNeighboursProcess::ClearNeighbours)
+    typedef FindNodalNeighboursProcess<ModelPart> FindNodalNeighboursProcessType;
+    class_<FindNodalNeighboursProcessType, bases<Process> >("FindNodalNeighboursProcess", init<ModelPart&, int, int>())
+    .def("ClearNeighbours", &FindNodalNeighboursProcessType::ClearNeighbours)
     ;
 
-    class_<FindConditionsNeighboursProcess, bases<Process> >("FindConditionsNeighboursProcess",
-            init<ModelPart&, int, int>())
-    .def("ClearNeighbours",&FindConditionsNeighboursProcess::ClearNeighbours)
+    typedef FindConditionsNeighboursProcess<ModelPart> FindConditionsNeighboursProcessType;
+    class_<FindConditionsNeighboursProcessType, bases<Process> >("FindConditionsNeighboursProcess", init<ModelPart&, int, int>())
+    .def("ClearNeighbours", &FindConditionsNeighboursProcessType::ClearNeighbours)
     ;
 
-    class_<FindElementalNeighboursProcess, bases<Process> >("FindElementalNeighboursProcess",
-            init<ModelPart&, int, int>())
-    .def("ClearNeighbours",&FindElementalNeighboursProcess::ClearNeighbours)
+    typedef FindElementalNeighboursProcess<ModelPart> FindElementalNeighboursProcessType;
+    class_<FindElementalNeighboursProcessType, bases<Process> >("FindElementalNeighboursProcess", init<ModelPart&, int, int>())
+    .def("ClearNeighbours", &FindElementalNeighboursProcessType::ClearNeighbours)
+    ;
     ;
 }
 

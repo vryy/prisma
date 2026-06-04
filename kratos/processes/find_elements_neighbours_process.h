@@ -55,6 +55,7 @@ namespace Kratos
  * @brief This process looks for neighbours of the element in a finite element mesh.
  *          This fill the NEIGHBOUR_ELEMENTS value field of an element
  */
+template<class TModelPartType>
 class FindElementalNeighboursProcess : public Process
 {
 public:
@@ -64,8 +65,9 @@ public:
     /// Pointer definition of FindElementalNeighboursProcess
     KRATOS_CLASS_POINTER_DEFINITION(FindElementalNeighboursProcess);
 
-    typedef ModelPart::NodesContainerType NodesContainerType;
-    typedef ModelPart::ElementsContainerType ElementsContainerType;
+    typedef typename TModelPartType::NodesContainerType NodesContainerType;
+    typedef typename TModelPartType::ElementsContainerType ElementsContainerType;
+    typedef typename TModelPartType::ElementType ElementType;
 
     ///@}
     ///@name Life Cycle
@@ -75,7 +77,7 @@ public:
     /// avg_elems ------ expected number of neighbour elements per node.,
     /// avg_nodes ------ expected number of neighbour Nodes
     /// the better the guess for the quantities above the less memory occupied and the fastest the algorithm
-    FindElementalNeighboursProcess(ModelPart& model_part, int TDim, unsigned int avg_elems = 10)
+    FindElementalNeighboursProcess(TModelPartType& model_part, int TDim, unsigned int avg_elems = 10)
         : mr_model_part(model_part)
     {
         mavg_elems = avg_elems;
@@ -101,32 +103,30 @@ public:
         NodesContainerType& rNodes = mr_model_part.Nodes();
         ElementsContainerType& rElems = mr_model_part.Elements();
 
-        //first of all the neighbour nodes and elements array are initialized to the guessed size
-        //and empties the old entries
-        for(NodesContainerType::iterator in = rNodes.begin(); in != rNodes.end(); in++)
+        // first of all the neighbour nodes and elements array are initialized to the guessed size
+        // and empties the old entries
+        for (auto in = rNodes.begin(); in != rNodes.end(); in++)
         {
             (in->GetValue(NEIGHBOUR_ELEMENTS)).reserve(mavg_elems);
-            WeakPointerVector<Element >& rE = in->GetValue(NEIGHBOUR_ELEMENTS);
-            rE.erase(rE.begin(),rE.end() );
+            auto& rE = in->GetValue(NEIGHBOUR_ELEMENTS);
+            rE.erase(rE.begin(), rE.end());
         }
-        for(ElementsContainerType::iterator ie = rElems.begin(); ie != rElems.end(); ie++)
+        for (auto ie = rElems.begin(); ie != rElems.end(); ie++)
         {
             if(!ie->Is(ACTIVE)) continue;
             (ie->GetValue(NEIGHBOUR_ELEMENTS)).reserve(NumberOfNeighbours(ie->GetGeometry().GetGeometryType()));
-            WeakPointerVector<Element >& rE = ie->GetValue(NEIGHBOUR_ELEMENTS);
-            rE.erase(rE.begin(),rE.end() );
+            auto& rE = ie->GetValue(NEIGHBOUR_ELEMENTS);
+            rE.erase(rE.begin(), rE.end());
         }
 
-        //add the neighbour elements to all the nodes in the mesh
-        for(ElementsContainerType::iterator ie = rElems.begin(); ie != rElems.end(); ie++)
+        // add the neighbour elements to all the nodes in the mesh
+        for (auto ie = rElems.begin(); ie != rElems.end(); ie++)
         {
             if(!ie->Is(ACTIVE)) continue;
-            Element::GeometryType& pGeom = ie->GetGeometry();
+            auto& pGeom = ie->GetGeometry();
             for(unsigned int i = 0; i < pGeom.size(); i++)
             {
-                //KRATOS_WATCH( pGeom[i] );
-                (pGeom[i].GetValue(NEIGHBOUR_ELEMENTS)).push_back( Element::WeakPointer( *(ie.base()) ) );
-                //KRATOS_WATCH( (pGeom[i].GetValue(NEIGHBOUR_CONDITIONS)).size() );
+                (pGeom[i].GetValue(NEIGHBOUR_ELEMENTS)).push_back( typename ElementType::WeakPointer( *(ie.base()) ) );
             }
         }
 
@@ -134,7 +134,7 @@ public:
         //loop over faces
         if (mTDim == 2)
         {
-            for(ElementsContainerType::iterator ie = rElems.begin(); ie != rElems.end(); ie++)
+            for(auto ie = rElems.begin(); ie != rElems.end(); ie++)
             {
                 if(!ie->Is(ACTIVE)) continue;
 
@@ -145,7 +145,7 @@ public:
                 {
                     //vector of the 3 faces around the given face
                     (ie->GetValue(NEIGHBOUR_ELEMENTS)).resize(3);
-                    WeakPointerVector< Element >& neighb_elems = ie->GetValue(NEIGHBOUR_ELEMENTS);
+                    auto& neighb_elems = ie->GetValue(NEIGHBOUR_ELEMENTS);
                     //neighb_face is the vector containing pointers to the three faces around ic
                     //neighb_face[0] = neighbour face over edge 1-2 of element ic;
                     //neighb_face[1] = neighbour face over edge 2-0 of element ic;
@@ -160,7 +160,7 @@ public:
                 {
                     //vector of the 3 faces around the given face
                     (ie->GetValue(NEIGHBOUR_ELEMENTS)).resize(4);
-                    WeakPointerVector< Element >& neighb_elems = ie->GetValue(NEIGHBOUR_ELEMENTS);
+                    auto& neighb_elems = ie->GetValue(NEIGHBOUR_ELEMENTS);
                     //neighb_face is the vector containing pointers to the three faces around ic
                     //neighb_face[0] = neighbour face over edge 1-2 of element ic;
                     //neighb_face[1] = neighbour face over edge 2-3 of element ic;
@@ -179,7 +179,7 @@ public:
         }
         if (mTDim == 3)
         {
-            for(ElementsContainerType::iterator ie = rElems.begin(); ie != rElems.end(); ie++)
+            for (auto ie = rElems.begin(); ie != rElems.end(); ie++)
             {
                 if(!ie->Is(ACTIVE)) continue;
 
@@ -191,7 +191,7 @@ public:
                 {
                     //vector of the 3 faces around the given face
                     (ie->GetValue(NEIGHBOUR_ELEMENTS)).resize(4);
-                    WeakPointerVector< Element >& neighb_elems = ie->GetValue(NEIGHBOUR_ELEMENTS);
+                    auto& neighb_elems = ie->GetValue(NEIGHBOUR_ELEMENTS);
                     //neighb_face is the vector containing pointers to the three faces around ic
                     //neighb_face[0] = neighbour face over edge 1-2 of element ic;
                     //neighb_face[1] = neighbour face over edge 2-0 of element ic;
@@ -207,7 +207,7 @@ public:
                 {
                     //vector of the 3 faces around the given face
                     (ie->GetValue(NEIGHBOUR_ELEMENTS)).resize(6);
-                    WeakPointerVector< Element >& neighb_elems = ie->GetValue(NEIGHBOUR_ELEMENTS);
+                    auto& neighb_elems = ie->GetValue(NEIGHBOUR_ELEMENTS);
                     //neighb_face is the vector containing pointers to the three faces around ic
                     neighb_elems(0) = CheckForNeighbourElemsHexa(geom[3].Id(), geom[2].Id(), geom[1].Id(), geom[0].Id(), geom[3].GetValue(NEIGHBOUR_ELEMENTS), ie);
                     neighb_elems(1) = CheckForNeighbourElemsHexa(geom[0].Id(), geom[1].Id(), geom[5].Id(), geom[4].Id(), geom[0].GetValue(NEIGHBOUR_ELEMENTS), ie);
@@ -227,16 +227,16 @@ public:
     void ClearNeighbours()
     {
         NodesContainerType& rNodes = mr_model_part.Nodes();
-        for(NodesContainerType::iterator in = rNodes.begin(); in != rNodes.end(); in++)
+        for (auto in = rNodes.begin(); in != rNodes.end(); in++)
         {
-            WeakPointerVector<Element >& rE = in->GetValue(NEIGHBOUR_ELEMENTS);
-            rE.erase(rE.begin(),rE.end());
+            auto& rE = in->GetValue(NEIGHBOUR_ELEMENTS);
+            rE.erase(rE.begin(), rE.end());
         }
         ElementsContainerType& rElems = mr_model_part.Elements();
-        for(ElementsContainerType::iterator ie = rElems.begin(); ie != rElems.end(); ie++)
+        for(auto ie = rElems.begin(); ie != rElems.end(); ie++)
         {
-            WeakPointerVector<Element >& rE = ie->GetValue(NEIGHBOUR_ELEMENTS);
-            rE.erase(rE.begin(),rE.end());
+            auto& rE = ie->GetValue(NEIGHBOUR_ELEMENTS);
+            rE.erase(rE.begin(), rE.end());
         }
     }
 
@@ -313,7 +313,7 @@ private:
     ///@name Member Variables
     ///@{
 
-    ModelPart& mr_model_part;
+    TModelPartType& mr_model_part;
     unsigned int mavg_elems;
     int mTDim;
 
@@ -323,11 +323,11 @@ private:
 
     //******************************************************************************************
     //******************************************************************************************
-    template< class TDataType > void  AddUniqueWeakPointer
-    (WeakPointerVector< TDataType >& v, const typename TDataType::WeakPointer candidate)
+    template<class TDataType>
+    void AddUniqueWeakPointer(WeakPointerVector<TDataType>& v, const typename TDataType::WeakPointer candidate)
     {
-        typename WeakPointerVector< TDataType >::iterator i = v.begin();
-        typename WeakPointerVector< TDataType >::iterator endit = v.end();
+        typename WeakPointerVector<TDataType>::iterator i = v.begin();
+        typename WeakPointerVector<TDataType>::iterator endit = v.end();
         while ( i != endit && (i)->Id() != (candidate.lock())->Id())
         {
             i++;
@@ -338,11 +338,11 @@ private:
         }
     }
 
-    Element::WeakPointer CheckForNeighbourElems (const unsigned int Id_1, const unsigned int Id_2,
-        WeakPointerVector< Element >& neighbour_elem, ElementsContainerType::iterator elem)
+    typename ElementType::WeakPointer CheckForNeighbourElems (const unsigned int Id_1, const unsigned int Id_2,
+        WeakPointerVector<ElementType>& neighbour_elem, ElementsContainerType::iterator elem)
     {
         //look for the faces around node Id_1
-        for( WeakPointerVector< Element >::iterator i = neighbour_elem.begin(); i != neighbour_elem.end(); i++)
+        for (auto i = neighbour_elem.begin(); i != neighbour_elem.end(); i++)
         {
             //look for the nodes of the neighbour faces
             auto& neigh_elem_geometry = (i)->GetGeometry();
@@ -360,12 +360,12 @@ private:
         return *(elem.base());
     }
 
-    Element::WeakPointer CheckForNeighbourElemsTetra (const unsigned int Id_1,
+    typename ElementType::WeakPointer CheckForNeighbourElemsTetra (const unsigned int Id_1,
         const unsigned int Id_2, const unsigned int Id_3,
-        WeakPointerVector< Element >& neighbour_elem, ElementsContainerType::iterator elem)
+        WeakPointerVector<ElementType>& neighbour_elem, ElementsContainerType::iterator elem)
     {
         //look for the faces around node Id_1
-        for( WeakPointerVector< Element >::iterator i = neighbour_elem.begin(); i != neighbour_elem.end(); i++)
+        for (auto i = neighbour_elem.begin(); i != neighbour_elem.end(); i++)
         {
             //look for the nodes of the neighbour faces
             auto& neigh_elem_geometry = (i)->GetGeometry();
@@ -387,12 +387,12 @@ private:
         return *(elem.base());
     }
 
-    Element::WeakPointer CheckForNeighbourElemsHexa (const unsigned int Id_1,
+    typename ElementType::WeakPointer CheckForNeighbourElemsHexa (const unsigned int Id_1,
         const unsigned int Id_2, const unsigned int Id_3, const unsigned int Id_4,
-        WeakPointerVector< Element >& neighbour_elem, ElementsContainerType::iterator elem)
+        WeakPointerVector<ElementType>& neighbour_elem, ElementsContainerType::iterator elem)
     {
         //look for the faces around node Id_1
-        for( WeakPointerVector< Element >::iterator i = neighbour_elem.begin(); i != neighbour_elem.end(); i++)
+        for (auto i = neighbour_elem.begin(); i != neighbour_elem.end(); i++)
         {
             //look for the nodes of the neighbour faces
             auto& neigh_elem_geometry = (i)->GetGeometry();
@@ -465,7 +465,6 @@ private:
 
     /// Copy constructor.
     //FindElementalNeighboursProcess(FindConditionsNeighboursProcess const& rOther);
-
 
     ///@}
 

@@ -53,6 +53,7 @@ namespace Kratos
  * @brief This process looks for neighbours of the node in a finite element mesh.
  *          This fill the NEIGHBOUR_NODES value field of a node
  */
+template<class TModelPartType>
 class FindNodalNeighboursProcess : public Process
 {
 public:
@@ -62,8 +63,10 @@ public:
     /// Pointer definition of FindNodalNeighboursProcess
     KRATOS_CLASS_POINTER_DEFINITION(FindNodalNeighboursProcess);
 
-    typedef ModelPart::NodesContainerType NodesContainerType;
-    typedef ModelPart::ElementsContainerType ElementsContainerType;
+    typedef typename TModelPartType::NodesContainerType NodesContainerType;
+    typedef typename TModelPartType::ElementsContainerType ElementsContainerType;
+    typedef typename TModelPartType::ElementType ElementType;
+    typedef typename TModelPartType::NodeType NodeType;
 
     ///@}
     ///@name Life Cycle
@@ -75,7 +78,7 @@ public:
      * @param AverageElements Expected number of neighbour elements per node.
      * @param AverageNodes Expected number of neighbour Nodes
     */
-    FindNodalNeighboursProcess(ModelPart& model_part, unsigned int avg_elems = 10, unsigned int avg_nodes = 10)
+    FindNodalNeighboursProcess(TModelPartType& model_part, unsigned int avg_elems = 10, unsigned int avg_nodes = 10)
         : mr_model_part(model_part)
     {
         mavg_elems = avg_elems;
@@ -86,7 +89,6 @@ public:
     ~FindNodalNeighboursProcess() override
     {
     }
-
 
     ///@}
     ///@name Operators
@@ -105,45 +107,43 @@ public:
         NodesContainerType& rNodes = mr_model_part.Nodes();
         ElementsContainerType& rElems = mr_model_part.Elements();
 
-        //first of all the neighbour nodes and elements array are initialized to the guessed size
-        //and empties the old entries
-        for(NodesContainerType::iterator in = rNodes.begin(); in != rNodes.end(); in++)
+        // first of all the neighbour nodes and elements array are initialized to the guessed size
+        // and empties the old entries
+        for (auto in = rNodes.begin(); in != rNodes.end(); in++)
         {
             (in->GetValue(NEIGHBOUR_NODES)).reserve(mavg_nodes);
-            WeakPointerVector<Node<3> >& rN = in->GetValue(NEIGHBOUR_NODES);
-            rN.erase(rN.begin(),rN.end() );
+            auto& rN = in->GetValue(NEIGHBOUR_NODES);
+            rN.erase(rN.begin(), rN.end() );
 
             (in->GetValue(NEIGHBOUR_ELEMENTS)).reserve(mavg_elems);
-            WeakPointerVector<Element >& rE = in->GetValue(NEIGHBOUR_ELEMENTS);
-            rE.erase(rE.begin(),rE.end() );
+            auto& rE = in->GetValue(NEIGHBOUR_ELEMENTS);
+            rE.erase(rE.begin(), rE.end() );
         }
 
-        //add the neighbour elements to all the nodes in the mesh
-        for(ElementsContainerType::iterator ie = rElems.begin(); ie!=rElems.end(); ie++)
+        // add the neighbour elements to all the nodes in the mesh
+        for (auto ie = rElems.begin(); ie != rElems.end(); ie++)
         {
-            Element::GeometryType& pGeom = ie->GetGeometry();
+            auto& pGeom = ie->GetGeometry();
             for(unsigned int i = 0; i < pGeom.size(); i++)
             {
-                //KRATOS_WATCH( pGeom[i] );
-                (pGeom[i].GetValue(NEIGHBOUR_ELEMENTS)).push_back( Element::WeakPointer( *(ie.base()) ) );
-                //KRATOS_WATCH( (pGeom[i].GetValue(NEIGHBOUR_ELEMENTS)).size() );
+                (pGeom[i].GetValue(NEIGHBOUR_ELEMENTS)).push_back( typename ElementType::WeakPointer( *(ie.base()) ) );
             }
         }
 
-        //adding the neighbouring nodes
-        for(NodesContainerType::iterator in = rNodes.begin(); in!=rNodes.end(); in++)
+        // adding the neighbouring nodes
+        for (auto in = rNodes.begin(); in != rNodes.end(); in++)
         {
-            WeakPointerVector<Element >& rE = in->GetValue(NEIGHBOUR_ELEMENTS);
+            auto& rE = in->GetValue(NEIGHBOUR_ELEMENTS);
 
             for(unsigned int ie = 0; ie < rE.size(); ie++)
             {
-                Element::GeometryType& pGeom = rE[ie].GetGeometry();
+                auto& pGeom = rE[ie].GetGeometry();
                 for(unsigned int i = 0; i < pGeom.size(); i++)
                 {
                     if(pGeom[i].Id() != in->Id() )
                     {
-                        Element::NodeType::WeakPointer temp = pGeom(i);
-                        AddUniqueWeakPointer< Node<3> >(in->GetValue(NEIGHBOUR_NODES), temp);
+                        typename NodeType::WeakPointer temp = pGeom(i);
+                        AddUniqueWeakPointer<NodeType>(in->GetValue(NEIGHBOUR_NODES), temp);
                     }
                 }
             }
@@ -156,13 +156,13 @@ public:
     void ClearNeighbours()
     {
         NodesContainerType& rNodes = mr_model_part.Nodes();
-        for(NodesContainerType::iterator in = rNodes.begin(); in!=rNodes.end(); in++)
+        for (auto in = rNodes.begin(); in != rNodes.end(); in++)
         {
-            WeakPointerVector<Element >& rE = in->GetValue(NEIGHBOUR_ELEMENTS);
-            rE.erase(rE.begin(),rE.end());
+            auto& rE = in->GetValue(NEIGHBOUR_ELEMENTS);
+            rE.erase(rE.begin(), rE.end());
 
-            WeakPointerVector<Node<3> >& rN = in->GetValue(NEIGHBOUR_NODES);
-            rN.erase(rN.begin(),rN.end() );
+            auto& rN = in->GetValue(NEIGHBOUR_NODES);
+            rN.erase(rN.begin(), rN.end() );
         }
     }
 
@@ -238,10 +238,10 @@ private:
     ///@}
     ///@name Member Variables
     ///@{
-    ModelPart& mr_model_part;
+
+    TModelPartType& mr_model_part;
     unsigned int mavg_elems;
     unsigned int mavg_nodes;
-
 
     ///@}
     ///@name Private Operators
@@ -249,11 +249,12 @@ private:
 
     //******************************************************************************************
     //******************************************************************************************
-    template< class TDataType > void  AddUniqueWeakPointer
-    (WeakPointerVector< TDataType >& v, const typename TDataType::WeakPointer candidate)
+    template<class TDataType>
+    static void AddUniqueWeakPointer(WeakPointerVector<TDataType>& v,
+            const typename TDataType::WeakPointer candidate)
     {
-        typename WeakPointerVector< TDataType >::iterator i = v.begin();
-        typename WeakPointerVector< TDataType >::iterator endit = v.end();
+        typename WeakPointerVector<TDataType>::iterator i = v.begin();
+        typename WeakPointerVector<TDataType>::iterator endit = v.end();
         while ( i != endit && (i)->Id() != (candidate.lock())->Id())
         {
             i++;
@@ -262,7 +263,6 @@ private:
         {
             v.push_back(candidate);
         }
-
     }
 
     ///@}
@@ -289,7 +289,6 @@ private:
 
     /// Copy constructor.
     //FindNodalNeighboursProcess(FindNodalNeighboursProcess const& rOther);
-
 
     ///@}
 
