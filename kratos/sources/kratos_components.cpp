@@ -92,6 +92,8 @@ void AddKratosComponent(std::string const& Name, ConstitutiveLaw const& ThisComp
 }
 
 template class KratosComponents<MasterSlaveConstraint>;
+template class KratosComponents<ComplexMasterSlaveConstraint>;
+template class KratosComponents<GComplexMasterSlaveConstraint>;
 template class KRATOS_API(KRATOS_CORE) KratosComponents<Variable<bool> >;
 template class KRATOS_API(KRATOS_CORE) KratosComponents<Variable<int> >;
 template class KRATOS_API(KRATOS_CORE) KratosComponents<Variable<unsigned int> >;

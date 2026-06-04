@@ -73,7 +73,7 @@ namespace Kratos
  * This unique equation is used later on to modify the equation system.
  * @author Aditya Ghantasala
  */
-template<class TNodeType = Node<3> >
+template<class TNodeType>
 class KRATOS_API(KRATOS_CORE) BaseMasterSlaveConstraint
     :  public IndexedObject, public Flags
 {
@@ -108,8 +108,14 @@ public:
     /// The matrix type definition
     typedef typename MatrixVectorTypeSelector<DataType>::MatrixType MatrixType;
 
+    /// The zero matrix type definition
+    typedef typename MatrixVectorTypeSelector<DataType>::ZeroMatrixType ZeroMatrixType;
+
     /// The vector type definition
     typedef typename MatrixVectorTypeSelector<DataType>::VectorType VectorType;
+
+    /// The zero vector type definition
+    typedef typename MatrixVectorTypeSelector<DataType>::ZeroVectorType ZeroVectorType;
 
     /// The variable type definition (DataType)
     typedef Variable<DataType> VariableType;
@@ -670,11 +676,17 @@ private:
         KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, Flags);
         rSerializer.load("Data", mData);
     }
+
+    ///@}
 };
 
-typedef BaseMasterSlaveConstraint<> MasterSlaveConstraint;
+typedef BaseMasterSlaveConstraint<RealNode> MasterSlaveConstraint;
+typedef BaseMasterSlaveConstraint<ComplexNode> ComplexMasterSlaveConstraint;
+typedef BaseMasterSlaveConstraint<GComplexNode> GComplexMasterSlaveConstraint;
 
 KRATOS_API_EXTERN template class KRATOS_API(KRATOS_CORE) KratosComponents<MasterSlaveConstraint>;
+KRATOS_API_EXTERN template class KRATOS_API(KRATOS_CORE) KratosComponents<ComplexMasterSlaveConstraint>;
+KRATOS_API_EXTERN template class KRATOS_API(KRATOS_CORE) KratosComponents<GComplexMasterSlaveConstraint>;
 
 ///@name Input/Output functions
 ///@{
