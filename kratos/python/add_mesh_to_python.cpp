@@ -210,7 +210,8 @@ void SetValuesOnIntegrationPointsDouble( TEntityType& dummy, const Variable<TDat
     typename TEntityType::GeometryType::IntegrationPointsArrayType integration_points =
             dummy.GetGeometry().IntegrationPoints( dummy.GetIntegrationMethod() );
     if (boost::python::len(values_list) != integration_points.size())
-        KRATOS_ERROR << "Incompatiable number of integration points and given values";
+        KRATOS_ERROR << "Incompatiable number of integration points (" << integration_points.size()
+                     << ") and given values (" << boost::python::len(values_list) << ")";
     std::vector<TDataType> values( integration_points.size() );
     for( unsigned int i=0; i<integration_points.size(); i++ )
     {
