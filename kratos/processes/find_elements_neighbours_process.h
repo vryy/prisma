@@ -339,7 +339,7 @@ private:
     }
 
     typename ElementType::WeakPointer CheckForNeighbourElems (const unsigned int Id_1, const unsigned int Id_2,
-        WeakPointerVector<ElementType>& neighbour_elem, ElementsContainerType::iterator elem)
+        WeakPointerVector<ElementType>& neighbour_elem, typename ElementsContainerType::iterator elem)
     {
         //look for the faces around node Id_1
         for (auto i = neighbour_elem.begin(); i != neighbour_elem.end(); i++)
@@ -362,7 +362,7 @@ private:
 
     typename ElementType::WeakPointer CheckForNeighbourElemsTetra (const unsigned int Id_1,
         const unsigned int Id_2, const unsigned int Id_3,
-        WeakPointerVector<ElementType>& neighbour_elem, ElementsContainerType::iterator elem)
+        WeakPointerVector<ElementType>& neighbour_elem, typename ElementsContainerType::iterator elem)
     {
         //look for the faces around node Id_1
         for (auto i = neighbour_elem.begin(); i != neighbour_elem.end(); i++)
@@ -389,7 +389,7 @@ private:
 
     typename ElementType::WeakPointer CheckForNeighbourElemsHexa (const unsigned int Id_1,
         const unsigned int Id_2, const unsigned int Id_3, const unsigned int Id_4,
-        WeakPointerVector<ElementType>& neighbour_elem, ElementsContainerType::iterator elem)
+        WeakPointerVector<ElementType>& neighbour_elem, typename ElementsContainerType::iterator elem)
     {
         //look for the faces around node Id_1
         for (auto i = neighbour_elem.begin(); i != neighbour_elem.end(); i++)
