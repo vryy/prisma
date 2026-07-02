@@ -171,6 +171,7 @@ public:
     {
         mData = rOther.mData;
         mSortedPartSize = rOther.mSortedPartSize;
+        mMaxBufferSize = rOther.mMaxBufferSize;
 
         return *this;
     }
