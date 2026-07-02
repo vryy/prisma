@@ -2133,7 +2133,6 @@ namespace Kratos
         p_ghost_mesh->Nodes().Sort();
         p_interface_mesh->Nodes().Sort();
 
-
 //  KRATOS_WATCH(rThisCommunicator)
         KRATOS_CATCH("")
 
@@ -2302,6 +2301,7 @@ namespace Kratos
         }
 
         rMesh.Nodes().Sort();
+
         KRATOS_CATCH("")
     }
 

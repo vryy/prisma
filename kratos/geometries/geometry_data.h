@@ -390,7 +390,6 @@ public:
         return mLocalSpaceDimension;
     }
 
-
     ///@}
     ///@name Inquiry
     ///@{

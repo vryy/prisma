@@ -139,7 +139,8 @@ public:
      * @param rOther The PointerVectorSet to copy from.
      */
     PointerVectorSet(const PointerVectorSet& rOther)
-        :  mData(rOther.mData), mSortedPartSize(rOther.mSortedPartSize), mMaxBufferSize(rOther.mMaxBufferSize) {}
+        :  mData(rOther.mData), mSortedPartSize(rOther.mSortedPartSize), mMaxBufferSize(rOther.mMaxBufferSize)
+    {}
 
     /**
      * @brief Constructs a PointerVectorSet from a container.
@@ -1352,8 +1353,8 @@ private:
         for(size_type i = 0 ; i < local_size ; i++)
             rSerializer.save("E", mData[i]);
 
-        rSerializer.save("Sorted Part Size",mSortedPartSize);
-        rSerializer.save("Max Buffer Size",mMaxBufferSize);
+        rSerializer.save("Sorted Part Size", mSortedPartSize);
+        rSerializer.save("Max Buffer Size", mMaxBufferSize);
     }
 
     /**
@@ -1371,8 +1372,8 @@ private:
         for(size_type i = 0 ; i < local_size ; i++)
             rSerializer.load("E", mData[i]);
 
-        rSerializer.load("Sorted Part Size",mSortedPartSize);
-        rSerializer.load("Max Buffer Size",mMaxBufferSize);
+        rSerializer.load("Sorted Part Size", mSortedPartSize);
+        rSerializer.load("Max Buffer Size", mMaxBufferSize);
     }
 
     ///@}
