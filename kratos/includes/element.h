@@ -76,7 +76,7 @@ public:
     ///definition of this entity type
     typedef BaseElement<TNodeType> EntityType;
 
-    ///definition of node type (default is: Node<3>)
+    ///definition of node type
     typedef typename BaseType::NodeType NodeType;
 
     /**

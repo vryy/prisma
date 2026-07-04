@@ -210,7 +210,7 @@ public:
             (*it)->InitializeNonLinearIteration(CurrentProcessInfo);
             (*it)->CalculateLocalSystem(LHS_Contribution,RHS_Contribution,CurrentProcessInfo);
 
-            Geometry< Node<3> >& geom = (*it)->GetGeometry();
+            auto& geom = (*it)->GetGeometry();
             if(EquationId.size() != geom.size()) EquationId.resize(geom.size(),false);
 
             for(unsigned int i=0; i<geom.size(); i++)
@@ -232,7 +232,7 @@ public:
             (*it)->InitializeNonLinearIteration(CurrentProcessInfo);
             (*it)->CalculateLocalSystem(LHS_Contribution,RHS_Contribution,CurrentProcessInfo);
 
-            Geometry< Node<3> >& geom = (*it)->GetGeometry();
+            auto& geom = (*it)->GetGeometry();
             if(EquationId.size() != geom.size()) EquationId.resize(geom.size(),false);
 
             for(unsigned int i=0; i<geom.size(); i++)
@@ -298,7 +298,7 @@ public:
                 (*it)->InitializeNonLinearIteration(CurrentProcessInfo);
                 (*it)->CalculateLocalSystem(LHS_Contribution,RHS_Contribution,CurrentProcessInfo);
 
-                Geometry< Node<3> >& geom = (*it)->GetGeometry();
+                auto& geom = (*it)->GetGeometry();
                 if(EquationId.size() != geom.size()) EquationId.resize(geom.size(),false);
 
                 for(unsigned int i=0; i<geom.size(); i++)
@@ -337,7 +337,7 @@ public:
                 (*it)->InitializeNonLinearIteration(CurrentProcessInfo);
                 (*it)->CalculateLocalSystem(LHS_Contribution,RHS_Contribution,CurrentProcessInfo);
 
-                Geometry< Node<3> >& geom = (*it)->GetGeometry();
+                auto& geom = (*it)->GetGeometry();
                 if(EquationId.size() != geom.size()) EquationId.resize(geom.size(),false);
 
                 for(unsigned int i=0; i<geom.size(); i++)
@@ -389,7 +389,7 @@ public:
         BaseType::mDofSet.clear();
         BaseType::mDofSet.reserve(mActiveNodes.size() );
 
-        for(WeakPointerVector< Node<3> >::iterator iii = mActiveNodes.begin(); iii!=mActiveNodes.end(); iii++)
+        for(auto iii = mActiveNodes.begin(); iii != mActiveNodes.end(); iii++)
         {
             BaseType::mDofSet.push_back( iii->pGetDof(rVar) );
         }
@@ -560,25 +560,22 @@ protected:
         unsigned int pos = (mActiveNodes.begin())->GetDofPosition(rVar);
         //constructing the system matrix row by row
         int index_i;
-        for(WeakPointerVector< Node<3> >::iterator in = mActiveNodes.begin();
-                in!=mActiveNodes.end(); in++)
+        for(auto in = mActiveNodes.begin(); in != mActiveNodes.end(); in++)
         {
-            Node<3>::DofType& current_dof = in->GetDof(rVar,pos);
+            auto& current_dof = in->GetDof(rVar,pos);
             if( current_dof.IsFixed() == false)
             {
                 index_i = (current_dof).EquationId();
-                WeakPointerVector< Node<3> >& neighb_nodes = in->GetValue(NEIGHBOUR_NODES);
+                auto& neighb_nodes = in->GetValue(NEIGHBOUR_NODES);
 
                 std::vector<int>& indices = index_list[index_i];
                 indices.reserve(neighb_nodes.size()+1);
 
                 //filling the first neighbours list
                 indices.push_back(index_i);
-                for( WeakPointerVector< Node<3> >::iterator i = neighb_nodes.begin();
-                        i != neighb_nodes.end(); i++)
+                for( auto i = neighb_nodes.begin(); i != neighb_nodes.end(); i++)
                 {
-
-                    Node<3>::DofType& neighb_dof = i->GetDof(rVar,pos);
+                    auto& neighb_dof = i->GetDof(rVar,pos);
                     if(neighb_dof.IsFixed() == false )
                     {
                         int index_j = (neighb_dof).EquationId();
@@ -638,28 +635,25 @@ protected:
         #pragma omp parallel for firstprivate(number_of_threads,pos) schedule(static,1)
         for(int k=0; k<number_of_threads; k++)
         {
-            WeakPointerVector< Node<3> >::iterator it_begin = mActiveNodes.begin()+partition[k];
-            WeakPointerVector< Node<3> >::iterator it_end = mActiveNodes.begin()+partition[k+1];
+            auto it_begin = mActiveNodes.begin()+partition[k];
+            auto it_end = mActiveNodes.begin()+partition[k+1];
 
-            for(WeakPointerVector< Node<3> >::iterator in = it_begin;
-                    in!=it_end; in++)
+            for(auto in = it_begin; in != it_end; in++)
             {
-                Node<3>::DofType& current_dof = in->GetDof(rVar,pos);
+                auto& current_dof = in->GetDof(rVar,pos);
                 if( current_dof.IsFixed() == false)
                 {
                     int index_i = (current_dof).EquationId();
-                    WeakPointerVector< Node<3> >& neighb_nodes = in->GetValue(NEIGHBOUR_NODES);
+                    auto& neighb_nodes = in->GetValue(NEIGHBOUR_NODES);
 
                     std::vector<int>& indices = index_list[index_i];
                     indices.reserve(neighb_nodes.size()+1);
 
                     //filling the first neighbours list
                     indices.push_back(index_i);
-                    for( WeakPointerVector< Node<3> >::iterator i = neighb_nodes.begin();
-                            i != neighb_nodes.end(); i++)
+                    for(auto i = neighb_nodes.begin(); i != neighb_nodes.end(); i++)
                     {
-
-                        Node<3>::DofType& neighb_dof = i->GetDof(rVar,pos);
+                        auto& neighb_dof = i->GetDof(rVar,pos);
                         if(neighb_dof.IsFixed() == false )
                         {
                             int index_j = (neighb_dof).EquationId();
@@ -733,7 +727,7 @@ private:
     /**@name Member Variables */
     /*@{ */
     TVariableType const & rVar;
-    WeakPointerVector<Node<3> > mActiveNodes;
+    WeakPointerVector<RealNode> mActiveNodes;
 
     /*@} */
     /**@name Private Operators*/

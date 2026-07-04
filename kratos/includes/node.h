@@ -64,8 +64,9 @@ namespace Kratos
 ///@{
 
 /// This class defines the node
-/** The node is a dimensionalized object inherited from point, but carrying the dofs with it and associated historical values
-*/
+/**
+ * The node is a dimensionalized object inherited from point, but carrying the dofs with it and associated historical values
+ */
 template<std::size_t TDimension, typename TCoordinateType = KRATOS_DOUBLE_TYPE, class TDofType = Dof<KRATOS_DOUBLE_TYPE> >
 class Node : public Point<TDimension, TCoordinateType>,  public IndexedObject, public Flags
 {
@@ -1009,11 +1010,9 @@ private:
     ///Initial Position of the node
     PointType mInitialPosition;
 
-
     ///@}
     ///@name Private Operators
     ///@{
-
 
 
     ///@}
@@ -1076,8 +1075,8 @@ private:
 
 ///@}
 
-// template class KRATOS_API(KRATOS_CORE) KratosComponents<Node<3, KRATOS_DOUBLE_TYPE> >;
-// template class KRATOS_API(KRATOS_CORE) KratosComponents<Node<3, KRATOS_DOUBLE_TYPE>::Pointer >;
+// template class KRATOS_API(KRATOS_CORE) KratosComponents<RealNode>;
+// template class KRATOS_API(KRATOS_CORE) KratosComponents<RealNode::Pointer >;
 
 ///@name Type Definitions
 ///@{
@@ -1124,20 +1123,15 @@ typedef Node<3, KRATOS_COMPLEX_TYPE, Dof<KRATOS_COMPLEX_TYPE> > GComplexNode;
 #undef  KRATOS_EXPORT_MACRO
 #define KRATOS_EXPORT_MACRO KRATOS_API
 
-KRATOS_DEFINE_VARIABLE(WeakPointerVector<Node<3> >, NEIGHBOUR_NODES)
-KRATOS_DEFINE_VARIABLE(WeakPointerVector<Node<3> >, FATHER_NODES)
+KRATOS_DEFINE_VARIABLE(WeakPointerVector<RealNode>, NEIGHBOUR_NODES)
+KRATOS_DEFINE_VARIABLE(WeakPointerVector<RealNode>, FATHER_NODES)
 
 #undef  KRATOS_EXPORT_MACRO
 #define KRATOS_EXPORT_MACRO KRATOS_NO_EXPORT
 
-template<> struct DataTypeToString<WeakPointerVector<Node<3> > > { static inline constexpr const char* Get() {return "WeakPointerVector<Node<3>>";} };
-template<> struct DataTypeToString<typename Node<3>::Pointer> { static inline constexpr const char* Get() {return "Node<3>::Pointer";} };
+template<> struct DataTypeToString<WeakPointerVector<RealNode> > { static inline constexpr const char* Get() {return "WeakPointerVector<RealNode>";} };
+template<> struct DataTypeToString<typename RealNode::Pointer> { static inline constexpr const char* Get() {return "RealNode::Pointer";} };
 
-//     namespace Globals
-//     {
-//  extern Node<3> DefaultNode3;
-//     }
-
-}  // namespace Kratos.
+} // namespace Kratos.
 
 #endif // KRATOS_NODE_H_INCLUDED  defined

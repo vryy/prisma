@@ -10,16 +10,6 @@
 //  Main authors:    Jordi Cotela
 //
 
-
-
-
-
-
-
-
-
-
-
 #include "includes/periodic_condition.h"
 
 namespace Kratos

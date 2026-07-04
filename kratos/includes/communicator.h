@@ -54,7 +54,7 @@ namespace Kratos
 /** The base Communicator class only holds the required data (local and remote mesh interfaces)
  *  for communication. The actual communication is implemented in the derived MPICommunicator.
  */
-template<class TNodeType = Node<3> >
+template<class TNodeType = RealNode>
 class KRATOS_API(KRATOS_CORE) Communicator
 {
 public:

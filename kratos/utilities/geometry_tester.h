@@ -218,7 +218,7 @@ protected:
 
     bool TestTetrahedra3D4N( std::stringstream& error_msg )
     {
-        Tetrahedra3D4<Node<3> > geom( mModelPart.pGetNode(4), mModelPart.pGetNode(3), mModelPart.pGetNode(17), mModelPart.pGetNode(19) );
+        Tetrahedra3D4<RealNode> geom( mModelPart.pGetNode(4), mModelPart.pGetNode(3), mModelPart.pGetNode(17), mModelPart.pGetNode(19) );
 
         bool succesful = true;
 
@@ -241,24 +241,23 @@ protected:
         if( !VerifyAreaByIntegration( geom, GeometryData::IntegrationMethod::GI_GAUSS_4, expected_area, error_msg) ) succesful=false;
         if( !VerifyAreaByIntegration( geom, GeometryData::IntegrationMethod::GI_GAUSS_5, expected_area, error_msg) ) succesful=false;
 
-        VerifyStrainExactness( geom, GeometryData::IntegrationMethod::GI_GAUSS_1, error_msg);
-        VerifyStrainExactness( geom, GeometryData::IntegrationMethod::GI_GAUSS_2, error_msg);
-        VerifyStrainExactness( geom, GeometryData::IntegrationMethod::GI_GAUSS_3, error_msg);
-        VerifyStrainExactness( geom, GeometryData::IntegrationMethod::GI_GAUSS_4, error_msg);
-        VerifyStrainExactness( geom, GeometryData::IntegrationMethod::GI_GAUSS_5, error_msg);
+        VerifyStrainExactness( geom, GeometryData::IntegrationMethod::GI_GAUSS_1, error_msg );
+        VerifyStrainExactness( geom, GeometryData::IntegrationMethod::GI_GAUSS_2, error_msg );
+        VerifyStrainExactness( geom, GeometryData::IntegrationMethod::GI_GAUSS_3, error_msg );
+        VerifyStrainExactness( geom, GeometryData::IntegrationMethod::GI_GAUSS_4, error_msg );
+        VerifyStrainExactness( geom, GeometryData::IntegrationMethod::GI_GAUSS_5, error_msg );
 
         error_msg << std::endl;
 
         return succesful;
-
     }
 
     bool TestTetrahedra3D10N( std::stringstream& error_msg )
     {
-        Tetrahedra3D10<Node<3> > geom( mModelPart.pGetNode(1), mModelPart.pGetNode(3), mModelPart.pGetNode(7), mModelPart.pGetNode(19),
-                                        mModelPart.pGetNode(2), mModelPart.pGetNode(5), mModelPart.pGetNode(4), mModelPart.pGetNode(10),
-                                        mModelPart.pGetNode(11), mModelPart.pGetNode(13)
-                                    );
+        Tetrahedra3D10<RealNode> geom( mModelPart.pGetNode(1), mModelPart.pGetNode(3), mModelPart.pGetNode(7), mModelPart.pGetNode(19),
+                                       mModelPart.pGetNode(2), mModelPart.pGetNode(5), mModelPart.pGetNode(4), mModelPart.pGetNode(10),
+                                       mModelPart.pGetNode(11), mModelPart.pGetNode(13)
+                                     );
 
         bool succesful = true;
 
@@ -290,7 +289,7 @@ protected:
 
     bool TestTriangle2D3N( std::stringstream& error_msg )
     {
-        Triangle2D3<Node<3> > geom( mModelPart.pGetNode(4), mModelPart.pGetNode(3), mModelPart.pGetNode(8) );
+        Triangle2D3<RealNode> geom( mModelPart.pGetNode(4), mModelPart.pGetNode(3), mModelPart.pGetNode(8) );
 
         bool succesful = true;
 
@@ -327,7 +326,7 @@ protected:
 
     bool TestTriangle2D6N( std::stringstream& error_msg )
     {
-        Triangle2D6<Node<3> > geom( mModelPart.pGetNode(1), mModelPart.pGetNode(3), mModelPart.pGetNode(7),
+        Triangle2D6<RealNode> geom( mModelPart.pGetNode(1), mModelPart.pGetNode(3), mModelPart.pGetNode(7),
                                     mModelPart.pGetNode(2), mModelPart.pGetNode(5), mModelPart.pGetNode(4) );
 
         bool succesful = true;
@@ -359,7 +358,7 @@ protected:
 
     bool TestQuadrilateral2D4N( std::stringstream& error_msg )
     {
-        Quadrilateral2D4<Node<3> > geom( mModelPart.pGetNode(2), mModelPart.pGetNode(6), mModelPart.pGetNode(7), mModelPart.pGetNode(4));
+        Quadrilateral2D4<RealNode> geom( mModelPart.pGetNode(2), mModelPart.pGetNode(6), mModelPart.pGetNode(7), mModelPart.pGetNode(4));
 
         bool succesful = true;
 
@@ -390,7 +389,7 @@ protected:
 
     bool TestQuadrilateral2D9N( std::stringstream& error_msg )
     {
-        Quadrilateral2D9<Node<3> > geom( mModelPart.pGetNode(1), mModelPart.pGetNode(3), mModelPart.pGetNode(9), mModelPart.pGetNode(7),
+        Quadrilateral2D9<RealNode> geom( mModelPart.pGetNode(1), mModelPart.pGetNode(3), mModelPart.pGetNode(9), mModelPart.pGetNode(7),
                                          mModelPart.pGetNode(2), mModelPart.pGetNode(6), mModelPart.pGetNode(8), mModelPart.pGetNode(4),
                                          mModelPart.pGetNode(9));
 
@@ -423,7 +422,7 @@ protected:
 
     bool TestHexahedra3D8N( std::stringstream& error_msg )
     {
-        Hexahedra3D8<Node<3> > geom( mModelPart.pGetNode(2), mModelPart.pGetNode(6), mModelPart.pGetNode(7), mModelPart.pGetNode(4),
+        Hexahedra3D8<RealNode> geom( mModelPart.pGetNode(2), mModelPart.pGetNode(6), mModelPart.pGetNode(7), mModelPart.pGetNode(4),
                                      mModelPart.pGetNode(11), mModelPart.pGetNode(15), mModelPart.pGetNode(16), mModelPart.pGetNode(13));
 
         bool succesful = true;
@@ -456,7 +455,7 @@ protected:
 
     bool TestHexahedra3D20N( std::stringstream& error_msg )
     {
-        Hexahedra3D20<Node<3> > geom( mModelPart.pGetNode(1), mModelPart.pGetNode(3), mModelPart.pGetNode(9), mModelPart.pGetNode(7),
+        Hexahedra3D20<RealNode> geom( mModelPart.pGetNode(1), mModelPart.pGetNode(3), mModelPart.pGetNode(9), mModelPart.pGetNode(7),
                                       mModelPart.pGetNode(19), mModelPart.pGetNode(21), mModelPart.pGetNode(27), mModelPart.pGetNode(25),
                                       mModelPart.pGetNode(2), mModelPart.pGetNode(6), mModelPart.pGetNode(8), mModelPart.pGetNode(4),
                                       mModelPart.pGetNode(10), mModelPart.pGetNode(12), mModelPart.pGetNode(18), mModelPart.pGetNode(16),
@@ -494,7 +493,7 @@ protected:
 
     bool TestHexahedra3D27N( std::stringstream& error_msg )
     {
-        Hexahedra3D27<Node<3> > geom( mModelPart.pGetNode(1), mModelPart.pGetNode(3), mModelPart.pGetNode(9), mModelPart.pGetNode(7),
+        Hexahedra3D27<RealNode> geom( mModelPart.pGetNode(1), mModelPart.pGetNode(3), mModelPart.pGetNode(9), mModelPart.pGetNode(7),
                                       mModelPart.pGetNode(19), mModelPart.pGetNode(21), mModelPart.pGetNode(27), mModelPart.pGetNode(25),
                                       mModelPart.pGetNode(2), mModelPart.pGetNode(6), mModelPart.pGetNode(8), mModelPart.pGetNode(4),
                                       mModelPart.pGetNode(10), mModelPart.pGetNode(12), mModelPart.pGetNode(18), mModelPart.pGetNode(16),
@@ -533,9 +532,9 @@ protected:
 
     bool TestPrism3D6N( std::stringstream& error_msg )
     {
-        Prism3D6<Node<3> > geom( mModelPart.pGetNode(1), mModelPart.pGetNode(2), mModelPart.pGetNode(4),
+        Prism3D6<RealNode> geom( mModelPart.pGetNode(1), mModelPart.pGetNode(2), mModelPart.pGetNode(4),
                                  mModelPart.pGetNode(10),mModelPart.pGetNode(11), mModelPart.pGetNode(13)
-                                    );
+                               );
 
         bool succesful = true;
 
@@ -567,7 +566,7 @@ protected:
 
 //    bool TestPrism3D15N( std::stringstream& error_msg )
 //    {
-//          Prism3D15<Node<3> > geom( mModelPart.pGetNode(1),  mModelPart.pGetNode(2),  mModelPart.pGetNode(3),
+//          Prism3D15<RealNode> geom( mModelPart.pGetNode(1),  mModelPart.pGetNode(2),  mModelPart.pGetNode(3),
 //                                    mModelPart.pGetNode(5),  mModelPart.pGetNode(7),  mModelPart.pGetNode(4),
 //                                    mModelPart.pGetNode(10), mModelPart.pGetNode(12), mModelPart.pGetNode(16),
 //                                    mModelPart.pGetNode(19), mModelPart.pGetNode(20), mModelPart.pGetNode(21),
@@ -636,7 +635,7 @@ private:
     ///@}
     ///@name Private Operations
     ///@{
-    bool VerifyAreaByIntegration( Geometry<Node<3> >& geom, Geometry<Node<3> >::IntegrationMethod ThisMethod, const double reference_area, std::stringstream& error_msg)
+    bool VerifyAreaByIntegration( Geometry<RealNode>& geom, Geometry<RealNode>::IntegrationMethod ThisMethod, const double reference_area, std::stringstream& error_msg)
     {
         if(geom.WorkingSpaceDimension() != geom.LocalSpaceDimension())
             KRATOS_THROW_ERROR(std::logic_error,"VerifyStrainExactness can not be used if LocalSpaceDimension and WorkingSpaceDimension do not coincide --> geometry is ",GetGeometryName(geom) );
@@ -694,9 +693,8 @@ private:
 
     //here we verify that a  "displacement field" which varies linearly in space, produces the expected strain distribution.
     //this shall be considered a test for shape function derivatives
-    void VerifyStrainExactness( Geometry<Node<3> >& geom,  Geometry<Node<3> >::IntegrationMethod ThisMethod, std::stringstream& error_msg)
+    void VerifyStrainExactness( Geometry<RealNode>& geom,  Geometry<RealNode>::IntegrationMethod ThisMethod, std::stringstream& error_msg)
     {
-
         const Element::GeometryType::IntegrationPointsArrayType& integration_points = geom.IntegrationPoints( ThisMethod );
         const unsigned int number_of_nodes = geom.PointsNumber();
         const unsigned int dim = geom.WorkingSpaceDimension();
@@ -885,7 +883,7 @@ private:
         KRATOS_CATCH( "" )
     }
 
-    std::string GetIntegrationName(Geometry< Node<3> >& geom, Geometry<Node<3> >::IntegrationMethod ThisMethod)
+    std::string GetIntegrationName(Geometry< RealNode >& geom, Geometry<RealNode>::IntegrationMethod ThisMethod)
     {
         switch(ThisMethod)
         {
@@ -905,7 +903,7 @@ private:
 
         return std::string("UnknownIntegrationMethod");
     }
-    std::string GetGeometryName(Geometry< Node<3> >& geom)
+    std::string GetGeometryName(Geometry<RealNode>& geom)
     {
         GeometryData::KratosGeometryType geom_type = geom.GetGeometryType();
         switch(geom_type)

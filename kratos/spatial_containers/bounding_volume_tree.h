@@ -43,7 +43,7 @@ class KRATOS_API(KRATOS_CORE) kDOP
 public:
     KRATOS_CLASS_POINTER_DEFINITION(kDOP);
 
-    typedef Node<3> NodeType;
+    typedef RealNode NodeType;
     typedef Geometry<NodeType> GeometryType;
     typedef NodeType::PointType PointType;
 
@@ -389,7 +389,7 @@ public:
     BoundingVolumePartitioner() {}
     virtual ~BoundingVolumePartitioner() {}
 
-    typedef Node<3> NodeType;
+    typedef RealNode NodeType;
     typedef Geometry<NodeType> GeometryType;
     typedef NodeType::PointType PointType;
 

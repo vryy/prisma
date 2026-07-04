@@ -71,7 +71,7 @@ inline MPI_Datatype DataTypeToMpiDataType(const T& Value);
 
 /** Detail class definition.
  */
-template<class TNodeType = Node<3> >
+template<class TNodeType = RealNode>
 class KRATOS_API(KRATOS_CORE) MPICommunicator : public Communicator<TNodeType>
 {
 public:
@@ -352,6 +352,7 @@ public:
         NeighbourIndicesContainerType& neighbours_indices = this->NeighbourIndices();
 
         for (unsigned int i_color = 0; i_color < neighbours_indices.size(); i_color++)
+        {
             if ((destination = neighbours_indices[i_color]) >= 0)
             {
                 ElementsContainerType& r_local_elements = this->LocalMesh(i_color).Elements();
@@ -395,6 +396,7 @@ public:
                 if (position > receive_buffer_size)
                     std::cout << rank << " Error in estimating receive buffer size...." << std::endl;
             }
+        }
 
         return true;
     }

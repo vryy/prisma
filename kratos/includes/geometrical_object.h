@@ -358,7 +358,7 @@ inline std::ostream& operator << (std::ostream& rOStream, const GeometricalObjec
 
 ///@}
 
-template<> struct DataTypeToString<WeakPointerVector<GeometricalObject<Node<3> > > > { static inline constexpr const char* Get() {return "WeakPointerVector<GeometricalObject<Node<3>>>";} };
+template<> struct DataTypeToString<WeakPointerVector<GeometricalObject<RealNode> > > { static inline constexpr const char* Get() {return "WeakPointerVector<GeometricalObject<RealNode>>";} };
 
 } // namespace Kratos.
 

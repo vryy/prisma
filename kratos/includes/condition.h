@@ -75,7 +75,7 @@ public:
     ///definition of this entity type
     typedef BaseCondition<TNodeType> EntityType;
 
-    ///definition of node type (default is: Node<3>)
+    ///definition of node type (default is: RealNode)
     typedef typename BaseType::NodeType NodeType;
 
     /**

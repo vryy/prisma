@@ -186,7 +186,6 @@ public:
 
     /**
      * Type definitions
-     * NOTE: geometries are assumed to be of type Node<3> for all problems
      */
     typedef ProcessInfo ProcessInfoType;
     typedef Geometry<TNodeType> GeometryType;
@@ -1447,15 +1446,13 @@ private:
 ///@{
 
 /// input stream function
-inline std::istream & operator >>(std::istream& rIStream,
-                                  BaseConstitutiveLaw& rThis)
+inline std::istream & operator >>(std::istream& rIStream, BaseConstitutiveLaw& rThis)
 {
     return rIStream;
 }
 
 /// output stream function
-inline std::ostream & operator <<(std::ostream& rOStream,
-                                  const BaseConstitutiveLaw& rThis)
+inline std::ostream & operator <<(std::ostream& rOStream, const BaseConstitutiveLaw& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << " : " << std::endl;
@@ -1485,9 +1482,9 @@ inline std::ostream& operator<<(std::ostream& os, const BaseConstitutiveLaw::Pla
 ///@}
 ///@} addtogroup block
 
-typedef ConstitutiveLawImpl<Node<3, KRATOS_DOUBLE_TYPE, Dof<KRATOS_DOUBLE_TYPE> > > ConstitutiveLaw;
-typedef ConstitutiveLawImpl<Node<3, KRATOS_DOUBLE_TYPE, Dof<KRATOS_COMPLEX_TYPE> > > ComplexConstitutiveLaw;
-typedef ConstitutiveLawImpl<Node<3, KRATOS_COMPLEX_TYPE, Dof<KRATOS_COMPLEX_TYPE> > > GComplexConstitutiveLaw;
+typedef ConstitutiveLawImpl<RealNode> ConstitutiveLaw;
+typedef ConstitutiveLawImpl<ComplexNode> ComplexConstitutiveLaw;
+typedef ConstitutiveLawImpl<GComplexNode> GComplexConstitutiveLaw;
 
 void KRATOS_API(KRATOS_CORE) AddKratosComponent(std::string const& Name, ConstitutiveLaw const& ThisComponent);
 void KRATOS_API(KRATOS_CORE) AddKratosComponent(std::string const& Name, ComplexConstitutiveLaw const& ThisComponent);

@@ -70,13 +70,13 @@ namespace Kratos
 
   KratosApplication::KratosApplication() :
     mApplicationName("ApplicationName"),
-    mCondition3D( 0, Element::GeometryType::Pointer( new Triangle3D3<Node<3> >( Element::GeometryType::PointsArrayType( 3, Node<3>() ) ) ) ),
-    mCondition2D( 0, Element::GeometryType::Pointer( new Geometry<Node<3> >( Element::GeometryType::PointsArrayType( 2, Node<3>() ) ) ) ),
-    mPeriodicCondition(0, Element::GeometryType::Pointer( new Line2D2<Node<3> >( Element::GeometryType::PointsArrayType( 2, Node<3>() ) ) ) ),
-    mPeriodicConditionEdge(0, Element::GeometryType::Pointer( new Quadrilateral3D4<Node<3> >( Element::GeometryType::PointsArrayType( 4, Node<3>() ) ) ) ),
-    mPeriodicConditionCorner(0, Element::GeometryType::Pointer( new Hexahedra3D8<Node<3> >( Element::GeometryType::PointsArrayType( 8, Node<3>() ) ) ) ),
-    mElement3D4N( 0, Element::GeometryType::Pointer( new Tetrahedra3D4<Node<3> >( Element::GeometryType::PointsArrayType( 4, Node<3>() ) ) ) ),
-    mElement2D3N( 0, Element::GeometryType::Pointer( new Triangle2D3<Node<3> >( Element::GeometryType::PointsArrayType( 3, Node<3>() ) ) ) ),
+    mCondition3D( 0, Element::GeometryType::Pointer( new Triangle3D3<RealNode>( Element::GeometryType::PointsArrayType( 3, RealNode() ) ) ) ),
+    mCondition2D( 0, Element::GeometryType::Pointer( new Geometry<RealNode>( Element::GeometryType::PointsArrayType( 2, RealNode() ) ) ) ),
+    mPeriodicCondition(0, Element::GeometryType::Pointer( new Line2D2<RealNode>( Element::GeometryType::PointsArrayType( 2, RealNode() ) ) ) ),
+    mPeriodicConditionEdge(0, Element::GeometryType::Pointer( new Quadrilateral3D4<RealNode>( Element::GeometryType::PointsArrayType( 4, RealNode() ) ) ) ),
+    mPeriodicConditionCorner(0, Element::GeometryType::Pointer( new Hexahedra3D8<RealNode>( Element::GeometryType::PointsArrayType( 8, RealNode() ) ) ) ),
+    mElement3D4N( 0, Element::GeometryType::Pointer( new Tetrahedra3D4<RealNode>( Element::GeometryType::PointsArrayType( 4, RealNode() ) ) ) ),
+    mElement2D3N( 0, Element::GeometryType::Pointer( new Triangle2D3<RealNode>( Element::GeometryType::PointsArrayType( 3, RealNode() ) ) ) ),
     mpVariableData( KratosComponents<VariableData>::pGetComponents() ),
     mpIntVariables( KratosComponents<Variable<int> >::pGetComponents() ),
     mpUnsignedIntVariables( KratosComponents<Variable<unsigned int> >::pGetComponents() ),
@@ -97,13 +97,13 @@ namespace Kratos
 
   KratosApplication::KratosApplication(const std::string& Name) :
     mApplicationName(Name),
-    mCondition3D( 0, Element::GeometryType::Pointer( new Triangle3D3<Node<3> >( Element::GeometryType::PointsArrayType( 3, Node<3>() ) ) ) ),
-    mCondition2D( 0, Element::GeometryType::Pointer( new Geometry<Node<3> >( Element::GeometryType::PointsArrayType( 2, Node<3>() ) ) ) ),
-    mPeriodicCondition(0, Element::GeometryType::Pointer( new Line2D2<Node<3> >( Element::GeometryType::PointsArrayType( 2, Node<3>() ) ) ) ),
-    mPeriodicConditionEdge(0, Element::GeometryType::Pointer( new Quadrilateral3D4<Node<3> >( Element::GeometryType::PointsArrayType( 4, Node<3>() ) ) ) ),
-    mPeriodicConditionCorner(0, Element::GeometryType::Pointer( new Hexahedra3D8<Node<3> >( Element::GeometryType::PointsArrayType( 8, Node<3>() ) ) ) ),
-    mElement3D4N( 0, Element::GeometryType::Pointer( new Tetrahedra3D4<Node<3> >( Element::GeometryType::PointsArrayType( 4, Node<3>() ) ) ) ),
-    mElement2D3N( 0, Element::GeometryType::Pointer( new Triangle2D3<Node<3> >( Element::GeometryType::PointsArrayType( 3, Node<3>() ) ) ) ),
+    mCondition3D( 0, Element::GeometryType::Pointer( new Triangle3D3<RealNode>( Element::GeometryType::PointsArrayType( 3, RealNode() ) ) ) ),
+    mCondition2D( 0, Element::GeometryType::Pointer( new Geometry<RealNode>( Element::GeometryType::PointsArrayType( 2, RealNode() ) ) ) ),
+    mPeriodicCondition(0, Element::GeometryType::Pointer( new Line2D2<RealNode>( Element::GeometryType::PointsArrayType( 2, RealNode() ) ) ) ),
+    mPeriodicConditionEdge(0, Element::GeometryType::Pointer( new Quadrilateral3D4<RealNode>( Element::GeometryType::PointsArrayType( 4, RealNode() ) ) ) ),
+    mPeriodicConditionCorner(0, Element::GeometryType::Pointer( new Hexahedra3D8<RealNode>( Element::GeometryType::PointsArrayType( 8, RealNode() ) ) ) ),
+    mElement3D4N( 0, Element::GeometryType::Pointer( new Tetrahedra3D4<RealNode>( Element::GeometryType::PointsArrayType( 4, RealNode() ) ) ) ),
+    mElement2D3N( 0, Element::GeometryType::Pointer( new Triangle2D3<RealNode>( Element::GeometryType::PointsArrayType( 3, RealNode() ) ) ) ),
     mpVariableData( KratosComponents<VariableData>::pGetComponents() ),
     mpIntVariables( KratosComponents<Variable<int> >::pGetComponents() ),
     mpUnsignedIntVariables( KratosComponents<Variable<unsigned int> >::pGetComponents() ),
@@ -538,7 +538,7 @@ namespace Kratos
       Serializer::Register( "ComplexCondition", ComplexCondition() );
       Serializer::Register( "GComplexCondition", GComplexCondition() );
       Serializer::Register( "Properties", Properties() );
-      Serializer::Register( "GeometricalObject", GeometricalObject<Node<3> >() );
+      Serializer::Register( "GeometricalObject", GeometricalObject<RealNode>() );
 
       Serializer::Register("MasterSlaveConstraint", MasterSlaveConstraint());
 
@@ -563,83 +563,83 @@ namespace Kratos
       //Points:
       Serializer::Register( "Point", Point<3>() );
 
-      Point2D<Node<3> > Point2DPrototype( Element::GeometryType::PointsArrayType( 1, Node<3>() ) );
+      Point2D<RealNode> Point2DPrototype( Element::GeometryType::PointsArrayType( 1, RealNode() ) );
       Serializer::Register( "Point2D", Point2DPrototype );
 
-      Point3D<Node<3> > Point3DPrototype( Element::GeometryType::PointsArrayType( 1, Node<3>() ) );
+      Point3D<RealNode> Point3DPrototype( Element::GeometryType::PointsArrayType( 1, RealNode() ) );
       Serializer::Register( "Point3D", Point3DPrototype );
 
       //Lines:
-      Line2D<Node<3> > Line2DPrototype( Element::GeometryType::PointsArrayType( 2, Node<3>() ) );
+      Line2D<RealNode> Line2DPrototype( Element::GeometryType::PointsArrayType( 2, RealNode() ) );
       Serializer::Register( "Line2D", Line2DPrototype );
 
-      Line2D2<Node<3> > Line2D2Prototype( Element::GeometryType::PointsArrayType( 2, Node<3>() ) );
+      Line2D2<RealNode> Line2D2Prototype( Element::GeometryType::PointsArrayType( 2, RealNode() ) );
       Serializer::Register( "Line2D2", Line2D2Prototype );
 
-      Line2D3<Node<3> > Line2D3Prototype( Element::GeometryType::PointsArrayType( 3, Node<3>() ) );
+      Line2D3<RealNode> Line2D3Prototype( Element::GeometryType::PointsArrayType( 3, RealNode() ) );
       Serializer::Register( "Line2D3", Line2D3Prototype );
 
-      Line3D2<Node<3> > Line3D2Prototype( Element::GeometryType::PointsArrayType( 2, Node<3>() ) );
+      Line3D2<RealNode> Line3D2Prototype( Element::GeometryType::PointsArrayType( 2, RealNode() ) );
       Serializer::Register( "Line3D2", Line3D2Prototype );
 
-      Line3D3<Node<3> > Line3D3Prototype( Element::GeometryType::PointsArrayType( 3, Node<3>() ) );
+      Line3D3<RealNode> Line3D3Prototype( Element::GeometryType::PointsArrayType( 3, RealNode() ) );
       Serializer::Register( "Line3D3", Line3D3Prototype );
 
       //Triangles:
-      Triangle2D3<Node<3> > Triangle2D3Prototype( Element::GeometryType::PointsArrayType( 3, Node<3>() ) );
+      Triangle2D3<RealNode> Triangle2D3Prototype( Element::GeometryType::PointsArrayType( 3, RealNode() ) );
       Serializer::Register( "Triangle2D3", Triangle2D3Prototype );
 
-      Triangle2D6<Node<3> > Triangle2D6Prototype( Element::GeometryType::PointsArrayType( 6, Node<3>() ) );
+      Triangle2D6<RealNode> Triangle2D6Prototype( Element::GeometryType::PointsArrayType( 6, RealNode() ) );
       Serializer::Register( "Triangle2D6", Triangle2D6Prototype );
 
-      Triangle3D3<Node<3> > Triangle3D3Prototype( Element::GeometryType::PointsArrayType( 3, Node<3>() ) );
+      Triangle3D3<RealNode> Triangle3D3Prototype( Element::GeometryType::PointsArrayType( 3, RealNode() ) );
       Serializer::Register( "Triangle3D3", Triangle3D3Prototype );
 
-      Triangle3D6<Node<3> > Triangle3D6Prototype( Element::GeometryType::PointsArrayType( 6, Node<3>() ) );
+      Triangle3D6<RealNode> Triangle3D6Prototype( Element::GeometryType::PointsArrayType( 6, RealNode() ) );
       Serializer::Register( "Triangle3D6", Triangle3D6Prototype );
 
       //Quadrilaterals:
-      Quadrilateral2D4<Node<3> > Quadrilateral2D4Prototype( Element::GeometryType::PointsArrayType( 4, Node<3>() ) );
+      Quadrilateral2D4<RealNode> Quadrilateral2D4Prototype( Element::GeometryType::PointsArrayType( 4, RealNode() ) );
       Serializer::Register( "Quadrilateral2D4", Quadrilateral2D4Prototype );
 
-      Quadrilateral2D8<Node<3> > Quadrilateral2D8Prototype( Element::GeometryType::PointsArrayType( 8, Node<3>() ) );
+      Quadrilateral2D8<RealNode> Quadrilateral2D8Prototype( Element::GeometryType::PointsArrayType( 8, RealNode() ) );
       Serializer::Register( "Quadrilateral2D8", Quadrilateral2D8Prototype );
 
-      Quadrilateral2D9<Node<3> > Quadrilateral2D9Prototype( Element::GeometryType::PointsArrayType( 9, Node<3>() ) );
+      Quadrilateral2D9<RealNode> Quadrilateral2D9Prototype( Element::GeometryType::PointsArrayType( 9, RealNode() ) );
       Serializer::Register( "Quadrilateral2D9", Quadrilateral2D9Prototype );
 
-      Quadrilateral3D4<Node<3> > Quadrilateral3D4Prototype( Element::GeometryType::PointsArrayType( 4, Node<3>() ) );
+      Quadrilateral3D4<RealNode> Quadrilateral3D4Prototype( Element::GeometryType::PointsArrayType( 4, RealNode() ) );
       Serializer::Register( "Quadrilateral3D4", Quadrilateral3D4Prototype );
 
-      Quadrilateral3D8<Node<3> > Quadrilateral3D8Prototype( Element::GeometryType::PointsArrayType( 8, Node<3>() ) );
+      Quadrilateral3D8<RealNode> Quadrilateral3D8Prototype( Element::GeometryType::PointsArrayType( 8, RealNode() ) );
       Serializer::Register( "Quadrilateral3D8", Quadrilateral3D8Prototype );
 
-      Quadrilateral3D9<Node<3> > Quadrilateral3D9Prototype( Element::GeometryType::PointsArrayType( 9, Node<3>() ) );
+      Quadrilateral3D9<RealNode> Quadrilateral3D9Prototype( Element::GeometryType::PointsArrayType( 9, RealNode() ) );
       Serializer::Register( "Quadrilateral3D9", Quadrilateral3D9Prototype );
 
 
       //Tetrahedra:
-      Tetrahedra3D4 <Node<3> > Tetrahedra3D4Prototype( Element::GeometryType::PointsArrayType( 4, Node<3>() ) );
+      Tetrahedra3D4 <RealNode> Tetrahedra3D4Prototype( Element::GeometryType::PointsArrayType( 4, RealNode() ) );
       Serializer::Register( "Tetrahedra3D4", Tetrahedra3D4Prototype );
 
-      Tetrahedra3D10 <Node<3> > Tetrahedra3D10Prototype( Element::GeometryType::PointsArrayType( 10, Node<3>() ) );
+      Tetrahedra3D10 <RealNode> Tetrahedra3D10Prototype( Element::GeometryType::PointsArrayType( 10, RealNode() ) );
       Serializer::Register( "Tetrahedra3D10", Tetrahedra3D10Prototype );
 
       //Prisms:
-      Prism3D6<Node<3> > Prism3D6Prototype( Element::GeometryType::PointsArrayType( 6, Node<3>() ) );
+      Prism3D6<RealNode> Prism3D6Prototype( Element::GeometryType::PointsArrayType( 6, RealNode() ) );
       Serializer::Register( "Prism3D6", Prism3D6Prototype );
 
-      Prism3D15<Node<3> > Prism3D15Prototype( Element::GeometryType::PointsArrayType( 15, Node<3>() ) );
+      Prism3D15<RealNode> Prism3D15Prototype( Element::GeometryType::PointsArrayType( 15, RealNode() ) );
       Serializer::Register( "Prism3D15", Prism3D15Prototype );
 
       //Hexahedra:
-      Hexahedra3D8<Node<3> > Hexahedra3D8Prototype( Element::GeometryType::PointsArrayType( 8, Node<3>() ) );
+      Hexahedra3D8<RealNode> Hexahedra3D8Prototype( Element::GeometryType::PointsArrayType( 8, RealNode() ) );
       Serializer::Register( "Hexahedra3D8", Hexahedra3D8Prototype );
 
-      Hexahedra3D20<Node<3> > Hexahedra3D20Prototype( Element::GeometryType::PointsArrayType( 20, Node<3>() ) );
+      Hexahedra3D20<RealNode> Hexahedra3D20Prototype( Element::GeometryType::PointsArrayType( 20, RealNode() ) );
       Serializer::Register( "Hexahedra3D20", Hexahedra3D20Prototype );
 
-      Hexahedra3D27<Node<3> > Hexahedra3D27Prototype( Element::GeometryType::PointsArrayType( 27, Node<3>() ) );
+      Hexahedra3D27<RealNode> Hexahedra3D27Prototype( Element::GeometryType::PointsArrayType( 27, RealNode() ) );
       Serializer::Register( "Hexahedra3D27", Hexahedra3D27Prototype );
 
       // Register flags:

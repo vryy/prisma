@@ -129,7 +129,7 @@ namespace Kratos
 
     // KRATOS_DEFINE_3D_VARIABLE_WITH_COMPONENTS( xi_c )
 
-    KRATOS_DEFINE_VARIABLE( WeakPointerVector< GeometricalObject<Node<3> > >, NEIGHBOUR_EMBEDDED_FACES )
+    KRATOS_DEFINE_VARIABLE( WeakPointerVector< GeometricalObject<RealNode> >, NEIGHBOUR_EMBEDDED_FACES )
 
 }  // namespace Kratos.
 

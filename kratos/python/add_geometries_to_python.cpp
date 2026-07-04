@@ -31,7 +31,6 @@ namespace Kratos
 namespace Python
 {
 
-
 template<class TGeometryType>
 bool Geometry_IsInside1(TGeometryType& rDummy, boost::python::list& point)
 {

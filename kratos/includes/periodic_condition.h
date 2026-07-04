@@ -10,16 +10,6 @@
 //  Main authors:    Jordi Cotela
 //
 
-
-
-
-
-
-
-
-
-
-
 #ifndef KRATOS_PERIODIC_CONDITION_H
 #define	KRATOS_PERIODIC_CONDITION_H
 
@@ -29,9 +19,7 @@
 #include <sstream>
 #include <cstddef>
 
-
 // External includes
-
 
 // Project includes
 #include "includes/define.h"
@@ -42,7 +30,6 @@
 #include "utilities/indexed_object.h"
 #include "includes/condition.h"
 #include "includes/serializer.h"
-
 
 namespace Kratos
 {
@@ -96,7 +83,7 @@ public:
 
     typedef Condition BaseType;
 
-    typedef Node<3> NodeType;
+    typedef RealNode NodeType;
 
     typedef Properties PropertiesType;
 
@@ -121,7 +108,6 @@ public:
     typedef PointerVectorSet<DofType, IndexedObject> DofsArrayType;
 
     typedef VectorMap<IndexType, DataValueContainer> SolutionStepsConditionalDataContainerType;
-
 
     ///@}
     ///@name Life Cycle
@@ -161,10 +147,8 @@ public:
     /// Copy constructor.
     PeriodicCondition(PeriodicCondition const& rOther);
 
-
     /// Destructor.
-    virtual ~PeriodicCondition();
-
+    ~PeriodicCondition() override;
 
     ///@}
     ///@name Operators
@@ -273,7 +257,6 @@ public:
         Condition::PrintData(rOStream);
     }
 
-
     ///@}
     ///@name Friends
     ///@{
@@ -338,7 +321,6 @@ private:
 
     void load(Serializer& rSerializer) override;
 
-
     ///@}
     ///@name Private Operators
     ///@{
@@ -364,7 +346,6 @@ private:
     ///@{
 
 
-
     ///@}
 
 }; // Class PeriodicCondition
@@ -380,23 +361,6 @@ private:
 ///@{
 
 
-/// input stream function
-inline std::istream & operator >>(std::istream& rIStream,
-                                  PeriodicCondition& rThis)
-{
-    return rIStream;
-}
-
-/// output stream function
-inline std::ostream & operator <<(std::ostream& rOStream,
-                                  const PeriodicCondition& rThis)
-{
-    rThis.PrintInfo(rOStream);
-    rOStream << " : " << std::endl;
-    rThis.PrintData(rOStream);
-
-    return rOStream;
-}
 ///@}
 
 ///@}

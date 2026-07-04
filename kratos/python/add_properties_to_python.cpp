@@ -92,7 +92,7 @@ void PropertiesAddVariableInterface(TAdapterType& a)
 
 void  AddPropertiesToPython()
 {
-    typedef Mesh<Node<3>, Properties, Element, Condition> MeshType;
+    typedef Mesh<RealNode, Properties, Element, Condition> MeshType;
 
     auto a = class_<Properties, Properties::Pointer, bases<Properties::BaseType > >("Properties", init<int>())
     .def(init<const Properties&>())
