@@ -192,10 +192,11 @@ public:
     /// Constructor with communicator
     MPICommunicator(VariablesListType* Variables_list, MPI_Comm Comm) : BaseType(), mpVariablesList(Variables_list), mComm(Comm)
     {
+        mMpiDataType = DataTypeToMpiDataType(DataType());
     }
 
     /// Copy constructor.
-    MPICommunicator(MPICommunicator const& rOther) : BaseType(rOther)
+    MPICommunicator(MPICommunicator const& rOther) : BaseType(rOther), mpVariablesList(rOther.mpVariablesList), mComm(rOther.mComm), mMpiDataType(rOther.mMpiDataType)
     {
     }
 
@@ -208,7 +209,7 @@ public:
     {
         KRATOS_TRY
 
-        return typename BaseType::Pointer(new MPICommunicator(mpVariables_list));
+        return typename BaseType::Pointer(new MPICommunicator(mpVariablesList, mComm));
 
         KRATOS_CATCH("");
     }
@@ -221,6 +222,7 @@ public:
     MPICommunicator & operator=(MPICommunicator const& rOther)
     {
         BaseType::operator=(rOther);
+        mMpiDataType = rOther.mMpiDataType;
         return *this;
     }
 
