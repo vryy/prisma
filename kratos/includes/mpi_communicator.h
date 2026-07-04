@@ -41,7 +41,6 @@
 #define KRATOS_TIMER_STOP(t)
 #endif
 
-
 namespace Kratos
 {
 
@@ -185,13 +184,13 @@ public:
     ///@{
 
     /// Default constructor.
-    MPICommunicator(VariablesListType* Variables_list) : BaseType(), mpVariables_list(Variables_list), mComm(MPI_COMM_WORLD)
+    MPICommunicator(VariablesListType* Variables_list) : BaseType(), mpVariablesList(Variables_list), mComm(MPI_COMM_WORLD)
     {
-        MyMpiDataType = DataTypeToMpiDataType(DataType());
+        mMpiDataType = DataTypeToMpiDataType(DataType());
     }
 
     /// Constructor with communicator
-    MPICommunicator(VariablesListType* Variables_list, MPI_Comm Comm) : BaseType(), mpVariables_list(Variables_list), mComm(Comm)
+    MPICommunicator(VariablesListType* Variables_list, MPI_Comm Comm) : BaseType(), mpVariablesList(Variables_list), mComm(Comm)
     {
     }
 
@@ -272,7 +271,6 @@ public:
     ///@}
     ///@name Access
     ///@{
-
 
     ///@}
     ///@name Operations
@@ -365,7 +363,9 @@ public:
                 unsigned int receive_buffer_size = ghost_elements_size * elemental_data_size;
 
                 if ((local_elements_size == 0) && (ghost_elements_size == 0))
-                    continue; // nothing to transfer!
+                {
+                    continue;    // nothing to transfer!
+                }
 
                 unsigned int position = 0;
                 std::vector<double> send_buffer(send_buffer_size);
@@ -394,7 +394,9 @@ public:
                 }
 
                 if (position > receive_buffer_size)
+                {
                     std::cout << rank << " Error in estimating receive buffer size...." << std::endl;
+                }
             }
         }
 
@@ -427,7 +429,9 @@ public:
                 if (local_nodes_size == 0)
                 {
                     if (ghost_nodes_size == 0)
-                        continue; // nothing to transfer!
+                    {
+                        continue;    // nothing to transfer!
+                    }
                     else
                     {
                         nodal_data_size = r_ghost_nodes.begin()->SolutionStepData().TotalSize();
@@ -439,7 +443,9 @@ public:
                     nodal_data_size = r_local_nodes.begin()->SolutionStepData().TotalSize();
                     send_buffer_size = local_nodes_size * nodal_data_size;
                     if (ghost_nodes_size != 0)
+                    {
                         receive_buffer_size = ghost_nodes_size * nodal_data_size;
+                    }
                 }
 
                 unsigned int position = 0;
@@ -456,12 +462,12 @@ public:
                 MPI_Status status;
 
                 if (position > send_buffer_size)
+                {
                     std::cout << rank << " Error in estimating send buffer size...." << std::endl;
-
+                }
 
                 int send_tag = i_color;
                 int receive_tag = i_color;
-
 
                 MPI_Sendrecv(send_buffer.data(), send_buffer_size, MPI_DOUBLE, destination, send_tag, receive_buffer.data(), receive_buffer_size, MPI_DOUBLE, destination, receive_tag,
                              mComm, &status);
@@ -476,7 +482,9 @@ public:
                 }
 
                 if (position > receive_buffer_size)
+                {
                     std::cout << rank << " Error in estimating receive buffer size...." << std::endl;
+                }
             }
 
         return true;
@@ -502,15 +510,18 @@ public:
                 unsigned int receive_buffer_size = 0;
 
                 for (auto i_node = r_local_nodes.begin(); i_node != r_local_nodes.end(); ++i_node)
+                {
                     send_buffer_size += i_node->GetDofs().size();
+                }
 
                 for (auto i_node = r_ghost_nodes.begin(); i_node != r_ghost_nodes.end(); ++i_node)
+                {
                     receive_buffer_size += i_node->GetDofs().size();
+                }
 
                 unsigned int position = 0;
                 int* send_buffer = new int[send_buffer_size];
                 int* receive_buffer = new int[receive_buffer_size];
-
 
                 // Filling the buffer
                 for (auto i_node = r_local_nodes.begin(); i_node != r_local_nodes.end(); ++i_node)
@@ -519,12 +530,12 @@ public:
                         send_buffer[position++] = i_dof->EquationId();
                     }
 
-
                 MPI_Status status;
 
                 if (position > send_buffer_size)
+                {
                     std::cout << rank << " Error in estimating send buffer size...." << std::endl;
-
+                }
 
                 int send_tag = i_color;
                 int receive_tag = i_color;
@@ -537,10 +548,14 @@ public:
                 for (auto i_node = this->GhostMesh(i_color).NodesBegin();
                         i_node != this->GhostMesh(i_color).NodesEnd(); i_node++)
                     for (auto i_dof = i_node->GetDofs().begin(); i_dof != i_node->GetDofs().end(); i_dof++)
+                    {
                         i_dof->SetEquationId(receive_buffer[position++]);
+                    }
 
                 if (position > receive_buffer_size)
+                {
                     std::cout << rank << " Error in estimating receive buffer size...." << std::endl;
+                }
 
                 delete [] send_buffer;
                 delete [] receive_buffer;
@@ -551,7 +566,7 @@ public:
 
     bool SynchronizeVariable(Variable<int> const& ThisVariable) override
     {
-        SynchronizeVariable<int,int>(ThisVariable);
+        SynchronizeVariable<int, int>(ThisVariable);
         return true;
     }
 
@@ -601,7 +616,7 @@ public:
 
     bool AssembleCurrentData(Variable<array_1d<DataType, 3 > > const& ThisVariable) override
     {
-        AssembleThisVariable<array_1d<DataType,3>, DataType>(ThisVariable);
+        AssembleThisVariable<array_1d<DataType, 3>, DataType>(ThisVariable);
         return true;
     }
 
@@ -619,7 +634,7 @@ public:
 
     bool AssembleNonHistoricalData(Variable<int> const& ThisVariable) override
     {
-        AssembleThisNonHistoricalVariable<int,int>(ThisVariable);
+        AssembleThisNonHistoricalVariable<int, int>(ThisVariable);
         return true;
     }
 
@@ -631,13 +646,13 @@ public:
 
     bool AssembleNonHistoricalData(Variable<array_1d<DataType, 3 > > const& ThisVariable) override
     {
-        AssembleThisNonHistoricalVariable<array_1d<DataType,3>, DataType>(ThisVariable);
+        AssembleThisNonHistoricalVariable<array_1d<DataType, 3>, DataType>(ThisVariable);
         return true;
     }
 
-    bool AssembleNonHistoricalData(Variable<vector<array_1d<DataType,3> > > const& ThisVariable) override
+    bool AssembleNonHistoricalData(Variable<vector<array_1d<DataType, 3> > > const& ThisVariable) override
     {
-        AssembleThisNonHistoricalVariable<vector<array_1d<DataType,3> >, DataType>(ThisVariable);
+        AssembleThisNonHistoricalVariable<vector<array_1d<DataType, 3> >, DataType>(ThisVariable);
         return true;
     }
 
@@ -657,7 +672,7 @@ public:
 
     bool SynchronizeElementalNonHistoricalVariable(Variable<int> const& ThisVariable) override
     {
-        SynchronizeElementalNonHistoricalVariable<int,int>(ThisVariable);
+        SynchronizeElementalNonHistoricalVariable<int, int>(ThisVariable);
         return true;
     }
 
@@ -669,13 +684,13 @@ public:
 
     bool SynchronizeElementalNonHistoricalVariable(Variable<array_1d<DataType, 3 > > const& ThisVariable) override
     {
-        SynchronizeElementalNonHistoricalVariable<array_1d<DataType,3>, DataType>(ThisVariable);
+        SynchronizeElementalNonHistoricalVariable<array_1d<DataType, 3>, DataType>(ThisVariable);
         return true;
     }
 
-    bool SynchronizeElementalNonHistoricalVariable(Variable<vector<array_1d<DataType,3> > > const& ThisVariable) override
+    bool SynchronizeElementalNonHistoricalVariable(Variable<vector<array_1d<DataType, 3> > > const& ThisVariable) override
     {
-        SynchronizeElementalNonHistoricalVariable<vector<array_1d<DataType,3> >, DataType>(ThisVariable);
+        SynchronizeElementalNonHistoricalVariable<vector<array_1d<DataType, 3> >, DataType>(ThisVariable);
         return true;
     }
 
@@ -701,7 +716,7 @@ public:
     bool TransferObjects(std::vector<NodesContainerType>& SendObjects, std::vector<NodesContainerType>& RecvObjects) override
     {
         Serializer particleSerializer;
-        AsyncSendAndReceiveObjects<NodesContainerType>(SendObjects,RecvObjects,particleSerializer);
+        AsyncSendAndReceiveObjects<NodesContainerType>(SendObjects, RecvObjects, particleSerializer);
         return true;
     }
 
@@ -713,7 +728,7 @@ public:
     bool TransferObjects(std::vector<ElementsContainerType>& SendObjects, std::vector<ElementsContainerType>& RecvObjects) override
     {
         Serializer particleSerializer;
-        AsyncSendAndReceiveObjects<ElementsContainerType>(SendObjects,RecvObjects,particleSerializer);
+        AsyncSendAndReceiveObjects<ElementsContainerType>(SendObjects, RecvObjects, particleSerializer);
         return true;
     }
 
@@ -725,7 +740,7 @@ public:
     bool TransferObjects(std::vector<ConditionsContainerType>& SendObjects, std::vector<ConditionsContainerType>& RecvObjects) override
     {
         Serializer particleSerializer;
-        AsyncSendAndReceiveObjects<ConditionsContainerType>(SendObjects,RecvObjects,particleSerializer);
+        AsyncSendAndReceiveObjects<ConditionsContainerType>(SendObjects, RecvObjects, particleSerializer);
         return true;
     }
 
@@ -736,7 +751,7 @@ public:
      **/
     bool TransferObjects(std::vector<NodesContainerType>& SendObjects, std::vector<NodesContainerType>& RecvObjects, Serializer& particleSerializer) override
     {
-        AsyncSendAndReceiveObjects<NodesContainerType>(SendObjects,RecvObjects,particleSerializer);
+        AsyncSendAndReceiveObjects<NodesContainerType>(SendObjects, RecvObjects, particleSerializer);
         return true;
     }
 
@@ -747,7 +762,7 @@ public:
     **/
     bool TransferObjects(std::vector<ElementsContainerType>& SendObjects, std::vector<ElementsContainerType>& RecvObjects, Serializer& particleSerializer) override
     {
-        AsyncSendAndReceiveObjects<ElementsContainerType>(SendObjects,RecvObjects,particleSerializer);
+        AsyncSendAndReceiveObjects<ElementsContainerType>(SendObjects, RecvObjects, particleSerializer);
         return true;
     }
 
@@ -758,7 +773,7 @@ public:
     **/
     bool TransferObjects(std::vector<ConditionsContainerType>& SendObjects, std::vector<ConditionsContainerType>& RecvObjects, Serializer& particleSerializer) override
     {
-        AsyncSendAndReceiveObjects<ConditionsContainerType>(SendObjects,RecvObjects,particleSerializer);
+        AsyncSendAndReceiveObjects<ConditionsContainerType>(SendObjects, RecvObjects, particleSerializer);
         return true;
     }
 
@@ -768,11 +783,9 @@ public:
     ///@name Access
     ///@{
 
-
     ///@}
     ///@name Inquiry
     ///@{
-
 
     ///@}
     ///@name Input and output
@@ -808,43 +821,35 @@ public:
     ///@name Friends
     ///@{
 
-
     ///@}
 
 protected:
     ///@name Protected static Member Variables
     ///@{
 
-
     ///@}
     ///@name Protected member Variables
     ///@{
-
 
     ///@}
     ///@name Protected Operators
     ///@{
 
-
     ///@}
     ///@name Protected Operations
     ///@{
-
 
     ///@}
     ///@name Protected  Access
     ///@{
 
-
     ///@}
     ///@name Protected Inquiry
     ///@{
 
-
     ///@}
     ///@name Protected LifeCycle
     ///@{
-
 
     ///@}
 
@@ -852,22 +857,20 @@ private:
     ///@name Static Member Variables
     ///@{
 
-
     ///@}
     ///@name Member Variables
     ///@{
 
     MPI_Comm mComm;
 
-    VariablesListType* mpVariables_list;
+    VariablesListType* mpVariablesList;
 
     /** The struct representing MPI data type. For some stupid reason, this variable cannot be marked constexpr */
-    MPI_Datatype MyMpiDataType;
+    MPI_Datatype mMpiDataType;
 
     ///@}
     ///@name Private Operators
     ///@{
-
 
     ///@}
     ///@name Private Operations
@@ -913,7 +916,9 @@ private:
         MPI_Comm_rank(mComm, &rank);
         std::cout << Tag << rank << " with color " << color << ":";
         for (auto i_node = rNodes.begin(); i_node != rNodes.end(); i_node++)
+        {
             std::cout << i_node->Id() << ", ";
+        }
         std::cout << std::endl;
     }
 
@@ -950,7 +955,9 @@ private:
                 receive_buffer_size[i_color] = ghost_nodes_size * nodal_data_size;
 
                 if ((local_nodes_size == 0) && (ghost_nodes_size == 0))
-                    continue; // nothing to transfer!
+                {
+                    continue;    // nothing to transfer!
+                }
 
                 unsigned int position = 0;
                 TSendType* send_buffer = new TSendType[send_buffer_size];
@@ -966,13 +973,15 @@ private:
                 MPI_Status status;
 
                 if (position > send_buffer_size)
+                {
                     std::cout << rank << " Error in estimating send buffer size...." << std::endl;
+                }
 
                 int send_tag = i_color;
                 int receive_tag = i_color;
 
-                MPI_Sendrecv(send_buffer, send_buffer_size, MyMpiDataType, destination, send_tag,
-                             receive_buffer[i_color], receive_buffer_size[i_color], MyMpiDataType, destination, receive_tag,
+                MPI_Sendrecv(send_buffer, send_buffer_size, mMpiDataType, destination, send_tag,
+                             receive_buffer[i_color], receive_buffer_size[i_color], mMpiDataType, destination, receive_tag,
                              mComm, &status);
 
                 delete [] send_buffer;
@@ -993,7 +1002,9 @@ private:
                 }
 
                 if (position > receive_buffer_size[i_color])
+                {
                     std::cout << rank << " Error in estimating receive buffer size...." << std::endl;
+                }
 
                 delete [] receive_buffer[i_color];
             }
@@ -1001,7 +1012,7 @@ private:
         //MPI_Barrier(mComm);
 
         //SynchronizeNodalSolutionStepsData();
-        SynchronizeVariable<TDataType,TSendType>(ThisVariable);
+        SynchronizeVariable<TDataType, TSendType>(ThisVariable);
 
         return true;
     }
@@ -1040,7 +1051,9 @@ private:
                 receive_buffer_size[i_color] = ghost_nodes_size * nodal_data_size;
 
                 if ((local_nodes_size == 0) && (ghost_nodes_size == 0))
-                    continue; // nothing to transfer!
+                {
+                    continue;    // nothing to transfer!
+                }
 
                 unsigned int position = 0;
                 TSendType* send_buffer = new TSendType[send_buffer_size];
@@ -1056,13 +1069,15 @@ private:
                 MPI_Status status;
 
                 if (position > send_buffer_size)
+                {
                     std::cout << rank << " Error in estimating send buffer size...." << std::endl;
+                }
 
                 int send_tag = i_color;
                 int receive_tag = i_color;
 
-                MPI_Sendrecv(send_buffer, send_buffer_size, MyMpiDataType, destination, send_tag,
-                             receive_buffer[i_color], receive_buffer_size[i_color], MyMpiDataType, destination, receive_tag,
+                MPI_Sendrecv(send_buffer, send_buffer_size, mMpiDataType, destination, send_tag,
+                             receive_buffer[i_color], receive_buffer_size[i_color], mMpiDataType, destination, receive_tag,
                              mComm, &status);
 
                 delete [] send_buffer;
@@ -1084,16 +1099,17 @@ private:
                 }
 
                 if (position > receive_buffer_size[i_color])
+                {
                     std::cout << rank << " Error in estimating receive buffer size...." << std::endl;
+                }
 
                 delete [] receive_buffer[i_color];
             }
 
         //MPI_Barrier(mComm);
 
-
         //SynchronizeNodalSolutionStepsData();
-        SynchronizeVariable<TDataType,TSendType>(ThisVariable);
+        SynchronizeVariable<TDataType, TSendType>(ThisVariable);
 
         return true;
     }
@@ -1123,7 +1139,9 @@ private:
                 unsigned int receive_buffer_size = ghost_nodes_size * nodal_data_size;
 
                 if ((local_nodes_size == 0) && (ghost_nodes_size == 0))
-                    continue; // nothing to transfer!
+                {
+                    continue;    // nothing to transfer!
+                }
 
                 unsigned int position = 0;
                 TSendType* send_buffer = new TSendType[send_buffer_size];
@@ -1141,7 +1159,7 @@ private:
                 int send_tag = i_color;
                 int receive_tag = i_color;
 
-                MPI_Sendrecv(send_buffer, send_buffer_size, MyMpiDataType, destination, send_tag, receive_buffer, receive_buffer_size, MyMpiDataType, destination, receive_tag,
+                MPI_Sendrecv(send_buffer, send_buffer_size, mMpiDataType, destination, send_tag, receive_buffer, receive_buffer_size, mMpiDataType, destination, receive_tag,
                              mComm, &status);
 
                 position = 0;
@@ -1152,7 +1170,9 @@ private:
                 }
 
                 if (position > receive_buffer_size)
+                {
                     std::cout << rank << " Error in estimating receive buffer size...." << std::endl;
+                }
 
                 delete [] send_buffer;
                 delete [] receive_buffer;
@@ -1160,7 +1180,6 @@ private:
 
         return true;
     }
-
 
     template< class TDataType, class TSendType >
     bool AssembleThisNonHistoricalVariable(Variable<TDataType> const& ThisVariable)
@@ -1195,7 +1214,9 @@ private:
                 receive_buffer_size[i_color] = ghost_nodes_size * nodal_data_size;
 
                 if ((local_nodes_size == 0) && (ghost_nodes_size == 0))
-                    continue; // nothing to transfer!
+                {
+                    continue;    // nothing to transfer!
+                }
 
                 unsigned int position = 0;
                 TSendType* send_buffer = new TSendType[send_buffer_size];
@@ -1211,13 +1232,15 @@ private:
                 MPI_Status status;
 
                 if (position > send_buffer_size)
+                {
                     std::cout << rank << " Error in estimating send buffer size...." << std::endl;
+                }
 
                 int send_tag = i_color;
                 int receive_tag = i_color;
 
-                MPI_Sendrecv(send_buffer, send_buffer_size, MyMpiDataType, destination, send_tag,
-                             receive_buffer[i_color], receive_buffer_size[i_color], MyMpiDataType, destination, receive_tag,
+                MPI_Sendrecv(send_buffer, send_buffer_size, mMpiDataType, destination, send_tag,
+                             receive_buffer[i_color], receive_buffer_size[i_color], mMpiDataType, destination, receive_tag,
                              mComm, &status);
 
                 delete [] send_buffer;
@@ -1238,12 +1261,14 @@ private:
                 }
 
                 if (position > receive_buffer_size[i_color])
+                {
                     std::cout << rank << " Error in estimating receive buffer size...." << std::endl;
+                }
 
                 delete [] receive_buffer[i_color];
             }
 
-        SynchronizeNonHistoricalVariable<TDataType,TSendType>(ThisVariable);
+        SynchronizeNonHistoricalVariable<TDataType, TSendType>(ThisVariable);
 
         return true;
     }
@@ -1273,7 +1298,9 @@ private:
                 unsigned int receive_buffer_size = ghost_nodes_size * nodal_data_size;
 
                 if ((local_nodes_size == 0) && (ghost_nodes_size == 0))
-                    continue; // nothing to transfer!
+                {
+                    continue;    // nothing to transfer!
+                }
 
                 unsigned int position = 0;
                 TSendType* send_buffer = new TSendType[send_buffer_size];
@@ -1291,7 +1318,7 @@ private:
                 int send_tag = i_color;
                 int receive_tag = i_color;
 
-                MPI_Sendrecv(send_buffer, send_buffer_size, MyMpiDataType, destination, send_tag, receive_buffer, receive_buffer_size, MyMpiDataType, destination, receive_tag,
+                MPI_Sendrecv(send_buffer, send_buffer_size, mMpiDataType, destination, send_tag, receive_buffer, receive_buffer_size, mMpiDataType, destination, receive_tag,
                              mComm, &status);
 
                 position = 0;
@@ -1302,7 +1329,9 @@ private:
                 }
 
                 if (position > receive_buffer_size)
+                {
                     std::cout << rank << " Error in estimating receive buffer size...." << std::endl;
+                }
 
                 delete [] send_buffer;
                 delete [] receive_buffer;
@@ -1336,7 +1365,9 @@ private:
                 unsigned int receive_buffer_size = ghost_elements_size * elemental_data_size;
 
                 if ((local_elements_size == 0) && (ghost_elements_size == 0))
-                    continue; // nothing to transfer!
+                {
+                    continue;    // nothing to transfer!
+                }
 
                 unsigned int position = 0;
                 std::vector<DataType> send_buffer(send_buffer_size);
@@ -1354,7 +1385,7 @@ private:
                 int send_tag = i_color;
                 int receive_tag = i_color;
 
-                MPI_Sendrecv(send_buffer.data(), send_buffer_size, MyMpiDataType, destination, send_tag, receive_buffer.data(), receive_buffer_size, MyMpiDataType, destination, receive_tag,
+                MPI_Sendrecv(send_buffer.data(), send_buffer_size, mMpiDataType, destination, send_tag, receive_buffer.data(), receive_buffer_size, mMpiDataType, destination, receive_tag,
                              mComm, &status);
 
                 position = 0;
@@ -1365,7 +1396,9 @@ private:
                 }
 
                 if (position > receive_buffer_size)
+                {
                     std::cout << rank << " Error in estimating receive buffer size...." << std::endl;
+                }
             }
 
         return true;
@@ -1386,26 +1419,26 @@ private:
         char ** message = new char * [mpi_size];
         char ** mpi_send_buffer = new char * [mpi_size];
 
-        for(int i = 0; i < mpi_size; i++)
+        for (int i = 0; i < mpi_size; i++)
         {
             msgSendSize[i] = 0;
             msgRecvSize[i] = 0;
         }
 
-        for(int i = 0; i < mpi_size; i++)
+        for (int i = 0; i < mpi_size; i++)
         {
-            if(mpi_rank != i)
+            if (mpi_rank != i)
             {
                 Serializer particleSerializer;
 
-                particleSerializer.save("VariableList",mpVariables_list);
-                particleSerializer.save("ObjectList",SendObjects[i].GetContainer());
+                particleSerializer.save("VariableList", mpVariablesList);
+                particleSerializer.save("ObjectList", SendObjects[i].GetContainer());
 
                 std::stringstream * stream = (std::stringstream *)particleSerializer.pGetBuffer();
                 const std::string & stream_str = stream->str();
                 const char * cstr = stream_str.c_str();
 
-                msgSendSize[i] = sizeof(char) * (stream_str.size()+1);
+                msgSendSize[i] = sizeof(char) * (stream_str.size() + 1);
                 mpi_send_buffer[i] = (char *)malloc(msgSendSize[i]);
                 memcpy(mpi_send_buffer[i], cstr, msgSendSize[i]);
             }
@@ -1416,26 +1449,26 @@ private:
         int NumberOfCommunicationEvents      = 0;
         int NumberOfCommunicationEventsIndex = 0;
 
-        for(int j = 0; j < mpi_size; j++)
+        for (int j = 0; j < mpi_size; j++)
         {
-            if(j != mpi_rank && msgRecvSize[j]) NumberOfCommunicationEvents++;
-            if(j != mpi_rank && msgSendSize[j]) NumberOfCommunicationEvents++;
+            if (j != mpi_rank && msgRecvSize[j]) { NumberOfCommunicationEvents++; }
+            if (j != mpi_rank && msgSendSize[j]) { NumberOfCommunicationEvents++; }
         }
 
         std::vector<MPI_Request> reqs(NumberOfCommunicationEvents);
         std::vector<MPI_Status> stats(NumberOfCommunicationEvents);
 
         //Set up all receive and send events
-        for(int i = 0; i < mpi_size; i++)
+        for (int i = 0; i < mpi_size; i++)
         {
-            if(i != mpi_rank && msgRecvSize[i])
+            if (i != mpi_rank && msgRecvSize[i])
             {
                 message[i] = (char *)malloc(sizeof(char) * msgRecvSize[i]);
 
                 MPI_Irecv(message[i], msgRecvSize[i], MPI_CHAR, i, 0, mComm, &reqs[NumberOfCommunicationEventsIndex++]);
             }
 
-            if(i != mpi_rank && msgSendSize[i])
+            if (i != mpi_rank && msgSendSize[i])
             {
                 MPI_Isend(mpi_send_buffer[i], msgSendSize[i], MPI_CHAR, i, 0, mComm, &reqs[NumberOfCommunicationEventsIndex++]);
             }
@@ -1444,12 +1477,14 @@ private:
         //wait untill all communications finish
         int err = MPI_Waitall(NumberOfCommunicationEvents, reqs.data(), stats.data());
 
-        if(err != MPI_SUCCESS)
+        if (err != MPI_SUCCESS)
+        {
             KRATOS_ERROR << "Error in mpi_communicator";
+        }
 
         MPI_Barrier(mComm);
 
-        for(int i = 0; i < mpi_size; i++)
+        for (int i = 0; i < mpi_size; i++)
         {
             if (i != mpi_rank && msgRecvSize[i])
             {
@@ -1459,13 +1494,15 @@ private:
                 serializer_buffer = (std::stringstream *)particleSerializer.pGetBuffer();
                 serializer_buffer->write(message[i], msgRecvSize[i]);
 
-                VariablesListType* tmp_mpVariables_list = nullptr;
+                VariablesListType* tmp_mpVariablesList = nullptr;
 
-                particleSerializer.load("VariableList", tmp_mpVariables_list);
+                particleSerializer.load("VariableList", tmp_mpVariablesList);
 
-                if(tmp_mpVariables_list != nullptr)
-                    delete tmp_mpVariables_list;
-                tmp_mpVariables_list = mpVariables_list;
+                if (tmp_mpVariablesList != nullptr)
+                {
+                    delete tmp_mpVariablesList;
+                }
+                tmp_mpVariablesList = mpVariablesList;
 
                 particleSerializer.load("ObjectList", RecvObjects[i].GetContainer());
             }
@@ -1474,13 +1511,17 @@ private:
         }
 
         // Free buffers
-        for(int i = 0; i < mpi_size; i++)
+        for (int i = 0; i < mpi_size; i++)
         {
-            if(msgRecvSize[i])
+            if (msgRecvSize[i])
+            {
                 free(message[i]);
+            }
 
-            if(msgSendSize[i])
+            if (msgSendSize[i])
+            {
                 free(mpi_send_buffer[i]);
+            }
         }
 
         delete [] message;
@@ -1507,16 +1548,13 @@ private:
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
 
-
     ///@}
     ///@name Un accessible methods
     ///@{
-
 
     ///@}
 
@@ -1527,11 +1565,9 @@ private:
 ///@name Type Definitions
 ///@{
 
-
 ///@}
 ///@name Input and output
 ///@{
-
 
 ///@}
 
