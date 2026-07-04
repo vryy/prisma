@@ -283,61 +283,53 @@ public:
 
     bool SumAll(int& rValue) const override
     {
-        int local_value = rValue;
-        MPI_Allreduce(&local_value, &rValue, 1, MPI_INT, MPI_SUM, mComm);
-        return true;
+        int ierr = MPI_Allreduce(MPI_IN_PLACE, &rValue, 1, MPI_INT, MPI_SUM, mComm);
+        return (ierr == MPI_SUCCESS);
     }
 
     bool SumAll(DataType& rValue) const override
     {
-        DataType local_value = rValue;
-        MPI_Allreduce(&local_value, &rValue, 1, MyMpiDataType, MPI_SUM, mComm);
-        return true;
+        int ierr = MPI_Allreduce(MPI_IN_PLACE, &rValue, 1, mMpiDataType, MPI_SUM, mComm);
+        return (ierr == MPI_SUCCESS);
     }
 
     bool MinAll(int& rValue) const override
     {
-        int local_value = rValue;
-        MPI_Allreduce(&local_value, &rValue, 1, MPI_INT, MPI_MIN, mComm);
-        return true;
+        int ierr = MPI_Allreduce(MPI_IN_PLACE, &rValue, 1, MPI_INT, MPI_MIN, mComm);
+        return (ierr == MPI_SUCCESS);
     }
 
     bool MinAll(DataType& rValue) const override
     {
-        DataType local_value = rValue;
-        MPI_Allreduce(&local_value, &rValue, 1, MyMpiDataType, MPI_MIN, mComm);
-        return true;
+        int ierr = MPI_Allreduce(MPI_IN_PLACE, &rValue, 1, mMpiDataType, MPI_MIN, mComm);
+        return (ierr == MPI_SUCCESS);
     }
 
     bool MaxAll(int& rValue) const override
     {
-        int local_value = rValue;
-        MPI_Allreduce(&local_value, &rValue, 1, MPI_INT, MPI_MAX, mComm);
-        return true;
+        int ierr = MPI_Allreduce(MPI_IN_PLACE, &rValue, 1, MPI_INT, MPI_MAX, mComm);
+        return (ierr == MPI_SUCCESS);
     }
 
     bool MaxAll(IndexType& rValue) const override
     {
-        IndexType local_value = rValue;
         MPI_Datatype ThisMPI_DataType = DataTypeToMpiDataType(rValue);
-        MPI_Allreduce(&local_value, &rValue, 1, ThisMPI_DataType, MPI_MAX, mComm);
-        return true;
+        int ierr = MPI_Allreduce(MPI_IN_PLACE, &rValue, 1, ThisMPI_DataType, MPI_MAX, mComm);
+        return (ierr == MPI_SUCCESS);
     }
 
 #ifdef _MSC_VER
     bool MaxAll(unsigned long& rValue) const override
     {
-        unsigned long local_value = rValue;
-        MPI_Allreduce(&local_value, &rValue, 1, MPI_UNSIGNED_LONG, MPI_MAX, mComm);
-        return true;
+        int ierr = MPI_Allreduce(MPI_IN_PLACE, &rValue, 1, MPI_UNSIGNED_LONG, MPI_MAX, mComm);
+        return (ierr == MPI_SUCCESS);
     }
 #endif
 
     bool MaxAll(DataType& rValue) const override
     {
-        double local_value = rValue;
-        MPI_Allreduce(&local_value, &rValue, 1, MPI_DOUBLE, MPI_MAX, mComm);
-        return true;
+        int ierr = MPI_Allreduce(MPI_IN_PLACE, &rValue, 1, MPI_DOUBLE, MPI_MAX, mComm);
+        return (ierr == MPI_SUCCESS);
     }
 
     bool SynchronizeElementalIds() override
