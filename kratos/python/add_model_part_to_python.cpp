@@ -678,48 +678,24 @@ void ModelPartRemoveMasterSlaveConstraintFromAllLevels2(TModelPartType& rModelPa
     rModelPart.RemoveMasterSlaveConstraintFromAllLevels(rMasterSlaveConstraint);
 }
 
-template<class TCommunicatorType>
-int CommunicatorSumAllInt(TCommunicatorType& rCommunicator, const int& value)
-{
-    int temp = value;
-    rCommunicator.SumAll(temp);
-    return temp;
-}
-
 template<class TCommunicatorType, typename TDataType>
-TDataType CommunicatorSumAllDouble(TCommunicatorType& rCommunicator, const TDataType& value)
+TDataType CommunicatorSumAll(TCommunicatorType& rCommunicator, const TDataType& value)
 {
     TDataType temp = value;
     rCommunicator.SumAll(temp);
     return temp;
 }
 
-template<class TCommunicatorType>
-int CommunicatorMinAllInt(TCommunicatorType& rCommunicator, const int& value)
-{
-    int temp = value;
-    rCommunicator.MinAll(temp);
-    return temp;
-}
-
 template<class TCommunicatorType, typename TDataType>
-TDataType CommunicatorMinAllDouble(TCommunicatorType& rCommunicator, const TDataType& value)
+TDataType CommunicatorMinAll(TCommunicatorType& rCommunicator, const TDataType& value)
 {
     TDataType temp = value;
     rCommunicator.MinAll(temp);
     return temp;
 }
 
-template<class TCommunicatorType>
-int CommunicatorMaxAllInt(TCommunicatorType& rCommunicator, const int& value)
-{
-    int temp = value;
-    rCommunicator.MaxAll(temp);
-    return temp;
-}
-
 template<class TCommunicatorType, typename TDataType>
-TDataType CommunicatorMaxAllDouble(TCommunicatorType& rCommunicator, const TDataType& value)
+TDataType CommunicatorMaxAll(TCommunicatorType& rCommunicator, const TDataType& value)
 {
     TDataType temp = value;
     rCommunicator.MaxAll(temp);
@@ -842,31 +818,32 @@ void AddModelPartToPythonImpl(const std::string& Prefix)
     .def("NeighbourIndices", NeighbourIndicesConst<CommunicatorType>, return_internal_reference<>())
     .def("SynchronizeNodalSolutionStepsData", &CommunicatorType::SynchronizeNodalSolutionStepsData)
     .def("SynchronizeDofs", &CommunicatorType::SynchronizeDofs)
-    .def("SumAll", CommunicatorSumAllInt<CommunicatorType> )
-    .def("SumAll", CommunicatorSumAllDouble<CommunicatorType, DataType> )
-    .def("MinAll", CommunicatorMinAllInt<CommunicatorType> )
-    .def("MinAll", CommunicatorMinAllDouble<CommunicatorType, DataType> )
-    .def("MaxAll", CommunicatorMaxAllInt<CommunicatorType> )
-    .def("MaxAll", CommunicatorMaxAllDouble<CommunicatorType, DataType> )
-    .def("LocalMesh", CommunicatorGetLocalMesh<CommunicatorType>, return_internal_reference<>() )
-    .def("LocalMesh", CommunicatorGetLocalMeshWithIndex<CommunicatorType>, return_internal_reference<>() )
-    .def("GhostMesh", CommunicatorGetGhostMesh<CommunicatorType>, return_internal_reference<>() )
-    .def("GhostMesh", CommunicatorGetGhostMeshWithIndex<CommunicatorType>, return_internal_reference<>() )
-    .def("InterfaceMesh", CommunicatorGetInterfaceMesh<CommunicatorType>, return_internal_reference<>() )
-    .def("InterfaceMesh", CommunicatorGetInterfaceMeshWithIndex<CommunicatorType>, return_internal_reference<>() )
-    .def("GetLastNodeId", CommunicatorGetLastNodeId<CommunicatorType> )
-    .def("GetLastElementId", CommunicatorGetLastElementId<CommunicatorType> )
-    .def("GetLastConditionId", CommunicatorGetLastConditionId<CommunicatorType> )
-    .def("AssembleCurrentData", CommunicatorAssembleCurrentData<CommunicatorType, int> )
-    .def("AssembleCurrentData", CommunicatorAssembleCurrentData<CommunicatorType, DataType> )
-    .def("AssembleCurrentData", CommunicatorAssembleCurrentData<CommunicatorType, array_1d<DataType,3> > )
-    .def("AssembleCurrentData", CommunicatorAssembleCurrentData<CommunicatorType, VectorType> )
-    .def("AssembleCurrentData", CommunicatorAssembleCurrentData<CommunicatorType, MatrixType> )
-    .def("AssembleNonHistoricalData", CommunicatorAssembleNonHistoricalData<CommunicatorType, int> )
-    .def("AssembleNonHistoricalData", CommunicatorAssembleNonHistoricalData<CommunicatorType, DataType> )
-    .def("AssembleNonHistoricalData", CommunicatorAssembleNonHistoricalData<CommunicatorType, array_1d<DataType,3> > )
-    .def("AssembleNonHistoricalData", CommunicatorAssembleNonHistoricalData<CommunicatorType, VectorType> )
-    .def("AssembleNonHistoricalData", CommunicatorAssembleNonHistoricalData<CommunicatorType, MatrixType> )
+    .def("SumAllInt", CommunicatorSumAll<CommunicatorType, int>)
+    .def("SumAllScalar", CommunicatorSumAll<CommunicatorType, DataType>)
+    .def("MinAllInt", CommunicatorMinAll<CommunicatorType, int>)
+    .def("MinAllScalar", CommunicatorMinAll<CommunicatorType, DataType>)
+    .def("MaxAllInt", CommunicatorMaxAll<CommunicatorType, int>)
+    .def("MaxAllScalar", CommunicatorMaxAll<CommunicatorType, DataType>)
+    .def("LocalMesh", CommunicatorGetLocalMesh<CommunicatorType>, return_internal_reference<>())
+    .def("LocalMesh", CommunicatorGetLocalMeshWithIndex<CommunicatorType>, return_internal_reference<>())
+    .def("GhostMesh", CommunicatorGetGhostMesh<CommunicatorType>, return_internal_reference<>())
+    .def("GhostMesh", CommunicatorGetGhostMeshWithIndex<CommunicatorType>, return_internal_reference<>())
+    .def("InterfaceMesh", CommunicatorGetInterfaceMesh<CommunicatorType>, return_internal_reference<>())
+    .def("InterfaceMesh", CommunicatorGetInterfaceMeshWithIndex<CommunicatorType>, return_internal_reference<>())
+    .def("GetLastNodeId", CommunicatorGetLastNodeId<CommunicatorType>)
+    .def("GetLastElementId", CommunicatorGetLastElementId<CommunicatorType>)
+    .def("GetLastConditionId", CommunicatorGetLastConditionId<CommunicatorType>)
+    .def("AssembleCurrentData", CommunicatorAssembleCurrentData<CommunicatorType, int>)
+    .def("AssembleCurrentData", CommunicatorAssembleCurrentData<CommunicatorType, DataType>)
+    .def("AssembleCurrentData", CommunicatorAssembleCurrentData<CommunicatorType, array_1d<DataType,3> >)
+    .def("AssembleCurrentData", CommunicatorAssembleCurrentData<CommunicatorType, VectorType>)
+    .def("AssembleCurrentData", CommunicatorAssembleCurrentData<CommunicatorType, MatrixType>)
+    .def("AssembleNonHistoricalData", CommunicatorAssembleNonHistoricalData<CommunicatorType, int>)
+    .def("AssembleNonHistoricalData", CommunicatorAssembleNonHistoricalData<CommunicatorType, DataType>)
+    .def("AssembleNonHistoricalData", CommunicatorAssembleNonHistoricalData<CommunicatorType, array_1d<DataType,3> >)
+    .def("AssembleNonHistoricalData", CommunicatorAssembleNonHistoricalData<CommunicatorType, VectorType>)
+    .def("AssembleNonHistoricalData", CommunicatorAssembleNonHistoricalData<CommunicatorType, MatrixType>)
+    .def(self_ns::str(self))
     ;
 
     PointerVectorSetPythonInterface<typename TModelPartType::MasterSlaveConstraintContainerType>::CreateInterface((Prefix + "MasterSlaveConstraintsArray").c_str());
@@ -991,10 +968,10 @@ void AddModelPartToPythonImpl(const std::string& Prefix)
     .def("GetCommunicator", ModelPartGetCommunicator<TModelPartType>, return_internal_reference<>())
     .def("Check", &TModelPartType::Check)
     .def("IsSubModelPart", &TModelPartType::IsSubModelPart)
-    .def("GetLastNodeId", &TModelPartType::GetLastNodeId )
-    .def("GetLastElementId", &TModelPartType::GetLastElementId )
-    .def("GetLastConditionId", &TModelPartType::GetLastConditionId )
-    .def("GetLastConstraintId", &TModelPartType::GetLastConstraintId )
+    .def("GetLastNodeId", &TModelPartType::GetLastNodeId)
+    .def("GetLastElementId", &TModelPartType::GetLastElementId)
+    .def("GetLastConditionId", &TModelPartType::GetLastConditionId)
+    .def("GetLastConstraintId", &TModelPartType::GetLastConstraintId)
     .add_property("MasterSlaveConstraints", ModelPartGetMasterSlaveConstraints1<TModelPartType>)
     // .def("GetMasterSlaveConstraint", ModelPartGetMasterSlaveConstraint1<TModelPartType>)
     // .def("GetMasterSlaveConstraints", ModelPartGetMasterSlaveConstraints1<TModelPartType>)
@@ -1015,7 +992,9 @@ void AddModelPartToPythonImpl(const std::string& Prefix)
     .def(self_ns::str(self))
     ;
 
-    class_<typename TModelPartType::DofsArrayType, boost::noncopyable>((Prefix + "DofsArrayType").c_str(), init<>());
+    class_<typename TModelPartType::DofsArrayType, boost::noncopyable>((Prefix + "DofsArrayType").c_str(), init<>())
+    .def(self_ns::str(self))
+    ;
 }
 
 void AddModelPartToPython()
