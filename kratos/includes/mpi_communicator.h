@@ -179,6 +179,12 @@ public:
     /** The type of nodal variables list. */
     typedef VariablesList<DataType> VariablesListType;
 
+    /** Compatible vector type. */
+    typedef typename MatrixVectorTypeSelector<DataType>::VectorType VectorType;
+
+    /** Compatible matrix type. */
+    typedef typename MatrixVectorTypeSelector<DataType>::MatrixType MatrixType;
+
     ///@}
     ///@name Life Cycle
     ///@{
@@ -303,14 +309,30 @@ public:
 
     bool MinAll(DataType& rValue) const override
     {
-        int ierr = MPI_Allreduce(MPI_IN_PLACE, &rValue, 1, mMpiDataType, MPI_MIN, mComm);
-        return (ierr == MPI_SUCCESS);
+        if constexpr (std::is_arithmetic<DataType>::value)
+        {
+            int ierr = MPI_Allreduce(MPI_IN_PLACE, &rValue, 1, mMpiDataType, MPI_MIN, mComm);
+            return (ierr == MPI_SUCCESS);
+        }
+        else
+        {
+            KRATOS_ERROR << "MinAll is only meaningful for integral type";
+            return false;
+        }
     }
 
     bool MaxAll(int& rValue) const override
     {
-        int ierr = MPI_Allreduce(MPI_IN_PLACE, &rValue, 1, MPI_INT, MPI_MAX, mComm);
-        return (ierr == MPI_SUCCESS);
+        if constexpr (std::is_arithmetic<DataType>::value)
+        {
+            int ierr = MPI_Allreduce(MPI_IN_PLACE, &rValue, 1, MPI_INT, MPI_MAX, mComm);
+            return (ierr == MPI_SUCCESS);
+        }
+        else
+        {
+            KRATOS_ERROR << "MinAll is only meaningful for integral type";
+            return false;
+        }
     }
 
     bool MaxAll(IndexType& rValue) const override
@@ -576,15 +598,15 @@ public:
         return true;
     }
 
-    bool SynchronizeVariable(Variable<Vector> const& ThisVariable) override
+    bool SynchronizeVariable(Variable<VectorType> const& ThisVariable) override
     {
-        SynchronizeVariable<Vector, DataType>(ThisVariable);
+        SynchronizeVariable<VectorType, DataType>(ThisVariable);
         return true;
     }
 
-    bool SynchronizeVariable(Variable<Matrix> const& ThisVariable) override
+    bool SynchronizeVariable(Variable<MatrixType> const& ThisVariable) override
     {
-        SynchronizeVariable<Matrix, DataType>(ThisVariable);
+        SynchronizeVariable<MatrixType, DataType>(ThisVariable);
         return true;
     }
 
@@ -614,15 +636,15 @@ public:
         return true;
     }
 
-    bool AssembleCurrentData(Variable<Vector> const& ThisVariable) override
+    bool AssembleCurrentData(Variable<VectorType> const& ThisVariable) override
     {
-        AssembleThisVariable<Vector, DataType>(ThisVariable);
+        AssembleThisVariable<VectorType, DataType>(ThisVariable);
         return true;
     }
 
-    bool AssembleCurrentData(Variable<Matrix> const& ThisVariable) override
+    bool AssembleCurrentData(Variable<MatrixType> const& ThisVariable) override
     {
-        AssembleThisVariable<Matrix, DataType>(ThisVariable);
+        AssembleThisVariable<MatrixType, DataType>(ThisVariable);
         return true;
     }
 
@@ -650,15 +672,15 @@ public:
         return true;
     }
 
-    bool AssembleNonHistoricalData(Variable<Vector> const& ThisVariable) override
+    bool AssembleNonHistoricalData(Variable<VectorType> const& ThisVariable) override
     {
-        AssembleThisNonHistoricalVariable<Vector, DataType>(ThisVariable);
+        AssembleThisNonHistoricalVariable<VectorType, DataType>(ThisVariable);
         return true;
     }
 
-    bool AssembleNonHistoricalData(Variable<Matrix> const& ThisVariable) override
+    bool AssembleNonHistoricalData(Variable<MatrixType> const& ThisVariable) override
     {
-        AssembleThisNonHistoricalVariable<Matrix, DataType>(ThisVariable);
+        AssembleThisNonHistoricalVariable<MatrixType, DataType>(ThisVariable);
         return true;
     }
 
@@ -688,15 +710,15 @@ public:
         return true;
     }
 
-    bool SynchronizeElementalNonHistoricalVariable(Variable<Vector> const& ThisVariable) override
+    bool SynchronizeElementalNonHistoricalVariable(Variable<VectorType> const& ThisVariable) override
     {
-        SynchronizeElementalNonHistoricalVariable<Vector, DataType>(ThisVariable);
+        SynchronizeElementalNonHistoricalVariable<VectorType, DataType>(ThisVariable);
         return true;
     }
 
-    bool SynchronizeElementalNonHistoricalVariable(Variable<Matrix> const& ThisVariable) override
+    bool SynchronizeElementalNonHistoricalVariable(Variable<MatrixType> const& ThisVariable) override
     {
-        SynchronizeElementalNonHistoricalVariable<Matrix, DataType>(ThisVariable);
+        SynchronizeElementalNonHistoricalVariable<MatrixType, DataType>(ThisVariable);
         return true;
     }
 
@@ -1015,9 +1037,12 @@ private:
     template<class TDataType, class TSendType>
     bool SynchronizeMinThisVariable(Variable<TDataType> const& ThisVariable)
     {
-        // PrintNodesId();
-        /*  KRATOS_WATCH("AssembleThisVariable")
-                KRATOS_WATCH(ThisVariable)*/
+        if constexpr (!std::is_arithmetic<DataType>::value)
+        {
+            KRATOS_ERROR << "SynchronizeMin is only working with integral data type";
+            return false;
+        }
+
         int rank;
         MPI_Comm_rank(mComm, &rank);
 
@@ -1031,6 +1056,7 @@ private:
 
         //first of all gather everything to the owner node
         for (unsigned int i_color = 0; i_color < neighbours_indices.size(); i_color++)
+        {
             if ((destination = neighbours_indices[i_color]) >= 0)
             {
                 NodesContainerType& r_local_nodes = this->InterfaceMesh(i_color).Nodes();
@@ -1076,8 +1102,10 @@ private:
 
                 delete [] send_buffer;
             }
+        }
 
         for (unsigned int i_color = 0; i_color < neighbours_indices.size(); i_color++)
+        {
             if ((destination = neighbours_indices[i_color]) >= 0)
             {
                 // Updating nodes
@@ -1088,7 +1116,8 @@ private:
                 for (auto i_node = r_ghost_nodes.begin(); i_node != r_ghost_nodes.end(); ++i_node)
                 {
                     TDataType& data = i_node->FastGetSolutionStepValue(ThisVariable);
-                    data = std::min(data, *reinterpret_cast<TDataType*> (receive_buffer[i_color] + position));
+                    if constexpr (std::is_arithmetic<DataType>::value)
+                        data = std::min(data, *reinterpret_cast<TDataType*> (receive_buffer[i_color] + position));
                     position += nodal_data_size;
                 }
 
@@ -1099,6 +1128,7 @@ private:
 
                 delete [] receive_buffer[i_color];
             }
+        }
 
         //MPI_Barrier(mComm);
 
@@ -1524,20 +1554,6 @@ private:
         return true;
     }
 
-    //       friend class boost::serialization::access;
-
-    //       template<class TArchive>
-    //    void serialize(TArchive & ThisArchive, const unsigned int ThisVersion)
-    //    {
-    // /*         ThisArchive & mName & mBufferSize & mCurrentIndex; */
-    //    }
-
-    //       void RemoveSolutionStepData(IndexType SolutionStepIndex, MeshType& ThisMesh)
-    //  {
-    //    for(NodeIterator i_node = ThisMesh.NodesBegin() ; i_node != ThisMesh.NodesEnd() ; ++i_node)
-    //      i_node->RemoveSolutionStepNodalData(SolutionStepIndex);
-    //  }
-
     ///@}
     ///@name Private  Access
     ///@{
@@ -1577,6 +1593,7 @@ template<> inline MPI_Datatype DataTypeToMpiDataType<unsigned long long>(const u
 template<> inline MPI_Datatype DataTypeToMpiDataType<float>(const float& Value) { return MPI_FLOAT; }
 template<> inline MPI_Datatype DataTypeToMpiDataType<double>(const double& Value) { return MPI_DOUBLE; }
 template<> inline MPI_Datatype DataTypeToMpiDataType<long double>(const long double& Value) { return MPI_LONG_DOUBLE; }
+template<> inline MPI_Datatype DataTypeToMpiDataType<std::complex<double> >(const std::complex<double>& Value) { return MPI_DOUBLE_COMPLEX; }
 
 } // namespace Kratos.
 
