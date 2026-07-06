@@ -12,6 +12,7 @@
 // System includes
 #include <array>
 #include <map>
+#include <set>
 #include <vector>
 
 // External includes
@@ -63,6 +64,53 @@ struct PythonUtils
         }
     }
 
+    /// Unpack a boost::python::list and append to std::set
+    template<typename TInputValueType, typename TOutputValueType = TInputValueType>
+    static void UnpackAndAppend(const boost::python::list& rValues, std::set<TOutputValueType>& values)
+    {
+        using namespace boost::python;
+
+        const int n = len(rValues);
+
+        for (int i = 0; i < n; ++i)
+        {
+            object item = rValues[i];
+            extract<TInputValueType> ex(item);
+
+            if (!ex.check())
+            {
+                KRATOS_ERROR << "List element " << i
+                             << " cannot be converted to " << DataTypeToString<TInputValueType>::Get();
+            }
+
+            values.insert(static_cast<TOutputValueType>(ex()));
+        }
+    }
+
+    /// Unpack a boost::python::list and append to a container.
+    /// The container shall perform implicit cast if needed.
+    template<typename TInputValueType, typename TContainerType>
+    static void UnpackAndAppend(const boost::python::list& rValues, TContainerType& values)
+    {
+        using namespace boost::python;
+
+        const int n = len(rValues);
+
+        for (int i = 0; i < n; ++i)
+        {
+            object item = rValues[i];
+            extract<TInputValueType> ex(item);
+
+            if (!ex.check())
+            {
+                KRATOS_ERROR << "List element " << i
+                             << " cannot be converted to " << DataTypeToString<TInputValueType>::Get();
+            }
+
+            values.push_back(ex());
+        }
+    }
+
     /// Unpack a boost::python::list to std::vector
     template<typename TInputValueType, typename TOutputValueType = TInputValueType>
     static void Unpack(const boost::python::list& rValues, std::vector<TOutputValueType>& values)
@@ -72,6 +120,18 @@ struct PythonUtils
         const int n = len(rValues);
         values.clear();
         values.reserve(n);
+
+        UnpackAndAppend<TInputValueType, TOutputValueType>(rValues, values);
+    }
+
+    /// Unpack a boost::python::list to std::set
+    template<typename TInputValueType, typename TOutputValueType = TInputValueType>
+    static void Unpack(const boost::python::list& rValues, std::set<TOutputValueType>& values)
+    {
+        using namespace boost::python;
+
+        const int n = len(rValues);
+        values.clear();
 
         UnpackAndAppend<TInputValueType, TOutputValueType>(rValues, values);
     }
