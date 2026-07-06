@@ -26,5 +26,7 @@ namespace Kratos
 {
 
 template class MPICommunicator<RealNode>;
+template class MPICommunicator<ComplexNode>;
+template class MPICommunicator<GComplexNode>;
 
 } // namespace Kratos.
