@@ -1449,6 +1449,48 @@ KRATOS_DEFINE_VARIABLE(WeakPointerVector< Condition >, NEIGHBOUR_CONDITIONS)
 template<> struct DataTypeToString<WeakPointerVector<Condition> > { static inline constexpr const char* Get() {return "WeakPointerVector<Condition>";} };
 template<> struct DataTypeToString<typename Condition::Pointer> { static inline constexpr const char* Get() {return "Condition::Pointer";} };
 
+#ifdef KRATOS_DEFINE_CONDITION_VARIABLE
+#undef KRATOS_DEFINE_CONDITION_VARIABLE
+#endif
+#define KRATOS_DEFINE_CONDITION_VARIABLE(name)                                    \
+    KRATOS_DEFINE_VARIABLE_IMPLEMENTATION(KRATOS_CORE, Condition::Pointer, name)  \
+    KRATOS_DEFINE_VARIABLE_IMPLEMENTATION(KRATOS_CORE, ComplexCondition::Pointer, COMPLEX##_##name)   \
+    KRATOS_DEFINE_VARIABLE_IMPLEMENTATION(KRATOS_CORE, GComplexCondition::Pointer, GCOMPLEX##_##name) \
+\
+template<typename T> struct KRATOS_EXPORT_MACRO(KRATOS_CORE) VariableSelector_##name;   \
+template<> struct KRATOS_EXPORT_MACRO(KRATOS_CORE) VariableSelector_##name<Condition> {static constexpr Variable<Condition::Pointer>& Get() {return name;}};  \
+template<> struct KRATOS_EXPORT_MACRO(KRATOS_CORE) VariableSelector_##name<ComplexCondition> {static constexpr Variable<ComplexCondition::Pointer>& Get() {return COMPLEX##_##name;}};    \
+template<> struct KRATOS_EXPORT_MACRO(KRATOS_CORE) VariableSelector_##name<GComplexCondition> {static constexpr Variable<GComplexCondition::Pointer>& Get() {return GCOMPLEX##_##name;}}; \
+
+#ifdef KRATOS_DEFINE_APPLICATION_CONDITION_VARIABLE
+#undef KRATOS_DEFINE_APPLICATION_CONDITION_VARIABLE
+#endif
+#define KRATOS_DEFINE_APPLICATION_CONDITION_VARIABLE(application, name)           \
+    KRATOS_API(application) extern Variable<Condition::Pointer> name;             \
+    KRATOS_API(application) extern Variable<ComplexCondition::Pointer> COMPLEX##_##name;          \
+    KRATOS_API(application) extern Variable<GComplexCondition::Pointer> GCOMPLEX##_##name;        \
+\
+template<typename T> struct KRATOS_API(application) VariableSelector_##name;    \
+template<> struct KRATOS_API(application) VariableSelector_##name<Condition> {static constexpr Variable<Condition::Pointer>& Get() {return name;}};     \
+template<> struct KRATOS_API(application) VariableSelector_##name<ComplexCondition> {static constexpr Variable<ComplexCondition::Pointer>& Get() {return COMPLEX##_##name;}};     \
+template<> struct KRATOS_API(application) VariableSelector_##name<GComplexCondition> {static constexpr Variable<GComplexCondition::Pointer>& Get() {return GCOMPLEX##_##name;}};  \
+
+#ifdef KRATOS_CREATE_CONDITION_VARIABLE
+#undef KRATOS_CREATE_CONDITION_VARIABLE
+#endif
+#define KRATOS_CREATE_CONDITION_VARIABLE(name)                    \
+    /*const*/ Kratos::Variable<Condition::Pointer> name(#name);   \
+    /*const*/ Kratos::Variable<ComplexCondition::Pointer> COMPLEX##_##name("COMPLEX_" #name);     \
+    /*const*/ Kratos::Variable<GComplexCondition::Pointer> GCOMPLEX##_##name("GCOMPLEX_" #name);  \
+
+#ifdef KRATOS_REGISTER_CONDITION_VARIABLE
+#undef KRATOS_REGISTER_CONDITION_VARIABLE
+#endif
+#define KRATOS_REGISTER_CONDITION_VARIABLE(name)                  \
+    KRATOS_REGISTER_VARIABLE_IMPLEMENTATION(name)               \
+    KRATOS_REGISTER_VARIABLE_IMPLEMENTATION(COMPLEX##_##name)   \
+    KRATOS_REGISTER_VARIABLE_IMPLEMENTATION(GCOMPLEX##_##name)  \
+
 } // namespace Kratos.
 
 #endif // KRATOS_CONDITION_H_INCLUDED  defined

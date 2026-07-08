@@ -1511,6 +1511,48 @@ KRATOS_DEFINE_VARIABLE(WeakPointerVector< Element >, NEIGHBOUR_ELEMENTS)
 template<> struct DataTypeToString<WeakPointerVector<Element> > { static inline constexpr const char* Get() {return "WeakPointerVector<Element>";} };
 template<> struct DataTypeToString<typename Element::Pointer> { static inline constexpr const char* Get() {return "Element::Pointer";} };
 
+#ifdef KRATOS_DEFINE_ELEMENT_VARIABLE
+#undef KRATOS_DEFINE_ELEMENT_VARIABLE
+#endif
+#define KRATOS_DEFINE_ELEMENT_VARIABLE(name)                                    \
+    KRATOS_DEFINE_VARIABLE_IMPLEMENTATION(KRATOS_CORE, Element::Pointer, name)  \
+    KRATOS_DEFINE_VARIABLE_IMPLEMENTATION(KRATOS_CORE, ComplexElement::Pointer, COMPLEX##_##name)   \
+    KRATOS_DEFINE_VARIABLE_IMPLEMENTATION(KRATOS_CORE, GComplexElement::Pointer, GCOMPLEX##_##name) \
+\
+template<typename T> struct KRATOS_EXPORT_MACRO(KRATOS_CORE) VariableSelector_##name;   \
+template<> struct KRATOS_EXPORT_MACRO(KRATOS_CORE) VariableSelector_##name<Element> {static constexpr Variable<Element::Pointer>& Get() {return name;}};  \
+template<> struct KRATOS_EXPORT_MACRO(KRATOS_CORE) VariableSelector_##name<ComplexElement> {static constexpr Variable<ComplexElement::Pointer>& Get() {return COMPLEX##_##name;}};    \
+template<> struct KRATOS_EXPORT_MACRO(KRATOS_CORE) VariableSelector_##name<GComplexElement> {static constexpr Variable<GComplexElement::Pointer>& Get() {return GCOMPLEX##_##name;}}; \
+
+#ifdef KRATOS_DEFINE_APPLICATION_ELEMENT_VARIABLE
+#undef KRATOS_DEFINE_APPLICATION_ELEMENT_VARIABLE
+#endif
+#define KRATOS_DEFINE_APPLICATION_ELEMENT_VARIABLE(application, name)           \
+    KRATOS_API(application) extern Variable<Element::Pointer> name;             \
+    KRATOS_API(application) extern Variable<ComplexElement::Pointer> COMPLEX##_##name;          \
+    KRATOS_API(application) extern Variable<GComplexElement::Pointer> GCOMPLEX##_##name;        \
+\
+template<typename T> struct KRATOS_API(application) VariableSelector_##name;    \
+template<> struct KRATOS_API(application) VariableSelector_##name<Element> {static constexpr Variable<Element::Pointer>& Get() {return name;}};     \
+template<> struct KRATOS_API(application) VariableSelector_##name<ComplexElement> {static constexpr Variable<ComplexElement::Pointer>& Get() {return COMPLEX##_##name;}};     \
+template<> struct KRATOS_API(application) VariableSelector_##name<GComplexElement> {static constexpr Variable<GComplexElement::Pointer>& Get() {return GCOMPLEX##_##name;}};  \
+
+#ifdef KRATOS_CREATE_ELEMENT_VARIABLE
+#undef KRATOS_CREATE_ELEMENT_VARIABLE
+#endif
+#define KRATOS_CREATE_ELEMENT_VARIABLE(name)                    \
+    /*const*/ Kratos::Variable<Element::Pointer> name(#name);   \
+    /*const*/ Kratos::Variable<ComplexElement::Pointer> COMPLEX##_##name("COMPLEX_" #name);     \
+    /*const*/ Kratos::Variable<GComplexElement::Pointer> GCOMPLEX##_##name("GCOMPLEX_" #name);  \
+
+#ifdef KRATOS_REGISTER_ELEMENT_VARIABLE
+#undef KRATOS_REGISTER_ELEMENT_VARIABLE
+#endif
+#define KRATOS_REGISTER_ELEMENT_VARIABLE(name)                  \
+    KRATOS_REGISTER_VARIABLE_IMPLEMENTATION(name)               \
+    KRATOS_REGISTER_VARIABLE_IMPLEMENTATION(COMPLEX##_##name)   \
+    KRATOS_REGISTER_VARIABLE_IMPLEMENTATION(GCOMPLEX##_##name)  \
+
 } // namespace Kratos.
 
 #endif // KRATOS_ELEMENT_H_INCLUDED  defined
