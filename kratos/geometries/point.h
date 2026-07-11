@@ -198,9 +198,10 @@ public:
         return *this;
     }
 
-    bool operator==(const Point& rOther)
+    Point& operator=(const CoordinatesArrayType& rOther)
     {
-        return std::equal(this->begin(), this->end(), rOther.begin());
+        CoordinatesArrayType::operator=(rOther);
+        return *this;
     }
 
     /// Assignment operator.
@@ -220,6 +221,11 @@ public:
         return *this;
 
         KRATOS_CATCH_LEVEL_4(*this)
+    }
+
+    bool operator==(const Point& rOther)
+    {
+        return std::equal(this->begin(), this->end(), rOther.begin());
     }
 
     ///@}
