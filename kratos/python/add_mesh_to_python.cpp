@@ -640,6 +640,7 @@ void AddMeshToPython(const std::string& Prefix)
     typedef typename MeshType::NodeType NodeType;
     typedef typename NodeType::DofType::DataType DataType;
 
+    typedef typename ElementType::ValueType ValueType;
     typedef typename ElementType::VectorType VectorType;
     typedef typename ElementType::MatrixType MatrixType;
 
@@ -647,7 +648,7 @@ void AddMeshToPython(const std::string& Prefix)
     ((Prefix+"GeometricalObject").c_str(), init<int>())
     ;
 
-    class_<ElementType, typename ElementType::Pointer, bases<typename ElementType::BaseType> >
+    auto element_interface = class_<ElementType, typename ElementType::Pointer, bases<typename ElementType::BaseType> >
     ((Prefix+"Element").c_str(), init<IndexType>())
     .add_property("Properties", GetPropertiesFromEntity<ElementType>, SetPropertiesForEntity<ElementType>)
     .def("__setitem__", SetValueHelperFunction< ElementType, Variable< array_1d<DataType, 3>  > >)
@@ -777,10 +778,21 @@ void AddMeshToPython(const std::string& Prefix)
     .def(self_ns::str(self))
     ;
 
+    if constexpr (!std::is_same<DataType, ValueType>::value)
+    {
+        element_interface
+        .def("__setitem__", SetValueHelperFunction< ElementType, Variable< ValueType > >)
+        .def("__getitem__", GetValueHelperFunction< ElementType, Variable< ValueType > >)
+        .def("Has", HasHelperFunction< ElementType, Variable< ValueType > >)
+        .def("SetValue", SetValueHelperFunction< ElementType, Variable< ValueType > >)
+        .def("GetValue", GetValueHelperFunction< ElementType, Variable< ValueType > >)
+        ;
+    }
+
     PointerVectorSetPythonInterface<typename MeshType::ElementsContainerType>::CreateInterface((Prefix+"ElementsArray").c_str())
     ;
 
-    class_<ConditionType, typename ConditionType::Pointer, bases<typename ConditionType::BaseType> >
+    auto condition_interface = class_<ConditionType, typename ConditionType::Pointer, bases<typename ConditionType::BaseType> >
     ((Prefix+"Condition").c_str(), init<int>())
     .add_property("Properties", GetPropertiesFromEntity<ConditionType>, SetPropertiesForEntity<ConditionType>)
     .def("__setitem__", SetValueHelperFunction< ConditionType, Variable< array_1d<DataType, 3>  > >)
@@ -880,6 +892,17 @@ void AddMeshToPython(const std::string& Prefix)
     .def("Check", &ConditionType::Check)
     .def(self_ns::str(self))
     ;
+
+    if constexpr (!std::is_same<DataType, ValueType>::value)
+    {
+        condition_interface
+        .def("__setitem__", SetValueHelperFunction< ConditionType, Variable< ValueType > >)
+        .def("__getitem__", GetValueHelperFunction< ConditionType, Variable< ValueType > >)
+        .def("Has", HasHelperFunction< ConditionType, Variable< ValueType > >)
+        .def("SetValue", SetValueHelperFunction< ConditionType, Variable< ValueType > >)
+        .def("GetValue", GetValueHelperFunction< ConditionType, Variable< ValueType > >)
+        ;
+    }
 
     PointerVectorSetPythonInterface<typename MeshType::ConditionsContainerType>::CreateInterface((Prefix+"ConditionsArray").c_str())
     ;
