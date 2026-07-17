@@ -14,11 +14,20 @@
 #define  KRATOS_DEFINE_H_INCLUDED
 
 /* System includes */
+#include <complex>
 #include <stdexcept>
 #include <sstream>
 #include <string>
-#include <complex>
 
+#if defined(__has_include)
+    #if __has_include(<version>)
+        #include <version>
+    #endif
+#endif
+
+#ifdef __cpp_lib_format
+    #include <format>
+#endif
 
 /* External includes */
 #include "boost/smart_ptr.hpp"

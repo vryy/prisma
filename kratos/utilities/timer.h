@@ -122,10 +122,35 @@ class KRATOS_API(KRATOS_CORE) Timer
         {
             if(mRepeatNumber != 0)
             {
+#ifndef __cpp_lib_format
                 if(GlobalElapsedTime <= 0.00)
-                    rOStream << mRepeatNumber << " \t" << mTotalElapsedTime << "s     \t" << mMaximumTime << "s     \t" << mMinimumTime << "s     \t" << mTotalElapsedTime/static_cast<double>(mRepeatNumber) << "s     \t" ;
+                    rOStream << mRepeatNumber << " \t"
+                             << mTotalElapsedTime << "s     \t"
+                             << mMaximumTime << "s     \t"
+                             << mMinimumTime << "s     \t"
+                             << mTotalElapsedTime/static_cast<double>(mRepeatNumber) << "s     \t";
                 else
-                    rOStream << mRepeatNumber << " \t" << mTotalElapsedTime << "s     \t" << mMaximumTime << "s     \t" << mMinimumTime << "s     \t" << mTotalElapsedTime/static_cast<double>(mRepeatNumber) << "s     \t" << (mTotalElapsedTime/GlobalElapsedTime)*100.00 << "%" ;
+                    rOStream << mRepeatNumber << " \t"
+                             << mTotalElapsedTime << "s     \t"
+                             << mMaximumTime << "s     \t"
+                             << mMinimumTime << "s     \t"
+                             << mTotalElapsedTime/static_cast<double>(mRepeatNumber) << "s     \t"
+                             << (mTotalElapsedTime/GlobalElapsedTime)*100.00 << "%";
+#else
+                if(GlobalElapsedTime <= 0.00)
+                    rOStream << std::format("{:<20}{:<20}{:<20}{:<20}{:<20}", mRepeatNumber,
+                            std::format("{:.6e}s", mTotalElapsedTime),
+                            std::format("{:.6e}s", mMaximumTime),
+                            std::format("{:.6e}s", mMinimumTime),
+                            std::format("{:.6e}s", mTotalElapsedTime/static_cast<double>(mRepeatNumber)));
+                else
+                    rOStream << std::format("{:<20}{:<20}{:<20}{:<20}{:<20}{:<20}", mRepeatNumber,
+                            std::format("{:.6e}s", mTotalElapsedTime),
+                            std::format("{:.6e}s", mMaximumTime),
+                            std::format("{:.6e}s", mMinimumTime),
+                            std::format("{:.6e}s", mTotalElapsedTime/static_cast<double>(mRepeatNumber)),
+                            std::format("{:.2e}%", (mTotalElapsedTime/GlobalElapsedTime)*100.00));
+#endif
             }
         }
     };
@@ -283,7 +308,11 @@ public:
     static void PrintTimingInformation(std::ostream& rOStream)
     {
         double global_elapsed_time = GetTime() - msGlobalStart;
+#ifndef __cpp_lib_format
         rOStream << "                                 Repeat # \tTotal     \tMax     \tMin     \tAverage     \t%" << std::endl;
+#else
+        rOStream << std::format("                                        {:<20}{:<20}{:<20}{:<20}{:<20}{:<20}", "Repeat #", "Total", "Max", "Min", "Average", "%") << std::endl;
+#endif
         for(ContainerType::iterator i_time_data = msTimeTable.begin() ; i_time_data != msTimeTable.end() ; i_time_data++)
         {
             rOStream << i_time_data->first;
@@ -408,7 +437,6 @@ private:
 ///@name Input and output
 ///@{
 
-
 /// input stream function
 //   inline std::istream& operator >> (std::istream& rIStream,
 //                  Timer& rThis){}
@@ -423,6 +451,7 @@ inline std::ostream& operator << (std::ostream& rOStream,
 
     return rOStream;
 }
+
 ///@}
 
 }  // namespace Kratos.
