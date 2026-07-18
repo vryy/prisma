@@ -96,7 +96,6 @@ public:
     /// Destructor.
     virtual ~VectorPythonInterface() {}
 
-
     ///@}
     ///@name Operators
     ///@{
@@ -342,7 +341,6 @@ private:
         return inner_prod(ThisContainer, OtherContainer);
     }
 
-
     static void
     base_append(TContainerType& container, object v)
     {
@@ -396,6 +394,4 @@ private:
 
 }  // namespace Kratos.
 
-#endif // KRATOS_VECTOR_PYTHON_INTERFACE_H_INCLUDED defined 
-
-
+#endif // KRATOS_VECTOR_PYTHON_INTERFACE_H_INCLUDED defined

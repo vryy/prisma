@@ -111,7 +111,6 @@ struct UblasSparseVectorModifier
     }
 };
 
-
 void  AddVectorialSpacesToPython()
 {
     ReadonlyVectorPythonInterface<zero_vector<double> >::CreateInterface("ZeroVector")
@@ -157,7 +156,6 @@ void  AddVectorialSpacesToPython()
     //.def(VectorVectorOperatorPython<vector<double>, mapped_vector<double>, vector<double> >())
     ;
 
-
     //VectorPythonInterface<mapped_vector<double>, UblasSparseVectorModifier<mapped_vector<double> > >::CreateInterface("SparseVector")
     //.def(init<mapped_vector<double>::size_type>())
     //.def("NonZeros", &mapped_vector<double>::nnz)
@@ -189,8 +187,6 @@ void  AddVectorialSpacesToPython()
     //.def(VectorVectorOperatorPython<coordinate_vector<double>, scalar_vector<double>, coordinate_vector<double> >())
     //.def(VectorVectorOperatorPython<coordinate_vector<double>, vector<double>, vector<double> >())
     //;
-
-
 
 // // 		MatrixFromPython<Matrix<double> >();
 

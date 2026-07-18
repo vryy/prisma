@@ -46,7 +46,6 @@ namespace Kratos
 namespace Python
 {
 
-using namespace boost::python;
 ///@name Kratos Globals
 ///@{
 
@@ -66,11 +65,11 @@ using namespace boost::python;
 ///@name Kratos Classes
 ///@{
 
-/// Short class definition.
-/** Detail class definition.
-*/
+/** This utility class supports to export access using variable to Python, such as
+ *      prop[YOUNG_MODULUS] = 2e6
+ */
 template<class TContainerType, class TVariableType>
-class VariableIndexingPython : public def_visitor<VariableIndexingPython<TContainerType, TVariableType> >
+class VariableIndexingPython : public boost::python::def_visitor<VariableIndexingPython<TContainerType, TVariableType> >
 {
 public:
     ///@name Type Definitions
@@ -91,7 +90,6 @@ public:
 
     /// Destructor.
     virtual ~VariableIndexingPython() {}
-
 
     ///@}
     ///@name Operators
@@ -139,7 +137,6 @@ public:
 
     ///@}
 
-
 private:
     ///@name Static Member Variables
     ///@{
@@ -159,7 +156,7 @@ private:
     ///@name Private Operations
     ///@{
 
-    static void DataValueContainerSetValue(TContainerType&  rData, TVariableType const& rV, typename TVariableType::Type const& rValue)
+    static void DataValueContainerSetValue(TContainerType& rData, TVariableType const& rV, typename TVariableType::Type const& rValue)
     {
         rData.SetValue(rV, rValue);
     }
@@ -185,9 +182,6 @@ private:
         return rData.Has(rV);
     }
 
-
-
-
     ///@}
     ///@name Private  Access
     ///@{
@@ -204,7 +198,6 @@ private:
 
     /// Assignment operator.
     VariableIndexingPython& operator=(const VariableIndexingPython& rOther);
-
 
     ///@}
 

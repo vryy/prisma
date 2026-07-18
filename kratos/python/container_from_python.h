@@ -234,6 +234,4 @@ public:
 
 }  // namespace Kratos.
 
-#endif // KRATOS_CONTAINER_FROM_PYTHON_H_INCLUDED  defined 
-
-
+#endif // KRATOS_CONTAINER_FROM_PYTHON_H_INCLUDED  defined

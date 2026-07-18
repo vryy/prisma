@@ -128,7 +128,6 @@ public:
 
     ///@}
 
-
 private:
     ///@name Static Member Variables
     ///@{
@@ -178,7 +177,6 @@ private:
 
     /// Assignment operator.
     VectorVectorAssignmentOperatorPython& operator=(const VectorVectorAssignmentOperatorPython& rOther);
-
 
     ///@}
 

@@ -24,7 +24,6 @@
 #define  KRATOS_VECTOR_VECTOR_OPERATOR_PYTHON_H_INCLUDED
 
 
-
 // System includes
 
 
@@ -86,7 +85,6 @@ public:
     /// Destructor.
     virtual ~VectorVectorOperatorPython() {}
 
-
     ///@}
     ///@name Operators
     ///@{
@@ -130,7 +128,6 @@ public:
 
 
     ///@}
-
 
 private:
     ///@name Static Member Variables
@@ -209,7 +206,6 @@ private:
 
     /// Assignment operator.
     VectorVectorOperatorPython& operator=(const VectorVectorOperatorPython& rOther);
-
 
     ///@}
 

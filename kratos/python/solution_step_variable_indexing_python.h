@@ -90,7 +90,6 @@ public:
     /// Destructor.
     virtual ~SolutionStepVariableIndexingPython() {}
 
-
     ///@}
     ///@name Operators
     ///@{
@@ -138,7 +137,6 @@ public:
 
 
     ///@}
-
 
 private:
     ///@name Static Member Variables
@@ -189,9 +187,6 @@ private:
     {
         return rData.SolutionStepsDataHas(rV);
     }
-
-
-
 
     ///@}
     ///@name Private  Access

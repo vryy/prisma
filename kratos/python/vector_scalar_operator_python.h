@@ -25,7 +25,6 @@
 #define  KRATOS_VECTOR_SCALAR_OPERATOR_PYTHON_H_INCLUDED
 
 
-
 // System includes
 
 
@@ -136,7 +135,6 @@ public:
 
 
     ///@}
-
 
 private:
     ///@name Static Member Variables
@@ -258,6 +256,7 @@ private:
 ///@}
 ///@name Input and output
 ///@{
+
 
 ///@}
 
