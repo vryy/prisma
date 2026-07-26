@@ -376,35 +376,37 @@ typename TModelPartType::MasterSlaveConstraintType::Pointer ConstraintUtilities<
     std::vector<typename DofType::Pointer> slave_dofs(rSlaveVariables.size());
     for (std::size_t i = 0; i < rSlaveVariables.size(); ++i)
     {
-        if (typeid(*rSlaveVariables[i]) == typeid(DoubleVariableType))
+        const auto& rSlaveVariable = *rSlaveVariables[i];
+        if (typeid(rSlaveVariable) == typeid(DoubleVariableType))
         {
             typename DoubleVariableType::Pointer var = boost::dynamic_pointer_cast<DoubleVariableType>(rSlaveVariables[i]);
             slave_dofs[i] = pSlaveNode->pGetDof(*var);
         }
-        else if (typeid(*rSlaveVariables[i]) == typeid(VariableComponentType))
+        else if (typeid(rSlaveVariable) == typeid(VariableComponentType))
         {
             typename VariableComponentType::Pointer var = boost::dynamic_pointer_cast<VariableComponentType>(rSlaveVariables[i]);
             slave_dofs[i] = pSlaveNode->pGetDof(*var);
         }
         else
-            KRATOS_ERROR << "The slave variable " << *rSlaveVariables[i] << " is not supported";
+            KRATOS_ERROR << "The slave variable " << rSlaveVariable << " is not supported";
     }
 
     std::vector<typename DofType::Pointer> master_dofs(rMasterVariables.size());
     for (std::size_t i = 0; i < rMasterVariables.size(); ++i)
     {
-        if (typeid(*rMasterVariables[i]) == typeid(DoubleVariableType))
+        const auto& rMasterVariable = *rMasterVariables[i];
+        if (typeid(rMasterVariable) == typeid(DoubleVariableType))
         {
             typename DoubleVariableType::Pointer var = boost::dynamic_pointer_cast<DoubleVariableType>(rMasterVariables[i]);
             master_dofs[i] = pMasterNode->pGetDof(*var);
         }
-        else if (typeid(*rMasterVariables[i]) == typeid(VariableComponentType))
+        else if (typeid(rMasterVariable) == typeid(VariableComponentType))
         {
             typename VariableComponentType::Pointer var = boost::dynamic_pointer_cast<VariableComponentType>(rMasterVariables[i]);
             master_dofs[i] = pMasterNode->pGetDof(*var);
         }
         else
-            KRATOS_ERROR << "The master variable " << *rMasterVariables[i] << " is not supported";
+            KRATOS_ERROR << "The master variable " << rMasterVariable << " is not supported";
     }
 
     assert(r_constant_vector.size() == rSlaveVariables.size());

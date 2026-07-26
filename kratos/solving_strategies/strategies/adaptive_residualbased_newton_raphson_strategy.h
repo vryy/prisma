@@ -326,7 +326,7 @@ public:
     // 2 -> printing linear solver data
     // 3 -> Print of debug informations:
     //      Echo of stiffness matrix, Dx, b...
-    void SetEchoLevel(int Level)
+    void SetEchoLevel(int Level) override
     {
         BaseType::mEchoLevel = Level;
         GetBuilderAndSolver()->SetEchoLevel(Level);

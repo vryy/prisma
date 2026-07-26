@@ -291,7 +291,7 @@ public:
     // 3 -> Print of debug informations:
     //      Echo of stiffness matrix, Dx, b...
 
-    void SetEchoLevel(int Level)
+    void SetEchoLevel(int Level) override
     {
         BaseType::SetEchoLevel(Level);
         GetBuilderAndSolver()->SetEchoLevel(Level);
@@ -305,7 +305,7 @@ public:
     operation to predict the solution ... if it is not called a trivial predictor is used in which the
     values of the solution step of interest are assumed equal to the old values
      */
-    void Predict()
+    void Predict() override
     {
         KRATOS_TRY
         //OPERATIONS THAT SHOULD BE DONE ONCE - internal check to avoid repetitions
@@ -492,7 +492,7 @@ public:
     }
     //*********************************************************************************
 
-    double GetResidualNorm() const
+    double GetResidualNorm() const override
     {
         if (TSparseSpace::Size(*mpb) != 0)
             return std::abs(TSparseSpace::TwoNorm(*mpb));

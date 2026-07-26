@@ -33,6 +33,30 @@ extern "C"
 namespace Kratos
 {
 
+template<typename TDataType>
+inline int WriteMatrixMarketMatrixEntry(FILE* f, int row, int col, TDataType val)
+{
+    return fprintf(f, "%d %d %22.16e\n", row, col, val);
+}
+
+template<typename TDataType>
+inline int WriteMatrixMarketMatrixEntry(FILE* f, int row, int col, const std::complex<TDataType>& val)
+{
+    return fprintf(f, "%d %d %22.16e %22.16e\n", row, col, val.real(), val.imag());
+}
+
+template<typename TDataType>
+inline int WriteMatrixMarketVectorEntry(FILE* f, TDataType val)
+{
+    return fprintf(f, "%22.16e\n", val);
+}
+
+template<typename TDataType>
+inline int WriteMatrixMarketVectorEntry(FILE* f, const std::complex<TDataType>& val)
+{
+    return fprintf(f, "%22.16e %22.16e\n", val.real(), val.imag());
+}
+
 // Matrix I/O routines
 
 template <typename CompressedMatrixType> inline bool ReadMatrixMarketMatrix(const char* FileName, CompressedMatrixType& M)
@@ -318,7 +342,7 @@ template <typename CompressedMatrixType> inline bool WriteMatrixMarketMatrix(con
                 int I = a_iterator.index1(), J = row_iterator.index2();
 
                 if (I >= J)
-                    if (fprintf(f, "%d %d %22.16e\n", I + 1, J + 1, *row_iterator) < 0)
+                    if (WriteMatrixMarketMatrixEntry(f, I + 1, J + 1, *row_iterator) < 0)
                     {
                         printf("WriteMatrixMarketMatrix(): unable to write data.\n");
                         fclose(f);
@@ -343,7 +367,7 @@ template <typename CompressedMatrixType> inline bool WriteMatrixMarketMatrix(con
             {
                 int I = a_iterator.index1(), J = row_iterator.index2();
 
-                if (fprintf(f, "%d %d %22.16e\n", I + 1, J + 1, *row_iterator) < 0)
+                if (WriteMatrixMarketMatrixEntry(f, I + 1, J + 1, *row_iterator) < 0)
                 {
                     printf("WriteMatrixMarketMatrix(): unable to write data.\n");
                     fclose(f);
@@ -469,7 +493,7 @@ template <typename VectorType> inline bool WriteMatrixMarketVector(const char* F
     mm_write_mtx_array_size(f, V.size(), 1);
 
     for (unsigned int i = 0; i < V.size(); i++)
-        if (fprintf(f, "%22.16e\n", V(i)) < 0)
+        if (WriteMatrixMarketVectorEntry(f, V(i)) < 0)
         {
             printf("WriteMatrixMarketVector(): unable to write data.\n");
             fclose(f);

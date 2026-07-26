@@ -165,6 +165,11 @@ elseif(KRATOS_MATRIX_VECTOR_ADAPTER STREQUAL "Eigen")
     target_compile_definitions(KratosCore PUBLIC KRATOS_USE_EIGEN_FOR_LINEAR_ALGEBRA)
 endif()
 
+target_compile_options(KratosCore PUBLIC
+    $<$<CXX_COMPILER_ID:Clang>:-Wno-undefined-var-template>
+    $<$<CXX_COMPILER_ID:AppleClang>:-Wno-undefined-var-template>
+)
+
 if(${CMAKE_SYSTEM_NAME} MATCHES "Android")
     # DO NOT INSTALL ON ANDROID
 else()

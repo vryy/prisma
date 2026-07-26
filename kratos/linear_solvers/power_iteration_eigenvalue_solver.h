@@ -130,7 +130,7 @@ public:
     void Solve(SparseMatrixType& K,
                SparseMatrixType& M,
                DenseVectorType& Eigenvalues,
-               DenseMatrixType& Eigenvectors)
+               DenseMatrixType& Eigenvectors) override
     {
 
         using boost::numeric::ublas::trans;

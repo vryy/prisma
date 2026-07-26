@@ -325,7 +325,7 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    std::string Info() const //override
+    std::string Info() const override
     {
         std::stringstream buffer;
         buffer << "AuxiliaryGlobalMasterSlaveConstraint # " << this->Id();

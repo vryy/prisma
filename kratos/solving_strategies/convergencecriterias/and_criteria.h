@@ -178,7 +178,7 @@ public:
         const TSystemMatrixType& A,
         const TSystemVectorType& Dx,
         const TSystemVectorType& b
-    )
+    ) override
     {
         mpfirst_criterion->InitializeSolutionStep(r_model_part,rDofSet,A,Dx,b);
         mpsecond_criterion->InitializeSolutionStep(r_model_part,rDofSet,A,Dx,b);

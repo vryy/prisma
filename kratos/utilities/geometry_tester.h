@@ -883,7 +883,7 @@ private:
         KRATOS_CATCH( "" )
     }
 
-    std::string GetIntegrationName(Geometry< RealNode >& geom, Geometry<RealNode>::IntegrationMethod ThisMethod)
+    std::string GetIntegrationName(Geometry<RealNode>& geom, Geometry<RealNode>::IntegrationMethod ThisMethod)
     {
         switch(ThisMethod)
         {
@@ -899,6 +899,8 @@ private:
             return std::string("GI_GAUSS_5");
         case GeometryData::IntegrationMethod::NumberOfIntegrationMethods :
             return std::string("NumberOfIntegrationMethods");
+        default:
+            return std::string("UnsupportedIntegrationMethod");
         };
 
         return std::string("UnknownIntegrationMethod");
@@ -958,6 +960,8 @@ private:
             return std::string("Kratos_Point3D");
         case GeometryData::KratosGeometryType::Kratos_Sphere3D1 :
             return std::string("Kratos_Sphere3D1");
+        default:
+            return std::string("UnsupportedGeometry");
         };
 
         return std::string("UnknownGeometry");
