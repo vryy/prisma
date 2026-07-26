@@ -82,11 +82,11 @@ namespace Kratos
 namespace Python
 {
 
-char const* greet()
+std::string greet()
 {
     std::stringstream header;
     header << "Hello, I am Kratos Multi-Physics " << KRATOS_VERSION <<" ;-)";
-    return header.str().c_str();
+    return header.str();
 }
 
 using namespace boost::python;
