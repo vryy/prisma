@@ -80,6 +80,8 @@ public:
 };
 #endif
 
+using namespace boost::numeric::ublas;
+
 ///@name Kratos Globals
 ///@{
 
@@ -337,18 +339,20 @@ public:
             KRATOS_ERROR << __FUNCTION__ << " is not implemented";
     }
 
-    static void Mult(const Matrix& rA, const VectorType& rX, VectorType& rY)
+    static void Mult(const MatrixType& rA, const VectorType& rX, VectorType& rY)
     {
-        axpy_prod(rA, rX, rY, true);
-    }
-
-    static void Mult(const compressed_matrix<DataType>& rA, const VectorType& rX, VectorType& rY)
-    {
+        if constexpr (std::is_same<MatrixType, compressed_matrix<DataType> >::value)
+        {
 #ifndef _OPENMP
-        axpy_prod(rA, rX, rY, true);
+            axpy_prod(rA, rX, rY, true);
 #else
-        ParallelProductNoAdd(rA, rX, rY);
+            ParallelProductNoAdd(rA, rX, rY);
 #endif
+        }
+        else
+        {
+            axpy_prod(rA, rX, rY, true);
+        }
     }
 
     template< class TOtherMatrixType >

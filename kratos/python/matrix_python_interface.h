@@ -48,6 +48,7 @@ namespace Python
 {
 
 using namespace boost::python;
+using namespace boost::numeric::ublas;
 
 ///@name Kratos Globals
 ///@{
@@ -88,13 +89,14 @@ public:
     typedef typename TMatrixType::difference_type difference_type;
     typedef ReadonlyMatrixPythonInterface<TMatrixType> BaseType;
 
+    typedef vector<data_type> VectorType;
+
     ///@}
     ///@name Life Cycle
     ///@{
 
     /// Destructor.
-    virtual ~MatrixPythonInterface() {}
-
+    ~MatrixPythonInterface() override {}
 
     ///@}
     ///@name Operators
@@ -145,7 +147,7 @@ public:
                 }
                 if (!py_elem_hdl.get()) break; // end of iteration
                 object py_elem_obj(py_elem_hdl);
-                extract<vector<data_type> > elem_proxy(py_elem_obj);
+                extract<VectorType> elem_proxy(py_elem_obj);
                 if (!elem_proxy.check()) return 0;
                 if (is_range) break; // in a range all elements are of the same type
             }
@@ -177,7 +179,7 @@ public:
             if (PyErr_Occurred()) throw_error_already_set();
             if (!py_elem_hdl.get()) break; // end of iteration
             object py_elem_obj(py_elem_hdl);
-            extract<vector<data_type> > elem_proxy(py_elem_obj);
+            extract<VectorType> elem_proxy(py_elem_obj);
             if(i == 0)
                 result.resize(elem_proxy().size(), size2, false);
             set_row(result, i, elem_proxy());
@@ -196,13 +198,13 @@ public:
         ThisMatrix(i,j) = Value;
     }
 
-    static void set_row(TMatrixType& ThisMatrix, index_type i, vector<data_type> const& Value)
+    static void set_row(TMatrixType& ThisMatrix, index_type i, VectorType const& Value)
     {
         fill_row(ThisMatrix, i, Value, TFunctorType());
     }
 
 // 			static class_<TMatrixType, boost::shared_ptr<TMatrixType> > CreateInterface(std::string const& Name)
-    static class_<TMatrixType > CreateInterface(std::string const& Name)
+    static class_<TMatrixType> CreateInterface(std::string const& Name)
     {
 // 				boost::python::converter::registry::push_back(
 // 					&convertible,
@@ -210,7 +212,7 @@ public:
 // 					boost::python::type_id<TMatrixType>());
 
 //  				return class_<TMatrixType, boost::shared_ptr<TMatrixType> >(Name.c_str())
-        return class_<TMatrixType >(Name.c_str())
+        return class_<TMatrixType>(Name.c_str())
                .def(init<TMatrixType>())
                /* 					.def("Resize", &BaseType::resize1) */
                /* 					.def("Resize", &BaseType::resize2) */
@@ -218,24 +220,15 @@ public:
                .def("Size2", &TMatrixType::size2)
                .def("__setitem__", &set_item)
                .def("__getitem__", &BaseType::get_item)
-               .def(MatrixVectorOperatorPython<TMatrixType, vector<data_type> >())
-// 					.def(MatrixVectorOperatorPython<TMatrixType, zero_vector<double>, vector<double> >())
-// 					.def(MatrixVectorOperatorPython<TMatrixType, unit_vector<double>, vector<double> >())
-// 					.def(MatrixVectorOperatorPython<TMatrixType, scalar_vector<double>, vector<double> >())
-// 					.def(MatrixVectorOperatorPython<TMatrixType, mapped_vector<double> >())
-// 					.def(MatrixVectorOperatorPython<TMatrixType, compressed_vector<double> >())
-// 					.def(MatrixVectorOperatorPython<TMatrixType, coordinate_vector<double> >())
+               .def(MatrixVectorOperatorPython<TMatrixType, VectorType>())
                .def(MatrixMatrixOperatorPython<TMatrixType, TMatrixType, TMatrixType>())
                .def(self_ns::str(self))
-
                ;
-
     }
-
 
 private:
 
-    static void fill_row(TMatrixType& ThisMatrix, index_type i, vector<data_type> const& Value, row_major const& dummy)
+    static void fill_row(TMatrixType& ThisMatrix, index_type i, VectorType const& Value, row_major const& dummy)
     {
         if (i >= ThisMatrix.size1())
         {
@@ -247,7 +240,7 @@ private:
             ThisMatrix(i,j) = Value[j];
     }
 
-    static void fill_row(TMatrixType& ThisMatrix, index_type i, vector<data_type> const& Value, upper const& dummy)
+    static void fill_row(TMatrixType& ThisMatrix, index_type i, VectorType const& Value, upper const& dummy)
     {
         if (i >= ThisMatrix.size1())
         {
@@ -259,7 +252,7 @@ private:
             ThisMatrix(i,j) = Value[j];
     }
 
-    static void fill_row(TMatrixType& ThisMatrix, index_type i, vector<data_type> const& Value, lower const& dummy)
+    static void fill_row(TMatrixType& ThisMatrix, index_type i, VectorType const& Value, lower const& dummy)
     {
         if (i >= ThisMatrix.size1())
         {
@@ -309,11 +302,8 @@ private:
 
 ///@}
 
-
 }  // namespace Python.
 
 }  // namespace Kratos.
 
-#endif // KRATOS_MATRIX_PYTHON_INTERFACE_H_INCLUDED defined 
-
-
+#endif // KRATOS_MATRIX_PYTHON_INTERFACE_H_INCLUDED defined

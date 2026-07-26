@@ -46,6 +46,8 @@ namespace Kratos
 namespace Python
 {
 
+using namespace boost::numeric::ublas;
+
 ///@name Kratos Globals
 ///@{
 

@@ -89,7 +89,6 @@ public:
     /// Destructor.
     virtual ~ReadonlyMatrixPythonInterface() {}
 
-
     ///@}
     ///@name Operators
     ///@{
@@ -99,9 +98,7 @@ public:
     ///@name Operations
     ///@{
 
-
-    static
-    data_type get_item(TMatrixType const& ThisMatrix, tuple index)
+    static data_type get_item(TMatrixType const& ThisMatrix, tuple index)
     {
         unsigned int i = extract<index_type>(index[0]);
         unsigned int j = extract<index_type>(index[1]);
@@ -114,30 +111,14 @@ public:
         return ThisMatrix(i,j);
     }
 
-    /*       static  */
-    /*       void resize1(TMatrixType& ThisMatrix, size_type NewSize) */
-    /*       {	 */
-    /*           ThisMatrix.resize(NewSize, NewSize); */
-    /*       } */
-
-    /*       static  */
-    /*       void resize2(TMatrixType& ThisMatrix, size_type NewSize1, size_type NewSize2) */
-    /*       {	 */
-    /*           ThisMatrix.resize(NewSize1, NewSize2); */
-    /*       } */
-
-
-
     static class_<TMatrixType> CreateInterface(std::string const& Name)
     {
         return class_<TMatrixType>(Name.c_str())
                .def(init<TMatrixType>())
-               //.def("Resize", &resize1)
-               //.def("Resize", &resize2)
                .def("Size1", &TMatrixType::size1)
                .def("Size2", &TMatrixType::size2)
                .def("__getitem__", &get_item)
-//	  .def(self_ns::str(self))
+	           .def(self_ns::str(self))
                ;
     }
 
@@ -179,11 +160,8 @@ public:
 
 ///@}
 
-
 }  // namespace Python.
 
 }  // namespace Kratos.
 
-#endif // KRATOS_READONLY_MATRIX_PYTHON_INTERFACE_H_INCLUDED defined 
-
-
+#endif // KRATOS_READONLY_MATRIX_PYTHON_INTERFACE_H_INCLUDED defined

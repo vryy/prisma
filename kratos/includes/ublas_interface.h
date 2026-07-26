@@ -143,10 +143,6 @@ namespace Kratos
     template<> struct DataTypeToString<boost::numeric::ublas::matrix<double> > { static inline constexpr const char* Get() {return "boost::numeric::ublas::matrix<double>";} };
     template<> struct DataTypeToString<boost::numeric::ublas::matrix<std::complex<double> > > { static inline constexpr const char* Get() {return "boost::numeric::ublas::matrix<std::complex<double>>";} };
 
-
-    // declare namespace usage to avoid downstream explosion of compilation errors
-    using namespace boost::numeric::ublas;
-
 ///@}
 ///@name  Enum's
 ///@{
