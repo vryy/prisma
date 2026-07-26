@@ -29,7 +29,7 @@
 
 // Project includes
 #include "includes/define.h"
-#include "includes/ublas_interface.h"
+#include "includes/matrix_vector_adapter.h"
 #include "containers/array_1d.h"
 #include "python/add_vector_to_python.h"
 #include "python/vector_python_interface.h"

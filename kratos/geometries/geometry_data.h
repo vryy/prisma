@@ -14,7 +14,7 @@
 // External includes
 
 // Project includes
-#include "includes/ublas_interface.h"
+#include "includes/matrix_vector_adapter.h"
 #include "integration/integration_point.h"
 
 

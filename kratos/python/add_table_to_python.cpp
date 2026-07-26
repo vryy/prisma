@@ -29,7 +29,6 @@
 
 // Project includes
 #include "includes/define.h"
-#include "includes/ublas_interface.h"
 #include "includes/table.h"
 
 
@@ -48,7 +47,6 @@ DoubleTableType::result_type TableGetNearestValue(DoubleTableType& ThisTable, Do
     return ThisTable.GetNearestValue(X);
 }
 
-
 void  AddTableToPython()
 {
     class_<DoubleTableType, DoubleTableType::Pointer>("PiecewiseLinearTable")
@@ -64,4 +62,3 @@ void  AddTableToPython()
 }  // namespace Python.
 
 } // Namespace Kratos
-

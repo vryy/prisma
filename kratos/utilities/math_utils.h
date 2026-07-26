@@ -27,7 +27,7 @@
 
 // Project includes
 #include "includes/define.h"
-#include "includes/ublas_interface.h"
+#include "includes/matrix_vector_adapter.h"
 #include "includes/kratos_exception.h"
 
 namespace Kratos

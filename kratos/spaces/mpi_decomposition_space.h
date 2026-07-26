@@ -49,7 +49,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define  KRATOS__MPI_DECOMPOSITION_SPACE_H_INCLUDED
 
 
-
 // System includes
 #include <string>
 #include <iostream>
@@ -61,7 +60,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 // Project includes
 #include "includes/define.h"
-#include "includes/ublas_interface.h"
+#include "includes/matrix_vector_adapter.h"
 #include "mpi.h"
 
 

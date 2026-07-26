@@ -61,7 +61,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 // Project includes
 #include "includes/define.h"
-#include "includes/ublas_interface.h"
+#include "includes/matrix_vector_adapter.h"
 
 
 namespace Kratos
@@ -101,14 +101,14 @@ public:
 
     typedef TDataType DataType;
 
-    typedef matrix<TDataType> MatrixType;
+    typedef DenseMatrix<TDataType> MatrixType;
 
-    typedef vector<TDataType> VectorType;
+    typedef DenseVector<TDataType> VectorType;
 
     typedef std::size_t IndexType;
 
-    typedef typename boost::shared_ptr< TMatrixType > MatrixPointerType;
-    typedef typename boost::shared_ptr< TVectorType > VectorPointerType;
+    typedef typename boost::shared_ptr<MatrixType> MatrixPointerType;
+    typedef typename boost::shared_ptr<VectorType> VectorPointerType;
 
     ///@}
     ///@name Life Cycle
@@ -131,11 +131,11 @@ public:
     ///@{
     static MatrixPointerType CreateEmptyMatrixPointer()
     {
-        return MatrixPointerType( new TMatrixType() );
+        return MatrixPointerType( new MatrixType() );
     }
     static VectorPointerType CreateEmptyVectorPointer()
     {
-        return VectorPointerType( new TVectorType() );
+        return VectorPointerType( new VectorType() );
     }
 
 

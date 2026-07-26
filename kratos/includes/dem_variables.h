@@ -11,18 +11,8 @@
 //
 
 
-
-
-
-
-
-
-
-
-
 #if !defined(KRATOS_DEM_VARIABLES_H_INCLUDED )
 #define  KRATOS_DEM_VARIABLES_H_INCLUDED
-
 
 
 // System includes
@@ -33,9 +23,9 @@
 
 // Project includes
 #include "includes/define.h"
+#include "includes/matrix_vector_adapter.h"
 #include "containers/variable_component.h"
 #include "containers/vector_component_adaptor.h"
-#include "includes/ublas_interface.h"
 #include "containers/array_1d.h"
 
 #undef  KRATOS_EXPORT_MACRO

@@ -18,7 +18,7 @@
 
 // Project includes
 #include "includes/serializer.h"
-#include "includes/ublas_interface.h"
+#include "includes/matrix_vector_adapter.h"
 
 namespace Kratos
 {

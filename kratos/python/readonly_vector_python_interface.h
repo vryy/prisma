@@ -35,6 +35,7 @@
 
 // Project includes
 #include "includes/define.h"
+#include "includes/matrix_vector_adapter.h"
 
 
 namespace Kratos
@@ -133,7 +134,6 @@ public:
         return object(result);
     }
 
-
     static void
     set_slice(TContainerType& container, index_type from,
               index_type to, data_type const& v)
@@ -156,7 +156,6 @@ public:
     delete_slice(TContainerType& container, index_type from, index_type to)
     {
     }
-
 
     static void
     append(TContainerType& container, data_type const& v)
@@ -223,6 +222,4 @@ public:
 
 }  // namespace Kratos.
 
-#endif // KRATOS_READONLY_VECTOR_PYTHON_INTERFACE_H_INCLUDED defined 
-
-
+#endif // KRATOS_READONLY_VECTOR_PYTHON_INTERFACE_H_INCLUDED defined

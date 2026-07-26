@@ -167,6 +167,14 @@ if(ADOL_C_FOUND)
     message(STATUS "Kratos is linked with ADOLC")
 endif()
 
+if(KRATOS_MATRIX_VECTOR_ADAPTER STREQUAL "Ublas")
+    target_compile_definitions(KratosCore PUBLIC KRATOS_USE_UBLAS_FOR_LINEAR_ALGEBRA)
+elseif(KRATOS_MATRIX_VECTOR_ADAPTER STREQUAL "AMatrix")
+    target_compile_definitions(KratosCore PUBLIC KRATOS_USE_AMATRIX_FOR_LINEAR_ALGEBRA)
+elseif(KRATOS_MATRIX_VECTOR_ADAPTER STREQUAL "Eigen")
+    target_compile_definitions(KratosCore PUBLIC KRATOS_USE_EIGEN_FOR_LINEAR_ALGEBRA)
+endif()
+
 if(${CMAKE_SYSTEM_NAME} MATCHES "Android")
     # DO NOT INSTALL ON ANDROID
 else()

@@ -13,7 +13,7 @@
 #if !defined(KRATOS_MEMORY_UTILS_H_INCLUDED )
 #define  KRATOS_MEMORY_UTILS_H_INCLUDED
 
-#include "includes/ublas_interface.h"
+#include "includes/matrix_vector_adapter.h"
 
 namespace Kratos
 {

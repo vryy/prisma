@@ -34,16 +34,13 @@
 
 // Project includes
 #include "includes/define.h"
-#include "includes/ublas_interface.h"
+#include "includes/matrix_vector_adapter.h"
 #include "geometries/point.h"
 
 
 namespace Kratos
 {
 
-
-
 }  // namespace Kratos.
 
-#endif // KRATOS_KRATOS_H_INCLUDED  defined 
-
+#endif // KRATOS_KRATOS_H_INCLUDED  defined

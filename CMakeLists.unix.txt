@@ -199,6 +199,20 @@ endif()
 
 ################################
 
+##options for matrix and vector backend
+
+set(KRATOS_MATRIX_VECTOR_ADAPTER "Ublas" CACHE STRING "Use Ublas for definition of Matrix and Vector")
+set_property(CACHE KRATOS_MATRIX_VECTOR_ADAPTER PROPERTY STRINGS "Ublas" "AMatrix" "Eigen")
+if(KRATOS_MATRIX_VECTOR_ADAPTER STREQUAL "Ublas")
+    message(STATUS "Using uBLAS backend for Matrix and Vector definition")
+elseif(KRATOS_MATRIX_VECTOR_ADAPTER STREQUAL "AMatrix")
+    message(STATUS "Using AMatrix backend for Matrix and Vector definition")
+elseif(KRATOS_MATRIX_VECTOR_ADAPTER STREQUAL "Eigen")
+    message(STATUS "Using Eigen backend for Matrix and Vector definition")
+endif()
+
+################################
+
 ##find all dependencies
 
 ##*****************************

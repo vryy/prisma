@@ -29,7 +29,7 @@
 
 // Project includes
 #include "includes/define.h"
-#include "includes/ublas_interface.h"
+#include "includes/matrix_vector_adapter.h"
 #include "python/add_sparse_vector_to_python.h"
 #include "python/vector_python_interface.h"
 #include "python/vector_scalar_operator_python.h"
@@ -91,10 +91,8 @@ struct UblasSparseVectorModifier
     }
 };
 
-
 void  AddSparseVectorToPython()
 {
-
     VectorPythonInterface<mapped_vector<double>, UblasSparseVectorModifier<mapped_vector<double> > >::CreateInterface("SparseVector")
     .def(init<mapped_vector<double>::size_type>())
     .def("NonZeros", &mapped_vector<double>::nnz)
@@ -126,13 +124,8 @@ void  AddSparseVectorToPython()
     .def(VectorVectorOperatorPython<coordinate_vector<double>, scalar_vector<double>, coordinate_vector<double> >())
     .def(VectorVectorOperatorPython<coordinate_vector<double>, vector<double>, vector<double> >())
     ;
-
-
-
-
 }
 
 }  // namespace Python.
 
 } // Namespace Kratos
-
