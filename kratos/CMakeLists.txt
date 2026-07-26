@@ -1,15 +1,5 @@
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-#include cotire (CMake module to hep generating precompiled header to speed-up the build process)
-# include(cotire)
-
-# ## add the include directories needed for the compilation
-# message("current dir = " ${CMAKE_CURRENT_SOURCE_DIR})
-# include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/sources )
-# include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/container )
-# include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/python )
-
-
 ## generate variables with the sources
 set( KRATOS_CORE_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/containers/variable_data.cpp
