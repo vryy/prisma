@@ -109,6 +109,19 @@ public:
     ///@{
 
     /**
+     * @brief Empty constructor.
+     */
+    BuilderAndSolver()
+    {
+        if constexpr (!std::is_same<TDataType, typename ModelPartType::DataType>::value)
+        {
+            static_assert(always_false<TDataType>::value,
+                          "TDataType does not match ModelPartType::DataType. "
+                          "See instantiation trace for actual type.");
+        }
+    }
+
+    /**
      * @brief Default constructor.
      * @param pNewLinearSystemSolver The linear solver for the system of equations
      */
