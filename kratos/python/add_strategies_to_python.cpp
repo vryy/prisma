@@ -295,7 +295,14 @@ namespace Kratos
             class_< ResidualBasedEliminationBuilderAndSolverType, bases<BuilderAndSolverType>, boost::noncopyable > ((Prefix+"ResidualBasedEliminationBuilderAndSolver").c_str(), init< typename LinearSolverType::Pointer > ());
 
             typedef ResidualBasedEliminationBuilderAndSolverDeactivation< SparseSpaceType, LocalSpaceType, LinearSolverType, TModelPartType > ResidualBasedEliminationBuilderAndSolverDeactivationType;
-            class_< ResidualBasedEliminationBuilderAndSolverDeactivationType, bases<BuilderAndSolverType>, boost::noncopyable > ((Prefix+"ResidualBasedEliminationBuilderAndSolverDeactivation").c_str(), init< typename LinearSolverType::Pointer > ());
+            class_< ResidualBasedEliminationBuilderAndSolverDeactivationType,
+                    typename ResidualBasedEliminationBuilderAndSolverDeactivationType::Pointer,
+                    bases<BuilderAndSolverType>,
+                    boost::noncopyable
+                  > (
+                        (Prefix+"ResidualBasedEliminationBuilderAndSolverDeactivation").c_str(),
+                        init< typename LinearSolverType::Pointer > ()
+                    );
 
 #ifdef KRATOS_NONSQUARE_SUPPORT
             typedef ResidualBasedEliminationBuilderAndSolverDeactivationNonSquare< SparseSpaceType, LocalSpaceType, LinearSolverType, TModelPartType > ResidualBasedEliminationBuilderAndSolverDeactivationNonSquareType;
