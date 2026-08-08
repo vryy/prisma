@@ -1,24 +1,22 @@
+//    |  /           |
+//    ' /   __| _` | __|  _ \   __|
+//    . \  |   (   | |   (   |\__ `
+//   _|\_\_|  \__,_|\__|\___/ ____/
+//                   Multi-Physics
 //
-//   Project Name:        Kratos
-//   Last Modified by:    $Author: rrossi $
-//   Date:                $Date: 2007-03-06 10:30:33 $
-//   Revision:            $Revision: 1.2 $
+//  License:         BSD License
+//                   Kratos default license: kratos/license.txt
 //
+//  Main authors:    Pooyan Dadvand
+//                   Riccardo Rossi
 //
-
 
 #if !defined(KRATOS_PROCESS_H_INCLUDED )
 #define  KRATOS_PROCESS_H_INCLUDED
 
-
-
 // System includes
-#include <string>
-#include <iostream>
-
 
 // External includes
-
 
 // Project includes
 #include "includes/define.h"
@@ -30,13 +28,16 @@ namespace Kratos
 ///@name Kratos Classes
 ///@{
 
-/// The base class for all processes in Kratos.
-/** The process is the base class for all processes and defines a simple interface for them.
+/**
+ * @brief The base class for all processes in Kratos.
+ * @details The process is the base class for all processes and defines a simple interface for them.
     Execute method is used to execute the Process algorithms. While the parameters of this method
   can be very different from one Process to other there is no way to create enough overridden
   versions of it. For this reason this method takes no argument and all Process parameters must
   be passed at construction time. The reason is that each constructor can take different set of
   argument without any dependency to other processes or the base Process class.
+  @author Pooyan Dadvand
+  @author Riccardo Rossi
 */
 class Process : public Flags
 {
@@ -56,8 +57,7 @@ public:
     Process(Flags options) : Flags( options ) {}
 
     /// Destructor.
-    virtual ~Process() {}
-
+    ~Process() override {}
 
     ///@}
     ///@name Operators
@@ -69,104 +69,104 @@ public:
         Execute();
     }
 
-
     ///@}
     ///@name Operations
     ///@{
 
-
-    /// Execute method is used to execute the Process algorithms.
+    /**
+     * @brief Execute method is used to execute the Process algorithms.
+     */
     virtual void Execute() {}
 
-    /// this function is designed for being called at the beginning of the computations
-    /// right after reading the model and the groups
+    /**
+     * @brief This function is designed for being called at the beginning of the computations
+     * right after reading the model and the groups
+     */
     virtual void ExecuteInitialize()
     {
     }
 
-    /// this function is designed for being execute once before the solution loop but after all of the
-    /// solvers where built
+    /**
+     * @brief This function is designed for being execute once before the solution loop but after
+     * all of the solvers where built
+     */
     virtual void ExecuteBeforeSolutionLoop()
     {
     }
 
-
-    /// this function will be executed at every time step BEFORE performing the solve phase
+    /**
+     * @brief This function will be executed at every time step BEFORE performing the solve phase
+     */
     virtual void ExecuteInitializeSolutionStep()
     {
     }
 
-    /// this function will be executed at every time step AFTER performing the solve phase
+    /**
+     * @brief This function will be executed at every time step AFTER performing the solve phase
+     */
     virtual void ExecuteFinalizeSolutionStep()
     {
     }
 
-
-    /// this function will be executed at every time step BEFORE  writing the output
+    /**
+     * @brief This function will be executed at every time step BEFORE  writing the output
+     */
     virtual void ExecuteBeforeOutputStep()
     {
     }
 
-
-    /// this function will be executed at every time step AFTER writing the output
+    /**
+     * @brief This function will be executed at every time step AFTER writing the output
+     */
     virtual void ExecuteAfterOutputStep()
     {
     }
 
-
-    /// this function is designed for being called at the end of the computations
-    /// right after reading the model and the groups
+    /**
+     * @brief This function is designed for being called at the end of the computations
+     */
     virtual void ExecuteFinalize()
     {
     }
-
 
     ///@}
     ///@name Access
     ///@{
 
-
     ///@}
     ///@name Inquiry
     ///@{
-
 
     ///@}
     ///@name Input and output
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const override
     {
         return "Process";
     }
 
     /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << Info();
     }
 
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
     }
-
 
     ///@}
     ///@name Friends
     ///@{
 
-
     ///@}
-
 
 private:
     ///@name Static Member Variables
     ///@{
-
-
-
 
     ///@}
     ///@name Un accessible methods
@@ -178,7 +178,6 @@ private:
     /// Copy constructor.
     //Process(Process const& rOther);
 
-
     ///@}
 
 }; // Class Process
@@ -187,7 +186,6 @@ private:
 
 ///@name Type Definitions
 ///@{
-
 
 ///@}
 ///@name Input and output
