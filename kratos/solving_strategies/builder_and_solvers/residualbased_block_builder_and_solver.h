@@ -198,6 +198,8 @@ public:
     {
         KRATOS_TRY
 
+        Timer::Start("Build");
+
         #ifdef ENABLE_LOG
         std::stringstream ss;
         ss << "residualbased_block_builder_and_solver_" << r_model_part.Name() << ".log";
@@ -431,6 +433,8 @@ public:
         #endif
 
         ++mLocalCounter;
+
+        Timer::Stop("Build");
 
         KRATOS_CATCH("")
     }
@@ -680,13 +684,7 @@ public:
     {
         KRATOS_TRY
 
-        Timer::Start("Build");
-
         Build(pScheme, r_model_part, A, b);
-
-        // KRATOS_WATCH(A)
-
-        Timer::Stop("Build");
 
         ApplyDirichletConditions(pScheme, r_model_part, A, Dx, b);
 

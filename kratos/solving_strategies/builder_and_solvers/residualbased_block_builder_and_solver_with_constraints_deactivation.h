@@ -174,6 +174,8 @@ public:
     {
         KRATOS_TRY
 
+        Timer::Start("Build");
+
         if ( this->GetEchoLevel() > 1 && rModelPart.GetCommunicator().MyPID() == 0)
         {
             std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation: " << "Entering Build" << std::endl;
@@ -270,6 +272,8 @@ public:
         {
             std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation: " << "Finished parallel building" << std::endl;
         }
+
+        Timer::Stop("Build");
 
         KRATOS_CATCH("")
     }
@@ -542,11 +546,7 @@ public:
     {
         KRATOS_TRY
 
-        Timer::Start("Build");
-
         Build(pScheme, rModelPart, A, b);
-
-        Timer::Stop("Build");
 
         if(rModelPart.MasterSlaveConstraints().size() != 0) {
             Timer::Start("ApplyConstraints");

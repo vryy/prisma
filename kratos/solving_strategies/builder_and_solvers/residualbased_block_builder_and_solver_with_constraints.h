@@ -175,6 +175,8 @@ public:
     {
         KRATOS_TRY
 
+        Timer::Start("Build");
+
         if(!pScheme)
             KRATOS_ERROR << "No scheme provided!";
 
@@ -263,6 +265,8 @@ public:
         {
             std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraints: " << "Finished parallel building" << std::endl;
         }
+
+        Timer::Stop("Build");
 
         KRATOS_CATCH("")
     }
@@ -460,11 +464,7 @@ public:
     {
         KRATOS_TRY
 
-        Timer::Start("Build");
-
         Build(pScheme, rModelPart, A, b);
-
-        Timer::Stop("Build");
 
         if(rModelPart.MasterSlaveConstraints().size() != 0) {
             Timer::Start("ApplyConstraints");

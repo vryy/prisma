@@ -160,10 +160,14 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
         TSystemMatrixType& A,
         TSystemVectorType& b) override
     {
+        Timer::Start("Build");
+
         if(mGlobalMasterSlaveConstraints.size() > 0)
             BuildWithConstraints(pScheme, rModelPart, A, b);
         else
             BaseType::Build(pScheme, rModelPart, A, b);
+
+        Timer::Stop("Build");
     }
 
     /**
@@ -490,11 +494,7 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise
             std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivationElementWise: " << "Constraints update time : " << stop_update_constraints - start_update_constraints << std::endl;
         }
 
-        Timer::Start("Build");
-
         Build(pScheme, rModelPart, A, b);
-
-        Timer::Stop("Build");
 
         this->ApplyDirichletConditions(pScheme, rModelPart, A, Dx, b);
 

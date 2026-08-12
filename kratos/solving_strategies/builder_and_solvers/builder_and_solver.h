@@ -132,7 +132,7 @@ public:
 
         mDofSetIsInitialized = false;
 
-        mReshapeMatrixFlag = false; //by default the matrix is shaped just once
+        mReshapeMatrixFlag = false; // by default the matrix is shaped just once
 
         if constexpr (!std::is_same<TDataType, typename ModelPartType::DataType>::value)
         {

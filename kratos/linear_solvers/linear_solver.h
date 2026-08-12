@@ -244,10 +244,10 @@ public:
     }
 
     /** Eigenvalue and eigenvector solve method for derived eigensolvers */
-    virtual  void Solve(SparseMatrixType& K,
-                        SparseMatrixType& M,
-                        DenseVectorType& Eigenvalues,
-                        DenseMatrixType& Eigenvectors)
+    virtual void Solve(SparseMatrixType& K,
+                       SparseMatrixType& M,
+                       DenseVectorType& Eigenvalues,
+                       DenseMatrixType& Eigenvectors)
     {}
 
     /** Some solvers may require a minimum degree of knowledge of the structure of the matrix. To make an example
