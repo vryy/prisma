@@ -82,6 +82,7 @@ public:
     typedef Scheme<TSparseSpace, TDenseSpace, TModelPartType> TSchemeType;
     typedef TLinearSolver TLinearSolverType;
     typedef TSparseSpace TSparseSpaceType;
+    typedef TDenseSpace TDenseSpaceType;
 
     typedef TModelPartType ModelPartType;
     typedef typename ModelPartType::DofType DofType;
