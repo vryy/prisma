@@ -122,9 +122,9 @@ public:
      * @brief Clone method
      * @return The pointer of the cloned scheme
      */
-    virtual Pointer Clone()
+    virtual Pointer Clone() const
     {
-        return Pointer( new Scheme(*this) );
+        KRATOS_ERROR << "Calling the base class Clone method. Please implement the Clone method in the derived class.";
     }
 
     /**
