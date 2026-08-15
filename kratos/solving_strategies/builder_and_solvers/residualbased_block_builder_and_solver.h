@@ -1490,7 +1490,7 @@ private:
         TSystemMatrixType& A,
         LocalSystemMatrixType& LHS_Contribution,
         typename ElementType::EquationIdVectorType& EquationId
-    )
+    ) const
     {
         unsigned int local_size = LHS_Contribution.size1();
         for (unsigned int i_local = 0; i_local < local_size; i_local++)
@@ -1503,7 +1503,6 @@ private:
 
                 A(i_global, j_global) += LHS_Contribution(i_local, j_local);
             }
-
         }
     }
 

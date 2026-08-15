@@ -2090,7 +2090,7 @@ protected:
         TSystemMatrixType& A,
         LocalSystemMatrixType& LHS_Contribution,
         typename ElementType::EquationIdVectorType& EquationId
-    )
+    ) const
     {
         unsigned int local_size = LHS_Contribution.size1();
 
@@ -2155,7 +2155,7 @@ protected:
         TSystemVectorType& b,
         LocalSystemVectorType& RHS_Contribution,
         typename ElementType::EquationIdVectorType& EquationId
-    )
+    ) const
     {
         unsigned int local_size = RHS_Contribution.size();
 
@@ -2279,7 +2279,7 @@ private:
         TSystemMatrixType& A,
         LocalSystemMatrixType& LHS_Contribution,
         typename ElementType::EquationIdVectorType& EquationId
-    )
+    ) const
     {
         unsigned int local_size = LHS_Contribution.size1();
         for (unsigned int i_local = 0; i_local < local_size; ++i_local)
@@ -2316,7 +2316,7 @@ private:
         const LocalSystemVectorType& RHS_Contribution,
         typename ElementType::EquationIdVectorType& EquationId,
         std::vector< omp_lock_t >& lock_array
-    )
+    ) const
     {
         unsigned int local_size = LHS_Contribution.size1();
 

@@ -11,7 +11,7 @@
 //
 
 
-#if !defined(KRATOS_SCHEME )
+#if !defined(KRATOS_SCHEME)
 #define  KRATOS_SCHEME
 
 
@@ -70,6 +70,8 @@ public:
     typedef typename TDenseSpace::MatrixType LocalSystemMatrixType;
     typedef typename TDenseSpace::VectorType LocalSystemVectorType;
 
+    typedef TSparseSpace TSparseSpaceType;
+    typedef TDenseSpace TDenseSpaceType;
     typedef TModelPartType ModelPartType;
 
     typedef typename ModelPartType::DofType DofType;
@@ -88,17 +90,12 @@ public:
 
     /**
      * @brief Default Constructor
-     * @details Initializes the flags
      */
     Scheme()
-    {
-        mSchemeIsInitialized = false;
-        mElementsAreInitialized = false;
-        mConditionsAreInitialized = false;
-    }
+    {}
 
-
-    /** Copy Constructor.
+    /**
+     * @brief Copy Constructor
      */
     Scheme(Scheme& rOther)
     : mSchemeIsInitialized(rOther.mSchemeIsInitialized)
@@ -120,7 +117,6 @@ public:
     ///@}
     ///@name Operations
     ///@{
-
 
     /**
      * @brief Clone method
@@ -927,9 +923,9 @@ protected:
     ///@name Protected member Variables
     ///@{
 
-    bool mSchemeIsInitialized;      /// Flag to be used in controlling if the Scheme has been initialized or not
-    bool mElementsAreInitialized;   /// Flag taking in account if the elements were initialized correctly or not
-    bool mConditionsAreInitialized; /// Flag taking in account if the conditions were initialized correctly or not
+    bool mSchemeIsInitialized      = false; /// Flag to be used in controlling if the Scheme has been initialized or not
+    bool mElementsAreInitialized   = false; /// Flag taking in account if the elements were initialized correctly or not
+    bool mConditionsAreInitialized = false; /// Flag taking in account if the conditions were initialized correctly or not
 
     ///@}
     ///@name Protected Operators

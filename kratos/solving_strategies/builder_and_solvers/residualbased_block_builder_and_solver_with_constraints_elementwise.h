@@ -886,8 +886,8 @@ class ResidualBasedBlockBuilderAndSolverWithConstraintsElementWise
             auto global_constraint = mGlobalMasterSlaveConstraints(slave_equation_id);
             for (auto master_equation_id : master_equation_ids)
             {
-                    global_constraint->AddMaster(master_equation_id, relation_matrix(slave_count, master_count));
-                    master_count++;
+                global_constraint->AddMaster(master_equation_id, relation_matrix(slave_count, master_count));
+                master_count++;
             }
             slave_count++;
         }

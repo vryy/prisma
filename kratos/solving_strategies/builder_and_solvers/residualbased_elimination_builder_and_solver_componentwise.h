@@ -755,7 +755,7 @@ private:
         const LocalSystemVectorType& RHS_Contribution,
         Element::EquationIdVectorType& EquationId,
         std::vector< omp_lock_t >& lock_array
-    )
+    ) const
     {
         unsigned int local_size = LHS_Contribution.size1();
 
