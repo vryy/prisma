@@ -52,6 +52,7 @@ struct UblasVectorModifier
     {
         ThisContainer.resize(NewSize, true);
     }
+
     static void MoveSlice(TContainerType& ThisContainer, index_type Index, index_type From, index_type To)
     {
         if(Index > From)
@@ -128,4 +129,3 @@ void AddVectorToPython()
 }  // namespace Python.
 
 } // Namespace Kratos
-

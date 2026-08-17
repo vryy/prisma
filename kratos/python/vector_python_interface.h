@@ -96,7 +96,7 @@ public:
     }
 
     /// Destructor.
-    virtual ~VectorPythonInterface() {}
+    ~VectorPythonInterface() override {}
 
     ///@}
     ///@name Operators
@@ -194,13 +194,11 @@ public:
         ;
     }
 
-
     //static object
     //get_slice(TContainerType& container, index_type from, index_type to)
     //{
     //    return object((vector_range<TContainerType>(container, boost::numeric::ublas::range(from, to))));
     //}
-
 
     static void
     set_item(TContainerType& container, index_type i, data_type const& v)

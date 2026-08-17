@@ -5,12 +5,12 @@
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 //
-// 	-	Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-// 	-	Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
-// 		in the documentation and/or other materials provided with the distribution.
-// 	-	All advertising materials mentioning features or use of this software must display the following acknowledgement:
-// 			This product includes Kratos Multi-Physics technology.
-// 	-	Neither the name of the CIMNE nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+//  -   Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+//  -   Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
+//      in the documentation and/or other materials provided with the distribution.
+//  -   All advertising materials mentioning features or use of this software must display the following acknowledgement:
+//          This product includes Kratos Multi-Physics technology.
+//  -   Neither the name of the CIMNE nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
 // THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
@@ -203,19 +203,10 @@ public:
         fill_row(ThisMatrix, i, Value, TFunctorType());
     }
 
-// 			static class_<TMatrixType, boost::shared_ptr<TMatrixType> > CreateInterface(std::string const& Name)
     static class_<TMatrixType> CreateInterface(std::string const& Name)
     {
-// 				boost::python::converter::registry::push_back(
-// 					&convertible,
-// 					&construct1,
-// 					boost::python::type_id<TMatrixType>());
-
-//  				return class_<TMatrixType, boost::shared_ptr<TMatrixType> >(Name.c_str())
         return class_<TMatrixType>(Name.c_str())
                .def(init<TMatrixType>())
-               /* 					.def("Resize", &BaseType::resize1) */
-               /* 					.def("Resize", &BaseType::resize2) */
                .def("Size1", &TMatrixType::size1)
                .def("Size2", &TMatrixType::size2)
                .def("__setitem__", &set_item)
