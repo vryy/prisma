@@ -1,26 +1,20 @@
-#set here the version number **** only update upon tagging a release!
+#set here the version number
 set (KratosMultiphysics_VERSION_MAJOR 3)
 set (KratosMultiphysics_VERSION_MINOR 3)
 
-#get subversion data. This is done automatically by cmake
-include (GenerateExportHeader)
-
-find_package(Subversion QUIET)
-if(Subversion_FOUND)
-  get_filename_component(ABS_PROJECT_SOURCE_DIR ${PROJECT_SOURCE_DIR} REALPATH)
-  include(FindSubversion)
-#  Subversion_WC_INFO(${ABS_PROJECT_SOURCE_DIR} KRATOS_SVN_REVISION)
-  configure_file(
-      "${PROJECT_SOURCE_DIR}/kratos_version.h.in"
-      "${PROJECT_SOURCE_DIR}/kratos/includes/kratos_version.h"
-      )
-else()
-  # if svn is not found use 0 as a default placeholder
-  set (KRATOS_SVN_REVISION_WC_REVISION 0)
-  configure_file(
+configure_file(
     "${PROJECT_SOURCE_DIR}/kratos_version.h.in"
     "${PROJECT_SOURCE_DIR}/kratos/includes/kratos_version.h"
     )
+
+include(CheckLanguage)
+check_language(Fortran)
+
+if(CMAKE_Fortran_COMPILER)
+    enable_language(Fortran)
+    message(STATUS "Kratos is compiled with Fortran support")
+else()
+    message(STATUS "Kratos is compiled without Fortran")
 endif()
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
@@ -395,7 +389,6 @@ endif()
 
 if(${BLAS_INCLUDE_NEEDED} MATCHES ON )
     if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-        enable_language( Fortran )
         include(FortranCInterface)
         FortranCInterface_HEADER(FC.h MACRO_NAMESPACE "FC_")
     endif()
@@ -473,7 +466,7 @@ endif()
 if(${MPI_NEEDED} MATCHES ON)
     message(STATUS "MPI_ROOT: " ${MPI_ROOT})
     message(STATUS "MPIEXEC_EXECUTABLE: " ${MPIEXEC_EXECUTABLE})
-    find_package(MPI REQUIRED)
+    find_package(MPI REQUIRED COMPONENTS C CXX)
     set(CMAKE_CXX_COMPILE_FLAGS ${CMAKE_CXX_COMPILE_FLAGS} ${MPI_COMPILE_FLAGS})
     set(CMAKE_C_COMPILE_FLAGS ${CMAKE_C_COMPILE_FLAGS} ${MPI_COMPILE_FLAGS})
     set(CMAKE_CXX_LINK_FLAGS ${CMAKE_CXX_LINK_FLAGS} ${MPI_LINK_FLAGS})
@@ -485,8 +478,6 @@ if(${MPI_NEEDED} MATCHES ON)
         endif()
     endif()
 endif()
-
-##*****************************
 
 ##*****************************
 #finding ADOL-C
