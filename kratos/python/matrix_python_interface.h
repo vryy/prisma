@@ -203,6 +203,11 @@ public:
         fill_row(ThisMatrix, i, Value, TFunctorType());
     }
 
+    static typename TMatrixType::value_type frobenius_norm(TMatrixType const& container)
+    {
+        return norm_frobenius(container);
+    }
+
     static class_<TMatrixType> CreateInterface(std::string const& Name)
     {
         return class_<TMatrixType>(Name.c_str())
@@ -211,6 +216,7 @@ public:
                .def("Size2", &TMatrixType::size2)
                .def("__setitem__", &set_item)
                .def("__getitem__", &BaseType::get_item)
+               .def("NormFrobenius", &frobenius_norm)
                .def(MatrixVectorOperatorPython<TMatrixType, VectorType>())
                .def(MatrixMatrixOperatorPython<TMatrixType, TMatrixType, TMatrixType>())
                .def(self_ns::str(self))

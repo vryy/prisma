@@ -275,6 +275,15 @@ public:
             container.insert_element(i++, *first);
     }
 
+    static typename TContainerType::value_type one_norm(TContainerType const& container)
+    {
+        return norm_1(container);
+    }
+
+    static typename TContainerType::value_type two_norm(TContainerType const& container)
+    {
+        return norm_2(container);
+    }
 
     static class_<TContainerType> CreateInterface(std::string const& Name)
     {
@@ -288,6 +297,8 @@ public:
                .def(indexing_suite<TContainerType, VectorPythonInterface>())
                //.def("Resize", &TContainerType::resize)
                .def("Size", &TContainerType::size)
+               .def("Norm1", &one_norm)
+               .def("Norm2", &two_norm)
                .def(VectorVectorOperatorPython<TContainerType, TContainerType, TContainerType>())
                .def(VectorScalarAssignmentOperatorPython<TContainerType, data_type>())
                .def(VectorVectorAssignmentOperatorPython<TContainerType, zero_vector<data_type> >())
