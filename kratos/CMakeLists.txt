@@ -82,6 +82,7 @@ if( ${KRATOS_PYTHON} MATCHES TRUE)
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_properties_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_node_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_linear_solvers_to_python.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/python/add_least_square_solvers_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_strategies_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_spaces_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_utilities_to_python.cpp
@@ -159,6 +160,16 @@ if(ADOL_C_FOUND)
     target_link_libraries(KratosCore PUBLIC ADOLC::lib)
     target_compile_definitions(KratosCore PUBLIC KRATOS_USE_ADOL_C)
     message(STATUS "Kratos is linked with ADOLC")
+endif()
+
+if(nnls_FOUND)
+    if(TARGET SS::nnls)
+        target_link_libraries(KratosCore PUBLIC SS::nnls)
+    else()
+        target_link_libraries(KratosCore PRIVATE ${NNLS_LIBRARIES})
+    endif()
+    target_compile_definitions(KratosCore PUBLIC KRATOS_USE_SS_NNLS)
+    message(STATUS "Kratos is linked with nnls (SS)")
 endif()
 
 if(KRATOS_MATRIX_VECTOR_ADAPTER STREQUAL "Ublas")

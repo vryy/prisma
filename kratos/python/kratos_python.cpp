@@ -51,6 +51,7 @@
 #include "add_kratos_application_to_python.h"
 //#include "add_equation_systems_to_python.h"
 #include "add_linear_solvers_to_python.h"
+#include "add_least_square_solvers_to_python.h"
 #include "add_process_info_to_python.h"
 #include "add_constitutive_law_to_python.h"
 #include "add_serializer_to_python.h"
@@ -111,6 +112,7 @@ BOOST_PYTHON_MODULE(Kratos)
     AddKratosApplicationToPython();
 //  AddEquationSystemsToPython();
     AddLinearSolversToPython();
+    AddLeastSquareSolversToPython();
     AddSpacesToPython();
     AddStrategiesToPython();
     AddUtilitiesToPython();
