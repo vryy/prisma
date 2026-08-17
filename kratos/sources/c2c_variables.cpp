@@ -10,17 +10,6 @@
 //  Main authors:    Riccardo Rossi
 //
 
-
-
-
-
-
-
-
-
-
-
-
 // This define must be HERE
 #define DKRATOS_EXPORT_INTERFACE_2 1
 

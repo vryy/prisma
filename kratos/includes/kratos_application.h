@@ -45,8 +45,8 @@ namespace Kratos
 
 /// This class defines the interface with kernel for all applications in Kratos.
 /** The application class defines the interface necessary for providing the information
-    needed by Kernel in order to configure the whole sistem correctly.
-*/
+ *  needed by Kernel in order to configure the whole system correctly.
+ */
 class KRATOS_API(KRATOS_CORE) KratosApplication
 {
 public:
@@ -55,7 +55,6 @@ public:
 
     /// Pointer definition of KratosApplication
     KRATOS_CLASS_POINTER_DEFINITION(KratosApplication);
-
 
     ///@}
     ///@name Life Cycle
@@ -68,19 +67,7 @@ public:
     KratosApplication(const std::string& Name);
 
     /// Copy constructor.
-    KratosApplication(KratosApplication const& rOther) :
-        mApplicationName(rOther.mApplicationName),
-        mpVariableData(rOther.mpVariableData),
-        mpIntVariables(rOther.mpIntVariables),
-        mpUnsignedIntVariables(rOther.mpUnsignedIntVariables),
-        mpDoubleVariables(rOther.mpDoubleVariables),
-        mpArray1DVariables(rOther.mpArray1DVariables),
-        mpVectorVariables(rOther.mpVectorVariables),
-        mpMatrixVariables(rOther.mpMatrixVariables),
-        mpArray1DVariableComponents(rOther.mpArray1DVariableComponents),
-        mpElements(rOther.mpElements),
-        mpConditions(rOther.mpConditions),
-        mpMasterSlaveConstraints(rOther.mpMasterSlaveConstraints) {}
+    KratosApplication(KratosApplication const& rOther);
 
     /// Destructor.
     virtual ~KratosApplication() {}
@@ -95,13 +82,6 @@ public:
     }
 
     virtual void RegisterVariables();
-
-    ///////////////////////////////////////////////////////////////////
-    void RegisterDeprecatedVariables(); //TODO: remove, this variables should not be there
-    void RegisterC2CVariables(); //TODO: move to application
-    void RegisterCFDVariables(); //TODO: move to application
-    void RegisterDEMVariables(); //TODO: move to application
-    void RegisterLegacyStructuralAppVariables(); //TODO: move to application
 
     const std::string& Name() const { return mApplicationName; }
 
@@ -214,16 +194,12 @@ public:
     }
 
     ///@}
-
     ///@name Inquiry
-
     ///@{
 
 
     ///@}
-
     ///@name Input and output
-
     ///@{
 
     /// Turn back information as a string.
@@ -265,9 +241,7 @@ public:
     }
 
     ///@}
-
     ///@name Friends
-
     ///@{
 
 
@@ -276,15 +250,11 @@ public:
 protected:
 
     ///@name Protected static Member Variables
-
     ///@{
 
 
-
     ///@}
-
     ///@name Protected member Variables
-
     ///@{
 
     // General conditions must be defined
@@ -335,37 +305,27 @@ protected:
     Serializer::RegisteredObjectsNameContainerType* mpRegisteredObjectsName;
 
     ///@}
-
     ///@name Protected Operators
-
     ///@{
 
 
     ///@}
-
     ///@name Protected Operations
-
     ///@{
 
 
     ///@}
-
     ///@name Protected  Access
-
     ///@{
 
 
     ///@}
-
     ///@name Protected Inquiry
-
     ///@{
 
 
     ///@}
-
     ///@name Protected LifeCycle
-
     ///@{
 
 
@@ -374,50 +334,42 @@ protected:
 private:
 
     ///@name Static Member Variables
-
     ///@{
 
     std::string mApplicationName;
 
     ///@}
-
     ///@name Member Variables
-
     ///@{
 
 
     ///@}
-
     ///@name Private Operators
-
     ///@{
 
 
     ///@}
-
     ///@name Private Operations
-
     ///@{
 
+    void RegisterDeprecatedVariables(); //TODO: remove, this variables should not be there
+    void RegisterC2CVariables(); //TODO: move to application
+    void RegisterCFDVariables(); //TODO: move to application
+    void RegisterDEMVariables(); //TODO: move to application
+    void RegisterLegacyStructuralAppVariables(); //TODO: move to application
 
     ///@}
-
     ///@name Private  Access
-
     ///@{
 
 
     ///@}
-
     ///@name Private Inquiry
-
     ///@{
 
 
     ///@}
-
     ///@name Un accessible methods
-
     ///@{
 
     /// Assignment operator.
@@ -427,16 +379,12 @@ private:
 }; // Class KratosApplication
 
 ///@}
-
 ///@name Type Definitions
-
 ///@{
 
 
 ///@}
-
 ///@name Input and output
-
 ///@{
 
 /// input stream function

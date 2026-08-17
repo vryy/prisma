@@ -122,14 +122,28 @@ namespace Kratos
     mLinearMasterSlaveConstraint()
   {}
 
+  KratosApplication::KratosApplication(KratosApplication const& rOther) :
+    mApplicationName(rOther.mApplicationName),
+    mpVariableData(rOther.mpVariableData),
+    mpIntVariables(rOther.mpIntVariables),
+    mpUnsignedIntVariables(rOther.mpUnsignedIntVariables),
+    mpDoubleVariables(rOther.mpDoubleVariables),
+    mpArray1DVariables(rOther.mpArray1DVariables),
+    mpVectorVariables(rOther.mpVectorVariables),
+    mpMatrixVariables(rOther.mpMatrixVariables),
+    mpArray1DVariableComponents(rOther.mpArray1DVariableComponents),
+    mpElements(rOther.mpElements),
+    mpConditions(rOther.mpConditions),
+    mpMasterSlaveConstraints(rOther.mpMasterSlaveConstraints)
+  {}
+
   void KratosApplication::RegisterVariables()
   {
-
-      KratosApplication::RegisterDeprecatedVariables();
-      KratosApplication::RegisterC2CVariables(); //TODO: move to application
-      KratosApplication::RegisterCFDVariables(); //TODO: move to application
-      KratosApplication::RegisterDEMVariables(); //TODO: move to application
-      KratosApplication::RegisterLegacyStructuralAppVariables(); //TODO: move to application
+      RegisterDeprecatedVariables();
+      RegisterC2CVariables(); //TODO: move to application
+      RegisterCFDVariables(); //TODO: move to application
+      RegisterDEMVariables(); //TODO: move to application
+      RegisterLegacyStructuralAppVariables(); //TODO: move to application
 
       // Variables that should be moved to applications (but have too many dependencies)
       KRATOS_REGISTER_VARIABLE( FRACTIONAL_STEP )
@@ -166,7 +180,6 @@ namespace Kratos
       KRATOS_REGISTER_VARIABLE( RESIDUAL_NORM )
       KRATOS_REGISTER_VARIABLE( CONVERGENCE_RATIO )
 
-
       //ROTATION
       //movement
       KRATOS_REGISTER_3D_VARIABLE_WITH_COMPONENTS( ROTATION )
@@ -188,7 +201,6 @@ namespace Kratos
       //movement time derivatives
       KRATOS_REGISTER_3D_VARIABLE_WITH_COMPONENTS( VELOCITY )
       KRATOS_REGISTER_3D_VARIABLE_WITH_COMPONENTS( ACCELERATION )
-
 
       //THERMAL DOFS
       KRATOS_REGISTER_VARIABLE( TEMPERATURE )
@@ -232,7 +244,6 @@ namespace Kratos
       KRATOS_REGISTER_VARIABLE( POSITIVE_FACE_PRESSURE )
 
       KRATOS_REGISTER_VARIABLE( FACE_HEAT_FLUX )
-
 
       //CONSTITUTIVE LAW AND PROPERTIES
       KRATOS_REGISTER_CONSTITUTIVE_LAW_VARIABLE( CONSTITUTIVE_LAW )

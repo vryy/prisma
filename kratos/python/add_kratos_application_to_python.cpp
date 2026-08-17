@@ -34,16 +34,16 @@
 
 namespace Kratos
 {
+
 namespace Python
 {
-using namespace boost::python;
 
+using namespace boost::python;
 
 void  AddKratosApplicationToPython()
 {
     class_<KratosApplication, KratosApplication::Pointer, boost::noncopyable >("KratosApplication")
     .def("Register",&KratosApplication::Register)
-    //.def("",&Kernel::Initialize)
     .def(self_ns::str(self))
     ;
 }
@@ -51,4 +51,3 @@ void  AddKratosApplicationToPython()
 }  // namespace Python.
 
 } // Namespace Kratos
-
