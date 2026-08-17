@@ -172,6 +172,11 @@ if(nnls_FOUND)
     message(STATUS "Kratos is linked with nnls (SS)")
 endif()
 
+if(CMAKE_Fortran_COMPILER)
+    target_link_libraries(KratosCore PUBLIC lawson)
+    target_compile_definitions(KratosCore PUBLIC KRATOS_USE_LAWSON)
+endif()
+
 if(KRATOS_MATRIX_VECTOR_ADAPTER STREQUAL "Ublas")
     target_compile_definitions(KratosCore PUBLIC KRATOS_USE_UBLAS_FOR_LINEAR_ALGEBRA)
 elseif(KRATOS_MATRIX_VECTOR_ADAPTER STREQUAL "AMatrix")

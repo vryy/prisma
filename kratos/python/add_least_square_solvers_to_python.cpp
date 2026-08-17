@@ -14,6 +14,9 @@
 #ifdef KRATOS_USE_SS_NNLS
 #include "least_square_solvers/ss_nnls_solver.h"
 #endif
+#ifdef KRATOS_USE_LAWSON
+#include "least_square_solvers/lawson_nnls_solver.h"
+#endif
 
 namespace Kratos
 {
@@ -33,6 +36,14 @@ void AddLeastSquareSolversToPython()
     class_<SS::NnlsSolver, SS::NnlsSolver::Pointer, boost::noncopyable>
     ("SsNnlsSolver", init<>())
     .def("Solve", &SS::NnlsSolver::Solve, args("A", "X", "B", "tolerance", "maxit", "echo_level"), "Solve the non-negative least square problem Ax=B")
+        .staticmethod("Solve")
+    ;
+#endif
+
+#ifdef KRATOS_USE_LAWSON
+    class_<Lawson::NnlsSolver, Lawson::NnlsSolver::Pointer, boost::noncopyable>
+    ("LawsonNnlsSolver", init<>())
+    .def("Solve", &Lawson::NnlsSolver::Solve, args("A", "X", "B", "echo_level"), "Solve the non-negative least square problem Ax=B")
         .staticmethod("Solve")
     ;
 #endif
