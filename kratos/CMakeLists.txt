@@ -125,6 +125,10 @@ else()
     target_link_libraries(KratosCore PUBLIC ${Boost_LIBRARIES} gidpost )
 endif()
 
+if(${BLAS_INCLUDE_NEEDED} MATCHES ON )
+    target_link_libraries(KratosCore PUBLIC ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
+endif()
+
 if(${MPI_FOUND})
     target_compile_definitions(KratosCore PUBLIC KRATOS_USING_MPI)
     target_link_libraries(KratosCore PUBLIC MPI::MPI_CXX )
