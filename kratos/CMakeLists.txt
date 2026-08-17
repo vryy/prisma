@@ -128,6 +128,7 @@ endif()
 
 if(${BLAS_INCLUDE_NEEDED} MATCHES ON )
     target_link_libraries(KratosCore PUBLIC ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
+    target_compile_definitions(KratosCore PUBLIC KRATOS_USE_BLAS_LAPACK)
 endif()
 
 if(${MPI_FOUND})

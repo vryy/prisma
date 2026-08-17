@@ -10,7 +10,9 @@
 
 // Project includes
 #include "add_least_square_solvers_to_python.h"
+#ifdef KRATOS_USE_BLAS_LAPACK
 #include "least_square_solvers/lapack_ls_solver.h"
+#endif
 #ifdef KRATOS_USE_SS_NNLS
 #include "least_square_solvers/ss_nnls_solver.h"
 #endif
@@ -28,9 +30,15 @@ using namespace boost::python;
 
 void AddLeastSquareSolversToPython()
 {
+#ifdef KRATOS_USE_BLAS_LAPACK
     class_<LapackLsSolver, LapackLsSolver::Pointer, boost::noncopyable>
     ("LapackLsSolver", init<>())
+    .def("EstimateRCond", &LapackLsSolver::EstimateRCond, args("A", "norm_type"), "Estimate the reciprocal condition number of matrix A")
+        .staticmethod("EstimateRCond")
+    .def("Solve", &LapackLsSolver::Solve, args("A", "X", "B", "variant"), "Solve the unconstrained least square problem Ax=B")
+        .staticmethod("Solve")
     ;
+#endif
 
 #ifdef KRATOS_USE_SS_NNLS
     class_<SS::NnlsSolver, SS::NnlsSolver::Pointer, boost::noncopyable>

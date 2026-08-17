@@ -100,122 +100,125 @@ public:
     ///@{
 
     /// Estimate the reciprocal condition number of the matrix
-    static double EstimateRCond(Matrix& rA, const char* norm_type = "1")
+    static double EstimateRCond(Matrix& rA, const std::string& norm_type = "1")
     {
-        int M = rA.size1();
-        int N = rA.size2();
+        int M = static_cast<int>(rA.size1());
+        int N = static_cast<int>(rA.size2());
         int LDA = M;
         int INFO;
 
-        double* A = new double[M * N];
+        std::vector<double> A(M * N);
         for (int i = 0; i < M; ++i)
             for (int j = 0; j < N; ++j)
-                A[i * N + j] = rA(j, i); // column-wise ordering
+                A[j * M + i] = rA(i, j); // column-major order
 
-        double* WORK = new double[4 * N];
-        double anorm = dlange_(norm_type, &M, &N, A, &LDA, WORK);
+        std::vector<double> WORK(4 * N);
+        double anorm = dlange_(norm_type.c_str(), &M, &N, A.data(), &LDA, WORK.data());
 
-        int* IPIV = new int[std::min(M, N)];
-        dgetrf_(&M, &N, A, &LDA, IPIV, &INFO);
+        std::vector<int> IPIV(std::min(M, N));
+        dgetrf_(&M, &N, A.data(), &LDA, IPIV.data(), &INFO);
 
-        int* IWORK = new int[N];
+        std::vector<int> IWORK(N);
         double rcond;
         LDA = N;
-        dgecon_(norm_type, &N, A, &LDA, &anorm, &rcond, WORK, IWORK, &INFO);
-
-        delete A;
-
-        delete [] IPIV;
-        delete [] WORK;
-        delete [] IWORK;
+        dgecon_(norm_type.c_str(), &N, A.data(), &LDA, &anorm, &rcond, WORK.data(), IWORK.data(), &INFO);
 
         return rcond;
     }
 
-    /// Solve the non-square linear system using least square method
+    /// Adapter function to solve the unconstrained non-square linear system using least square method.
+    static int Solve(Matrix& rA, Vector& rX, Vector& rB, const std::string& variant = "QR")
+    {
+        double rcond_est = EstimateRCond(rA);
+        if (variant == "QR")
+            return SolveDGELSY(rA, rX, rB, rcond_est);
+        else if (variant == "SVD")
+            return SolveDGELSS(rA, rX, rB, rcond_est);
+        else
+            return -1;
+    }
+
+    /// Solve the unconstrained non-square linear system using least square method.
+    /// This function uses the LAPACK routine DGELSY, which is based on QR factorization.
+    /// On the input, an estimate of the reciprocal condition number of the matrix is required.
+    /// This can be obtained by calling the function EstimateRCond() of this class.
     static int SolveDGELSY(Matrix& rA, Vector& rX, Vector& rB, const double rcond_est = 0.01)
     {
-        int M = rA.size1();
-        int N = rA.size2();
+        int M = static_cast<int>(rA.size1());
+        int N = static_cast<int>(rA.size2());
         int NRHS = 1;
 
-        double* A = new double[M * N];
+        std::vector<double> A(M * N);
         for (int i = 0; i < M; ++i)
             for (int j = 0; j < N; ++j)
-                A[i * N + j] = rA(j, i); // colume-wise ordering
+                A[j * M + i] = rA(i, j); // column-major order
 
         int LDA = M;
         int INFO;
         int LDB = std::max(M, N);
-        double* b = new double[LDB];
+        std::vector<double> b(LDB);
         for (int i = 0; i < M; ++i) { b[i] = rB(i); }
-        int* JPVT = new int[N]; for (int i = 0; i < N; ++i) JPVT[i] = 0;
+        std::vector<int> JPVT(N);
+        for (int i = 0; i < N; ++i) JPVT[i] = 0;
         double RCOND = rcond_est;
         int RANK;
-        int LWORK = -1;//std::max(std::min(M, N) + 3*N + 1, 2*std::min(M, N) + 1);
+        int LWORK = -1; //std::max(std::min(M, N) + 3*N + 1, 2*std::min(M, N) + 1);
         double WORKS;
 
         // estimate the size of working array
-        dgelsy_(&M, &N, &NRHS, A, &LDA, b, &LDB, JPVT, &RCOND, &RANK, &WORKS, &LWORK, &INFO);
+        dgelsy_(&M, &N, &NRHS, A.data(), &LDA, b.data(), &LDB, JPVT.data(), &RCOND, &RANK, &WORKS, &LWORK, &INFO);
         LWORK = (int) WORKS;
 
-        double* WORK = new double[LWORK];
+        std::vector<double> WORK(LWORK);
 
-        dgelsy_(&M, &N, &NRHS, A, &LDA, b, &LDB, JPVT, &RCOND, &RANK, WORK, &LWORK, &INFO);
+        dgelsy_(&M, &N, &NRHS, A.data(), &LDA, b.data(), &LDB, JPVT.data(), &RCOND, &RANK, WORK.data(), &LWORK, &INFO);
 
         if (rX.size() != N)
             rX.resize(N, false);
         for (int i = 0; i < N; ++i)
             rX(i) = b[i];
 
-        delete [] JPVT;
-        delete [] b;
-        delete [] WORK;
-        delete A;
-
         return 0;
     }
 
-    /// Solve the non-square linear system using least square method
+    /// Solve the unconstrained non-square linear system using least square method.
+    /// This function uses the LAPACK routine DGELSS, which is based on SVD factorization.
+    /// On the input, an estimate of the reciprocal condition number of the matrix is required.
+    /// This can be obtained by calling the function EstimateRCond() of this class.
     static int SolveDGELSS(Matrix& rA, Vector& rX, Vector& rB, const double rcond_est = 1.0e-10)
     {
-        int M = rA.size1();
-        int N = rA.size2();
+        int M = static_cast<int>(rA.size1());
+        int N = static_cast<int>(rA.size2());
         int NRHS = 1;
 
-        double* A = new double[M * N];
+        std::vector<double> A(M * N);
         for (int i = 0; i < M; ++i)
             for (int j = 0; j < N; ++j)
-                A[i * N + j] = rA(j, i); // column-wise ordering
+                A[j * M + i] = rA(i, j); // column-major order
 
         int LDA = M;
         int INFO;
         int LDB = std::max(M, N);
-        double* b = new double[LDB];
+        std::vector<double> b(LDB);
         for (int i = 0; i < M; ++i) { b[i] = rB(i); }
-        double* S = new double[std::min(M, N)];
+        std::vector<double> S(std::min(M, N));
         double RCOND = rcond_est;
         int RANK;
         int LWORK = -1;
         double WORKS;
 
         // estimate the size of working array
-        dgelss_(&M, &N, &NRHS, A, &LDA, b, &LDB, S, &RCOND, &RANK, &WORKS, &LWORK, &INFO);
+        dgelss_(&M, &N, &NRHS, A.data(), &LDA, b.data(), &LDB, S.data(), &RCOND, &RANK, &WORKS, &LWORK, &INFO);
         LWORK = (int) WORKS;
 
-        double* WORK = new double[LWORK];
+        std::vector<double> WORK(LWORK);
 
-        dgelss_(&M, &N, &NRHS, A, &LDA, b, &LDB, S, &RCOND, &RANK, WORK, &LWORK, &INFO);
+        dgelss_(&M, &N, &NRHS, A.data(), &LDA, b.data(), &LDB, S.data(), &RCOND, &RANK, WORK.data(), &LWORK, &INFO);
 
         if (rX.size() != N)
             rX.resize(N, false);
         for (int i = 0; i < N; ++i)
             rX(i) = b[i];
-
-        delete [] S;
-        delete [] b;
-        delete [] WORK;
-        delete A;
 
         return 0;
     }
