@@ -121,9 +121,9 @@ if((${CMAKE_CXX_COMPILER_ID} MATCHES Clang) OR (${CMAKE_CXX_COMPILER_ID} MATCHES
 endif()
 
 if(${KRATOS_PYTHON} MATCHES TRUE)
-    target_link_libraries(KratosCore PUBLIC ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${PYTHON_LIBRARIES} gidpost )
+    target_link_libraries(KratosCore PUBLIC ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${PYTHON_LIBRARIES} gidpost)
 else()
-    target_link_libraries(KratosCore PUBLIC ${Boost_LIBRARIES} gidpost )
+    target_link_libraries(KratosCore PUBLIC ${Boost_LIBRARIES} gidpost)
 endif()
 
 if(${BLAS_INCLUDE_NEEDED} MATCHES ON )

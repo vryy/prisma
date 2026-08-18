@@ -34,7 +34,6 @@ if(NOT(${CMAKE_SYSTEM_NAME} MATCHES "Windows"))
   find_library(AUX8 pthread ${MKLSOLVER_LIB_DIR})
 endif()
 
-#find_library(AUX9 mkl_p4n ${MKLSOLVER_LIB_DIR})
 
 ##ATTENTION! the order of libraries is FUNDAMENTAL!! take care!!!
 if(MKLSOLVER_INCLUDE_DIR AND AUX1)
