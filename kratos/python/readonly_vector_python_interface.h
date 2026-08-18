@@ -96,7 +96,6 @@ public:
     /// Destructor.
     virtual ~ReadonlyVectorPythonInterface() {}
 
-
     ///@}
     ///@name Operators
     ///@{
@@ -105,7 +104,6 @@ public:
     ///@}
     ///@name Operations
     ///@{
-
 
     template <class Class>
     static void
@@ -168,6 +166,21 @@ public:
     {
     }
 
+    static void
+    clear(TContainerType& container)
+    {
+    }
+
+    static void
+    erase(TContainerType& container, index_type i)
+    {
+    }
+
+    static void
+    erase(TContainerType& container, index_type from, index_type to)
+    {
+    }
+
     static class_<TContainerType> CreateInterface(std::string const& Name)
     {
         return class_<TContainerType>(Name.c_str())
@@ -216,7 +229,6 @@ public:
 
 
 ///@}
-
 
 }  // namespace Python.
 
