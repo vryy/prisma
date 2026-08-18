@@ -60,9 +60,6 @@ public:
     ///@name Life Cycle
     ///@{
 
-    /// Default constructor. // DEPRECATED
-    KratosApplication();
-
     /// Constructor with application name
     KratosApplication(const std::string& Name);
 

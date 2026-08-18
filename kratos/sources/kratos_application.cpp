@@ -68,33 +68,6 @@
 namespace Kratos
 {
 
-  KratosApplication::KratosApplication() :
-    mApplicationName("ApplicationName"),
-    mCondition3D( 0, Element::GeometryType::Pointer( new Triangle3D3<RealNode>( Element::GeometryType::PointsArrayType( 3, RealNode() ) ) ) ),
-    mCondition2D( 0, Element::GeometryType::Pointer( new Geometry<RealNode>( Element::GeometryType::PointsArrayType( 2, RealNode() ) ) ) ),
-    mPeriodicCondition(0, Element::GeometryType::Pointer( new Line2D2<RealNode>( Element::GeometryType::PointsArrayType( 2, RealNode() ) ) ) ),
-    mPeriodicConditionEdge(0, Element::GeometryType::Pointer( new Quadrilateral3D4<RealNode>( Element::GeometryType::PointsArrayType( 4, RealNode() ) ) ) ),
-    mPeriodicConditionCorner(0, Element::GeometryType::Pointer( new Hexahedra3D8<RealNode>( Element::GeometryType::PointsArrayType( 8, RealNode() ) ) ) ),
-    mElement3D4N( 0, Element::GeometryType::Pointer( new Tetrahedra3D4<RealNode>( Element::GeometryType::PointsArrayType( 4, RealNode() ) ) ) ),
-    mElement2D3N( 0, Element::GeometryType::Pointer( new Triangle2D3<RealNode>( Element::GeometryType::PointsArrayType( 3, RealNode() ) ) ) ),
-    mpVariableData( KratosComponents<VariableData>::pGetComponents() ),
-    mpIntVariables( KratosComponents<Variable<int> >::pGetComponents() ),
-    mpUnsignedIntVariables( KratosComponents<Variable<unsigned int> >::pGetComponents() ),
-    mpDoubleVariables( KratosComponents<Variable<double> >::pGetComponents() ),
-    mpArray1DVariables( KratosComponents<Variable<array_1d<double, 3> > >::pGetComponents() ),
-    mpVectorVariables( KratosComponents<Variable<Vector> >::pGetComponents() ),
-    mpMatrixVariables( KratosComponents<Variable<Matrix> >::pGetComponents() ),
-    mpArray1DVariableComponents( KratosComponents<VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > >::pGetComponents() ),
-    mpElements( KratosComponents<Element>::pGetComponents() ),
-    mpConditions( KratosComponents<Condition>::pGetComponents() ),
-    mpRegisteredObjects( &( Serializer::GetRegisteredObjects() ) ),
-    mpRegisteredObjectsName( &( Serializer::GetRegisteredObjectsName() ) ),
-    // Master-Slave Constraint
-    mMasterSlaveConstraint(),
-    mLinearConstraint(),
-    mLinearMasterSlaveConstraint()
-  {}
-
   KratosApplication::KratosApplication(const std::string& Name) :
     mApplicationName(Name),
     mCondition3D( 0, Element::GeometryType::Pointer( new Triangle3D3<RealNode>( Element::GeometryType::PointsArrayType( 3, RealNode() ) ) ) ),

@@ -155,7 +155,7 @@ private:
     ///@name Member Variables
     ///@{
 
-    KratosApplication mKratosApplication;
+    KratosApplication mKratosApplication{"DefaultApplication"};
 
     ///@}
     ///@name Private Operations
