@@ -47,3 +47,7 @@ libs
 .DS_Store
 ._DS_Store
 
+# Windows stuff
+vcpkg*
+.vs
+out
