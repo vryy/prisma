@@ -143,7 +143,7 @@ public:
      * @brief This method returns if the scheme is initialized
      * @return True if initialized, false otherwise
      */
-    bool SchemeIsInitialized()
+    virtual bool SchemeIsInitialized() const
     {
         return mSchemeIsInitialized;
     }
@@ -152,7 +152,7 @@ public:
      * @brief This method sets if the elements have been initialized or not (true by default)
      * @param ElementsAreInitializedFlag If the flag must be set to true or false
      */
-    void SetSchemeIsInitialized(bool SchemeIsInitializedFlag = true)
+    virtual void SetSchemeIsInitialized(bool SchemeIsInitializedFlag = true)
     {
         mSchemeIsInitialized = SchemeIsInitializedFlag;
     }
@@ -161,7 +161,7 @@ public:
      * @brief This method returns if the elements are initialized
      * @return True if initialized, false otherwise
      */
-    bool ElementsAreInitialized()
+    virtual bool ElementsAreInitialized() const
     {
         return mElementsAreInitialized;
     }
@@ -170,7 +170,7 @@ public:
      * @brief This method sets if the elements have been initialized or not (true by default)
      * @param ElementsAreInitializedFlag If the flag must be set to true or false
      */
-    void SetElementsAreInitialized(bool ElementsAreInitializedFlag = true)
+    virtual void SetElementsAreInitialized(bool ElementsAreInitializedFlag = true)
     {
         mElementsAreInitialized = ElementsAreInitializedFlag;
     }
@@ -179,7 +179,7 @@ public:
      * @brief This method returns if the conditions are initialized
      * @return True if initialized, false otherwise
      */
-    bool ConditionsAreInitialized()
+    virtual bool ConditionsAreInitialized() const
     {
         return mConditionsAreInitialized;
     }
@@ -188,7 +188,7 @@ public:
      * @brief This method sets if the conditions have been initialized or not (true by default)
      * @param ConditionsAreInitializedFlag If the flag must be set to true or false
      */
-    void SetConditionsAreInitialized(bool ConditionsAreInitializedFlag = true)
+    virtual void SetConditionsAreInitialized(bool ConditionsAreInitializedFlag = true)
     {
         mConditionsAreInitialized = ConditionsAreInitializedFlag;
     }
