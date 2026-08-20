@@ -33,15 +33,18 @@ namespace Lawson
 #ifdef _WIN32
     // Intel Fortran compiler on Windows does not append underscores to names
     // and also uses uppercase for the names
-#define nnls_wrapper_fortran NNLS
+#define nnls_wrapper NNLS
 #else
-#define nnls_wrapper_fortran nnls_
+#define nnls_wrapper nnls_
 #endif
 
-extern "C" void nnls_wrapper_fortran(double* A, int* MDA, int* M, int* N, double* B, double* X,
+extern "C" void nnls_wrapper(double* A, int* MDA, int* M, int* N, double* B, double* X,
     double* RNORM, double* W, double* ZZ, int* INDEX, int* MODE);
 
 /** Non-negative least square solver based on NNLS
+ * The method by lawson.f does not use QR factorization, so the results are not sparse.
+ * But the residuals are very good.
+ * This can be good for problem requiring high accuracy, such as moment-fitting.
  */
 class NnlsSolver
 {
@@ -89,7 +92,7 @@ public:
         int mode = -1;
         std::vector<int> index(N, 0);
 
-        nnls_wrapper_fortran(dA.data(), &MDA, &M, &N, dB.data(), dX.data(), &rnorm,
+        nnls_wrapper(dA.data(), &MDA, &M, &N, dB.data(), dX.data(), &rnorm,
                 w.data(), zz.data(), index.data(), &mode);
 
         if (rX.size() != N)

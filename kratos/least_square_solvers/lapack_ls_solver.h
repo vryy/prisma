@@ -27,6 +27,17 @@
 #include "includes/define.h"
 #include "includes/matrix_vector_adapter.h"
 
+namespace Kratos
+{
+///@addtogroup KratosCore
+///@{
+
+///@name Kratos Globals
+///@{
+
+///@}
+///@name Type Definitions
+///@{
 
 // definition for LAPACK functions
 extern "C" void dgelsy_(const int* M, const int* N, const int* NRHS, double* A, const int* LDA,
@@ -43,19 +54,6 @@ extern "C" void dgetrf_(const int* M, const int* N, double* A, const int* LDA, i
 
 extern "C" void dgecon_(const char* NORM, const int* N, const double* A, const int* LDA, const double* ANORM,
                         double* RCOND, double* WORK, int* IWORK, int* INFO);
-
-
-namespace Kratos
-{
-///@addtogroup KratosCore
-///@{
-
-///@name Kratos Globals
-///@{
-
-///@}
-///@name Type Definitions
-///@{
 
 ///@}
 ///@name  Enum's
