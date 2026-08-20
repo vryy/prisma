@@ -285,6 +285,19 @@ public:
         return norm_2(container);
     }
 
+    static TContainerType create_from_list(boost::python::list const& rValues)
+    {
+        int size = len(rValues);
+        TContainerType result(size);
+
+        for (std::size_t i = 0; i < size; ++i)
+        {
+            result(i) = extract<typename TContainerType::value_type>(rValues[i]);
+        }
+
+        return result;
+    }
+
     static class_<TContainerType> CreateInterface(std::string const& Name)
     {
         boost::python::converter::registry::push_back(
@@ -308,6 +321,7 @@ public:
                //.def(VectorVectorAssignmentOperatorPython<TContainerType, mapped_vector<data_type> >())
                //.def(VectorVectorAssignmentOperatorPython<TContainerType, compressed_vector<data_type> >())
                //.def(VectorVectorAssignmentOperatorPython<TContainerType, coordinate_vector<data_type> >())
+               .def("FromList", &create_from_list)
                .def(self_ns::str(self))
                ;
     }
@@ -399,7 +413,6 @@ private:
 
 
 ///@}
-
 
 }  // namespace Python.
 

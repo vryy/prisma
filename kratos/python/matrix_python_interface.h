@@ -208,6 +208,53 @@ public:
         return norm_frobenius(container);
     }
 
+    /// Create a matrix from a list of lists (2D list)
+    static TMatrixType create_from_double_list(boost::python::list const& rValues)
+    {
+        int size1 = len(rValues);
+        if (size1 == 0)
+            return TMatrixType();
+
+        list first_row = extract<list>(rValues[0]);
+        int size2 = len(first_row);
+
+        TMatrixType result(size1, size2);
+
+        for (int i = 0; i < size1; ++i)
+        {
+            list row = extract<list>(rValues[i]);
+            if (len(row) != size2)
+                KRATOS_ERROR << "Inconsistent row sizes in input list";
+
+            for (int j = 0; j < size2; ++j)
+            {
+                result(i, j) = extract<typename TMatrixType::value_type>(row[j]);
+            }
+        }
+
+        return result;
+    }
+
+    /// Create a matrix from list with predetermined size
+    /// The data is organized in row by row order
+    static TMatrixType create_from_list(boost::python::list const& rValues, std::size_t size1, std::size_t size2)
+    {
+        if (len(rValues) != size1*size2)
+            KRATOS_ERROR << "Input list size does not match specified number of rows and columns";
+
+        TMatrixType result(size1, size2);
+
+        for (std::size_t i = 0; i < size1; ++i)
+        {
+            for (std::size_t j = 0; j < size2; ++j)
+            {
+                result(i, j) = extract<typename TMatrixType::value_type>(rValues[i*size2 + j]);
+            }
+        }
+
+        return result;
+    }
+
     static class_<TMatrixType> CreateInterface(std::string const& Name)
     {
         return class_<TMatrixType>(Name.c_str())
@@ -219,6 +266,8 @@ public:
                .def("NormFrobenius", &frobenius_norm)
                .def(MatrixVectorOperatorPython<TMatrixType, VectorType>())
                .def(MatrixMatrixOperatorPython<TMatrixType, TMatrixType, TMatrixType>())
+               .def("FromDoubleList", &create_from_double_list)
+               .def("FromList", &create_from_list)
                .def(self_ns::str(self))
                ;
     }
