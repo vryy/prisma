@@ -800,7 +800,7 @@ public:
     virtual void GetDofList(
         const ElementType& rElement,
         typename ElementType::DofsVectorType& rDofList,
-        const ProcessInfo& rCurrentProcessInfo)
+        const ProcessInfo& rCurrentProcessInfo) const
     {
         rElement.GetDofList(rDofList, rCurrentProcessInfo);
     }
@@ -815,7 +815,7 @@ public:
     virtual void GetRowDofList(
         const ElementType& rElement,
         typename ElementType::DofsVectorType& rDofList,
-        const ProcessInfo& rCurrentProcessInfo)
+        const ProcessInfo& rCurrentProcessInfo) const
     {
         rElement.GetRowDofList(rDofList, rCurrentProcessInfo);
     }
@@ -829,7 +829,7 @@ public:
     virtual void GetColumnDofList(
         const ElementType& rElement,
         typename ElementType::DofsVectorType& rDofList,
-        const ProcessInfo& rCurrentProcessInfo)
+        const ProcessInfo& rCurrentProcessInfo) const
     {
         rElement.GetColumnDofList(rDofList, rCurrentProcessInfo);
     }
@@ -844,7 +844,7 @@ public:
     virtual void GetDofList(
         const ConditionType& rCondition,
         typename ConditionType::DofsVectorType& rDofList,
-        const ProcessInfo& rCurrentProcessInfo)
+        const ProcessInfo& rCurrentProcessInfo) const
     {
         rCondition.GetDofList(rDofList, rCurrentProcessInfo);
     }
@@ -859,7 +859,7 @@ public:
     virtual void GetRowDofList(
         const ConditionType& rCondition,
         typename ConditionType::DofsVectorType& rDofList,
-        const ProcessInfo& rCurrentProcessInfo)
+        const ProcessInfo& rCurrentProcessInfo) const
     {
         rCondition.GetRowDofList(rDofList, rCurrentProcessInfo);
     }
@@ -873,7 +873,7 @@ public:
     virtual void GetColumnDofList(
         const ConditionType& rCondition,
         typename ConditionType::DofsVectorType& rDofList,
-        const ProcessInfo& rCurrentProcessInfo)
+        const ProcessInfo& rCurrentProcessInfo) const
     {
         rCondition.GetColumnDofList(rDofList, rCurrentProcessInfo);
     }
