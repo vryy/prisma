@@ -249,7 +249,7 @@ public:
     */
     /*@{ */
 
-    /** Constructor.
+    /** Default constructor.
     */
     ResidualBasedEliminationBuilderAndSolverDeactivation(
         typename TLinearSolver::Pointer pNewLinearSystemSolver)
@@ -262,6 +262,18 @@ public:
         #endif
         mLocalCounter = 0;
         mStepCounter = 0;
+    }
+
+    /** Copy constructor.
+    */
+    ResidualBasedEliminationBuilderAndSolverDeactivation(
+        const ResidualBasedEliminationBuilderAndSolverDeactivation& rOther)
+        : BaseType(rOther)
+        , mLocalCounter(rOther.mLocalCounter)
+        , mStepCounter(rOther.mStepCounter)
+        , mFixedLength(rOther.mFixedLength)
+        , mAllDofs(rOther.mAllDofs)
+    {
     }
 
     /** Destructor.

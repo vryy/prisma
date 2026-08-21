@@ -142,6 +142,24 @@ public:
         }
     }
 
+    /**
+     * @brief Copy constructor.
+     * @param rOther The other builder and solver to be copied
+     */
+    BuilderAndSolver(const BuilderAndSolver& rOther)
+    : mpLinearSystemSolver(rOther.mpLinearSystemSolver)
+    , mDofSet(rOther.mDofSet)
+    , mReshapeMatrixFlag(rOther.mReshapeMatrixFlag)
+    , mDofSetIsInitialized(rOther.mDofSetIsInitialized)
+    , mCalculateReactionsFlag(rOther.mCalculateReactionsFlag)
+    , mEquationSystemSize(rOther.mEquationSystemSize)
+    , mEchoLevel(rOther.mEchoLevel)
+    {
+        if (rOther.mpReactionsVector != nullptr)
+            mpReactionsVector = TSystemVectorPointerType(
+                new TSystemVectorType(*rOther.mpReactionsVector));
+    }
+
     /** Destructor.
      */
     virtual ~BuilderAndSolver()
