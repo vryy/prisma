@@ -1,0 +1,13 @@
+{
+    // Settings for vscode to use clangd to index the build folder for intellisense
+    // Source - https://stackoverflow.com/a/59820115
+    // Posted by George Zheng, modified by community. See post 'Timeline' for change history
+    // Retrieved 2026-08-21, License - CC BY-SA 4.0
+
+    "C_Cpp.intelliSenseEngine": "disabled",
+    "clangd.path": "c:/Program Files/Microsoft Visual Studio/18/Community/VC/Tools/Llvm/x64/bin/clangd.exe",
+    "clangd.arguments": ["-log=verbose",
+                         "-pretty",
+                         "--background-index",
+                         "--compile-commands-dir=C:/Users/hgbk2/kratos_builds/ninja_release-2"]
+}

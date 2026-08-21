@@ -11,6 +11,7 @@
       "generator": "Ninja",
       "hidden": true,
       "cacheVariables": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
         "KRATOS_NONSQUARE_SUPPORT": "ON",
         "KRATOS_INDEX_TYPE": "std::size_t",
         "KRATOS_SIZE_TYPE": "std::size_t",
