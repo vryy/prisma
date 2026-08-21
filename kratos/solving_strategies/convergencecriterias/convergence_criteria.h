@@ -11,7 +11,7 @@
 //
 //
 
-#if !defined(KRATOS_CONVERGENCE_CRITERIA )
+#if !defined(KRATOS_CONVERGENCE_CRITERIA)
 #define  KRATOS_CONVERGENCE_CRITERIA
 
 
@@ -97,7 +97,7 @@ public:
 
     /** Copy constructor.
      */
-    ConvergenceCriteria( ConvergenceCriteria const& rOther)
+    ConvergenceCriteria(ConvergenceCriteria const& rOther)
       : mActualizeRHSIsNeeded(rOther.mActualizeRHSIsNeeded)
       , mConvergenceCriteriaIsInitialized(rOther.mConvergenceCriteriaIsInitialized)
       , mEchoLevel(rOther.mEchoLevel)

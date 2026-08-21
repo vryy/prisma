@@ -50,14 +50,12 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /* System includes */
 #include <set>
-#include <iomanip>
 
 #ifdef _OPENMP
 #include <omp.h>
 #endif
 
 /* External includes */
-#include "boost/smart_ptr.hpp"
 
 /* Project includes */
 #include "includes/define.h"
@@ -331,15 +329,15 @@ public:
 
         #ifdef MEASURE_TIME_CUT_CELL
         // if (!KratosComponents<VariableData>::Has("CUT_STATUS"))
-        //     KRATOS_THROW_ERROR(std::logic_error, "The CUT_STATUS variable is not registerred in Kratos database. Please import FiniteCellApplication.", "")
+        //     KRATOS_ERROR << "The CUT_STATUS variable is not registerred in Kratos database. Please import FiniteCellApplication.";
         Variable<int>& CUT_STATUS_var = static_cast<Variable<int>&>(KratosComponents<VariableData>::Get("CUT_STATUS"));
         #endif
 
         if(!pScheme)
-            KRATOS_THROW_ERROR(std::runtime_error, "No scheme provided!", "");
+            KRATOS_ERROR << "No scheme provided!";
 
         if(r_model_part.MasterSlaveConstraints().size() != 0) {
-            KRATOS_THROW_ERROR(std::logic_error, "This builder and solver does not support constraints!", "");
+            KRATOS_ERROR << "This builder and solver does not support constraints!";
         }
 
         //getting the elements from the model
@@ -520,7 +518,7 @@ public:
             KRATOS_WATCH(ActiveIdSet.size())
             KRATOS_WATCH(InactiveIdSet.size())
             KRATOS_WATCH(BaseType::mEquationSystemSize)
-            KRATOS_THROW_ERROR(std::logic_error, "Error: The active set of equation id's and inactive set of equation id's do not cover whole mEquationSystemSize. Check the enumeration.", __FUNCTION__)
+            KRATOS_ERROR << "Error: The active set of equation id's and inactive set of equation id's do not cover whole mEquationSystemSize. Check the enumeration.";
         }
         #endif // MODIFY_INACTIVE_PART_OF_THE_MATRIX
 
@@ -836,7 +834,7 @@ public:
                 {
                     if(col != 0)
                     {
-                        KRATOS_THROW_ERROR(std::logic_error, "Base indice for CSR must be 0", "")
+                        KRATOS_ERROR << "Base indice for CSR must be 0";
                     }
                 }
 
@@ -1571,7 +1569,7 @@ public:
 
         //throws an execption if there are no Degrees of freedom involved in the analysis
 //        if (BaseType::mDofSet.size()==0)
-//            KRATOS_THROW_ERROR(std::logic_error, "No degrees of freedom!", "");
+//            KRATOS_ERROR << "No degrees of freedom!";
 
         BaseType::mDofSetIsInitialized = true;
 
@@ -1762,22 +1760,22 @@ public:
     {
         KRATOS_TRY
 
-        if(pA == NULL) //if the pointer is not initialized initialize it to an empty matrix
+        if(pA == nullptr) //if the pointer is not initialized initialize it to an empty matrix
         {
             TSystemMatrixPointerType pNewA = TSystemMatrixPointerType(new TSystemMatrixType(0,0) );
             pA.swap(pNewA);
         }
-        if(pDx == NULL) //if the pointer is not initialized initialize it to an empty matrix
+        if(pDx == nullptr) //if the pointer is not initialized initialize it to an empty matrix
         {
             TSystemVectorPointerType pNewDx = TSystemVectorPointerType(new TSystemVectorType(0) );
             pDx.swap(pNewDx);
         }
-        if(pb == NULL) //if the pointer is not initialized initialize it to an empty matrix
+        if(pb == nullptr) //if the pointer is not initialized initialize it to an empty matrix
         {
             TSystemVectorPointerType pNewb = TSystemVectorPointerType(new TSystemVectorType(0) );
             pb.swap(pNewb);
         }
-        if(BaseType::mpReactionsVector == NULL) //if the pointer is not initialized initialize it to an empty matrix
+        if(BaseType::mpReactionsVector == nullptr) //if the pointer is not initialized initialize it to an empty matrix
         {
             TSystemVectorPointerType pNewReactionsVector = TSystemVectorPointerType(new TSystemVectorType(0) );
             BaseType::mpReactionsVector.swap(pNewReactionsVector);
@@ -1871,11 +1869,9 @@ public:
         int i;
         int systemsize = BaseType::mDofSet.size() - TSparseSpace::Size(*BaseType::mpReactionsVector);
 
-        typename DofsArrayType::ptr_iterator it2;
-
-        //updating variables
-        TSystemVectorType& ReactionsVector = *BaseType::mpReactionsVector;
-        for (it2=BaseType::mDofSet.ptr_begin(); it2 != BaseType::mDofSet.ptr_end(); ++it2)
+        // updating variables
+        const TSystemVectorType& ReactionsVector = *BaseType::mpReactionsVector;
+        for (auto it2 = BaseType::mDofSet.ptr_begin(); it2 != BaseType::mDofSet.ptr_end(); ++it2)
         {
             i = (*it2)->EquationId();
 
@@ -1910,7 +1906,7 @@ public:
     {
         this->mDofSet = DofsArrayType();
 
-        if(this->mpReactionsVector != NULL)
+        if(this->mpReactionsVector != nullptr)
             TSparseSpace::Clear( (this->mpReactionsVector) );
 //          this->mReactionsVector = TSystemVectorType();
 
