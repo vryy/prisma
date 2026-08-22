@@ -31,6 +31,7 @@
 
 // External includes
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
+#include <boost/numeric/ublas/matrix.hpp>
 
 
 // Project includes
@@ -203,7 +204,7 @@ public:
         fill_row(ThisMatrix, i, Value, TFunctorType());
     }
 
-    static typename TMatrixType::value_type frobenius_norm(TMatrixType const& container)
+    static double frobenius_norm(TMatrixType const& container)
     {
         return norm_frobenius(container);
     }
