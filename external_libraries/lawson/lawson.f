@@ -1048,7 +1048,8 @@ c
       integer M, MDA, MODE,N, NPP1, NSETP, RTNKEY
       integer INDEX(N)
       double precision A(MDA,N), B(M), W(N), X(N), ZZ(M)
-      double precision ALPHA, ASAVE, CC, DIFF, DUMMY, FACTOR, RNORM
+      double precision ALPHA, ASAVE, CC, DIFF, FACTOR, RNORM
+      double precision DUMMY(1)
       double precision SM, SS, T, TEMP, TWO, UNORM, UP, WMAX
       double precision ZERO, ZTEST
       parameter(FACTOR = 0.01d0)
