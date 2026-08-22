@@ -65,7 +65,7 @@ public:
         std::size_t M = rA.size1();
         std::size_t N = rA.size2();
 
-        double* dA = new double[M * N];
+        std::vector<double> dA(M * N);
         for (int i = 0; i < M; ++i)
             for (int j = 0; j < N; ++j)
                 dA[i * N + j] = rA(i, j); // row-major order
@@ -76,7 +76,7 @@ public:
         nsNNLS::nnls*   solver;
         int     flag;
 
-        A = new nsNNLS::denseMatrix(M, N, dA);
+        A = new nsNNLS::denseMatrix(M, N, dA.data());
 
         b = new nsNNLS::vector(M);
         for (std::size_t i = 0; i < M; ++i)
@@ -108,8 +108,9 @@ public:
             rX(i) = x->get(i);
 
         delete solver;
-        delete A, b, x;
-        delete dA;
+        delete A;
+        delete b;
+        delete x;
 
         return 0;
     }

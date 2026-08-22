@@ -30,12 +30,12 @@ namespace Kratos
 namespace Lawson
 {
 
-#ifdef _WIN32
+#if defined(__INTEL_COMPILER) || defined(__INTEL_LLVM_COMPILER)
     // Intel Fortran compiler on Windows does not append underscores to names
     // and also uses uppercase for the names
-#define nnls_wrapper NNLS
+    #define nnls_wrapper NNLS
 #else
-#define nnls_wrapper nnls_
+    #define nnls_wrapper nnls_
 #endif
 
 extern "C" void nnls_wrapper(double* A, int* MDA, int* M, int* N, double* B, double* X,
