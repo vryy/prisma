@@ -655,7 +655,9 @@ public:
                     }
 
                     //update the number of computed and assembled element
-                    num_computed_elements += 1;
+                    if (EquationId.size() > 0)
+                        num_computed_elements += 1; // only account element doing real computation
+                                // even though it is active
                     #ifdef DETECT_NAN_AT_BUILD
                     if (!std::isnan(norm_elem_k) && !std::isnan(norm_elem_r))
                     #endif
@@ -766,7 +768,9 @@ public:
 //                    std::cout << "Condition " << it->Id() << " is assembled" << std::endl;
 
                     // update the number of computed and assembled conditions
-                    num_computed_conditions += 1;
+                    if (EquationId.size() > 0)
+                        num_computed_conditions += 1; // only account condition doing real computation
+                                // even though it is active
                     #ifdef DETECT_NAN_AT_BUILD
                     if (!std::isnan(norm_cond_k) && !std::isnan(norm_cond_r))
                     #endif
@@ -1325,7 +1329,9 @@ public:
                     #endif
 
                     //update the number of computed and assembled element
-                    num_computed_elements += 1;
+                    if (EquationId.size() > 0)
+                        num_computed_elements += 1; // only account element doing real computation
+                                // even though it is active
                     #ifdef DETECT_NAN_AT_BUILD
                     if (!std::isnan(norm_elem_r))
                     #endif
@@ -1386,7 +1392,9 @@ public:
                     #endif
 
                     //update the number of computed and assembled condition
-                    num_computed_conditions += 1;
+                    if (EquationId.size() > 0)
+                        num_computed_conditions += 1; // only account condition doing real computation
+                                // even though it is active
                     #ifdef DETECT_NAN_AT_BUILD
                     if (!std::isnan(norm_elem_r))
                     #endif
