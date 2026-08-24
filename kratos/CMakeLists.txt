@@ -153,7 +153,6 @@ target_include_directories(KratosCore PUBLIC ${CMAKE_SOURCE_DIR}/applications)
 if(MSVC AND ${KRATOS_USE_INTEL_OPENMP} MATCHES ON)
     target_link_libraries(KratosCore ${INTEL_OPENMP_LIBRARY})
 endif()
-# cotire(KratosCore)
 
 if(ADOL_C_FOUND)
     target_link_libraries(KratosCore PUBLIC ADOLC::lib)
