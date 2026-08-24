@@ -16,8 +16,6 @@
 
 
 /* System includes */
-#include <set>
-
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -26,9 +24,7 @@
 #include "utilities/timer.h"
 
 /* Project includes */
-#include "includes/define.h"
 #include "solving_strategies/builder_and_solvers/builder_and_solver.h"
-#include "includes/model_part.h"
 
 namespace Kratos
 {

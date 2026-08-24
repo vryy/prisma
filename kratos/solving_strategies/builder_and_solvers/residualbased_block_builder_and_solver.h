@@ -15,10 +15,7 @@
 
 
 /* System includes */
-#include <set>
 #include <iostream>
-#include <fstream>
-
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -30,7 +27,6 @@
 /* Project includes */
 #include "includes/define.h"
 #include "solving_strategies/builder_and_solvers/builder_and_solver.h"
-#include "includes/model_part.h"
 #include "includes/kratos_flags.h"
 
 // #define EXPORT_LHS_MATRIX

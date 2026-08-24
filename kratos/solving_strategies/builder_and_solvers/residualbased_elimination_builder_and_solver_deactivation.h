@@ -49,8 +49,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 /* System includes */
-#include <set>
-
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -58,7 +56,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 /* External includes */
 
 /* Project includes */
-#include "includes/define.h"
 #include "includes/matrix_market_interface.h"
 #include "includes/kratos_flags.h"
 #include "includes/deprecated_variables.h"

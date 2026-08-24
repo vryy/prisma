@@ -14,20 +14,14 @@
 #define KRATOS_RESIDUAL_BASED_BLOCK_BUILDER_AND_SOLVER_WITH_CONSTRAINTS_ELEMENTWISE
 
 /* System includes */
-#include <unordered_set>
-#include <unordered_map>
 
 /* External includes */
-#include <boost/make_unique.hpp>
 
 /* Project includes */
 #include "solving_strategies/builder_and_solvers/residualbased_block_builder_and_solver_with_constraints.h"
 #include "includes/key_hash.h"
 #include "includes/master_slave_constraint.h"
 #include "utilities/helper_classes_for_constraint_builder.h"
-#include "containers/pointer_vector_map.h"
-#include "containers/pointer_hash_map_set.h"
-#include "containers/data_value_container.h"
 
 namespace Kratos
 {

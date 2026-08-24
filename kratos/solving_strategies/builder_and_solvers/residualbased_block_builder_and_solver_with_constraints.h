@@ -16,16 +16,11 @@
 
 
 /* System includes */
-#include <iostream>
-#include <unordered_set>
-#include <unordered_map>
 
 /* External includes */
 
 /* Project includes */
-#include "includes/define.h"
 #include "solving_strategies/builder_and_solvers/builder_and_solver.h"
-#include "includes/model_part.h"
 #include "utilities/timer.h"
 #include "utilities/openmp_utils.h"
 #include "includes/kratos_flags.h"

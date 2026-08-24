@@ -15,19 +15,13 @@
 
 
 /* System includes */
-#include <set>
-
 #ifdef _OPENMP
 #include <omp.h>
 #endif
 
-
 /* External includes */
-#include "boost/smart_ptr.hpp"
-
 
 /* Project includes */
-#include "includes/define.h"
 #include "solving_strategies/builder_and_solvers/residualbased_elimination_builder_and_solver.h"
 
 
