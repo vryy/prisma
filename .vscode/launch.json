@@ -34,6 +34,65 @@
           }
         ],
         "preLaunchTask": "build"  // Runs the build task before starting debugging
+      },
+      {
+        "name": "(gdb) (docker) Launch",
+        "type": "cppdbg",
+        "request": "launch",
+
+        "program": "/home/kuser/kratos_libs/Debug311/runkratos",  // Path to the compiled binary
+        "args": ["quad4.py", "test"],  // Arguments passed to the program, if any
+        "stopAtEntry": false,
+        "cwd": "/home/kuser/kratos_workspace/Benchmark_kratos/structural_application/patch_test/quad4.gid",  // Working directory for the program
+        "environment": [
+          {
+            "name": "LD_LIBRARY_PATH",
+            "value": "/home/kuser/kratos_libs/Debug311/libs:/opt/intel/oneapi/tbb/2021.12/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/mkl/2024.1/lib:/opt/intel/oneapi/compiler/2024.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2024.1/lib:/home/kuser/kratos_libs/libs:/opt/petsc-3.19.3/lib:/opt/p4est/lib:/opt/cddlib-094j/lib:/opt/cgal-4.10.2/lib:/opt/mpfr-3.1.2/lib:/opt/gmp-6.1.2/lib:/opt/boost_1_86_0/lib"
+          },
+          {
+            "name": "PYTHONPATH",
+            "value": "/home/kuser/kratos_libs/Debug311:/home/kuser/kratos_libs/Debug311/libs"
+          },
+          {
+            "name": "OMP_NUM_THREADS",
+            "value": "1"
+          }
+        ],
+        "externalConsole": false,
+        "MIMode": "gdb",
+        "miDebuggerPath": "/usr/bin/gdb",  // Ensure this path is correct on your system
+        "setupCommands": [
+          {
+            "description": "Enable pretty-printing for gdb",
+            "text": "-enable-pretty-printing",
+            "ignoreFailures": true
+          }
+        ],
+        "preLaunchTask": "build"  // Runs the build task before starting debugging
+      },
+      {
+        "name": "(msvc) Launch",
+        "type": "cppvsdbg",
+        "request": "launch",
+        "program": "C:/Users/hgbk2/Documents/kratos_bundle/kratos_libs/Release312_debug/runkratos.exe",  // Path to the compiled binary
+        "args": ["mesh_hyplas_q4.py", "test2"],  // Arguments passed to the program, if any
+        "stopAtEntry": false,
+        "cwd": "C:/Users/hgbk2/Documents/kratos_bundle/Benchmark_prisma/ersatz_anwendung/structural_application/test_multiplicative_finite_strain_bridging/example_14_9_3/mesh_hyplas_q4_fbar_dc_ecsw",  // Working directory for the program
+        "console": "integratedTerminal",
+        "environment": [
+          {
+            "name": "PATH",
+            "value": "${env:PATH}"
+          },
+          {
+            "name": "PYTHONPATH",
+            "value": "C:/Users/hgbk2/Documents/kratos_bundle/kratos_libs/Release312_debug;C:/Users/hgbk2/Documents/kratos_bundle/kratos_libs/Release312_debug/libs"
+          },
+          {
+            "name": "OMP_NUM_THREADS",
+            "value": "1"
+          }
+        ]
       }
     ]
 }
