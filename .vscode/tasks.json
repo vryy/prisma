@@ -84,6 +84,29 @@
 			"group": "build",
 			"problemMatcher": [],
 			"detail": "CMake release build task"
-		}
+		},
+		{
+            "label": "CMake: configure release ninja",
+            "type": "shell",
+            "command": "C:/PortablePrograms/cmake-4.2.0-windows-x86_64/bin/cmake",
+            "args": [
+				"--preset=ninja-release"
+            ],
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "Configures the project with CMake"
+        },
+		{
+            "label": "CMake: build release ninja",
+            "type": "shell",
+            "command": "C:/PortablePrograms/cmake-4.2.0-windows-x86_64/bin/cmake",
+            "args": [
+				"--build",
+				"--preset=ninja-build-release"
+            ],
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "Configures the project with CMake"
+        }
 	]
 }
