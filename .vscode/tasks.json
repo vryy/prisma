@@ -30,6 +30,34 @@
 			"detail": "CMake release build task"
 		},
 		{
+            "label": "CMake: configure debug docker",
+            "type": "shell",
+            "command": "sh",
+            "args": [
+				"configure.sh"
+            ],
+			"options": {
+                "cwd": "/home/kuser/kratos_builds/cmake_build_debug"
+            },
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "Configures the project with CMake"
+        },
+		{
+			"label": "CMake: build debug docker",
+			"type": "shell",
+			"command": "make",
+			"args": [
+				"install", "-j8"
+			],
+			"options": {
+                "cwd": "/home/kuser/kratos_builds/cmake_build_debug"
+            },
+			"group": "build",
+			"problemMatcher": [],
+			"detail": "CMake debug build task"
+		},
+		{
             "label": "CMake: configure release host",
             "type": "shell",
             "command": "sh",
