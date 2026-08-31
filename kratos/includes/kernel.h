@@ -20,11 +20,8 @@
 // THE USE OF THISSOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-
 #if !defined(KRATOS_KERNEL_H_INCLUDED )
 #define  KRATOS_KERNEL_H_INCLUDED
-
-
 
 // System includes
 #include <string>

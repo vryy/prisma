@@ -11,6 +11,7 @@
 
 namespace Kratos
 {
+
 template< class TSparseSpaceType, class TDenseSpaceType > class LUSkylineFactorization
 {
 public:
