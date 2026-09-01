@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.8.6...3.19.4)
+cmake_minimum_required(VERSION 3.21)
 project (Prisma)
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Android")

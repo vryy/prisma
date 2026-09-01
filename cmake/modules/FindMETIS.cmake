@@ -1,35 +1,33 @@
-# Find the METIS includes and libraries
-#
-# ParMETIS is an MPI-based parallel library that implements a variety of algorithms for 
-# partitioning unstructured graphs, meshes, and for computing fill-reducing orderings of 
-# sparse matrices. It can be found at:
-# 	http://www-users.cs.umn.edu/~karypis/metis/parmetis/index.html
-#
-# METIS_INCLUDE_DIR - where to find autopack.h
-# METIS_LIBRARIES   - List of fully qualified libraries to link against.
-# METIS_FOUND       - Do not attempt to use if "no" or undefined.
+# cmake/FindMETIS.cmake
 
-FIND_PATH(METIS_INCLUDE_DIR metis.h
-  /usr/local/include
-  /usr/include
-  "${METIS_ROOT_DIR}/include"
+find_path(METIS_INCLUDE_DIR metis.h
+    HINTS "${METIS_ROOT_DIR}" $ENV{METIS_ROOT_DIR}
+    PATH_SUFFIXES include
+    NO_DEFAULT_PATH
 )
 
-FIND_LIBRARY(METIS_LIBRARY metis
-  /usr/local/lib
-  /usr/lib
-  "${METIS_ROOT_DIR}/lib"
+find_library(METIS_LIBRARY metis
+    HINTS "${METIS_ROOT_DIR}" $ENV{METIS_ROOT_DIR}
+    PATH_SUFFIXES lib lib64
+    NO_DEFAULT_PATH
 )
 
+# 1. Include the standard args module
+include(FindPackageHandleStandardArgs)
 
-IF(METIS_INCLUDE_DIR)
-  IF(METIS_LIBRARY)
-    SET( METIS_LIBRARIES ${METIS_LIBRARY} ${METIS_LIBRARY})
-    SET( METIS_FOUND "YES" )
-    message("METIS found")
-  ELSE(METIS_LIBRARY)
-    message("finding METIS failed, please try to set the var METIS_ROOT_DIR")
-  ENDIF(METIS_LIBRARY)
-ELSE(METIS_INCLUDE_DIR)
-  message("finding METIS failed, please try to set the var METIS_ROOT_DIR")
-ENDIF(METIS_INCLUDE_DIR)
+# 2. Let CMake automatically check REQUIRED, QUIET, and populate METIS_FOUND
+find_package_handle_standard_args(METIS
+    REQUIRED_VARS METIS_LIBRARY METIS_INCLUDE_DIR
+    FAIL_MESSAGE "Could NOT find METIS using METIS_ROOT_DIR: ${METIS_ROOT_DIR}"
+)
+
+# 3. Create the imported target if found
+if(METIS_FOUND AND NOT TARGET METIS::METIS)
+    add_library(METIS::METIS UNKNOWN IMPORTED)
+    set_target_properties(METIS::METIS PROPERTIES
+        IMPORTED_LOCATION "${METIS_LIBRARY}"
+        INTERFACE_INCLUDE_DIRECTORIES "${METIS_INCLUDE_DIR}"
+    )
+endif()
+
+mark_as_advanced(METIS_INCLUDE_DIR METIS_LIBRARY)
