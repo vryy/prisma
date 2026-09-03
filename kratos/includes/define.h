@@ -618,21 +618,6 @@ namespace Internals
     struct is_extended_arithmetic<std::complex<T> > : std::true_type {};
 }
 
-//Print Trace if defined
-//#define KRATOS_PRINT_TRACE
-#ifdef KRATOS_PRINT_TRACE
-
-#define KRATOS_TRACE(A,B) gTrace.Inform(A,B)
-
-#else
-
-#define KRATOS_TRACE(A,B)
-#endif
-
-#define KRATOS_TRIANGULAR_MEMBRANE_ELEMENT_INCLUDED
-#define KRATOS_QUADRILATERAL_DIFFUSION_CONVECTION_ELEMENT_INCLUDED
-#define KRATOS_TETRAHEDRAL_HEAT_CONDUCTIVITY_ELEMENT_INCLUDED
-
 #define KRATOS_SWATCH(os, variable) \
   os << #variable << " : " << variable << std::endl;
 
