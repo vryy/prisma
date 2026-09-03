@@ -13,6 +13,7 @@
 // Project includes
 #include "includes/model_part_io.h"
 #include "utilities/timer.h"
+#include "utilities/logger.h"
 
 namespace Kratos
 {
@@ -444,8 +445,7 @@ namespace Kratos
             else if (word == "SubModelPart")
                 ReadSubModelPartBlock(rThisModelPart, rThisModelPart);
         }
-        std::cout << "  [Total Lines Read : " << mNumberOfLines<<"]";
-        std::cout << std::endl;
+        KRATOS_INFO("ModelPartIO") << "  [Total Lines Read : " << mNumberOfLines<<"]" << std::endl;
         Timer::Stop("Reading Input");
         KRATOS_CATCH("")
     }
@@ -595,8 +595,7 @@ namespace Kratos
         WritePartitionIndices(output_files, NodesPartitions, NodesAllPartitions);
 
         WriteCommunicatorData(output_files, NumberOfPartitions, DomainsColoredGraph, NodesPartitions, ElementsPartitions, ConditionsPartitions, NodesAllPartitions, ElementsAllPartitions, ConditionsAllPartitions);
-        std::cout << "  [Total Lines Read : " << mNumberOfLines<<"]";
-        std::cout << std::endl;
+        KRATOS_INFO("ModelPartIO") << "  [Total Lines Read : " << mNumberOfLines<<"]" << std::endl;
 
         for(SizeType i = 0 ; i < NumberOfPartitions ; i++)
             delete output_files[i];
@@ -849,7 +848,7 @@ namespace Kratos
 
         SizeType number_of_nodes_read = 0;
 
-        std::cout << "  [Reading Nodes    : ";
+        KRATOS_INFO("ModelPartIO") << "  [Reading Nodes    : ";
 
         while(!mFile.eof())
         {
@@ -873,12 +872,12 @@ namespace Kratos
             rThisNodes.push_back(temp_node);
             number_of_nodes_read++;
         }
-        std::cout << number_of_nodes_read << " nodes read]" << std::endl;
+        KRATOS_INFO("") << number_of_nodes_read << " nodes read]" << std::endl;
 
         unsigned int numer_of_nodes_read = rThisNodes.size();
         rThisNodes.Unique();
-        if(rThisNodes.size() != numer_of_nodes_read)
-            std::cout << "attention! we read " << numer_of_nodes_read << " but there are only " << rThisNodes.size() << " non repeated nodes" << std::endl;
+        KRATOS_WARNING_IF("ModelPartIO", rThisNodes.size() != numer_of_nodes_read) << "attention! we read "
+                << numer_of_nodes_read << " but there are only " << rThisNodes.size() << " non repeated nodes" << std::endl;
 
         KRATOS_CATCH("")
     }
@@ -887,53 +886,7 @@ namespace Kratos
     void ModelPartIO<TModelPartType>::ReadNodesBlock(ModelPartType& rModelPart)
     {
         KRATOS_TRY
-  /*
-  NodeType temp_node;
-        SizeType temp_id;
 
-        // Giving model part's variables list to the node
-        temp_node.SetSolutionStepVariablesList(&rModelPart.GetNodalSolutionStepVariablesList());
-
-        //set buffer size
-        temp_node.SetBufferSize(rModelPart.GetBufferSize());
-
-
-        std::string word;
-
-        SizeType number_of_nodes_read = 0;
-
-        std::cout << "  [Reading Nodes    : ";
-
-        while(!mFile.eof())
-        {
-            ReadWord(word);
-            if(CheckEndBlock("Nodes", word))
-                break;
-
-            ExtractValue(word, temp_id);
-            temp_node.SetId(ReorderedNodeId(temp_id));
-            ReadWord(word);
-            ExtractValue(word, temp_node.X());
-            ReadWord(word);
-            ExtractValue(word, temp_node.Y());
-            ReadWord(word);
-            ExtractValue(word, temp_node.Z());
-
-            temp_node.X0() = temp_node.X();
-            temp_node.Y0() = temp_node.Y();
-            temp_node.Z0() = temp_node.Z();
-
-
-            rModelPart.Nodes().push_back(temp_node);
-            number_of_nodes_read++;
-        }
-        std::cout << number_of_nodes_read << " nodes read]" << std::endl;
-
-        unsigned int numer_of_nodes_read = rModelPart.Nodes().size();
-        rModelPart.Nodes().Unique();
-        if(rModelPart.Nodes().size() != numer_of_nodes_read)
-            std::cout << "attention! we read " << numer_of_nodes_read << " but there are only " << rModelPart.Nodes().size() << " non repeated nodes" << std::endl;
-*/
         SizeType id;
         CoordinateType x, y, z;
 
@@ -944,7 +897,7 @@ namespace Kratos
         typedef std::map< unsigned int, array_1d<CoordinateType, 3> > map_type;
         map_type read_coordinates;
 
-        std::cout << "  [Reading Nodes    : ";
+        KRATOS_INFO("ModelPartIO") << "  [Reading Nodes    : ";
 
         while(!mFile.eof())
         {
@@ -967,7 +920,7 @@ namespace Kratos
             read_coordinates[id] = coords;
             number_of_nodes_read++;
         }
-        std::cout << number_of_nodes_read << " nodes read]" << std::endl;
+        KRATOS_INFO("") << number_of_nodes_read << " nodes read]" << std::endl;
 
         for(typename map_type::const_iterator it = read_coordinates.begin(); it!=read_coordinates.end(); ++it)
         {
@@ -975,8 +928,7 @@ namespace Kratos
             const auto& coords = it->second;
             rModelPart.CreateNewNode(node_id, coords[0], coords[1], coords[2]);
         }
-        if(rModelPart.Nodes().size() != number_of_nodes_read)
-            std::cout << "attention! we read " << number_of_nodes_read << " but there are only " << rModelPart.Nodes().size() << " non repeated nodes" << std::endl;
+        KRATOS_WARNING_IF("ModelPartIO", rModelPart.Nodes().size() != number_of_nodes_read) << "attention! we read " << number_of_nodes_read << " but there are only " << rModelPart.Nodes().size() << " non repeated nodes" << std::endl;
 
         KRATOS_CATCH("")
     }
@@ -994,8 +946,6 @@ namespace Kratos
 
         SizeType number_of_nodes_read = 0;
 
-    //std::cout << "  [Reading Nodes    : ";
-
         while(!mFile.eof())
         {
             ReadWord(word);
@@ -1011,15 +961,15 @@ namespace Kratos
 
             number_of_nodes_read++;
         }
-        //std::cout << number_of_nodes_read << " nodes read]" << std::endl;
 
         // Error check: look for duplicate nodes
         std::sort(found_ids.begin(),found_ids.end());
         typename std::vector<SizeType>::iterator unique_end = std::unique(found_ids.begin(),found_ids.end());
         SizeType number_of_unique_nodes = std::distance(found_ids.begin(),unique_end);
 
-        if(number_of_unique_nodes != number_of_nodes_read)
-            std::cout << "attention! we read " << number_of_nodes_read << " but there are only " << number_of_unique_nodes << " non repeated nodes" << std::endl;
+        KRATOS_WARNING_IF("ModelPartIO", number_of_unique_nodes != number_of_nodes_read)
+                << "attention! we read " << number_of_nodes_read << " but there are only "
+                << number_of_unique_nodes << " non repeated nodes" << std::endl;
 
         return number_of_nodes_read;
 
@@ -1151,7 +1101,7 @@ namespace Kratos
         std::string element_name;
 
         ReadWord(element_name);
-        std::cout << "  [Reading Elements : ";
+        KRATOS_INFO("ModelPartIO") << "  [Reading Elements : ";
 
         if(!KratosComponents<ElementType>::Has(element_name))
         {
@@ -1188,7 +1138,7 @@ namespace Kratos
             number_of_read_elements++;
 
         }
-        std::cout << number_of_read_elements << " elements read] [Type: " <<element_name << "]" << std::endl;
+        KRATOS_INFO("") << number_of_read_elements << " elements read] [Type: " <<element_name << "]" << std::endl;
         rThisElements.Unique();
 
         KRATOS_CATCH("")
@@ -1215,7 +1165,7 @@ namespace Kratos
         std::string condition_name;
 
         ReadWord(condition_name);
-        std::cout << "  [Reading Conditions : ";
+        KRATOS_INFO("ModelPartIO") << "  [Reading Conditions : ";
 
         if(!KratosComponents<ConditionType>::Has(condition_name))
         {
@@ -1251,7 +1201,7 @@ namespace Kratos
             rThisConditions.push_back(r_clone_condition.Create(ReorderedConditionId(id), temp_condition_nodes, p_temp_properties));
             number_of_read_conditions++;
         }
-        std::cout << number_of_read_conditions << " conditions read] [Type: " << condition_name << "]" << std::endl;
+        KRATOS_INFO("") << number_of_read_conditions << " conditions read] [Type: " << condition_name << "]" << std::endl;
         rThisConditions.Unique();
 
         KRATOS_CATCH("")
@@ -1280,7 +1230,9 @@ namespace Kratos
         {
             bool has_been_added = r_modelpart_nodal_variables_list.Has(KratosComponents<Variable<int> >::Get(variable_name)) ;
             if( !has_been_added && mOptions.Is(BaseType::IGNORE_VARIABLES_ERROR) ) {
-                std::cout<<std::endl<<"WARNING: Skipping NodalData block. Variable "<<variable_name<<" has not been added to ModelPartType '"<<rThisModelPart.Name()<<"'"<<std::endl<<std::endl;
+                KRATOS_WARNING("ModelPartIO") << std::endl << "WARNING: Skipping NodalData block. Variable "
+                        << variable_name << " has not been added to ModelPartType '"
+                        << rThisModelPart.Name() << "'" << std::endl << std::endl;
                 SkipBlock("NodalData");
             }
             else if (!has_been_added)
@@ -1296,7 +1248,9 @@ namespace Kratos
         {
             bool has_been_added = r_modelpart_nodal_variables_list.Has(KratosComponents<Variable<DataType> >::Get(variable_name)) ;
             if( !has_been_added && mOptions.Is(BaseType::IGNORE_VARIABLES_ERROR) ) {
-                std::cout<<std::endl<<"WARNING: Skipping NodalData block. Variable "<<variable_name<<" has not been added to ModelPartType '"<<rThisModelPart.Name()<<"'"<<std::endl<<std::endl;
+                KRATOS_WARNING("ModelPartIO") << std::endl << "WARNING: Skipping NodalData block. Variable "
+                        << variable_name << " has not been added to ModelPartType '"
+                        << rThisModelPart.Name() << "'" << std::endl << std::endl;
                 SkipBlock("NodalData");
             }
             else if (!has_been_added)
@@ -1316,7 +1270,9 @@ namespace Kratos
         {
             bool has_been_added = r_modelpart_nodal_variables_list.Has(KratosComponents<Variable<array_1d<DataType, 3> > >::Get(variable_name)) ;
             if( !has_been_added && mOptions.Is(BaseType::IGNORE_VARIABLES_ERROR) ) {
-                std::cout<<std::endl<<"WARNING: Skipping NodalData block. Variable "<<variable_name<<" has not been added to ModelPartType '"<<rThisModelPart.Name()<<"'"<<std::endl<<std::endl;
+                KRATOS_WARNING("ModelPartIO") << std::endl << "WARNING: Skipping NodalData block. Variable "
+                        << variable_name << " has not been added to ModelPartType '"
+                        << rThisModelPart.Name() << "'" << std::endl << std::endl;
             }
             else if (!has_been_added)
             {
@@ -1563,7 +1519,7 @@ namespace Kratos
             if(i_result != rThisElements.end())
                 i_result->GetValue(rVariable) =  elemental_value;
             else
-                std::cout  << "WARNING! Assigning " << rVariable.Name() << " to not existing element #" << id << " [Line " << mNumberOfLines << " ]" << std::endl;
+                KRATOS_WARNING("ModelPartIO") << "WARNING! Assigning " << rVariable.Name() << " to not existing element #" << id << " [Line " << mNumberOfLines << " ]" << std::endl;
         }
 
         KRATOS_CATCH("")
@@ -1598,7 +1554,7 @@ namespace Kratos
             if(i_result != rThisElements.end())
                 i_result->GetValue(rVariable) =  elemental_value;
             else
-                std::cout  << "WARNING! Assigning " << rVariable.Name() << " to not existing element #" << id << " [Line " << mNumberOfLines << " ]" << std::endl;
+                KRATOS_WARNING("ModelPartIO") << "WARNING! Assigning " << rVariable.Name() << " to not existing element #" << id << " [Line " << mNumberOfLines << " ]" << std::endl;
         }
 
         KRATOS_CATCH("")
@@ -1679,7 +1635,7 @@ namespace Kratos
             if(i_result != rThisConditions.end())
                 i_result->GetValue(rVariable) =  conditional_value;
             else
-                std::cout  << "WARNING! Assigning " << rVariable.Name() << " to not existing condition #" << id << " [Line " << mNumberOfLines << " ]" << std::endl;
+                KRATOS_WARNING("ModelPartIO") << "WARNING! Assigning " << rVariable.Name() << " to not existing condition #" << id << " [Line " << mNumberOfLines << " ]" << std::endl;
         }
 
         KRATOS_CATCH("")
@@ -1712,7 +1668,7 @@ namespace Kratos
             if(i_result != rThisConditions.end())
                 i_result->GetValue(rVariable) =  conditional_value;
             else
-                std::cout  << "WARNING! Assigning " << rVariable.Name() << " to not existing condition #" << id << " [Line " << mNumberOfLines << " ]" << std::endl;
+                KRATOS_WARNING("ModelPartIO") << "WARNING! Assigning " << rVariable.Name() << " to not existing condition #" << id << " [Line " << mNumberOfLines << " ]" << std::endl;
         }
 
         KRATOS_CATCH("")

@@ -7,85 +7,135 @@
 //  License:         BSD License
 //                   Kratos default license: kratos/license.txt
 //
-//  Main authors:    Carlos Roig
-//                   Pooyan Dadvand
+//  Main authors:    Pooyan Dadvand
+//                   Carlos Roig
 //
 
-
 // System includes
-
+#include <algorithm>
+#include <cstdlib>
 
 // External includes
 
-
 // Project includes
-#include "includes/define.h"
-#include "utilities/logger.h"
+#include "logger.h"
 
+#ifdef _OPENMP
+#define KRATOS_CRITICAL_SECTION _Pragma("omp critical")
+#else
+#define KRATOS_CRITICAL_SECTION
+#endif
 
 namespace Kratos
 {
 
-    Logger::Logger()
-    {
-    }
+Logger::Logger(std::string const& TheLabel) : mCurrentMessage(TheLabel)
+{
+}
 
-    Logger::~Logger()
+Logger::~Logger()
+{
+    auto outputs = GetOutputsInstance();
+    KRATOS_CRITICAL_SECTION
     {
-    }
-
-    std::string Logger::Info() const
-    {
-        return "Logger";
-    }
-
-      /// Print information about this object.
-    void Logger::PrintInfo(std::ostream& rOStream) const
-    {
-    }
-      /// Print object's data.
-    void Logger::PrintData(std::ostream& rOStream) const
-    {
-    }
-
-    std::string Logger::CleanFunctionName(const std::string& FunctionName, const std::string& FileName, int LineNumber)
-    {
-        std::stringstream buffer;
-        buffer << Filter(FunctionName) + " [ " + FileName +  " , Line " << LineNumber << " ] ";
-        return buffer.str();
-    }
-
-    std::string Logger::Filter(const std::string& ThisString)
-    {
-        std::string buffer(ThisString);
-
-        ReplaceAll(buffer, "Kratos::", "");
-        ReplaceAll(buffer, "__cdecl", "");
-        ReplaceAll(buffer, "class", "");
-        ReplaceAll(buffer, "Dof<double>", "Dof");
-        ReplaceAll(buffer, "Node<3, Dof >", "Node");
-        ReplaceAll(buffer, "Point<3,double>", "Point");
-        ReplaceAll(buffer, "boost::", "");
-        ReplaceAll(buffer, "numeric::", "");
-        ReplaceAll(buffer, "std::allocator<double>", "");
-        ReplaceAll(buffer, "std::allocator< Point >", "");
-        ReplaceAll(buffer, "<double,  >", "<double>");
-
-
-        return buffer;
-    }
-    std::string Logger::ReplaceAll(std::string& ThisString, const std::string& FromString, const std::string& ToString)
-    {
-        std::size_t start_position = 0;
-        while((start_position = ThisString.find(FromString,start_position)) != std::string::npos)
-        {
-            ThisString.replace(start_position, FromString.length(), ToString);
-            start_position += ToString.length(); // ...
+        const bool critical_message =
+            mCurrentMessage.GetCategory() == Logger::Category::CRITICAL;
+        if (critical_message) {
+            StdLoggerOutput::GetInstance().WriteMessage(mCurrentMessage);
         }
-        return ThisString;
+
+        for (auto it_output = outputs.begin(); it_output != outputs.end(); ++it_output) {
+            (*it_output)->WriteMessage(mCurrentMessage);
+        }
+    }
+}
+
+void Logger::AddOutput(LoggerOutput::Pointer pTheOutput)
+{
+    KRATOS_CRITICAL_SECTION
+    {
+        GetOutputsInstance().insert(pTheOutput);
+    }
+}
+
+void Logger::RemoveOutput(LoggerOutput::Pointer pTheOutput)
+{
+    KRATOS_TRY
+
+    KRATOS_CRITICAL_SECTION
+    {
+        auto& r_outputs = GetOutputsInstance();
+        auto it_find = std::find(r_outputs.begin(), r_outputs.end(), pTheOutput);
+        if (it_find != r_outputs.end()) {
+            r_outputs.erase(it_find);
+        }
     }
 
+    KRATOS_CATCH("");
+}
+
+void Logger::Flush()
+{
+    auto outputs = GetOutputsInstance();
+    StdLoggerOutput::GetInstance().Flush();
+    for (auto it_output = outputs.begin(); it_output != outputs.end(); ++it_output) {
+        (*it_output)->Flush();
+    }
+}
+
+std::string Logger::Info() const
+{
+    return "Logger";
+}
+
+/// Print information about this object.
+void Logger::PrintInfo(std::ostream& rOStream) const
+{
+}
+
+/// Print object's data.
+void Logger::PrintData(std::ostream& rOStream) const
+{
+}
+
+/// Manipulator stream function
+Logger& Logger::operator << (std::ostream& (*pf)(std::ostream&))
+{
+    mCurrentMessage << pf;
+
+    return *this;
+}
+
+/// char stream function
+Logger& Logger::operator << (const char * rString)
+{
+    mCurrentMessage << rString;
+
+    return *this;
+}
+
+// Location stream function
+Logger& Logger::operator << (CodeLocation const& TheLocation)
+{
+    mCurrentMessage << TheLocation;
+
+    return *this;
+}
+
+/// Severity stream function
+Logger& Logger::operator << (Severity const& TheSeverity)
+{
+    mCurrentMessage << TheSeverity;
+
+    return *this;
+}
+
+/// Category stream function
+Logger& Logger::operator << (Category const& TheCategory)
+{
+    mCurrentMessage << TheCategory;
+
+    return *this;
+}
 
 }  // namespace Kratos.
-
-

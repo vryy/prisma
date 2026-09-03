@@ -66,6 +66,7 @@
 
 #include "add_search_strategies_to_python.h"
 #include "add_kratos_parameters_to_python.h"
+#include "add_logger_to_python.h"
 
 #include "add_constraint_to_python.h"
 
@@ -123,6 +124,7 @@ BOOST_PYTHON_MODULE(Kratos)
     AddGeometriesToPython();
     AddMatrixMarketInterfaceToPython();
     AddKratosParametersToPython();
+    AddLoggerToPython();
     AddConstraintToPython();
     AddSearchStrategiesToPython();
 

@@ -132,6 +132,9 @@ public:
     ///@name Input and output
     ///@{
 
+    /// Print the welcome message
+    static void Welcome(std::ostream& rOStream);
+
     /// Turn back information as a string.
     virtual std::string Info() const;
 
@@ -146,7 +149,6 @@ public:
 private:
     ///@name Static Member Variables
     ///@{
-
 
     ///@}
     ///@name Member Variables
