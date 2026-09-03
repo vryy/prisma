@@ -43,12 +43,12 @@ set( KRATOS_CORE_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/utilities/constraint_utilities.cpp
 )
 
-if(${MPI_FOUND})
+if(MPI_FOUND)
     set(KRATOS_CORE_SOURCES ${KRATOS_CORE_SOURCES}
         ${CMAKE_CURRENT_SOURCE_DIR}/sources/mpi_communicator.cpp)
 endif()
 
-if( ${KRATOS_PYTHON} MATCHES TRUE)
+if(KRATOS_PYTHON)
     set( KRATOS_PYTHON_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_model_part_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_model_to_python.cpp
@@ -118,18 +118,18 @@ if((${CMAKE_CXX_COMPILER_ID} MATCHES Clang) OR (${CMAKE_CXX_COMPILER_ID} MATCHES
     )
 endif()
 
-if(${KRATOS_PYTHON} MATCHES TRUE)
+if(KRATOS_PYTHON)
     target_link_libraries(KratosCore PUBLIC ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${PYTHON_LIBRARIES} gidpost)
 else()
     target_link_libraries(KratosCore PUBLIC ${Boost_LIBRARIES} gidpost)
 endif()
 
-if(${BLAS_INCLUDE_NEEDED} MATCHES ON )
+if(BLAS_INCLUDE_NEEDED)
     target_link_libraries(KratosCore PUBLIC ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
     target_compile_definitions(KratosCore PUBLIC KRATOS_USE_BLAS_LAPACK)
 endif()
 
-if(${MPI_FOUND})
+if(MPI_FOUND)
     target_link_libraries(KratosCore PUBLIC MPI::MPI_CXX)
     target_compile_definitions(KratosCore PUBLIC KRATOS_USE_MPI)
 endif()
@@ -150,7 +150,7 @@ target_include_directories(KratosCore PUBLIC ${CMAKE_SOURCE_DIR})
 target_include_directories(KratosCore PUBLIC ${CMAKE_SOURCE_DIR}/kratos)
 # expose the applications directory in case the target wants to include like appname_application/custom...
 target_include_directories(KratosCore PUBLIC ${CMAKE_SOURCE_DIR}/applications)
-if(MSVC AND ${KRATOS_USE_INTEL_OPENMP} MATCHES ON)
+if(MSVC AND KRATOS_USE_INTEL_OPENMP)
     target_link_libraries(KratosCore ${INTEL_OPENMP_LIBRARY})
 endif()
 
@@ -194,13 +194,13 @@ else()
     install(TARGETS KratosCore DESTINATION libs )
 endif()
 
-if(${INSTALL_PYTHON_FILES} MATCHES ON)
+if(INSTALL_PYTHON_FILES)
   get_filename_component (CURRENT_DIR_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
   install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/python_scripts DESTINATION kratos/  FILES_MATCHING PATTERN "*.py"  PATTERN ".svn" EXCLUDE)
-endif(${INSTALL_PYTHON_FILES} MATCHES ON)
+endif()
 
 ###############################################################
-if(${KRATOS_PYTHON} MATCHES TRUE)
+if(KRATOS_PYTHON)
     ## define library Kratos which defines the basic python interface
     add_library(Kratos SHARED ${KRATOS_PYTHON_SOURCES})
     if(MSVC)

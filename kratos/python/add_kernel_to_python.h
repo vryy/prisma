@@ -47,4 +47,4 @@ void  AddKernelToPython();
 
 }  // namespace Kratos.
 
-#endif // KRATOS_ADD_KERNEL_TO_PYTHON_H_INCLUDED  defined 
+#endif // KRATOS_ADD_KERNEL_TO_PYTHON_H_INCLUDED  defined
