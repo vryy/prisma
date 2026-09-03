@@ -18,6 +18,13 @@ KratosGlobals = kratos_globals.KratosGlobals(
 # Initialize Kernel so that core variables have an assigned Key even if we are not importing applications
 KratosGlobals.Kernel.Initialize()
 
+# Set the default logger output to the standard output (can be changed later)
+Kernel().AddOutput(StdLoggerOutput())
+
+# Forward function to print to the logger, so that it can be used in the same way as print() in Python 2.7 and 3.x
+def kprint(*args, **kwargs):
+    Logger.Print(*args, **kwargs)
+
 def CheckForPreviousImport():
 
     first_caller = KratosGlobals.AuthorizedCaller[

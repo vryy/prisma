@@ -184,9 +184,7 @@ public:
 //KRATOS_WATCH(AbsoluteNorm)
 //KRATOS_WATCH(mAlwaysConvergedNorm)
 //KRATOS_WATCH(mRatioTolerance)
-            if (this->GetEchoLevel() == 1)
-/*                std::cout << "DISPLACEMENT CRITERION :: [ Obtained tol = " << ratio << "; Expected ratio = " << mRatioTolerance << "; Absolute tol = " << AbsoluteNorm << "; ]" << std::endl;*/
-                std::cout << "DISPLACEMENT CRITERION :: [ ||Dx||/||x|| = " << ratio << "; Expected tol = " << mRatioTolerance << "; ||b|| = " << AbsoluteNorm << "; ]" << std::endl;
+            KRATOS_INFO("ConvergenceCriteria") << "DISPLACEMENT CRITERION :: [ ||Dx||/||x|| = " << ratio << "; Expected tol = " << mRatioTolerance << "; ||b|| = " << AbsoluteNorm << "; ]" << std::endl;
 
             r_model_part.GetProcessInfo()[CONVERGENCE_RATIO] = ratio;
             r_model_part.GetProcessInfo()[RESIDUAL_NORM] = AbsoluteNorm;
@@ -194,26 +192,26 @@ public:
 //            if ( ratio <= mRatioTolerance  ||  AbsoluteNorm<mAlwaysConvergedNorm )  //  || (FinalCorrectionNorm/x.size())<=1e-7)
             if( ratio <= mRatioTolerance )
             {
-                if (this->GetEchoLevel() == 1)
-                    std::cout << "Convergence is achieved, reason: (Obtained tol = " << ratio
-                              << ") <= (Expected ratio = " << mRatioTolerance << ")" << std::endl;
+                KRATOS_INFO("ConvergenceCriteria")
+                          << "Convergence is achieved, reason: (Obtained tol = " << ratio
+                          << ") <= (Expected ratio = " << mRatioTolerance << ")" << std::endl;
                 return true;
             }
             else if(AbsoluteNorm < mAlwaysConvergedNorm)
             {
-                if (this->GetEchoLevel() == 1)
-                    std::cout << "Convergence is achieved, reason: (Absolute tol = " << AbsoluteNorm
-                              << ") <= (AlwaysConvergedNorm = " << mAlwaysConvergedNorm << ")" << std::endl;
+                KRATOS_INFO("ConvergenceCriteria")
+                          << "Convergence is achieved, reason: (Absolute tol = " << AbsoluteNorm
+                          << ") <= (AlwaysConvergedNorm = " << mAlwaysConvergedNorm << ")" << std::endl;
                 return true;
             }
             else
             {
-                if (this->GetEchoLevel() == 1)
-                    std::cout << "Convergence is not yet achieved, (Obtained tol = " << ratio
-                              << ") ? (Expected ratio = " << mRatioTolerance << ")"
-                              << " ; (Absolute tol = " << AbsoluteNorm
-                              << ") ? (AlwaysConvergedNorm = " << mAlwaysConvergedNorm << ")"
-                              << std::endl;
+                KRATOS_INFO("ConvergenceCriteria")
+                          << "Convergence is not yet achieved, (Obtained tol = " << ratio
+                          << ") ? (Expected ratio = " << mRatioTolerance << ")"
+                          << " ; (Absolute tol = " << AbsoluteNorm
+                          << ") ? (AlwaysConvergedNorm = " << mAlwaysConvergedNorm << ")"
+                          << std::endl;
                 return false;
             }
         }

@@ -22,6 +22,7 @@
 #include "includes/define.h"
 #include "includes/kratos_parameters.h"
 #include "includes/kratos_filesystem.h"
+#include "utilities/logger.h"
 
 namespace Kratos
 {
@@ -459,7 +460,7 @@ void Parameters::AddValue(
     if(mpValue->find(rEntry) == mpValue->end()) {
         (*mpValue)[rEntry] = *(rOtherValue.mpValue);
     } else {
-        std::cout << "WARNING:: Entry " << rEntry << " already defined. Overwriting it" << std::endl;
+        KRATOS_WARNING("Parameters") << "Entry " << rEntry << " already defined. Overwriting it" << std::endl;
         SetValue(rEntry, rOtherValue);
     }
 }
@@ -1185,7 +1186,7 @@ void Parameters::RecursivelyFindValue(
         const auto value = itr.value();
         if (&(value) == &rValueToFind) {
             const std::string value_string = value.dump();
-            std::cout << "Base = " << PrettyPrintJsonString()
+            KRATOS_INFO("Parameters") << "Base = " << PrettyPrintJsonString()
                         << "\nProblematic var name " << itr.key() << " value " << value_string << std::endl;
         } else {
             if (itr->is_object()) RecursivelyFindValue(value, rValueToFind);

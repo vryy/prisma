@@ -29,6 +29,7 @@
 #include "includes/define.h"
 #include "includes/matrix_vector_adapter.h"
 #include "includes/kratos_exception.h"
+#include "utilities/logger.h"
 
 namespace Kratos
 {
@@ -1730,7 +1731,7 @@ public:
 
         // KRATOS_WARNING_IF("MathUtils::EigenSystem", !is_converged) << "Spectral decomposition not converged " << std::endl;
         if (!is_converged)
-            std::cout << "MathUtils::EigenSystem: Spectral decomposition not converged " << std::endl;
+            KRATOS_WARNING("MathUtils") << "Spectral decomposition not converged " << std::endl;
 
         return is_converged;
     }
@@ -1797,7 +1798,7 @@ public:
         const bool is_converged = GaussSeidelEigenSystem(rA, eigenvectors_matrix, eigenvalues_matrix, Tolerance, MaxIterations);
         // KRATOS_WARNING_IF("MatrixSquareRoot", !is_converged) << "GaussSeidelEigenSystem did not converge.\n";
         if (!is_converged)
-            std::cout << "MathUtils::MatrixSquareRoot: GaussSeidelEigenSystem did not converge.\n";
+            KRATOS_WARNING("MathUtils") << "GaussSeidelEigenSystem did not converge.\n";
 
         // Get the square root of the eigenvalues
         SizeType size = eigenvalues_matrix.size1();

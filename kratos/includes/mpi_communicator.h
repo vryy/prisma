@@ -23,11 +23,12 @@
 #include <cstddef>
 
 // External includes
+#include "mpi.h"
 
 // Project includes
 #include "includes/define.h"
 #include "includes/model_part.h"
-#include "mpi.h"
+#include "utilities/logger.h"
 
 #define CUSTOMTIMER 1
 
@@ -411,7 +412,7 @@ public:
 
                 if (position > receive_buffer_size)
                 {
-                    std::cout << rank << " Error in estimating receive buffer size...." << std::endl;
+                    KRATOS_INFO_ALL_RANKS("MPICommunicator") << " Error in estimating receive buffer size...." << std::endl;
                 }
             }
         }
@@ -479,7 +480,7 @@ public:
 
                 if (position > send_buffer_size)
                 {
-                    std::cout << rank << " Error in estimating send buffer size...." << std::endl;
+                    KRATOS_INFO_ALL_RANKS("MPICommunicator") << " Error in estimating send buffer size...." << std::endl;
                 }
 
                 int send_tag = i_color;
@@ -499,7 +500,7 @@ public:
 
                 if (position > receive_buffer_size)
                 {
-                    std::cout << rank << " Error in estimating receive buffer size...." << std::endl;
+                    KRATOS_INFO_ALL_RANKS("MPICommunicator") << " Error in estimating receive buffer size...." << std::endl;
                 }
             }
 
@@ -550,7 +551,7 @@ public:
 
                 if (position > send_buffer_size)
                 {
-                    std::cout << rank << " Error in estimating send buffer size...." << std::endl;
+                    KRATOS_INFO_ALL_RANKS("MPICommunicator") << " Error in estimating send buffer size...." << std::endl;
                 }
 
                 int send_tag = i_color;
@@ -570,7 +571,7 @@ public:
 
                 if (position > receive_buffer_size)
                 {
-                    std::cout << rank << " Error in estimating receive buffer size...." << std::endl;
+                    KRATOS_INFO_ALL_RANKS("MPICommunicator") << " Error in estimating receive buffer size...." << std::endl;
                 }
 
                 delete [] send_buffer;
@@ -930,12 +931,12 @@ private:
     {
         int rank;
         MPI_Comm_rank(mComm, &rank);
-        std::cout << Tag << rank << " with color " << color << ":";
+        KRATOS_INFO("MPICommunicator") << Tag << rank << " with color " << color << ":";
         for (auto i_node = rNodes.begin(); i_node != rNodes.end(); i_node++)
         {
-            std::cout << i_node->Id() << ", ";
+            KRATOS_INFO("MPICommunicator") << i_node->Id() << ", ";
         }
-        std::cout << std::endl;
+        KRATOS_INFO("MPICommunicator") << std::endl;
     }
 
     template<class TDataType, class TSendType>
@@ -990,7 +991,7 @@ private:
 
                 if (position > send_buffer_size)
                 {
-                    std::cout << rank << " Error in estimating send buffer size...." << std::endl;
+                    KRATOS_INFO_ALL_RANKS("MPICommunicator") << " Error in estimating send buffer size...." << std::endl;
                 }
 
                 int send_tag = i_color;
@@ -1019,7 +1020,7 @@ private:
 
                 if (position > receive_buffer_size[i_color])
                 {
-                    std::cout << rank << " Error in estimating receive buffer size...." << std::endl;
+                    KRATOS_INFO_ALL_RANKS("MPICommunicator") << " Error in estimating receive buffer size...." << std::endl;
                 }
 
                 delete [] receive_buffer[i_color];
@@ -1090,7 +1091,7 @@ private:
 
                 if (position > send_buffer_size)
                 {
-                    std::cout << rank << " Error in estimating send buffer size...." << std::endl;
+                    KRATOS_INFO_ALL_RANKS("MPICommunicator") << " Error in estimating send buffer size...." << std::endl;
                 }
 
                 int send_tag = i_color;
@@ -1123,7 +1124,7 @@ private:
 
                 if (position > receive_buffer_size[i_color])
                 {
-                    std::cout << rank << " Error in estimating receive buffer size...." << std::endl;
+                    KRATOS_INFO_ALL_RANKS("MPICommunicator") << " Error in estimating receive buffer size...." << std::endl;
                 }
 
                 delete [] receive_buffer[i_color];
@@ -1195,7 +1196,7 @@ private:
 
                 if (position > receive_buffer_size)
                 {
-                    std::cout << rank << " Error in estimating receive buffer size...." << std::endl;
+                    KRATOS_INFO_ALL_RANKS("MPICommunicator") << " Error in estimating receive buffer size...." << std::endl;
                 }
 
                 delete [] send_buffer;
@@ -1257,7 +1258,7 @@ private:
 
                 if (position > send_buffer_size)
                 {
-                    std::cout << rank << " Error in estimating send buffer size...." << std::endl;
+                    KRATOS_INFO_ALL_RANKS("MPICommunicator") << " Error in estimating send buffer size...." << std::endl;
                 }
 
                 int send_tag = i_color;
@@ -1286,7 +1287,7 @@ private:
 
                 if (position > receive_buffer_size[i_color])
                 {
-                    std::cout << rank << " Error in estimating receive buffer size...." << std::endl;
+                    KRATOS_INFO_ALL_RANKS("MPICommunicator") << " Error in estimating receive buffer size...." << std::endl;
                 }
 
                 delete [] receive_buffer[i_color];
@@ -1354,7 +1355,7 @@ private:
 
                 if (position > receive_buffer_size)
                 {
-                    std::cout << rank << " Error in estimating receive buffer size...." << std::endl;
+                    KRATOS_INFO_ALL_RANKS("MPICommunicator") << " Error in estimating receive buffer size...." << std::endl;
                 }
 
                 delete [] send_buffer;
@@ -1421,7 +1422,7 @@ private:
 
                 if (position > receive_buffer_size)
                 {
-                    std::cout << rank << " Error in estimating receive buffer size...." << std::endl;
+                    KRATOS_INFO_ALL_RANKS("MPICommunicator") << " Error in estimating receive buffer size...." << std::endl;
                 }
             }
 

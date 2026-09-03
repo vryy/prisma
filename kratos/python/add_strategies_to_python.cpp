@@ -127,8 +127,6 @@ namespace Kratos
                     .def("Solve", &BaseSolvingStrategyType::Solve)
                     .def("IsConverged", &BaseSolvingStrategyType::IsConverged)
                     .def("CalculateOutputData", &BaseSolvingStrategyType::CalculateOutputData)
-                    .def("SetEchoLevel", &BaseSolvingStrategyType::SetEchoLevel)
-                    .def("GetEchoLevel", &BaseSolvingStrategyType::GetEchoLevel)
                     .def("SetRebuildLevel", &BaseSolvingStrategyType::SetRebuildLevel)
                     .def("GetRebuildLevel", &BaseSolvingStrategyType::GetRebuildLevel)
                     .def("SetMoveMeshFlag", &BaseSolvingStrategyType::SetMoveMeshFlag)
@@ -230,7 +228,6 @@ namespace Kratos
                     .def("InitializeSolutionStep", &ConvergenceCriteriaType::InitializeSolutionStep)
                     .def("FinalizeNonLinearIteration", &ConvergenceCriteriaType::FinalizeNonLinearIteration)
                     .def("FinalizeSolutionStep", &ConvergenceCriteriaType::FinalizeSolutionStep)
-                    .def("SetEchoLevel", &ConvergenceCriteriaType::SetEchoLevel)
                     .def("Check", &ConvergenceCriteriaType::Check)
                     .def(self_ns::str(self))
                     ;
@@ -287,8 +284,6 @@ namespace Kratos
                     .def("CalculateReactions", &BuilderAndSolverType::CalculateReactions)
                     .def("Clear", &BuilderAndSolverType::Clear)
                     .def("Check", &BuilderAndSolverType::Check)
-                    .def("SetEchoLevel", &BuilderAndSolverType::SetEchoLevel)
-                    .def("GetEchoLevel", &BuilderAndSolverType::GetEchoLevel)
                     ;
 
             typedef ResidualBasedEliminationBuilderAndSolver< SparseSpaceType, LocalSpaceType, LinearSolverType, TModelPartType > ResidualBasedEliminationBuilderAndSolverType;

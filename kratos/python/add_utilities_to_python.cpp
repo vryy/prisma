@@ -39,7 +39,7 @@ namespace Kratos
         void ConstraintUtilities_PrintConstraint(TConstraintUtilitiesType& rDummy,
                 const typename TConstraintUtilitiesType::MasterSlaveConstraintType& rConstraint)
         {
-            rDummy.PrintConstraint(rConstraint);
+            rDummy.PrintConstraint(std::cout, rConstraint);
         }
 
         template<class TConstraintUtilitiesType>

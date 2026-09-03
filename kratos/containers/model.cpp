@@ -18,6 +18,7 @@
 
 // Project includes
 #include "containers/model.h"
+#include "utilities/logger.h"
 
 namespace Kratos {
 
@@ -63,7 +64,7 @@ TModelPartType& Model::CreateModelPart( const std::string& ModelPartName, Model:
             CreateRootModelPart<TModelPartType>(root_model_part_name, NewBufferSize);
             return dynamic_cast<TModelPartType&>(*(mRootModelPartMap[root_model_part_name].get()));
         } else {
-            std::cout << "Model" << "Trying to create a root modelpart with name " << ModelPartName << " however a ModelPart with the same name already exists. \nReturning the already existent ModelPart.\n"; // hbui: 29/6/2022 temporary use this because KRATOS_WARNING is not defined
+            KRATOS_WARNING("Model") << "Trying to create a root modelpart with name " << ModelPartName << " however a ModelPart with the same name already exists. \nReturning the already existent ModelPart.\n";
             return dynamic_cast<TModelPartType&>(*(mRootModelPartMap[root_model_part_name].get()));
         }
     } else {
@@ -76,14 +77,14 @@ TModelPartType& Model::CreateModelPart( const std::string& ModelPartName, Model:
     KRATOS_CATCH("")
 }
 
-void Model::DeleteModelPart( const std::string& rModelPartName  )
+void Model::DeleteModelPart( const std::string& ModelPartName  )
 {
     KRATOS_TRY
 
-    if(this->HasBaseModelPart(rModelPartName)) {
-        mRootModelPartMap.erase(rModelPartName); //NOTE: the corresponding variable list should NOT be removed
+    if(this->HasBaseModelPart(ModelPartName)) {
+        mRootModelPartMap.erase(ModelPartName); //NOTE: the corresponding variable list should NOT be removed
     } else {
-        std::cout << "Model" << "Attempting to delete inexisting modelpart : " << rModelPartName << std::endl; // hbui: 29/6/2022 temporary use this because KRATOS_WARNING is not defined
+        KRATOS_WARNING("Model") << "Attempting to delete inexisting modelpart : " << ModelPartName << std::endl;
     }
 
     KRATOS_CATCH("")

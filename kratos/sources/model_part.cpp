@@ -24,6 +24,7 @@
 #include "includes/process_info_with_dofs.h"
 #include "containers/model.h"
 #include "utilities/progress.h"
+#include "utilities/logger.h"
 
 namespace Kratos
 {
@@ -87,7 +88,7 @@ Model& BaseModelPart::GetModel()
 {
     if (mpModel == nullptr)
     {
-        std::cout << "The ModelPart " << this->Name() << " is not associated with any model" << std::endl;
+        KRATOS_INFO("ModelPart") << "The ModelPart " << this->Name() << " is not associated with any model" << std::endl;
         return *pKratosDefaultModel;
     }
     else
@@ -98,7 +99,7 @@ const Model& BaseModelPart::GetModel() const
 {
     if (mpModel == nullptr)
     {
-        std::cout << "The ModelPart " << this->Name() << " is not associated with any model" << std::endl;
+        KRATOS_INFO("ModelPart") << "The ModelPart " << this->Name() << " is not associated with any model" << std::endl;
         return *pKratosDefaultModel;
     }
     else
@@ -254,6 +255,7 @@ ModelPartImpl<TNodeType>::ModelPartImpl(std::string const& NewName)
     MeshType mesh;
     mMeshes.push_back(mesh.Clone());
     mpCommunicator->SetLocalMesh(pGetMesh());  // assigning the current mesh to the local mesh of communicator for openmp cases
+    KRATOS_INFO("ModelPart") << "ModelPart " << Name() << "(" << this << ")" << " is created" << std::endl;
 }
 
 /// Constructor with name and bufferSize
@@ -269,7 +271,7 @@ ModelPartImpl<TNodeType>::ModelPartImpl(std::string const& NewName, IndexType Ne
     MeshType mesh;
     mMeshes.push_back(mesh.Clone());
     mpCommunicator->SetLocalMesh(pGetMesh());  // assigning the current mesh to the local mesh of communicator for openmp cases
-    std::cout << "odelPart " << Name() << "(" << this << ")" << " is created" << std::endl;
+    KRATOS_INFO("ModelPart") << "ModelPart " << Name() << "(" << this << ")" << " is created" << std::endl;
 }
 
 /// Constructor with name and bufferSize and the owner model
@@ -285,7 +287,7 @@ ModelPartImpl<TNodeType>::ModelPartImpl(std::string const& NewName, IndexType Ne
     MeshType mesh;
     mMeshes.push_back(mesh.Clone());
     mpCommunicator->SetLocalMesh(pGetMesh());  // assigning the current mesh to the local mesh of communicator for openmp cases
-    std::cout << "ModelPart " << Name() << "(" << this << ")" << " is created" << std::endl;
+    KRATOS_INFO("ModelPart") << "ModelPart " << Name() << "(" << this << ")" << " is created" << std::endl;
 }
 
 // Copy constructor.
@@ -299,7 +301,7 @@ ModelPartImpl<TNodeType>::ModelPartImpl(ModelPartImpl<TNodeType> const& rOther)
     , mpVariablesList(new VariablesListType(*rOther.mpVariablesList))
     , mpCommunicator(rOther.mpCommunicator)
 {
-    std::cout << "ModelPart " << Name() << "(" << this << ")" << " is copied from " << rOther.Name() << std::endl;
+    KRATOS_INFO("ModelPart") << "ModelPart " << Name() << "(" << this << ")" << " is copied from " << rOther.Name() << std::endl;
 }
 
 /// Destructor.
@@ -322,7 +324,7 @@ ModelPartImpl<TNodeType>::~ModelPartImpl()
     if (!IsSubModelPart())
         delete mpVariablesList;
 
-    std::cout << "ModelPart " << Name() << "(" << this << ")" << " destructor is called" << std::endl;
+    KRATOS_INFO("ModelPart") << "ModelPart " << Name() << "(" << this << ")" << " destructor is called" << std::endl;
 }
 
 /// Assignment operator.
@@ -446,7 +448,7 @@ void ModelPartImpl<TNodeType>::AddNode(typename ModelPartImpl<TNodeType>::NodeTy
 {
     if (IsSubModelPart())
     {
-        ModelPartImpl<TNodeType>* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
+        auto* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
         KRATOS_ERROR_IF(pParentModelPart == nullptr) << "The parent ModelPart is not the same type as the current ModelPart" << std::endl;
         pParentModelPart->AddNode(pNewNode, ThisIndex);
     }
@@ -459,7 +461,7 @@ typename ModelPartImpl<TNodeType>::NodeType::Pointer ModelPartImpl<TNodeType>::C
 {
     if (IsSubModelPart())
     {
-        ModelPartImpl<TNodeType>* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
+        auto* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
         KRATOS_ERROR_IF(pParentModelPart == nullptr) << "The parent ModelPart is not the same type as the current ModelPart" << std::endl;
         typename NodeType::Pointer p_new_node = pParentModelPart->CreateNewNode(Id, x, y, z, pNewVariablesList, ThisIndex);
         GetMesh(ThisIndex).AddNode(p_new_node);
@@ -488,7 +490,7 @@ typename ModelPartImpl<TNodeType>::NodeType::Pointer ModelPartImpl<TNodeType>::C
 {
     if (IsSubModelPart())
     {
-        ModelPartImpl<TNodeType>* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
+        auto* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
         KRATOS_ERROR_IF(pParentModelPart == nullptr) << "The parent ModelPart is not the same type as the current ModelPart" << std::endl;
         typename NodeType::Pointer p_new_node = pParentModelPart->CreateNewNode(Id, x, y, z, ThisIndex);
         GetMesh(ThisIndex).AddNode(p_new_node);
@@ -517,7 +519,7 @@ typename ModelPartImpl<TNodeType>::NodeType::Pointer ModelPartImpl<TNodeType>::C
 {
     if (IsSubModelPart())
     {
-        ModelPartImpl<TNodeType>* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
+        auto* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
         KRATOS_ERROR_IF(pParentModelPart == nullptr) << "The parent ModelPart is not the same type as the current ModelPart" << std::endl;
         typename NodeType::Pointer p_new_node = pParentModelPart->CreateNewNode(Id, x, y, z, pThisData, ThisIndex);
         GetMesh(ThisIndex).AddNode(p_new_node);
@@ -540,7 +542,7 @@ typename ModelPartImpl<TNodeType>::NodeType::Pointer ModelPartImpl<TNodeType>::C
 {
     if (IsSubModelPart())
     {
-        ModelPartImpl<TNodeType>* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
+        auto* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
         KRATOS_ERROR_IF(pParentModelPart == nullptr) << "The parent ModelPart is not the same type as the current ModelPart" << std::endl;
         typename NodeType::Pointer p_new_node = pParentModelPart->CreateNewNode(NodeId, rSourceNode, ThisIndex);
         GetMesh(ThisIndex).AddNode(p_new_node);
@@ -569,7 +571,7 @@ void ModelPartImpl<TNodeType>::AssignNode(typename ModelPartImpl<TNodeType>::Nod
 {
     if (IsSubModelPart())
     {
-        ModelPartImpl<TNodeType>* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
+        auto* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
         KRATOS_ERROR_IF(pParentModelPart == nullptr) << "The parent ModelPart is not the same type as the current ModelPart" << std::endl;
         pParentModelPart->AssignNode(pThisNode, ThisIndex);
 
@@ -596,7 +598,7 @@ void ModelPartImpl<TNodeType>::RemoveNode(typename ModelPartImpl<TNodeType>::Ind
 
     for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
     {
-        ModelPartImpl<TNodeType>* pThisSubModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(&(*i_sub_model_part));
+        auto* pThisSubModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(&(*i_sub_model_part));
         KRATOS_ERROR_IF(pThisSubModelPart == nullptr) << "The sub ModelPart is not the same type as the current ModelPart" << std::endl;
         pThisSubModelPart->RemoveNode(NodeId, ThisIndex);
     }
@@ -609,7 +611,7 @@ void ModelPartImpl<TNodeType>::RemoveNode(typename ModelPartImpl<TNodeType>::Nod
 
     for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
     {
-        ModelPartImpl<TNodeType>* pThisSubModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(&(*i_sub_model_part));
+        auto* pThisSubModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(&(*i_sub_model_part));
         KRATOS_ERROR_IF(pThisSubModelPart == nullptr) << "The sub ModelPart is not the same type as the current ModelPart" << std::endl;
         pThisSubModelPart->RemoveNode(ThisNode, ThisIndex);
     }
@@ -622,7 +624,7 @@ void ModelPartImpl<TNodeType>::RemoveNode(typename ModelPartImpl<TNodeType>::Nod
 
     for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
     {
-        ModelPartImpl<TNodeType>* pThisSubModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(&(*i_sub_model_part));
+        auto* pThisSubModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(&(*i_sub_model_part));
         KRATOS_ERROR_IF(pThisSubModelPart == nullptr) << "The sub ModelPart is not the same type as the current ModelPart" << std::endl;
         pThisSubModelPart->RemoveNode(pThisNode, ThisIndex);
     }
@@ -633,7 +635,7 @@ void ModelPartImpl<TNodeType>::RemoveNodeFromAllLevels(typename ModelPartImpl<TN
 {
     if (IsSubModelPart())
     {
-        ModelPartImpl<TNodeType>* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
+        auto* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
         KRATOS_ERROR_IF(pParentModelPart == nullptr) << "The parent ModelPart is not the same type as the current ModelPart" << std::endl;
         pParentModelPart->RemoveNodeFromAllLevels(NodeId, ThisIndex);
         return;
@@ -646,7 +648,7 @@ void ModelPartImpl<TNodeType>::RemoveNodeFromAllLevels(typename ModelPartImpl<TN
 {
     if (IsSubModelPart())
     {
-        ModelPartImpl<TNodeType>* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
+        auto* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
         KRATOS_ERROR_IF(pParentModelPart == nullptr) << "The parent ModelPart is not the same type as the current ModelPart" << std::endl;
         pParentModelPart->RemoveNode(ThisNode, ThisIndex);
         return;
@@ -659,7 +661,7 @@ void ModelPartImpl<TNodeType>::RemoveNodeFromAllLevels(typename ModelPartImpl<TN
 {
     if (IsSubModelPart())
     {
-        ModelPartImpl<TNodeType>* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
+        auto* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
         KRATOS_ERROR_IF(pParentModelPart == nullptr) << "The parent ModelPart is not the same type as the current ModelPart" << std::endl;
         pParentModelPart->RemoveNode(pThisNode, ThisIndex);
         return;
@@ -683,7 +685,7 @@ void ModelPartImpl<TNodeType>::AddTable(typename ModelPartImpl<TNodeType>::Index
 {
     if (IsSubModelPart())
     {
-        ModelPartImpl<TNodeType>* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
+        auto* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
         KRATOS_ERROR_IF(pParentModelPart == nullptr) << "The parent ModelPart is not the same type as the current ModelPart" << std::endl;
         pParentModelPart->AddTable(TableId, pNewTable);
     }
@@ -698,7 +700,7 @@ void ModelPartImpl<TNodeType>::RemoveTable(typename ModelPartImpl<TNodeType>::In
 
     for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
     {
-        ModelPartImpl<TNodeType>* pThisSubModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(&(*i_sub_model_part));
+        auto* pThisSubModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(&(*i_sub_model_part));
         KRATOS_ERROR_IF(pThisSubModelPart == nullptr) << "The sub ModelPart is not the same type as the current ModelPart" << std::endl;
         pThisSubModelPart->RemoveTable(TableId);
     }
@@ -709,7 +711,7 @@ void ModelPartImpl<TNodeType>::RemoveTableFromAllLevels(typename ModelPartImpl<T
 {
     if (IsSubModelPart())
     {
-        ModelPartImpl<TNodeType>* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
+        auto* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
         KRATOS_ERROR_IF(pParentModelPart == nullptr) << "The parent ModelPart is not the same type as the current ModelPart" << std::endl;
         pParentModelPart->RemoveTableFromAllLevels(TableId);
         return;
@@ -724,7 +726,7 @@ void ModelPartImpl<TNodeType>::AddProperties(typename ModelPartImpl<TNodeType>::
 {
     if (IsSubModelPart())
     {
-        ModelPartImpl<TNodeType>* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
+        auto* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
         KRATOS_ERROR_IF(pParentModelPart == nullptr) << "The parent ModelPart is not the same type as the current ModelPart" << std::endl;
         pParentModelPart->AddProperties(pNewProperties);
     }
@@ -740,7 +742,7 @@ void ModelPartImpl<TNodeType>::RemoveProperties(typename ModelPartImpl<TNodeType
 
     for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
     {
-        ModelPartImpl<TNodeType>* pThisSubModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(&(*i_sub_model_part));
+        auto* pThisSubModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(&(*i_sub_model_part));
         KRATOS_ERROR_IF(pThisSubModelPart == nullptr) << "The sub ModelPart is not the same type as the current ModelPart" << std::endl;
         pThisSubModelPart->RemoveProperties(PropertiesId, ThisIndex);
     }
@@ -754,7 +756,7 @@ void ModelPartImpl<TNodeType>::RemoveProperties(typename ModelPartImpl<TNodeType
 
     for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
     {
-        ModelPartImpl<TNodeType>* pThisSubModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(&(*i_sub_model_part));
+        auto* pThisSubModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(&(*i_sub_model_part));
         KRATOS_ERROR_IF(pThisSubModelPart == nullptr) << "The sub ModelPart is not the same type as the current ModelPart" << std::endl;
         pThisSubModelPart->RemoveProperties(ThisProperties, ThisIndex);
     }
@@ -768,7 +770,7 @@ void ModelPartImpl<TNodeType>::RemoveProperties(typename ModelPartImpl<TNodeType
 
     for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
     {
-        ModelPartImpl<TNodeType>* pThisSubModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(&(*i_sub_model_part));
+        auto* pThisSubModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(&(*i_sub_model_part));
         KRATOS_ERROR_IF(pThisSubModelPart == nullptr) << "The sub ModelPart is not the same type as the current ModelPart" << std::endl;
         pThisSubModelPart->RemoveProperties(pThisProperties, ThisIndex);
     }
@@ -780,7 +782,7 @@ void ModelPartImpl<TNodeType>::RemovePropertiesFromAllLevels(typename ModelPartI
 {
     if (IsSubModelPart())
     {
-        ModelPartImpl<TNodeType>* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
+        auto* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
         KRATOS_ERROR_IF(pParentModelPart == nullptr) << "The parent ModelPart is not the same type as the current ModelPart" << std::endl;
         pParentModelPart->RemovePropertiesFromAllLevels(PropertiesId, ThisIndex);
         return;
@@ -795,7 +797,7 @@ void ModelPartImpl<TNodeType>::RemovePropertiesFromAllLevels(typename ModelPartI
 {
     if (IsSubModelPart())
     {
-        ModelPartImpl<TNodeType>* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
+        auto* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
         KRATOS_ERROR_IF(pParentModelPart == nullptr) << "The parent ModelPart is not the same type as the current ModelPart" << std::endl;
         pParentModelPart->RemoveProperties(ThisProperties, ThisIndex);
     }
@@ -809,7 +811,7 @@ void ModelPartImpl<TNodeType>::RemovePropertiesFromAllLevels(typename ModelPartI
 {
     if (IsSubModelPart())
     {
-        ModelPartImpl<TNodeType>* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
+        auto* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
         KRATOS_ERROR_IF(pParentModelPart == nullptr) << "The parent ModelPart is not the same type as the current ModelPart" << std::endl;
         pParentModelPart->RemoveProperties(pThisProperties, ThisIndex);
     }
@@ -823,7 +825,7 @@ void ModelPartImpl<TNodeType>::AddElement(typename ModelPartImpl<TNodeType>::Ele
 {
     if (IsSubModelPart())
     {
-        ModelPartImpl<TNodeType>* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
+        auto* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
         KRATOS_ERROR_IF(pParentModelPart == nullptr) << "The parent ModelPart is not the same type as the current ModelPart" << std::endl;
         pParentModelPart->AddElement(pNewElement, ThisIndex);
     }
@@ -839,7 +841,7 @@ typename ModelPartImpl<TNodeType>::ElementType::Pointer ModelPartImpl<TNodeType>
 {
     if (IsSubModelPart())
     {
-        ModelPartImpl<TNodeType>* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
+        auto* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
         KRATOS_ERROR_IF(pParentModelPart == nullptr) << "The parent ModelPart is not the same type as the current ModelPart" << std::endl;
         typename ElementType::Pointer p_new_element = pParentModelPart->CreateNewElement(ElementName, Id, ElementNodeIds, pProperties, ThisIndex);
         GetMesh(ThisIndex).AddElement(p_new_element);
@@ -863,7 +865,7 @@ typename ModelPartImpl<TNodeType>::ElementType::Pointer ModelPartImpl<TNodeType>
 {
     if (IsSubModelPart())
     {
-        ModelPartImpl<TNodeType>* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
+        auto* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
         KRATOS_ERROR_IF(pParentModelPart == nullptr) << "The parent ModelPart is not the same type as the current ModelPart" << std::endl;
         typename ElementType::Pointer p_new_element = pParentModelPart->CreateNewElement(ElementName, Id, pElementNodes, pProperties, ThisIndex);
         GetMesh(ThisIndex).AddElement(p_new_element);
@@ -888,7 +890,7 @@ void ModelPartImpl<TNodeType>::RemoveElement(typename ModelPartImpl<TNodeType>::
 
     for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
     {
-        ModelPartImpl<TNodeType>* pThisSubModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(&(*i_sub_model_part));
+        auto* pThisSubModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(&(*i_sub_model_part));
         KRATOS_ERROR_IF(pThisSubModelPart == nullptr) << "The sub ModelPart is not the same type as the current ModelPart" << std::endl;
         pThisSubModelPart->RemoveElement(ElementId, ThisIndex);
     }
@@ -902,7 +904,7 @@ void ModelPartImpl<TNodeType>::RemoveElement(typename ModelPartImpl<TNodeType>::
 
     for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
     {
-        ModelPartImpl<TNodeType>* pThisSubModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(&(*i_sub_model_part));
+        auto* pThisSubModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(&(*i_sub_model_part));
         KRATOS_ERROR_IF(pThisSubModelPart == nullptr) << "The sub ModelPart is not the same type as the current ModelPart" << std::endl;
         pThisSubModelPart->RemoveElement(ThisElement, ThisIndex);
     }
@@ -916,7 +918,7 @@ void ModelPartImpl<TNodeType>::RemoveElement(typename ModelPartImpl<TNodeType>::
 
     for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
     {
-        ModelPartImpl<TNodeType>* pThisSubModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(&(*i_sub_model_part));
+        auto* pThisSubModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(&(*i_sub_model_part));
         KRATOS_ERROR_IF(pThisSubModelPart == nullptr) << "The sub ModelPart is not the same type as the current ModelPart" << std::endl;
         pThisSubModelPart->RemoveElement(pThisElement, ThisIndex);
     }
@@ -928,7 +930,7 @@ void ModelPartImpl<TNodeType>::RemoveElementFromAllLevels(typename ModelPartImpl
 {
     if (IsSubModelPart())
     {
-        ModelPartImpl<TNodeType>* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
+        auto* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
         KRATOS_ERROR_IF(pParentModelPart == nullptr) << "The parent ModelPart is not the same type as the current ModelPart" << std::endl;
         pParentModelPart->RemoveElement(ElementId, ThisIndex);
         return;
@@ -943,7 +945,7 @@ void ModelPartImpl<TNodeType>::RemoveElementFromAllLevels(typename ModelPartImpl
 {
     if (IsSubModelPart())
     {
-        ModelPartImpl<TNodeType>* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
+        auto* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
         KRATOS_ERROR_IF(pParentModelPart == nullptr) << "The parent ModelPart is not the same type as the current ModelPart" << std::endl;
         pParentModelPart->RemoveElement(ThisElement, ThisIndex);
         return;
@@ -958,7 +960,7 @@ void ModelPartImpl<TNodeType>::RemoveElementFromAllLevels(typename ModelPartImpl
 {
     if (IsSubModelPart())
     {
-        ModelPartImpl<TNodeType>* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
+        auto* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
         KRATOS_ERROR_IF(pParentModelPart == nullptr) << "The parent ModelPart is not the same type as the current ModelPart" << std::endl;
         pParentModelPart->RemoveElement(pThisElement, ThisIndex);
         return;
@@ -974,7 +976,7 @@ void ModelPartImpl<TNodeType>::AddMasterSlaveConstraint(typename ModelPartImpl<T
     if (IsSubModelPart())
     {
         // First add it to the parent modelpart
-        ModelPartImpl<TNodeType>* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
+        auto* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
         KRATOS_ERROR_IF(pParentModelPart == nullptr) << "The parent ModelPart is not the same type as the current ModelPart" << std::endl;
         pParentModelPart->AddMasterSlaveConstraint(pNewMasterSlaveConstraint, ThisIndex);
         GetMesh(ThisIndex).AddMasterSlaveConstraint(pNewMasterSlaveConstraint);
@@ -1003,9 +1005,9 @@ void ModelPartImpl<TNodeType>::AddMasterSlaveConstraints(std::vector<typename Mo
     if(IsSubModelPart()) //does nothing if we are on the top model part
     {
         //obtain from the root model part the corresponding list of constraints
-        ModelPartImpl<TNodeType>* root_model_part = dynamic_cast<ModelPartImpl<TNodeType>*>(&this->GetRootModelPart());
+        auto* root_model_part = dynamic_cast<ModelPartImpl<TNodeType>*>(&this->GetRootModelPart());
         KRATOS_ERROR_IF(root_model_part == nullptr) << "The root ModelPart is not the same type as the current ModelPart" << std::endl;
-        ModelPartImpl<TNodeType>::MasterSlaveConstraintContainerType  aux;
+        MasterSlaveConstraintContainerType  aux;
         aux.reserve(MasterSlaveConstraintIds.size());
         for(unsigned int i=0; i<MasterSlaveConstraintIds.size(); i++)
         {
@@ -1041,7 +1043,7 @@ typename ModelPartImpl<TNodeType>::MasterSlaveConstraintType::Pointer ModelPartI
 
     if (IsSubModelPart())
     {
-        ModelPartImpl<TNodeType>* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
+        auto* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
         KRATOS_ERROR_IF(pParentModelPart == nullptr) << "The parent ModelPart is not the same type as the current ModelPart" << std::endl;
         typename ModelPartImpl<TNodeType>::MasterSlaveConstraintType::Pointer p_new_constraint = pParentModelPart->CreateNewMasterSlaveConstraint(ConstraintName,
             Id, rMasterDofsVector, rSlaveDofsVector, RelationMatrix, ConstantVector, ThisIndex);
@@ -1082,7 +1084,7 @@ typename ModelPartImpl<TNodeType>::MasterSlaveConstraintType::Pointer ModelPartI
     {
         if (IsSubModelPart())
         {
-            ModelPartImpl<TNodeType>* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
+            auto* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
             KRATOS_ERROR_IF(pParentModelPart == nullptr) << "The parent ModelPart is not the same type as the current ModelPart" << std::endl;
             typename ModelPartImpl<TNodeType>::MasterSlaveConstraintType::Pointer p_new_constraint = pParentModelPart->CreateNewMasterSlaveConstraint(ConstraintName,
                 Id, rMasterNode, rMasterVariable, rSlaveNode, rSlaveVariable, Weight, Constant, ThisIndex);
@@ -1126,7 +1128,7 @@ typename ModelPartImpl<TNodeType>::MasterSlaveConstraintType::Pointer ModelPartI
     {
         if (IsSubModelPart())
         {
-            ModelPartImpl<TNodeType>* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
+            auto* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
             KRATOS_ERROR_IF(pParentModelPart == nullptr) << "The parent ModelPart is not the same type as the current ModelPart" << std::endl;
             typename ModelPartImpl<TNodeType>::MasterSlaveConstraintType::Pointer p_new_constraint = pParentModelPart->CreateNewMasterSlaveConstraint(ConstraintName,
                 Id, rMasterNode, rMasterVariable, rSlaveNode, rSlaveVariable, Weight, Constant, ThisIndex);
@@ -1168,7 +1170,7 @@ typename ModelPartImpl<TNodeType>::MasterSlaveConstraintType::Pointer ModelPartI
 
     if (IsSubModelPart())
     {
-        ModelPartImpl<TNodeType>* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
+        auto* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
         KRATOS_ERROR_IF(pParentModelPart == nullptr) << "The parent ModelPart is not the same type as the current ModelPart" << std::endl;
         typename ModelPartImpl<TNodeType>::MasterSlaveConstraintType::Pointer p_new_constraint = pParentModelPart->CreateNewMasterSlaveConstraint(ConstraintName,
             Id, rMasterDofsVector, rSlaveDofsVector, RelationMatrix, ConstantVector, ThisIndex);
@@ -1201,7 +1203,7 @@ void ModelPartImpl<TNodeType>::RemoveMasterSlaveConstraint(typename ModelPartImp
 
     for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
     {
-        ModelPartImpl<TNodeType>* pThisSubModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(&(*i_sub_model_part));
+        auto* pThisSubModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(&(*i_sub_model_part));
         KRATOS_ERROR_IF(pThisSubModelPart == nullptr) << "The sub ModelPart is not the same type as the current ModelPart" << std::endl;
         pThisSubModelPart->RemoveMasterSlaveConstraint(MasterSlaveConstraintId, ThisIndex);
     }
@@ -1213,7 +1215,7 @@ void ModelPartImpl<TNodeType>::RemoveMasterSlaveConstraint(typename ModelPartImp
     GetMesh(ThisIndex).RemoveMasterSlaveConstraint(ThisMasterSlaveConstraint);
     for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
     {
-        ModelPartImpl<TNodeType>* pThisSubModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(&(*i_sub_model_part));
+        auto* pThisSubModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(&(*i_sub_model_part));
         KRATOS_ERROR_IF(pThisSubModelPart == nullptr) << "The sub ModelPart is not the same type as the current ModelPart" << std::endl;
         pThisSubModelPart->RemoveMasterSlaveConstraint(ThisMasterSlaveConstraint, ThisIndex);
     }
@@ -1224,7 +1226,7 @@ void ModelPartImpl<TNodeType>::RemoveMasterSlaveConstraintFromAllLevels(typename
 {
     if (IsSubModelPart())
     {
-        ModelPartImpl<TNodeType>* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
+        auto* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
         KRATOS_ERROR_IF(pParentModelPart == nullptr) << "The parent ModelPart is not the same type as the current ModelPart" << std::endl;
         pParentModelPart->RemoveMasterSlaveConstraintFromAllLevels(MasterSlaveConstraintId, ThisIndex);
     }
@@ -1237,7 +1239,7 @@ void ModelPartImpl<TNodeType>::RemoveMasterSlaveConstraintFromAllLevels(typename
 {
     if (IsSubModelPart())
     {
-        ModelPartImpl<TNodeType>* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
+        auto* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
         KRATOS_ERROR_IF(pParentModelPart == nullptr) << "The parent ModelPart is not the same type as the current ModelPart" << std::endl;
         pParentModelPart->RemoveMasterSlaveConstraintFromAllLevels(ThisMasterSlaveConstraint, ThisIndex);
     }
@@ -1262,7 +1264,7 @@ void ModelPartImpl<TNodeType>::RemoveMasterSlaveConstraints(Flags IdentifierFlag
                 erase_count++;
         }
 
-        ModelPartImpl<TNodeType>::MasterSlaveConstraintContainerType temp_constraints_container;
+        MasterSlaveConstraintContainerType temp_constraints_container;
         temp_constraints_container.reserve(it_mesh->MasterSlaveConstraints().size() - erase_count);
 
         temp_constraints_container.swap(it_mesh->MasterSlaveConstraints());
@@ -1276,7 +1278,7 @@ void ModelPartImpl<TNodeType>::RemoveMasterSlaveConstraints(Flags IdentifierFlag
     // Now recursively remove the constraints in the submodelparts
     for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
     {
-        ModelPartImpl<TNodeType>* pThisSubModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(&(*i_sub_model_part));
+        auto* pThisSubModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(&(*i_sub_model_part));
         KRATOS_ERROR_IF(pThisSubModelPart == nullptr) << "The sub ModelPart is not the same type as the current ModelPart" << std::endl;
         pThisSubModelPart->RemoveMasterSlaveConstraints(IdentifierFlag);
     }
@@ -1285,7 +1287,7 @@ void ModelPartImpl<TNodeType>::RemoveMasterSlaveConstraints(Flags IdentifierFlag
 template<class TNodeType>
 void ModelPartImpl<TNodeType>::RemoveMasterSlaveConstraintsFromAllLevels(Flags IdentifierFlag)
 {
-    ModelPartImpl<TNodeType>* root_model_part = dynamic_cast<ModelPartImpl<TNodeType>*>(&this->GetRootModelPart());
+    auto* root_model_part = dynamic_cast<ModelPartImpl<TNodeType>*>(&this->GetRootModelPart());
     KRATOS_ERROR_IF(root_model_part == nullptr) << "The root ModelPart is not the same type as the current ModelPart" << std::endl;
     root_model_part->RemoveMasterSlaveConstraints(IdentifierFlag);
 }
@@ -1313,7 +1315,7 @@ void ModelPartImpl<TNodeType>::AddCondition(typename ModelPartImpl<TNodeType>::C
 {
     if (IsSubModelPart())
     {
-        ModelPartImpl<TNodeType>* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
+        auto* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
         KRATOS_ERROR_IF(pParentModelPart == nullptr) << "The parent ModelPart is not the same type as the current ModelPart" << std::endl;
         pParentModelPart->AddCondition(pNewCondition, ThisIndex);
     }
@@ -1342,7 +1344,7 @@ typename ModelPartImpl<TNodeType>::ConditionType::Pointer ModelPartImpl<TNodeTyp
 {
     if (IsSubModelPart())
     {
-        ModelPartImpl<TNodeType>* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
+        auto* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
         KRATOS_ERROR_IF(pParentModelPart == nullptr) << "The parent ModelPart is not the same type as the current ModelPart" << std::endl;
         typename ConditionType::Pointer p_new_condition = pParentModelPart->CreateNewCondition(ConditionName, Id, pConditionNodes, pProperties, ThisIndex);
         GetMesh(ThisIndex).AddCondition(p_new_condition);
@@ -1366,7 +1368,7 @@ void ModelPartImpl<TNodeType>::RemoveCondition(typename ModelPartImpl<TNodeType>
 
     for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
     {
-        ModelPartImpl<TNodeType>* pThisSubModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(&(*i_sub_model_part));
+        auto* pThisSubModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(&(*i_sub_model_part));
         KRATOS_ERROR_IF(pThisSubModelPart == nullptr) << "The sub ModelPart is not the same type as the current ModelPart" << std::endl;
         pThisSubModelPart->RemoveCondition(ConditionId, ThisIndex);
     }
@@ -1379,7 +1381,7 @@ void ModelPartImpl<TNodeType>::RemoveCondition(typename ModelPartImpl<TNodeType>
 
     for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
     {
-        ModelPartImpl<TNodeType>* pThisSubModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(&(*i_sub_model_part));
+        auto* pThisSubModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(&(*i_sub_model_part));
         KRATOS_ERROR_IF(pThisSubModelPart == nullptr) << "The sub ModelPart is not the same type as the current ModelPart" << std::endl;
         pThisSubModelPart->RemoveCondition(ThisCondition, ThisIndex);
     }
@@ -1392,7 +1394,7 @@ void ModelPartImpl<TNodeType>::RemoveCondition(typename ModelPartImpl<TNodeType>
 
     for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
     {
-        ModelPartImpl<TNodeType>* pThisSubModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(&(*i_sub_model_part));
+        auto* pThisSubModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(&(*i_sub_model_part));
         KRATOS_ERROR_IF(pThisSubModelPart == nullptr) << "The sub ModelPart is not the same type as the current ModelPart" << std::endl;
         pThisSubModelPart->RemoveCondition(pThisCondition, ThisIndex);
     }
@@ -1403,7 +1405,7 @@ void ModelPartImpl<TNodeType>::RemoveConditionFromAllLevels(typename ModelPartIm
 {
     if (IsSubModelPart())
     {
-        ModelPartImpl<TNodeType>* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
+        auto* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
         KRATOS_ERROR_IF(pParentModelPart == nullptr) << "The parent ModelPart is not the same type as the current ModelPart" << std::endl;
         pParentModelPart->RemoveCondition(ConditionId, ThisIndex);
         return;
@@ -1417,7 +1419,7 @@ void ModelPartImpl<TNodeType>::RemoveConditionFromAllLevels(typename ModelPartIm
 {
     if (IsSubModelPart())
     {
-        ModelPartImpl<TNodeType>* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
+        auto* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
         KRATOS_ERROR_IF(pParentModelPart == nullptr) << "The parent ModelPart is not the same type as the current ModelPart" << std::endl;
         pParentModelPart->RemoveCondition(ThisCondition, ThisIndex);
         return;
@@ -1431,7 +1433,7 @@ void ModelPartImpl<TNodeType>::RemoveConditionFromAllLevels(typename ModelPartIm
 {
     if (IsSubModelPart())
     {
-        ModelPartImpl<TNodeType>* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
+        auto* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
         KRATOS_ERROR_IF(pParentModelPart == nullptr) << "The parent ModelPart is not the same type as the current ModelPart" << std::endl;
         pParentModelPart->RemoveCondition(pThisCondition, ThisIndex);
         return;
@@ -1445,7 +1447,7 @@ BaseModelPart& ModelPartImpl<TNodeType>::CreateSubModelPart(std::string const& N
 {
     if (mSubModelParts.find(NewSubModelPartName) == mSubModelParts.end())
     {
-        ModelPartImpl<TNodeType>* p_model_part = new ModelPartImpl<TNodeType>(NewSubModelPartName);
+        auto* p_model_part = new ModelPartImpl<TNodeType>(NewSubModelPartName);
         p_model_part->SetParentModelPart(this);
         delete p_model_part->mpVariablesList;
         p_model_part->mpVariablesList = mpVariablesList;
@@ -1468,10 +1470,10 @@ void ModelPartImpl<TNodeType>::AddSubModelPart(BaseModelPart& rThisSubModelPart)
 
     if (IsSubModelPart())
     {
-        ModelPartImpl<TNodeType>* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
+        auto* pParentModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(mpParentModelPart);
         KRATOS_ERROR_IF(pParentModelPart == nullptr) << "The parent ModelPart is not the same type as the current ModelPart" << std::endl;
         // make a check if the adding sub ModelPart is the same type
-        ModelPartImpl<TNodeType>* pThisSubModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(&rThisSubModelPart);
+        auto* pThisSubModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(&rThisSubModelPart);
         KRATOS_ERROR_IF(pThisSubModelPart == nullptr) << "The adding ModelPart is not the same type as the current ModelPart" << std::endl;
         pParentModelPart->AddSubModelPart(rThisSubModelPart);
         return;
@@ -1489,7 +1491,7 @@ void ModelPartImpl<TNodeType>::SetBufferSize(typename ModelPartImpl<TNodeType>::
 
     for (SubModelPartIterator i_sub_model_part = SubModelPartsBegin(); i_sub_model_part != SubModelPartsEnd(); i_sub_model_part++)
     {
-        ModelPartImpl<TNodeType>* pThisSubModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(&(*i_sub_model_part));
+        auto* pThisSubModelPart = dynamic_cast<ModelPartImpl<TNodeType>*>(&(*i_sub_model_part));
         KRATOS_ERROR_IF(pThisSubModelPart == nullptr) << "The sub ModelPart is not the same type as the current ModelPart" << std::endl;
         pThisSubModelPart->SetBufferSize(NewBufferSize);
     }
@@ -1582,8 +1584,7 @@ template<class TNodeType>
 typename ModelPartImpl<TNodeType>::IndexType ModelPartImpl<TNodeType>::GetLastConstraintId() const
 {
     IndexType lastConstraintId = 0;
-    for(typename ModelPartImpl<TNodeType>::MasterSlaveConstraintContainerType::const_iterator it = this->MasterSlaveConstraints().begin();
-            it != this->MasterSlaveConstraints().end(); ++it)
+    for(auto it = this->MasterSlaveConstraints().begin(); it != this->MasterSlaveConstraints().end(); ++it)
     {
         if(it->Id() > lastConstraintId)
             lastConstraintId = it->Id();
@@ -1601,7 +1602,7 @@ int ModelPartImpl<TNodeType>::Check(ProcessInfo& rCurrentProcessInfo) const
 
     int err = 0;
 
-    std::cout << "Checking " << NumberOfElements() << " elements:" << std::endl;
+    KRATOS_INFO("ModelPart") << "Checking " << NumberOfElements() << " elements:" << std::endl;
 
     Kratos::progress_display show_progress_elements( NumberOfElements() );
     for (ElementConstantIterator elem_iterator = ElementsBegin(); elem_iterator != ElementsEnd(); ++elem_iterator)
@@ -1610,7 +1611,7 @@ int ModelPartImpl<TNodeType>::Check(ProcessInfo& rCurrentProcessInfo) const
         ++show_progress_elements;
     }
 
-    std::cout << "Checking " << NumberOfConditions() << " conditions:" << std::endl;
+    KRATOS_INFO("ModelPart") << "Checking " << NumberOfConditions() << " conditions:" << std::endl;
 
     Kratos::progress_display show_progress_conditions( NumberOfConditions() );
     for (ConditionConstantIterator condition_iterator = ConditionsBegin(); condition_iterator != ConditionsEnd(); ++condition_iterator)
@@ -1619,7 +1620,7 @@ int ModelPartImpl<TNodeType>::Check(ProcessInfo& rCurrentProcessInfo) const
         ++show_progress_conditions;
     }
 
-    std::cout << "Checking " << NumberOfMasterSlaveConstraints() << " master-slave constraints:" << std::endl;
+    KRATOS_INFO("ModelPart") << "Checking " << NumberOfMasterSlaveConstraints() << " master-slave constraints:" << std::endl;
 
     Kratos::progress_display show_progress_constraints( NumberOfMasterSlaveConstraints() );
     for (MasterSlaveConstraintConstantIteratorType constraint_iterator = MasterSlaveConstraintsBegin();

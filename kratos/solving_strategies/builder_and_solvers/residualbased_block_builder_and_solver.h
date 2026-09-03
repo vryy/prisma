@@ -312,9 +312,10 @@ public:
 
         vector<unsigned int> element_partition;
         CreatePartition(number_of_threads, pElements.size(), element_partition);
-        KRATOS_WATCH(number_of_threads);
-        KRATOS_WATCH(element_partition);
-
+        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolver", Kernel::GetInstance().GetLogLevel() > 2)
+            << "number_of_threads: " << number_of_threads
+            << ", element_partition: " << element_partition
+            << std::endl;
 
         double start_build = OpenMPUtils::GetCurrentTime();
 
@@ -398,15 +399,14 @@ public:
         }
 
         double stop_build = OpenMPUtils::GetCurrentTime();
-        if (this->GetEchoLevel() >=1 && r_model_part.GetCommunicator().MyPID() == 0)
-            std::cout << "build time: " << stop_build - start_build << std::endl;
+        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolver", Kernel::GetInstance().GetLogLevel() > 0)
+            << stop_build - start_build << std::endl;
 
         for (int i = 0; i < A_size; i++)
             omp_destroy_lock(&lock_array[i]);
-        if( this->GetEchoLevel() > 2 && r_model_part.GetCommunicator().MyPID() == 0)
-        {
-            KRATOS_WATCH("finished parallel building");
-        }
+
+        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolver", Kernel::GetInstance().GetLogLevel() > 2)
+            << "finished parallel building";
         //                        //ensure that all the threads are syncronized here
         //                        #pragma omp barrier
 #endif
@@ -604,10 +604,8 @@ public:
             TSparseSpace::SetToZero(Dx);
 
         //prints informations about the current time
-        if (this->GetEchoLevel() > 1)
-        {
-            std::cout << *(BaseType::mpLinearSystemSolver) << std::endl;
-        }
+        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolver", Kernel::GetInstance().GetLogLevel() > 1)
+            << *(BaseType::mpLinearSystemSolver) << std::endl;
 
         #ifdef EXPORT_SOL_VECTOR
         std::stringstream dx_filename;
@@ -649,10 +647,8 @@ public:
         }
 
         //prints informations about the current time
-        if (this->GetEchoLevel() > 1)
-        {
-            std::cout << *(BaseType::mpLinearSystemSolver) << std::endl;
-        }
+        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolver", Kernel::GetInstance().GetLogLevel() > 1)
+            << *(BaseType::mpLinearSystemSolver) << std::endl;
 
         #ifdef EXPORT_SOL_VECTOR
         std::stringstream dx_filename;
@@ -679,13 +675,11 @@ public:
 
         ApplyDirichletConditions(pScheme, r_model_part, A, Dx, b);
 
-        if (this->GetEchoLevel() == 3)
-        {
-            std::cout << "before the solution of the system" << std::endl;
-            std::cout << "System Matrix = " << A << std::endl;
-            std::cout << "unknowns vector = " << Dx << std::endl;
-            std::cout << "RHS vector = " << b << std::endl;
-        }
+        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolver", Kernel::GetInstance().GetLogLevel() > 2)
+            << "before the solution of the system" << std::endl
+            << "System Matrix = " << A << std::endl
+            << "unknowns vector = " << Dx << std::endl
+            << "RHS vector = " << b << std::endl;
 
         double start_solve = OpenMPUtils::GetCurrentTime();
         Timer::Start("Solve");
@@ -694,16 +688,14 @@ public:
 
         Timer::Stop("Solve");
         double stop_solve = OpenMPUtils::GetCurrentTime();
-        if (this->GetEchoLevel() >=1 && r_model_part.GetCommunicator().MyPID() == 0)
-            std::cout << "system solve time: " << stop_solve - start_solve << std::endl;
+        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolver", Kernel::GetInstance().GetLogLevel() > 0)
+            << "system solve time: " << stop_solve - start_solve << std::endl;
 
-        if (this->GetEchoLevel() == 3)
-        {
-            std::cout << "after the solution of the system" << std::endl;
-            std::cout << "System Matrix = " << A << std::endl;
-            std::cout << "unknowns vector = " << Dx << std::endl;
-            std::cout << "RHS vector = " << b << std::endl;
-        }
+        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolver", Kernel::GetInstance().GetLogLevel() > 2)
+            << "after the solution of the system" << std::endl
+            << "System Matrix = " << A << std::endl
+            << "unknowns vector = " << Dx << std::endl
+            << "RHS vector = " << b << std::endl;
 
         KRATOS_CATCH("")
     }
@@ -757,10 +749,8 @@ public:
     {
         KRATOS_TRY;
 
-        if( this->GetEchoLevel() > 0 && r_model_part.GetCommunicator().MyPID() == 0)
-        {
-            std::cout << "Setting up the dofs" << std::endl;
-        }
+        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolver", Kernel::GetInstance().GetLogLevel() > 0)
+            << "Setting up the dofs" << std::endl;
 
         //Gets the array of elements from the modeler
         ElementsContainerType& pElements = r_model_part.Elements();
@@ -825,10 +815,8 @@ public:
             KRATOS_ERROR << "No degrees of freedom!";
 
         BaseType::mDofSetIsInitialized = true;
-        if( this->GetEchoLevel() > 2 && r_model_part.GetCommunicator().MyPID() == 0)
-        {
-            std::cout << "finished setting up the dofs" << std::endl;
-        }
+        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolver", Kernel::GetInstance().GetLogLevel() > 2)
+            << "finished setting up the dofs" << std::endl;
 
         KRATOS_CATCH("");
     }
@@ -1156,10 +1144,8 @@ public:
 
         this->mpLinearSystemSolver->Clear();
 
-        if (this->GetEchoLevel() > 0)
-        {
-            std::cout << "ResidualBasedBlockBuilderAndSolver Clear Function called" << std::endl;
-        }
+        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolver", Kernel::GetInstance().GetLogLevel() > 0)
+            << "Clear Function called" << std::endl;
     }
 
     /**
@@ -1321,10 +1307,8 @@ protected:
         int number_of_threads = omp_get_max_threads();
         vector<unsigned int> matrix_partition;
         CreatePartition(number_of_threads, indices.size(), matrix_partition);
-        if (this->GetEchoLevel() > 2)
-        {
-            KRATOS_WATCH(matrix_partition);
-        }
+        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolver", Kernel::GetInstance().GetLogLevel() > 2)
+            << "matrix_partition: " << matrix_partition;
         for (int k = 0; k < number_of_threads; k++)
         {
             #pragma omp parallel

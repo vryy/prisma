@@ -24,8 +24,9 @@
 #define  KRATOS_KERNEL_H_INCLUDED
 
 // System includes
-#include <string>
 #include <iostream>
+#include <set>
+#include <string>
 
 // External includes
 
@@ -68,6 +69,8 @@ public:
     /// Pointer definition of Kernel
     KRATOS_CLASS_POINTER_DEFINITION(Kernel);
 
+    using LoggerOutputContainerType = std::set<LoggerOutput::Pointer, LoggerOutputPointerLess>;
+
     ///@}
     ///@name Life Cycle
     ///@{
@@ -84,7 +87,7 @@ public:
     Kernel(const Kernel&) = delete;
 
     /// Destructor.
-    virtual ~Kernel() {}
+    virtual ~Kernel();
 
     ///@}
     ///@name Operations
@@ -95,6 +98,18 @@ public:
     {
         static Kernel instance;
         return instance;
+    }
+
+    /// Set the log level
+    void SetLogLevel(int lvl)
+    {
+        mLogLevel = lvl;
+    }
+
+    /// Get the log level
+    int GetLogLevel() const
+    {
+        return mLogLevel;
     }
 
     /// Pluging an application into Kratos.
@@ -129,8 +144,30 @@ public:
     void InitializeApplication(KratosApplication& NewApplication);
 
     ///@}
+    ///@name Inquiry
+    ///@{
+
+    /**
+     * Get the list of logger outputs
+     */
+    const LoggerOutputContainerType& GetLoggerOutputs() const;
+
+    /**
+     * Add the logger output
+     */
+    void AddOutput(LoggerOutput::Pointer pTheOutput);
+
+    /**
+     * Remove the logger output
+     */
+    void RemoveOutput(LoggerOutput::Pointer pTheOutput);
+
+    ///@}
     ///@name Input and output
     ///@{
+
+    /// Print the welcome message
+    static void Welcome(std::ostream& rOStream);
 
     /// Turn back information as a string.
     virtual std::string Info() const;
@@ -147,12 +184,13 @@ private:
     ///@name Static Member Variables
     ///@{
 
-
     ///@}
     ///@name Member Variables
     ///@{
 
+    LoggerOutputContainerType mLoggerOutputs;
     KratosApplication mKratosApplication{"DefaultApplication"};
+    int mLogLevel = 1;
 
     ///@}
     ///@name Private Operations

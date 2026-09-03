@@ -506,7 +506,7 @@ public:
             InactiveIdSet.insert(*it);
 
         // size check
-        std::cout << "There are " << ActiveIdSet.size() << " active id's and " << InactiveIdSet.size() << " inactive id's" << std::endl;
+        KRATOS_DETAIL("BuilderAndSolver") << "There are " << ActiveIdSet.size() << " active id's and " << InactiveIdSet.size() << " inactive id's" << std::endl;
         if((ActiveIdSet.size() + InactiveIdSet.size()) != BaseType::mEquationSystemSize)
         {
             KRATOS_WATCH(ActiveIdSet.size())
@@ -667,7 +667,7 @@ public:
                 #endif
             }
         }
-        std::cout << "Element assembly completed"
+        KRATOS_INFO("BuilderAndSolver") << "Element assembly completed"
                   << ", computed: " << num_computed_elements
                   << ", assembled: " << num_assembled_elements << std::endl;
 
@@ -714,7 +714,7 @@ public:
 
                     if (std::isnan(norm_cond_k) || std::isnan(norm_cond_r))
                     {
-                        std::cout << "WARNING!!!NaN is detected at condition " << it->Id() << " at " << __FUNCTION__
+                        KRATOS_WARNING("BuilderAndSolver") << "NaN is detected at condition " << it->Id() << " at " << __FUNCTION__
                                      << ", type: " << typeid((*it)).name()
                                      << ", Properties " << it->GetProperties().Id()
                                      << std::endl;
@@ -773,7 +773,7 @@ public:
                 }
             }
         }
-        std::cout << "Condition assembly completed"
+        KRATOS_INFO("BuilderAndSolver") << "Condition assembly completed"
                   << ", computed: " << num_computed_conditions
                   << ", assembled: " << num_assembled_conditions << std::endl;
 
@@ -788,7 +788,7 @@ public:
         if constexpr (std::is_arithmetic<TDataType>::value)
             printf("DiagonalSum: %.16e, DiagonalAverage: %.16e\n", DiagonalSum, DiagonalAverage);
         else
-            std::cout << "DiagonalSum: " << DiagonalSum
+            KRATOS_INFO("BuilderAndSolver") << "DiagonalSum: " << DiagonalSum
                       << "DiagonalAverage: " << DiagonalAverage
                       << std::endl;
 
@@ -807,9 +807,9 @@ public:
             b(j)    = 0.0;
         }
 
-        std::cout << "modification of diagonal for inactive part completed, " << InactiveIdSet.size() << " entries are modified" << std::endl;
+        KRATOS_INFO("BuilderAndSolver") << "modification of diagonal for inactive part completed, " << InactiveIdSet.size() << " entries are modified" << std::endl;
         #endif
-        std::cout << "finished parallel building: " << stop_prod - start_prod << " s" << std::endl;
+        KRATOS_INFO("BuilderAndSolver") << "finished parallel building: " << stop_prod - start_prod << " s" << std::endl;
 #endif
 
         //finalize the build of compressed matrix
@@ -859,7 +859,7 @@ public:
             KRATOS_ERROR << "Error: Right hand side at inactive id's is nonzero. Check the assembly or enumeration";
         }
         else
-            std::cout << "Sum of inactive ids is zero, which is ok" << std::endl;
+            KRATOS_INFO("BuilderAndSolver") << "Sum of inactive ids is zero, which is ok" << std::endl;
 
         #ifdef MODIFY_NEGATIVE_DIAGONAL
         // detect the negative diagonal and multiply LHS & RHS as needed
@@ -873,7 +873,7 @@ public:
                     b(*it) *= (-1.0);
                 }
         }
-        std::cout << "Modify negative diagonal completed, " << counter << " row is multiplied with -1" << std::endl;
+        KRATOS_INFO("BuilderAndSolver") << "Modify negative diagonal completed, " << counter << " row is multiplied with -1" << std::endl;
         #endif
 
         #endif
@@ -881,12 +881,10 @@ public:
         Timer::Stop("Build");
         double building_time_stop = Timer::GetTime();
 
-        if(this->GetEchoLevel()>0)
-        {
-            std::cout << "Building Time : " << (building_time_stop - building_time_start)
-                      << " (step " << mStepCounter << ", it " << mLocalCounter << ")"
-                      << std::endl;
-        }
+        KRATOS_INFO_IF("BuilderAndSolver", Kernel::GetInstance().GetLogLevel() > 0)
+            << "Building Time : " << (building_time_stop - building_time_start)
+            << " (step " << mStepCounter << ", it " << mLocalCounter << ")"
+            << std::endl;
 
         #ifdef EXPORT_LHS_MATRIX
         std::stringstream lhs_filename;
@@ -1074,19 +1072,15 @@ public:
         else
             TSparseSpace::SetToZero(Dx);
 
-        //prints informations about the current time
-        if(this->GetEchoLevel() > 1)
-        {
-            std::cout << *(BaseType::mpLinearSystemSolver) << std::endl;
-        }
+        // print informations about the current time
+        KRATOS_INFO_IF("BuilderAndSolver", Kernel::GetInstance().GetLogLevel() > 1)
+            << *(BaseType::mpLinearSystemSolver) << std::endl;
 
         double solve_time_stop = Timer::GetTime();
         Timer::Stop("SystemSolve");
 
-        if(this->GetEchoLevel()>0)
-        {
-            std::cout << "System Solve Time : " << (solve_time_stop - solve_time_start) << std::endl;
-        }
+        KRATOS_INFO_IF("BuilderAndSolver", Kernel::GetInstance().GetLogLevel() > 0)
+            << "System Solve Time : " << (solve_time_stop - solve_time_start) << std::endl;
 
         #ifdef EXPORT_SOL_VECTOR_SAMPLING
         if(mLocalCounter == 1 && mStepCounter == 0)
@@ -1136,7 +1130,7 @@ public:
             }
         }
         info.close();
-        std::cout << "Exported " << fn.str() << std::endl;
+        KRATOS_INFO("BuilderAndSolver") << "Exported " << fn.str() << std::endl;
         #endif
 
 //          ApplyPointLoads(pScheme,r_model_part,b);
@@ -1144,13 +1138,11 @@ public:
         //does nothing...dirichlet conditions are naturally dealt with in defining the residual
         ApplyDirichletConditions(pScheme,r_model_part,A,Dx,b);
 
-        if (this->GetEchoLevel()== 3)
-        {
-            std::cout << "before the solution of the system" << std::endl;
-            std::cout << "System Matrix = " << A << std::endl;
-            std::cout << "unknowns vector = " << Dx << std::endl;
-            std::cout << "RHS vector = " << b << std::endl;
-        }
+        KRATOS_INFO_IF("BuilderAndSolver", Kernel::GetInstance().GetLogLevel() > 2)
+            << "before the solution of the system" << std::endl
+            << "System Matrix = " << A << std::endl
+            << "unknowns vector = " << Dx << std::endl
+            << "RHS vector = " << b << std::endl;
 
         #ifdef QUERY_RESIDUAL_NORM
         TSystemVectorType b_0 = b;
@@ -1160,7 +1152,7 @@ public:
         for(int i = 0; i < BaseType::mEquationSystemSize; ++i)
         {
             if(A(i, i) < 0.0)
-                std::cout << "Warning: the diagonal is negative at (" << i << ", " << i << "): " << A(i, i) << std::endl;
+                KRATOS_WARNING("BuilderAndSolver") << "the diagonal is negative at (" << i << ", " << i << "): " << A(i, i) << std::endl;
         }
         #endif
 
@@ -1173,13 +1165,11 @@ public:
         //solve the system
         SystemSolve(A,Dx,b);
 
-        if (this->GetEchoLevel()== 3)
-        {
-            std::cout << "after the solution of the system" << std::endl;
-            std::cout << "System Matrix = " << A << std::endl;
-            std::cout << "unknowns vector = " << Dx << std::endl;
-            std::cout << "RHS vector = " << b << std::endl;
-        }
+        KRATOS_INFO_IF("BuilderAndSolver", Kernel::GetInstance().GetLogLevel() > 2)
+            << "after the solution of the system" << std::endl
+            << "System Matrix = " << A << std::endl
+            << "unknowns vector = " << Dx << std::endl
+            << "RHS vector = " << b << std::endl;
 
         #ifdef QUERY_RESIDUAL_NORM
         ValueType norm_b = std::abs(TSparseSpace::TwoNorm(b_0));
@@ -1187,9 +1177,9 @@ public:
         TSparseSpace::Mult(A, Dx, r);
         TSparseSpace::UnaliasedAdd(r, -1.0, b_0);
         ValueType norm_r = std::abs(TSparseSpace::TwoNorm(r));
-        std::cout << "||r||_2 / ||b||_2: " << norm_r/norm_b << std::endl;
-        std::cout << "||r||_2: " << norm_r << std::endl;
-        std::cout << "||b||_2: " << norm_b << std::endl;
+        KRATOS_DETAIL("BuilderAndSolver") << "||r||_2 / ||b||_2: " << norm_r/norm_b << std::endl;
+        KRATOS_DETAIL("BuilderAndSolver") << "||r||_2: " << norm_r << std::endl;
+        KRATOS_DETAIL("BuilderAndSolver") << "||b||_2: " << norm_b << std::endl;
         #endif
 
         KRATOS_CATCH("")
@@ -1312,7 +1302,7 @@ public:
 
                     if (std::isnan(norm_elem_r))
                     {
-                        std::cout << "NaN is detected at element " << it->Id() << " at " << __FUNCTION__
+                        KRATOS_WARNING("BuilderAndSolver") << "NaN is detected at element " << it->Id() << " at " << __FUNCTION__
                                      << ", type: " << typeid((*it)).name()
                                      << ", Properties " << it->GetProperties().Id()
                                      << std::endl;
@@ -1335,7 +1325,7 @@ public:
             }
         }
 
-        std::cout << "Element assembly completed"
+        KRATOS_INFO("BuilderAndSolver") << "Element assembly completed"
                   << ", computed: " << num_computed_elements
                   << ", assembled: " << num_assembled_elements << std::endl;
 
@@ -1375,7 +1365,7 @@ public:
 
                     if (std::isnan(norm_elem_r))
                     {
-                        std::cout << "NaN is detected at condition " << it->Id() << " at " << __FUNCTION__
+                        KRATOS_WARNING("BuilderAndSolver") << "NaN is detected at condition " << it->Id() << " at " << __FUNCTION__
                                      << ", type: " << typeid((*it)).name()
                                      << ", Properties " << it->GetProperties().Id()
                                      << std::endl;
@@ -1398,7 +1388,7 @@ public:
             }
         }
 
-        std::cout << "Condition assembly completed"
+        KRATOS_INFO("BuilderAndSolver") << "Condition assembly completed"
                   << ", computed: " << num_computed_conditions
                   << ", assembled: " << num_assembled_conditions << std::endl;
 #endif
@@ -1454,7 +1444,7 @@ public:
             int number_of_threads = omp_get_max_threads();
             boost::numeric::ublas::vector<unsigned int> element_partition;
             OpenMPUtils::CreatePartition(number_of_threads, pElements.size(), element_partition);
-            std::cout << "number_of_threads for BuildRHSreactions: " << number_of_threads << std::endl;
+            KRATOS_INFO("BuilderAndSolver") << "number_of_threads for BuildRHSreactions: " << number_of_threads << std::endl;
 
             #pragma omp parallel for
             for(int k = 0; k < number_of_threads; ++k)
@@ -1497,7 +1487,7 @@ public:
     {
         KRATOS_TRY
 
-        std::cout << "setting up the dofs" << std::endl;
+        KRATOS_INFO("BuilderAndSolver") << "setting up the dofs" << std::endl;
         Timer::Start("SetUpDofSet");
 
         // obtain the dofs from elements
@@ -1911,10 +1901,8 @@ public:
             TSparseSpace::Clear( (this->mpReactionsVector) );
 //          this->mReactionsVector = TSystemVectorType();
 
-        if (this->GetEchoLevel() > 0)
-        {
-            std::cout << "ResidualBasedEliminationBuilderAndSolverDeactivation Clear Function called" << std::endl;
-        }
+        KRATOS_INFO_IF("ResidualBasedEliminationBuilderAndSolverDeactivation", Kernel::GetInstance().GetLogLevel() > 0)
+            << "Clear Function called" << std::endl;
     }
 
     /*@} */
@@ -1981,7 +1969,7 @@ protected:
         ConditionsContainerType& rConditions,
         const ProcessInfo& CurrentProcessInfo) const
     {
-        std::cout << "Warning: ConstructMatrixStructure is called." << std::endl;
+        KRATOS_INFO("BuilderAndSolver") << "Warning: ConstructMatrixStructure is called." << std::endl;
         double start_time = OpenMPUtils::GetCurrentTime();
 
         std::size_t equation_size = A.size1();
@@ -2010,7 +1998,7 @@ protected:
             }
         }
         else
-            std::cout << "SYSTEM_PERMUTATION_VECTOR is not set for ProcessInfo. The system reordering will not be performed" << std::endl;
+            KRATOS_WARNING("BuilderAndSolver") << "SYSTEM_PERMUTATION_VECTOR is not set for ProcessInfo. The system reordering will not be performed" << std::endl;
         #endif
 
         std::vector<std::vector<std::size_t> > indices(equation_size);
@@ -2091,7 +2079,7 @@ protected:
         Timer::Stop("MatrixStructure");
 
         double end_time = OpenMPUtils::GetCurrentTime();
-        std::cout << "ConstructMatrixStructure completed: " << end_time - start_time << " s" << std::endl;
+        KRATOS_INFO("BuilderAndSolver") << "ConstructMatrixStructure completed: " << end_time - start_time << " s" << std::endl;
     }
 
     //**************************************************************************

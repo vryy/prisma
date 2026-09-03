@@ -260,32 +260,34 @@ public:
     ///@{
 
     /**
-     * @brief This method prints the internal information in a given stream
-     * @param rOStream The strem considered
+     * @brief This method prints the internal information
      * @param rIntervalName The internal name that will store the timing data
      * @param StartTime The starting time
-     * @param StopTime The stoping time
+     * @param StopTime The stopping time
      */
     static void PrintIntervalInformation(std::string const& IntervalName, double StartTime, double StopTime)
     {
         if(msOutputFile.is_open())
-        {
-            msOutputFile << IntervalName << " ";
-
-            for(int i = IntervalName.size() + 1 ; i < 40 ; i++)
-                msOutputFile << ".";
-
-            msOutputFile << " " << StartTime << "s     \t" << StopTime << "s     \t" << StopTime - StartTime <<"s" << std::endl;
-        }
+            PrintIntervalInformation(msOutputFile, IntervalName, StartTime, StopTime);
         else if(msPrintOnScreen)
-        {
-            std::cout << IntervalName << " ";
+            PrintIntervalInformation(std::cout, IntervalName, StartTime, StopTime);
+    }
 
-            for(int i = IntervalName.size() + 1 ; i < 40 ; i++)
-                std::cout << ".";
+    /**
+     * @brief This method prints the internal information in a given stream
+     * @param rOStream The output stream
+     * @param rIntervalName The internal name that will store the timing data
+     * @param StartTime The starting time
+     * @param StopTime The stopping time
+     */
+    static void PrintIntervalInformation(std::ostream& rOStream, std::string const& IntervalName, double StartTime, double StopTime)
+    {
+        rOStream << IntervalName << " ";
 
-            std::cout << " " << StartTime << "s     \t" << StopTime << "s     \t" << StopTime - StartTime <<"s" << std::endl;
-        }
+        for(int i = IntervalName.size() + 1 ; i < 40 ; i++)
+            rOStream << ".";
+
+        rOStream << " " << StartTime << "s     \t" << StopTime << "s     \t" << StopTime - StartTime <<"s" << std::endl;
     }
 
     /**
@@ -301,7 +303,7 @@ public:
 
     /**
      * @brief This method prints the timing information in a giving stream
-     * @param rOStream The strem considered
+     * @param rOStream The output stream
      */
     static void PrintTimingInformation(std::ostream& rOStream)
     {

@@ -879,12 +879,10 @@ public:
         Timer::Stop("Build");
         double building_time_stop = Timer::GetTime();
 
-        if(this->GetEchoLevel()>0)
-        {
-            std::cout << "Building Time : " << (building_time_stop - building_time_start)
-                      << " (step " << mStepCounter << ", it " << mLocalCounter << ")"
-                      << std::endl;
-        }
+        KRATOS_INFO_IF("BuilderAndSolver", Kernel::GetInstance().GetLogLevel() > 0)
+            << "Building Time : " << (building_time_stop - building_time_start)
+            << " (step " << mStepCounter << ", it " << mLocalCounter << ")"
+            << std::endl;
 
         #ifdef EXPORT_LHS_MATRIX
         std::stringstream lhs_filename;
@@ -1071,18 +1069,14 @@ public:
             TSparseSpace::SetToZero(Dx);
 
         //prints informations about the current time
-        if(this->GetEchoLevel() > 1)
-        {
-            std::cout << *(BaseType::mpLinearSystemSolver) << std::endl;
-        }
+        KRATOS_INFO_IF("BuilderAndSolver", Kernel::GetInstance().GetLogLevel() > 1)
+            << *(BaseType::mpLinearSystemSolver) << std::endl;
 
         double solve_time_stop = Timer::GetTime();
         Timer::Stop("SystemSolve");
 
-        if(this->GetEchoLevel()>0)
-        {
-            std::cout << "System Solve Time : " << (solve_time_stop - solve_time_start) << std::endl;
-        }
+        KRATOS_INFO_IF("BuilderAndSolver", Kernel::GetInstance().GetLogLevel() > 0)
+            << "System Solve Time : " << (solve_time_stop - solve_time_start) << std::endl;
 
         #ifdef EXPORT_SOL_VECTOR_SAMPLING
         if(mLocalCounter == 1 && mStepCounter == 0)
@@ -1140,13 +1134,11 @@ public:
         //does nothing...dirichlet conditions are naturally dealt with in defining the residual
         ApplyDirichletConditions(pScheme,r_model_part,A,Dx,b);
 
-        if (this->GetEchoLevel()== 3)
-        {
-            std::cout << "before the solution of the system" << std::endl;
-            std::cout << "System Matrix = " << A << std::endl;
-            std::cout << "unknowns vector = " << Dx << std::endl;
-            std::cout << "RHS vector = " << b << std::endl;
-        }
+        KRATOS_INFO_IF("BuilderAndSolver", Kernel::GetInstance().GetLogLevel() > 2)
+            << "before the solution of the system" << std::endl
+            << "System Matrix = " << A << std::endl
+            << "unknowns vector = " << Dx << std::endl
+            << "RHS vector = " << b << std::endl;
 
         #ifdef QUERY_RESIDUAL_NORM
         TSystemVectorType b_0 = b;
@@ -1169,13 +1161,11 @@ public:
         //solve the system
         SystemSolve(A,Dx,b);
 
-        if (this->GetEchoLevel()== 3)
-        {
-            std::cout << "after the solution of the system" << std::endl;
-            std::cout << "System Matrix = " << A << std::endl;
-            std::cout << "unknowns vector = " << Dx << std::endl;
-            std::cout << "RHS vector = " << b << std::endl;
-        }
+        KRATOS_INFO_IF("BuilderAndSolver", Kernel::GetInstance().GetLogLevel() > 2)
+            << "after the solution of the system" << std::endl
+            << "System Matrix = " << A << std::endl
+            << "unknowns vector = " << Dx << std::endl
+            << "RHS vector = " << b << std::endl;
 
         #ifdef QUERY_RESIDUAL_NORM
         ValueType norm_b = std::abs(TSparseSpace::TwoNorm(b_0));
@@ -1873,10 +1863,8 @@ public:
             TSparseSpace::Clear( (this->mpReactionsVector) );
 //          this->mReactionsVector = TSystemVectorType();
 
-        if (this->GetEchoLevel() > 0)
-        {
-            std::cout << "ResidualBasedEliminationBuilderAndSolverDeactivationNonSquare Clear Function called" << std::endl;
-        }
+        KRATOS_INFO_IF("BuilderAndSolver", Kernel::GetInstance().GetLogLevel() > 0)
+            << "ResidualBasedEliminationBuilderAndSolverDeactivationNonSquare Clear Function called" << std::endl;
     }
 
     /*@} */

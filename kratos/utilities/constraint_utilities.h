@@ -179,20 +179,20 @@ public:
     /**
      * Print the values associated with the constraint
      */
-    static void PrintConstraint(const MasterSlaveConstraintType& rConstraint)
+    static void PrintConstraint(std::ostream& rOStream, const MasterSlaveConstraintType& rConstraint)
     {
         typedef typename MasterSlaveConstraintType::DofPointerVectorType DofPointerVectorType;
 
         const DofPointerVectorType& slave_dofs = rConstraint.GetSlaveDofsVector();
         const DofPointerVectorType& master_dofs = rConstraint.GetMasterDofsVector();
 
-        std::cout << "Constraint " << rConstraint.Id() << ":" << std::endl;
-        std::cout << " Slave dofs:" << std::endl;
+        rOStream << "Constraint " << rConstraint.Id() << ":" << std::endl;
+        rOStream << " Slave dofs:" << std::endl;
         for (std::size_t i = 0; i < slave_dofs.size(); ++i)
-            std::cout << "  " << slave_dofs[i]->Id() << " " << slave_dofs[i]->GetVariable().Name() << " " << slave_dofs[i]->GetSolutionStepValue() << std::endl;
-        std::cout << " Master dofs:" << std::endl;
+            rOStream << "  " << slave_dofs[i]->Id() << " " << slave_dofs[i]->GetVariable().Name() << " " << slave_dofs[i]->GetSolutionStepValue() << std::endl;
+        rOStream << " Master dofs:" << std::endl;
         for (std::size_t i = 0; i < master_dofs.size(); ++i)
-            std::cout << "  " << master_dofs[i]->Id() << " " << master_dofs[i]->GetVariable().Name() << " " << master_dofs[i]->GetSolutionStepValue() << std::endl;
+            rOStream << "  " << master_dofs[i]->Id() << " " << master_dofs[i]->GetVariable().Name() << " " << master_dofs[i]->GetSolutionStepValue() << std::endl;
     }
 
 }; // namespace ConstraintUtilities

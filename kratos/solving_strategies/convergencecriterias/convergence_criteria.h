@@ -24,6 +24,7 @@
 /* Project includes */
 #include "includes/define.h"
 #include "containers/variable.h"
+#include "utilities/logger.h"
 
 namespace Kratos
 {
@@ -92,7 +93,6 @@ public:
     {
         mActualizeRHSIsNeeded = false;
         mConvergenceCriteriaIsInitialized = false;
-        SetEchoLevel(1);
     }
 
     /** Copy constructor.
@@ -100,7 +100,6 @@ public:
     ConvergenceCriteria(ConvergenceCriteria const& rOther)
       : mActualizeRHSIsNeeded(rOther.mActualizeRHSIsNeeded)
       , mConvergenceCriteriaIsInitialized(rOther.mConvergenceCriteriaIsInitialized)
-      , mEchoLevel(rOther.mEchoLevel)
     {
     }
 
@@ -149,21 +148,6 @@ public:
     }
 
     //*********************************************************************************
-
-    /**level of echo for the convergence criterion
-    0 -> mute... no echo at all
-    1 -> print basic informations
-    2 -> print extra informations
-     */
-    virtual void SetEchoLevel(int Level)
-    {
-        mEchoLevel = Level;
-    }
-
-    int GetEchoLevel() const
-    {
-        return mEchoLevel;
-    }
 
     void SetActualizeRHSFlag(bool flag)
     {
@@ -360,7 +344,6 @@ private:
     /*@{ */
 
     bool mActualizeRHSIsNeeded;
-    int  mEchoLevel;
 
     /*@} */
     /**@name Private Operators*/

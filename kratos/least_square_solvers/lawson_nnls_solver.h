@@ -23,6 +23,7 @@
 // Project includes
 #include "includes/define.h"
 #include "includes/ublas_interface.h"
+#include "utilities/logger.h"
 
 namespace Kratos
 {
@@ -94,14 +95,17 @@ public:
         for (std::size_t i = 0; i < N; ++i)
             rX(i) = dX[i];
 
-        if (echo_level > 0)
+        if (mode == 1)
         {
-            if (mode == 1)
-                std::cout << "NNLS: optimization successful, rnorm = " << rnorm << std::endl;
-            else if (mode == 2)
-                std::cout << "NNLS: The dimensions of the problem are bad, either M <= 0 or N <= 0" << std::endl;
-            else if (mode == 3)
-                std::cout << "NNLS: iteration count exceeded. More than " << 3*N << " iterations" << std::endl;
+            KRATOS_INFO_IF("NnlsSolver", echo_level > 0) << "Optimization successful, rnorm = " << rnorm << std::endl;
+        }
+        else if (mode == 2)
+        {
+            KRATOS_INFO_IF("NnlsSolver", echo_level > 0) << "The dimensions of the problem are bad, either M <= 0 or N <= 0" << std::endl;
+        }
+        else if (mode == 3)
+        {
+            KRATOS_INFO_IF("NnlsSolver", echo_level > 0) << "Iteration count exceeded. More than " << 3*N << " iterations" << std::endl;
         }
 
         return mode;
@@ -114,7 +118,7 @@ public:
     /// Turn back information as a string.
     virtual std::string Info() const
     {
-        return "Nonnegative Least Square Solver based on Lawson";
+        return "Nonnegative Least Square Solver based on Lawson algorithm";
     }
 
     /// Print information about this object.

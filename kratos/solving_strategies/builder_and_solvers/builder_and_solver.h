@@ -9,9 +9,9 @@
 //
 //  Main authors:    Riccardo Rossi
 //
+
 #if !defined(KRATOS_BUILDER_AND_SOLVER )
 #define  KRATOS_BUILDER_AND_SOLVER
-
 
 /* System includes */
 
@@ -19,7 +19,9 @@
 
 /* Project includes */
 #include "includes/define.h"
+#include "includes/kernel.h"
 #include "solving_strategies/schemes/scheme.h"
+#include "utilities/logger.h"
 
 
 namespace Kratos
@@ -152,7 +154,6 @@ public:
     , mDofSetIsInitialized(rOther.mDofSetIsInitialized)
     , mCalculateReactionsFlag(rOther.mCalculateReactionsFlag)
     , mEquationSystemSize(rOther.mEquationSystemSize)
-    , mEchoLevel(rOther.mEchoLevel)
     {
         if (rOther.mpReactionsVector != nullptr)
             mpReactionsVector = TSystemVectorPointerType(
@@ -608,10 +609,8 @@ public:
         TSparseSpace::Clear(this->mpReactionsVector);
         if (this->mpLinearSystemSolver != nullptr) this->mpLinearSystemSolver->Clear();
 
-        if (this->GetEchoLevel() > 0)
-        {
-            std::cout << "BuilderAndSolver Clear Function called" << std::endl;
-        }
+        KRATOS_INFO_IF("BuilderAndSolver", Kernel::GetInstance().GetLogLevel() > 0)
+            << "BuilderAndSolver Clear Function called" << std::endl;
     }
 
     /**
@@ -637,30 +636,6 @@ public:
     ///@}
     ///@name Access
     ///@{
-
-    /**
-     * @brief It sets the level of echo for the solving strategy
-     * @param Level The level to set
-     * @details The different levels of echo are:
-     * - 0: Mute... no echo at all
-     * - 1: Printing time and basic information
-     * - 2: Printing linear solver data
-     * - 3: Print of debug information: Echo of stiffness matrix, Dx, b...
-     * - 4: Print of stiffness matrix, b to Matrix Market
-     */
-    void SetEchoLevel(int Level)
-    {
-        mEchoLevel = Level;
-    }
-
-    /**
-     * @brief It returns the echo level
-     * @return The echo level of the builder and solver
-     */
-    int GetEchoLevel() const
-    {
-        return mEchoLevel;
-    }
 
     /**
      * @brief This method returns constraint relation (T) matrix
@@ -731,8 +706,6 @@ protected:
     bool mCalculateReactionsFlag = false; /// Flag taking in account if it is needed or not to calculate the reactions
 
     SizeType mEquationSystemSize; /// Number of degrees of freedom of the problem to be solve
-
-    int mEchoLevel = 0;
 
     TSystemVectorPointerType mpReactionsVector;
 

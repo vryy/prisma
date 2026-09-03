@@ -50,9 +50,9 @@ typedef ModelPart::DataType DataType;
 
 void WriteNodeMesh( GidIO<>& dummy, GidIO<>::MeshType& rThisMesh )
 {
-    std::cout<<"start printing nodes mesh "<<std::endl;
+    KRATOS_INFO("GidIO") << "start printing nodes mesh " << std::endl;
     dummy.WriteNodeMesh( rThisMesh );
-    std::cout<<"end printing nodes mesh "<<std::endl;
+    KRATOS_INFO("GidIO") << "end printing nodes mesh " << std::endl;
 }
 
 void WriteSphereMesh( GidIO<>& dummy, GidIO<>::MeshType& rThisMesh )

@@ -246,12 +246,10 @@ public:
 
         vector<unsigned int> element_partition;
         CreatePartition(number_of_threads, pElements.size(), element_partition);
-        if( this->GetEchoLevel() > 2 && r_model_part.GetCommunicator().MyPID() == 0)
-        {
-            KRATOS_WATCH(number_of_threads);
-            KRATOS_WATCH(element_partition);
-        }
-
+        KRATOS_INFO_IF("BuilderAndSolver", Kernel::GetInstance().GetLogLevel() > 2)
+            << "number_of_threads: " << number_of_threads
+            << ", element_partition: " << element_partition
+            << std::endl;
 
         double start_prod = omp_get_wtime();
 
@@ -323,15 +321,14 @@ public:
         }
 
         double stop_prod = omp_get_wtime();
-        if (this->GetEchoLevel() > 2 && r_model_part.GetCommunicator().MyPID() == 0)
-            std::cout << "time: " << stop_prod - start_prod << std::endl;
+        KRATOS_INFO_IF("BuilderAndSolver", Kernel::GetInstance().GetLogLevel() > 2)
+            << "time: " << stop_prod - start_prod << std::endl;
 
         for (int i = 0; i < A_size; i++)
             omp_destroy_lock(&lock_array[i]);
-        if( this->GetEchoLevel() > 2 && r_model_part.GetCommunicator().MyPID() == 0)
-        {
-            KRATOS_WATCH("finished parallel building");
-        }
+
+        KRATOS_INFO_IF("BuilderAndSolver", Kernel::GetInstance().GetLogLevel() > 2)
+            << "finished parallel building" << std::endl;
 #endif
 
         KRATOS_CATCH("")
@@ -478,10 +475,8 @@ public:
             TSparseSpace::SetToZero(Dx);
 
         //prints informations about the current time
-        if (this->GetEchoLevel() > 1)
-        {
-            std::cout << *(BaseType::mpLinearSystemSolver) << std::endl;
-        }
+        KRATOS_INFO_IF("BuilderAndSolver", Kernel::GetInstance().GetLogLevel() > 1)
+            << *(BaseType::mpLinearSystemSolver) << std::endl;
 
         KRATOS_CATCH("")
     }
@@ -517,10 +512,8 @@ public:
         }
 
         //prints informations about the current time
-        if (this->GetEchoLevel() > 1)
-        {
-            std::cout << *(BaseType::mpLinearSystemSolver) << std::endl;
-        }
+        KRATOS_INFO_IF("BuilderAndSolver", Kernel::GetInstance().GetLogLevel() > 1)
+            << *(BaseType::mpLinearSystemSolver) << std::endl;
 
         KRATOS_CATCH("")
     }
@@ -555,13 +548,11 @@ public:
         //does nothing...dirichlet conditions are naturally dealt with in defining the residual
         ApplyDirichletConditions(pScheme, r_model_part, A, Dx, b);
 
-        if (this->GetEchoLevel() == 3)
-        {
-            std::cout << "before the solution of the system" << std::endl;
-            std::cout << "System Matrix = " << A << std::endl;
-            std::cout << "unknowns vector = " << Dx << std::endl;
-            std::cout << "RHS vector = " << b << std::endl;
-        }
+        KRATOS_INFO_IF("BuilderAndSolver", Kernel::GetInstance().GetLogLevel() > 2)
+            << "before the solution of the system" << std::endl
+            << "System Matrix = " << A << std::endl
+            << "unknowns vector = " << Dx << std::endl
+            << "RHS vector = " << b << std::endl;
 
         //          boost::timer solve_time;
         Timer::Start("Solve");
@@ -570,17 +561,11 @@ public:
 
         Timer::Stop("Solve");
 
-        //          if(this->GetEchoLevel()>0)
-        //          {
-        //              std::cout << "System Solve Time : " << solve_time.elapsed() << std::endl;
-        //          }
-        if (this->GetEchoLevel() == 3)
-        {
-            std::cout << "after the solution of the system" << std::endl;
-            std::cout << "System Matrix = " << A << std::endl;
-            std::cout << "unknowns vector = " << Dx << std::endl;
-            std::cout << "RHS vector = " << b << std::endl;
-        }
+        KRATOS_INFO_IF("BuilderAndSolver", Kernel::GetInstance().GetLogLevel() > 2)
+            << "after the solution of the system" << std::endl
+            << "System Matrix = " << A << std::endl
+            << "unknowns vector = " << Dx << std::endl
+            << "RHS vector = " << b << std::endl;
 
         KRATOS_CATCH("")
     }
@@ -668,10 +653,8 @@ public:
     {
         KRATOS_TRY;
 
-        if( this->GetEchoLevel() > 0 && r_model_part.GetCommunicator().MyPID() == 0)
-        {
-            std::cout << "Setting up the dofs" << std::endl;
-        }
+        KRATOS_INFO_IF("BuilderAndSolver", Kernel::GetInstance().GetLogLevel() > 0)
+            << "Setting up the dofs" << std::endl;
 
         //Gets the array of elements from the modeler
         ElementsContainerType& pElements = r_model_part.Elements();
@@ -750,10 +733,8 @@ public:
             KRATOS_THROW_ERROR(std::logic_error, "No degrees of freedom!", "");
 
         BaseType::mDofSetIsInitialized = true;
-        if( this->GetEchoLevel() > 2 && r_model_part.GetCommunicator().MyPID() == 0)
-        {
-            std::cout << "finished setting up the dofs" << std::endl;
-        }
+        KRATOS_INFO_IF("BuilderAndSolver", Kernel::GetInstance().GetLogLevel() > 2)
+            << "finished setting up the dofs" << std::endl;
 
         KRATOS_CATCH("");
     }
@@ -964,10 +945,8 @@ public:
 
         this->mpLinearSystemSolver->Clear();
 
-        if (this->GetEchoLevel() > 0)
-        {
-            std::cout << "ResidualBasedEliminationBuilderAndSolver Clear Function called" << std::endl;
-        }
+        KRATOS_INFO_IF("BuilderAndSolver", Kernel::GetInstance().GetLogLevel() > 0)
+            << "ResidualBasedEliminationBuilderAndSolver Clear Function called" << std::endl;
     }
 
     /**
@@ -1094,10 +1073,8 @@ protected:
         int number_of_threads = omp_get_max_threads();
         vector<unsigned int> matrix_partition;
         CreatePartition(number_of_threads, indices.size(), matrix_partition);
-        if (this->GetEchoLevel() > 2)
-        {
-            KRATOS_WATCH(matrix_partition);
-        }
+        KRATOS_INFO_IF("BuilderAndSolver", Kernel::GetInstance().GetLogLevel() > 2)
+            << "matrix_partition: " << matrix_partition << std::endl;
         for (int k = 0; k < number_of_threads; k++)
         {
             #pragma omp parallel

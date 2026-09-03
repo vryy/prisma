@@ -220,25 +220,6 @@ public:
 
     //*********************************************************************************
 
-    /**level of echo for the solving strategy
-    0 -> mute... no echo at all
-    1 -> printing time and basic informations
-    2 -> printing linear solver data
-    3 -> Print of debug informations:
-    Echo of stiffness matrix, Dx, b...
-     */
-    virtual void SetEchoLevel(int Level)
-    {
-        mEchoLevel = Level;
-    }
-
-    int GetEchoLevel() const
-    {
-        return mEchoLevel;
-    }
-
-    //*********************************************************************************
-
     /* 0 -> build StiffnessMatrix just once
     1 -> build StiffnessMatrix at the beginning of each solution step
     2 -> build StiffnessMatrix at each iteration*/
@@ -327,8 +308,8 @@ public:
 
                 if (i->SolutionStepsDataHas(VARSEL(TDataType, DISPLACEMENT)) == false)
                 {
-                    std::cout << "problem on node with Id " << i->Id() << std::endl;
-                    KRATOS_ERROR << "It is impossible to move the mesh since the " << VARSEL(TDataType, DISPLACEMENT).Name() << " var is not in the model_part."
+                    KRATOS_ERROR << "problem on node with Id " << i->Id() << std::endl
+                                 << "It is impossible to move the mesh since the " << VARSEL(TDataType, DISPLACEMENT).Name() << " var is not in the model_part."
                                  << " Either use SetMoveMeshFlag(False) or add " << VARSEL(TDataType, DISPLACEMENT).Name() << " to the list of variables";
                 }
         }
@@ -353,9 +334,6 @@ public:
 protected:
     /**@name Protected static Member Variables */
     /*@{ */
-
-    //level of echo for the solving strategy
-    int mEchoLevel;
 
     //settings for the rebuilding of the stiffness matrix
     int mRebuildLevel;

@@ -40,6 +40,8 @@ set( KRATOS_CORE_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/reorder_consecutive_model_part_io.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/utilities/indexed_object.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/utilities/logger.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/utilities/logger_output.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/utilities/logger_message.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/utilities/constraint_utilities.cpp
 )
 
@@ -87,6 +89,7 @@ if(KRATOS_PYTHON)
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_search_strategies_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_kratos_parameters_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_constraint_to_python.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/python/add_logger_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/kratos_python.cpp
     )
 endif()

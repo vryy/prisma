@@ -37,6 +37,7 @@
 #include "includes/master_slave_constraint.h"
 #include "includes/linear_constraint.h"
 #include "includes/linear_master_slave_constraint.h"
+#include "utilities/logger.h"
 
 namespace Kratos
 {

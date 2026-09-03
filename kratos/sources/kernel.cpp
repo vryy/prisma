@@ -10,33 +10,57 @@
 //  Main authors:    Pooyan Dadvand
 //
 
+#include <boost/python.hpp>
+
 #include "includes/kernel.h"
 #include "includes/kratos_version.h"
+
+#ifdef _OPENMP
+#define KRATOS_CRITICAL_SECTION _Pragma("omp critical")
+#else
+#define KRATOS_CRITICAL_SECTION
+#endif
 
 namespace Kratos
 {
     Kernel::Kernel()
     {
-        std::cout << " ____       _" << std::endl;
-        std::cout << "|  _ \\ _ __(_)___ _ __ ___   __ _" << std::endl;
-        std::cout << "| |_) | '__| / __| '_ ` _ \\ / _` |" << std::endl;
-        std::cout << "|  __/| |  | \\__ \\ | | | | | (_| |" << std::endl;
-        std::cout << "|_|   |_|  |_|___/_| |_| |_|\\__,_|" << std::endl;
+        mKratosApplication.RegisterVariables();
+    }
+
+    Kernel::~Kernel()
+    {
+        // If Python has already shut down, do NOT run shared_ptr destructors!
+        if (!Py_IsInitialized()) {
+            auto* leak = new LoggerOutputContainerType();
+            mLoggerOutputs.swap(*leak); // Defuses the set without calling Py_DECREF
+        } else {
+            PyGILState_STATE gstate = PyGILState_Ensure();
+            mLoggerOutputs.clear();
+            PyGILState_Release(gstate);
+        }
+    }
+
+    void Kernel::Welcome(std::ostream& rOStream)
+    {
+        rOStream << " ____       _" << std::endl;
+        rOStream << "|  _ \\ _ __(_)___ _ __ ___   __ _" << std::endl;
+        rOStream << "| |_) | '__| / __| '_ ` _ \\ / _` |" << std::endl;
+        rOStream << "|  __/| |  | \\__ \\ | | | | | (_| |" << std::endl;
+        rOStream << "|_|   |_|  |_|___/_| |_| |_|\\__,_|" << std::endl;
         #if PY_MAJOR_VERSION==3
-        std::cout << "         A Solver for Coupled Problems (with interface to Python 3)" << std::endl;
+        rOStream << "         A Solver for Coupled Problems (with interface to Python 3)" << std::endl;
         #elif PY_MAJOR_VERSION==2
-        std::cout << "         A Solver for Coupled Problems (with interface to Python 2)" << std::endl;
+        rOStream << "         A Solver for Coupled Problems (with interface to Python 2)" << std::endl;
         #else
         #error "PY_MAJOR_VERSION is undefined"
         #endif
-        std::cout << "   maintained by Hoang-Giang Bui" << std::endl;
-        std::cout << "     Ruhr University Bochum     2013-2021" << std::endl;
-        std::cout << "     Helmholtz-Zentrum Hereon   2022-2024" << std::endl;
-        std::cout << "     University of Birmingham   2025" << std::endl;
-        std::cout << "     Durham University          2026" << std::endl;
-        std::cout << ">>>This product includes Kratos Multi-Physics technology<<<" << std::endl;
-
-        mKratosApplication.RegisterVariables();
+        rOStream << "   maintained by Hoang-Giang Bui" << std::endl;
+        rOStream << "     Ruhr University Bochum     2013-2021" << std::endl;
+        rOStream << "     Helmholtz-Zentrum Hereon   2022-2024" << std::endl;
+        rOStream << "     University of Birmingham   2025" << std::endl;
+        rOStream << "     Durham University          2026" << std::endl;
+        rOStream << ">>>This product includes Kratos Multi-Physics technology<<<" << std::endl;
     }
 
     void Kernel::Initialize()
@@ -64,6 +88,34 @@ namespace Kratos
     void Kernel::PrintInfo(std::ostream& rOStream) const
     {
         rOStream << "kernel";
+    }
+
+    const Kernel::LoggerOutputContainerType& Kernel::GetLoggerOutputs() const
+    {
+        return mLoggerOutputs;
+    }
+
+    void Kernel::AddOutput(LoggerOutput::Pointer pTheOutput)
+    {
+        KRATOS_CRITICAL_SECTION
+        {
+            mLoggerOutputs.insert(pTheOutput);
+        }
+    }
+
+    void Kernel::RemoveOutput(LoggerOutput::Pointer pTheOutput)
+    {
+        KRATOS_TRY
+
+        KRATOS_CRITICAL_SECTION
+        {
+            auto it_find = std::find(mLoggerOutputs.begin(), mLoggerOutputs.end(), pTheOutput);
+            if (it_find != mLoggerOutputs.end()) {
+                mLoggerOutputs.erase(it_find);
+            }
+        }
+
+        KRATOS_CATCH("");
     }
 
     /// Print object's data.

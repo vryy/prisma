@@ -81,9 +81,10 @@ public:
         )
     : BaseType(model_part, move_mesh_flag)
     {
-        std::cout<< "*************************************"<< std::endl;
-        std::cout <<"*   EXPLICIT CALCULATIONS STRATEGY  *"<< std::endl;
-        std::cout<< "*************************************"<< std::endl;
+        KRATOS_INFO("ExplicitStrategy")
+            << "*************************************" << std::endl
+            << "*   EXPLICIT CALCULATIONS STRATEGY  *" << std::endl
+            << "*************************************" << std::endl;
     }
 
     ~ExplicitStrategy () override {}

@@ -21,6 +21,8 @@ see kratos/LICENSE.txt
 #include <vector>
 #include <cmath>
 
+#include "utilities/logger.h"
+
 namespace Kratos
 {
 
@@ -379,7 +381,7 @@ public:
             c[2] = a[0]*b[1] - a[1]*b[0];
         }
         else
-            std::cout << __FUNCTION__ <<  ": Invalid dimension" << std::endl;
+            KRATOS_WARNING("AD_Utils") << "Invalid dimension" << std::endl;
     }
 
     /// Compute the cross product of two first order tensor of dimension 3
@@ -393,7 +395,7 @@ public:
             c[2] += alpha * (a[0]*b[1] - a[1]*b[0]);
         }
         else
-            std::cout << __FUNCTION__ <<  ": Invalid dimension" << std::endl;
+            KRATOS_WARNING("AD_Utils") << "Invalid dimension" << std::endl;
     }
 
     /// Compute the cross product of two first order tensor of dimension 3
@@ -407,7 +409,7 @@ public:
             dc[2] = da[0]*b[1] + a[0]*db[1] - da[1]*b[0] - a[1]*db[0];
         }
         else
-            std::cout << __FUNCTION__ <<  ": Invalid dimension" << std::endl;
+            KRATOS_WARNING("AD_Utils") << "Invalid dimension" << std::endl;
     }
 
     /// Print the first order tensor

@@ -167,9 +167,6 @@ public:
         //be reshaped at each step or not
         GetBuilderAndSolver()->SetReshapeMatrixFlag(mReformDofSetAtEachStep);
 
-        //set EchoLevel to the default value (only time is displayed)
-        this->SetEchoLevel(1);
-
         //by default the matrices are rebuilt at each solution step
         BaseType::SetRebuildLevel(1);
 
@@ -215,9 +212,6 @@ public:
         //tells to the Builder And Solver if the system matrix and vectors need to
         //be reshaped at each step or not
         GetBuilderAndSolver()->SetReshapeMatrixFlag(mReformDofSetAtEachStep);
-
-        //set EchoLevel to the default value (only time is displayed)
-        this->SetEchoLevel(1);
 
         //by default the matrices are rebuilt at each solution step
         BaseType::SetRebuildLevel(1);
@@ -283,20 +277,6 @@ public:
     {
         return mReformDofSetAtEachStep;
     }
-
-    //level of echo for the solving strategy
-    // 0 -> mute... no echo at all
-    // 1 -> printing time and basic informations
-    // 2 -> printing linear solver data
-    // 3 -> Print of debug informations:
-    //      Echo of stiffness matrix, Dx, b...
-
-    void SetEchoLevel(int Level) override
-    {
-        BaseType::SetEchoLevel(Level);
-        GetBuilderAndSolver()->SetEchoLevel(Level);
-    }
-
 
     //*********************************************************************************
     /**OPERATIONS ACCESSIBLE FROM THE INPUT:*/
@@ -379,11 +359,8 @@ public:
         }
 
         //prints informations about the current time
-        if (BaseType::GetEchoLevel() != 0 && rank == 0)
-        {
-            std::cout << " " << std::endl;
-            std::cout << "CurrentTime = " << pCurrentProcessInfo[TIME] << std::endl;
-        }
+        KRATOS_INFO_IF("ResidualBasedLinearStrategy", Kernel::GetInstance().GetLogLevel() > 0)
+            << "CurrentTime = " << pCurrentProcessInfo[TIME] << std::endl;
 
         //initialize solution step
         if (mSolutionStepIsInitialized == false)
@@ -417,13 +394,11 @@ public:
             pBuilderAndSolver->BuildRHSAndSolve(pScheme, BaseType::GetModelPart(), mA, mDx, mb);
         }
 
-        if (BaseType::GetEchoLevel() == 3) //if it is needed to print the debug info
-        {
-            std::cout << "SystemMatrix = " << mA << std::endl;
-            std::cout << "solution obtained = " << mDx << std::endl;
-            std::cout << "RHS  = " << mb << std::endl;
-        }
-        if (this->GetEchoLevel() == 4) //print to matrix market file
+        KRATOS_INFO_IF("ResidualBasedLinearStrategy", Kernel::GetInstance().GetLogLevel() > 2)
+            << "SystemMatrix = " << mA << std::endl
+            << "solution obtained = " << mDx << std::endl
+            << "RHS  = " << mb << std::endl;
+        if (Kernel::GetInstance().GetLogLevel() > 3) //print to matrix market file
         {
             std::stringstream matrix_market_name;
             matrix_market_name << "A_" << BaseType::GetModelPart().GetProcessInfo()[TIME] <<  ".mm";
@@ -464,9 +439,9 @@ public:
         //deallocate the systemvectors if needed
         if (mReformDofSetAtEachStep == true)
         {
-            if (rank == 0 && BaseType::GetEchoLevel() > 0) std::cout << "Clearing System" << std::endl;
+            KRATOS_INFO_IF("ResidualBasedLinearStrategy", Kernel::GetInstance().GetLogLevel() > 0)
+                << "Clearing System" << std::endl;
             this->Clear();
-            //std::cout << "Clearing System" << std::endl;
             //TSparseSpace::ClearData(mA);
             //TSparseSpace::ClearData(mDx);
             //TSparseSpace::ClearData(mb);
@@ -643,8 +618,8 @@ private:
     {
         KRATOS_TRY
 
-        if (BaseType::GetEchoLevel() > 2)
-            std::cout << "entering in the  Initialize of the ResidualBasedLinearStrategy" << std::endl;
+        KRATOS_INFO_IF("ResidualBasedLinearStrategy", Kernel::GetInstance().GetLogLevel() > 2)
+            << "entering in the  Initialize of the ResidualBasedLinearStrategy" << std::endl;
 
         //pointers needed in the solution
         typename TSchemeType::Pointer pScheme = GetScheme();
@@ -661,8 +636,8 @@ private:
         if (pScheme->ConditionsAreInitialized() == false)
             pScheme->InitializeConditions(BaseType::GetModelPart());
 
-        if (BaseType::GetEchoLevel() > 2)
-            std::cout << "exiting the  Initialize of the ResidualBasedLinearStrategy" << std::endl;
+        KRATOS_INFO_IF("ResidualBasedLinearStrategy", Kernel::GetInstance().GetLogLevel() > 2)
+            << "exiting the  Initialize of the ResidualBasedLinearStrategy" << std::endl;
 
         KRATOS_CATCH("")
     }
@@ -679,8 +654,8 @@ private:
 
         int rank = BaseType::GetModelPart().GetCommunicator().MyPID();
 
-        if (BaseType::GetEchoLevel() > 2 && rank == 0)
-            std::cout << "entering in the  InitializeSolutionStep of the ResidualBasedLinearStrategy" << std::endl;
+        KRATOS_INFO_IF("ResidualBasedLinearStrategy", Kernel::GetInstance().GetLogLevel() > 2)
+            << "entering in the  InitializeSolutionStep of the ResidualBasedLinearStrategy" << std::endl;
 
         //loop to reform the dofset
         Kratos::timer system_construction_time;
@@ -690,23 +665,23 @@ private:
             Kratos::timer setup_dofs_time;
             //setting up the list of the DOFs to be solved
             pBuilderAndSolver->SetUpDofSet(pScheme, BaseType::GetModelPart());
-            if (BaseType::GetEchoLevel() > 0 && rank == 0)
-                std::cout << "setup_dofs_time : " << setup_dofs_time.elapsed() << std::endl;
+            KRATOS_INFO_IF("ResidualBasedLinearStrategy", Kernel::GetInstance().GetLogLevel() > 0)
+                << "setup_dofs_time : " << setup_dofs_time.format() << std::endl;
 
             //shaping correctly the system
             Kratos::timer setup_system_time;
             pBuilderAndSolver->SetUpSystem(BaseType::GetModelPart());
-            if (BaseType::GetEchoLevel() > 0 && rank == 0)
-                std::cout << "setup_system_time : " << setup_system_time.elapsed() << std::endl;
+            KRATOS_INFO_IF("ResidualBasedLinearStrategy", Kernel::GetInstance().GetLogLevel() > 0)
+                << "setup_system_time : " << setup_system_time.format() << std::endl;
 
             //setting up the Vectors involved to the correct size
             Kratos::timer system_matrix_resize_time;
             pBuilderAndSolver->ResizeAndInitializeVectors(mpA, mpDx, mpb, BaseType::GetModelPart());
-            if (BaseType::GetEchoLevel() > 0 && rank == 0)
-                std::cout << "system_matrix_resize_time : " << system_matrix_resize_time.elapsed() << std::endl;
+            KRATOS_INFO_IF("ResidualBasedLinearStrategy", Kernel::GetInstance().GetLogLevel() > 0)
+                << "system_matrix_resize_time : " << system_matrix_resize_time.format() << std::endl;
         }
-        if (BaseType::GetEchoLevel() > 0 && rank == 0)
-            std::cout << "System Construction Time : " << system_construction_time.elapsed() << std::endl;
+        KRATOS_INFO_IF("ResidualBasedLinearStrategy", Kernel::GetInstance().GetLogLevel() > 0)
+            << "System Construction Time : " << system_construction_time.format() << std::endl;
 
         TSystemMatrixType& mA = *mpA;
         TSystemVectorType& mDx = *mpDx;
@@ -727,9 +702,10 @@ private:
 
     void MaxIterationsExceeded() const
     {
-        std::cout << "***************************************************" << std::endl;
-        std::cout << "******* ATTENTION: max iterations exceeded ********" << std::endl;
-        std::cout << "***************************************************" << std::endl;
+        KRATOS_INFO("ResidualBasedLinearStrategy")
+            << "***************************************************" << std::endl
+            << "******* ATTENTION: max iterations exceeded ********" << std::endl
+            << "***************************************************" << std::endl;
     }
 
     //**********************************************************************

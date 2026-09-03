@@ -279,8 +279,8 @@ public:
 
         if(number_of_intersection_points == 0)
         {
-            std::cout << "Warning: The intersection with interface hasn't found!" << std::endl;
-            std::cout << "Warning: The distances are: " << Distances << std::endl;
+            KRATOS_WARNING("GeometryUtils") << "The intersection with interface hasn't found!" << std::endl;
+            KRATOS_WARNING("GeometryUtils") << "The distances are: " << Distances << std::endl;
         }
         else if(number_of_intersection_points == 1)
         { // There is one point with zero distance. The distance of the nodes are their distance to this point
@@ -296,34 +296,29 @@ public:
         else if(number_of_intersection_points == 2)
         {
             // loop over nodes to calculate their distance to the zero distance line.
-                        for(unsigned int i_node = 0; i_node < ThisGeometry.size() ; i_node++)
-                        {
+            for(unsigned int i_node = 0; i_node < ThisGeometry.size() ; i_node++)
+            {
                 Distances[i_node] = PointDistanceToLineSegment3D(intersection_points[0], intersection_points[1], ThisGeometry[i_node]);
             }
         }
         else if(number_of_intersection_points == 3)
         {
-//                    std::cout << "3 intersection points" << std::endl;
             // loop over nodes to calculate their distance to the zero distance triangle.
-                       for(unsigned int i_node = 0; i_node < ThisGeometry.size() ; i_node++)
-                       {
+           for(unsigned int i_node = 0; i_node < ThisGeometry.size() ; i_node++)
+           {
                 Distances[i_node] = PointDistanceToTriangle3D(intersection_points[0], intersection_points[1], intersection_points[2], ThisGeometry[i_node]);
-//                           Distances[i_node] = std::abs(ThisGeometry[i_node].Z()); // To be removed. Pooyan.
-                       }
-
+           }
         }
         else if(number_of_intersection_points == 4)
         {
             // loop over nodes to calculate their distance to the each zero distance triangle.
-                       for(unsigned int i_node = 0; i_node < ThisGeometry.size() ; i_node++)
-                       {   // here I'm taking in account the order of edges where I'm looking for intersection
-                           double d1 = PointDistanceToTriangle3D(intersection_points[0], intersection_points[1], intersection_points[3], ThisGeometry[i_node]);
-                           double d2 = PointDistanceToTriangle3D(intersection_points[0], intersection_points[3], intersection_points[2], ThisGeometry[i_node]);
-
+            for(unsigned int i_node = 0; i_node < ThisGeometry.size() ; i_node++)
+            {   // here I'm taking in account the order of edges where I'm looking for intersection
+               double d1 = PointDistanceToTriangle3D(intersection_points[0], intersection_points[1], intersection_points[3], ThisGeometry[i_node]);
+               double d2 = PointDistanceToTriangle3D(intersection_points[0], intersection_points[3], intersection_points[2], ThisGeometry[i_node]);
 
                Distances[i_node] = (d1 > d2) ? d2 : d1;
-                       }
-
+            }
         }
     }
 
@@ -342,44 +337,35 @@ public:
         array_1d<Point<3>, 4> intersection_points;
         int number_of_intersection_points = CalculateTetrahedraIntersectionPoints(ThisGeometry, Distances, intersection_points);
 
-//        for(int i = 0 ; i < number_of_intersection_points ; i++)
-//            KRATOS_WATCH(intersection_points[i]);
-
-
         if(number_of_intersection_points == 0)
         {
-            std::cout << "Warning: The intersection with interface hasn't found!" << std::endl;
-            std::cout << "Warning: The distances are: " << Distances << std::endl;
+            KRATOS_WARNING("GeometryUtils") << "The intersection with interface hasn't found!" << std::endl;
+            KRATOS_WARNING("GeometryUtils") << "The distances are: " << Distances << std::endl;
         }
         else if(number_of_intersection_points == 1)
         { // There is one point with zero distance. The distance of the nodes are their distance to this point
-//                    std::cout << "1 intersection point" << std::endl;
             array_1d<double,3> temp;
             // loop over nodes to calculate their distance to the zero distance node.
-                        for(unsigned int i_node = 0; i_node < ThisGeometry.size() ; i_node++)
-                        {
+            for(unsigned int i_node = 0; i_node < ThisGeometry.size() ; i_node++)
+            {
                 noalias(temp) = intersection_points[0] - ThisGeometry[i_node];
                 Distances[i_node] = norm_2(temp);
             }
         }
         else if(number_of_intersection_points == 2)
         {
-
-//                    std::cout << "2 intersection points" << std::endl;
-            // loop over nodes to calculate their distance to the zero distance line.
-                        for(unsigned int i_node = 0; i_node < ThisGeometry.size() ; i_node++)
-                        {
+            for(unsigned int i_node = 0; i_node < ThisGeometry.size() ; i_node++)
+            {
                 Distances[i_node] = PointDistanceToLineSegment3D(intersection_points[0], intersection_points[1], ThisGeometry[i_node]);
             }
         }
         else
         {
-            std::cout << "This is a triangle with more than two intersections!" << std::endl;
-            std::cout << "Warning: Too many intersections: " << number_of_intersection_points << std::endl;
-            std::cout << "Warning: The distances are: " << Distances << std::endl;
+            KRATOS_WARNING("GeometryUtils") << "This is a triangle with more than two intersections!" << std::endl;
+            KRATOS_WARNING("GeometryUtils") << "Too many intersections: " << number_of_intersection_points << std::endl;
+            KRATOS_WARNING("GeometryUtils") << "The distances are: " << Distances << std::endl;
         }
     }
-
 
     /**
      * This function calculates the coordinates of the intersecion points

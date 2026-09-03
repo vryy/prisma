@@ -22,6 +22,8 @@
 #include <ctime>
 #endif
 
+#include "logger.h"
+
 namespace Kratos
 {
 ///@addtogroup KratosCore
@@ -170,10 +172,10 @@ public:
         int procs    = omp_get_num_procs();
         if( procs < NumThreads )
         {
-            std::cout<<" WARNING: Maximimun number of threads is EXCEEDED "<<std::endl;
+            KRATOS_WARNING("OpenMPUtils") << "Maximimun number of threads is EXCEEDED " << std::endl;
             /* Set thread number */
             omp_set_num_threads(procs);
-            std::cout<<" Number of Threads Set To : "<<procs<<std::endl;
+            KRATOS_INFO("OpenMPUtils") << " Number of Threads Set To : " << procs << std::endl;
         }
         else
         {
@@ -225,7 +227,7 @@ public:
                 printf( "  | --------------------------------- |\n");
 
                 if( procs < nthreads )
-                  std::cout<<" ( WARNING: Maximimun number of threads is EXCEEDED )"<<std::endl;
+                    KRATOS_WARNING("OpenMPUtils") << "Maximimun number of threads is EXCEEDED"<<std::endl;
             }
         }
 #endif

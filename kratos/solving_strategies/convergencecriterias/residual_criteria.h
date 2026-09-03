@@ -179,9 +179,8 @@ public:
             if(mInitialResidualNorm == 0.00) ratio = 0.00;
             else ratio = mCurrentResidualNorm/mInitialResidualNorm;
 
-            if (r_model_part.GetCommunicator().MyPID() == 0)
-                if (this->GetEchoLevel() == 1)
-                    std::cout << "RESIDUAL CRITERION :: Ratio = " << ratio  << ";  Norm   = " << mCurrentResidualNorm/b_size << std::endl;
+            KRATOS_INFO("ConvergenceCriteria")
+                << "RESIDUAL CRITERION :: Ratio = " << ratio  << ";  Norm   = " << mCurrentResidualNorm/b_size << std::endl;
 
             r_model_part.GetProcessInfo()[CONVERGENCE_RATIO] = ratio;
             r_model_part.GetProcessInfo()[RESIDUAL_NORM] = mCurrentResidualNorm/b_size;
@@ -192,9 +191,7 @@ public:
                 (mCurrentResidualNorm/b_size) <mAlwaysConvergedNorm
             )
             {
-                if (r_model_part.GetCommunicator().MyPID() == 0)
-                    if (this->GetEchoLevel() == 1)
-                        std::cout << "Convergence is achieved" << std::endl;
+                KRATOS_INFO("ConvergenceCriteria") << "Convergence is achieved" << std::endl;
                 return true;
             }
             else

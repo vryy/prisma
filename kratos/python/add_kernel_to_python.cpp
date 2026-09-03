@@ -73,8 +73,10 @@ std::string GetVariableNames(Kernel& rKernel)
 
 void AddKernelToPython()
 {
-    class_<Kernel, Kernel::Pointer, boost::noncopyable >("Kernel", no_init)
+    class_<Kernel, Kernel::Pointer, boost::noncopyable>("Kernel", no_init)
     .def("Initialize", &Kernel::Initialize)
+    .def("SetLogLevel", &Kernel::SetLogLevel)
+    .def("GetLogLevel", &Kernel::GetLogLevel)
     .def("AddApplication", &Kernel::AddApplication,with_custodian_and_ward<1,2>()) // Note: custodian and ward to be checked. Pooyan.
     .def("InitializeApplication", &Kernel::InitializeApplication,with_custodian_and_ward<1,2>()) // Note: custodian and ward to be checked. Pooyan.
     .def("HasBoolVariable", HasVariable< Variable<bool> >)
@@ -120,6 +122,8 @@ void AddKernelToPython()
     .def("GetStringVariableNames", GetVariableNames<Variable<std::string> >)
     .def("GetFlagsVariableNames", GetVariableNames<Variable<Flags> >)
     .def("GetVariableComponentVariableNames", GetVariableNames<VariableComponent< VectorComponentAdaptor< array_1d<KRATOS_DOUBLE_TYPE, 3> > > >)
+    .def("AddOutput", &Kernel::AddOutput)
+    .def("RemoveOutput", &Kernel::RemoveOutput)
     .def(self_ns::str(self))
     ;
 

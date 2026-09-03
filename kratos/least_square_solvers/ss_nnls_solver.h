@@ -86,11 +86,12 @@ public:
         solver->setPgTol(tol);
 
         /* solve - optimize */
-        if (echo_level > 0) { std::cout << "Optimizing...\n"; }
+        KRATOS_INFO_IF("NnlsSolver", echo_level > 0) << "Optimizing...\n";
         flag = solver->optimize();
-        if (echo_level > 0) { std::cout << "Done!\n"; }
+        KRATOS_INFO_IF("NnlsSolver", echo_level > 0) << "Done!\n";
 
-        if (echo_level > 1) { printf("Optimization time: %.2e seconds\n", solver->getOptimizationTime()); }
+        KRATOS_INFO_IF("NnlsSolver", echo_level > 1)
+            << "Optimization time: " << std::format("%.2e", solver->getOptimizationTime()) << "seconds\n";
 
         if (flag < 0)
         {
@@ -100,7 +101,12 @@ public:
 
         x = solver->getSolution();
 
-        if (echo_level > 2) { solver->saveStats(std::cout); }
+        if (echo_level > 2)
+        {
+            std::stringstream ss;
+            solver->saveStats(ss);
+            KRATOS_INFO("NnlsSolver") << ss.str();
+        }
 
         if (rX.size() != N)
             rX.resize(N, false);

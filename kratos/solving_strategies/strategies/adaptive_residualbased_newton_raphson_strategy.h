@@ -184,9 +184,6 @@ public:
         //be reshaped at each step or not
         GetBuilderAndSolver()->SetReshapeMatrixFlag(mReformDofSetAtEachStep);
 
-        //set EchoLevel to the default value (only time is displayed)
-        SetEchoLevel(1);
-
         //by default the matrices are rebuilt at each iteration
         this->SetRebuildLevel(2);
 
@@ -250,9 +247,6 @@ public:
         //tells to the Builder And Solver if the system matrix and vectors need to
         //be reshaped at each step or not
         GetBuilderAndSolver()->SetReshapeMatrixFlag(mReformDofSetAtEachStep);
-
-        //set EchoLevel to the default value (only time is displayed)
-        SetEchoLevel(1);
 
         //by default the matrices are rebuilt at each iteration
         this->SetRebuildLevel(2);
@@ -318,18 +312,6 @@ public:
     unsigned int GetMaxIterationNumber() const
     {
         return mMaxIterationNumber;
-    }
-
-    //level of echo for the solving strategy
-    // 0 -> mute... no echo at all
-    // 1 -> printing time and basic informations
-    // 2 -> printing linear solver data
-    // 3 -> Print of debug informations:
-    //      Echo of stiffness matrix, Dx, b...
-    void SetEchoLevel(int Level) override
-    {
-        BaseType::mEchoLevel = Level;
-        GetBuilderAndSolver()->SetEchoLevel(Level);
     }
 
     //*********************************************************************************
@@ -400,11 +382,8 @@ public:
         }
 
         //prints informations about the current time
-        if (this->GetEchoLevel()!=0)
-        {
-            std::cout << " " << std::endl;
-            std::cout << "CurrentTime = " << BaseType::GetModelPart().GetProcessInfo()[TIME] << std::endl;
-        }
+        KRATOS_INFO_IF("AdaptiveResidualBasedNewtonRaphsonStrategy", Kernel::GetInstance().GetLogLevel() > 0)
+            << "CurrentTime = " << BaseType::GetModelPart().GetProcessInfo()[TIME] << std::endl;
 
         //updates the database with a prediction of the solution
         Predict();
@@ -417,14 +396,10 @@ public:
         TSystemVectorType& mDx = *mpDx;
         TSystemVectorType& mb = *mpb;
 
-
-
         //initializing the parameters of the Newton-Raphson cicle
         int iteration_number=1;
         BaseType::GetModelPart().GetProcessInfo()[NL_ITERATION_NUMBER] = iteration_number;
-//          BaseType::GetModelPart().GetProcessInfo().SetNonLinearIterationNumber(iteration_number);
         bool is_converged = false;
-//        bool ResidualIsUpdated = false;
         pScheme->InitializeNonLinIteration(BaseType::GetModelPart(),mA,mDx,mb);
         is_converged = mpConvergenceCriteria->PreCriteria(BaseType::GetModelPart(),rDofSet,mA,mDx,mb);
 
@@ -445,14 +420,12 @@ public:
             pBuilderAndSolver->BuildRHSAndSolve(pScheme,BaseType::GetModelPart(),mA,mDx,mb);
         }
 
-        if (this->GetEchoLevel()==3) //if it is needed to print the debug info
-        {
-//              std::cout << "After first system solution" << std::endl;
-            std::cout << "SystemMatrix = " << mA << std::endl;
-            std::cout << "solution obtained = " << mDx << std::endl;
-            std::cout << "RHS  = " << mb << std::endl;
-        }
-        if (this->GetEchoLevel()==4) //print to matrix market file
+        KRATOS_INFO_IF("AdaptiveResidualBasedNewtonRaphsonStrategy", Kernel::GetInstance().GetLogLevel() > 2)
+            << "After first system solution" << std::endl
+            << "SystemMatrix = " << mA << std::endl
+            << "solution obtained = " << mDx << std::endl
+            << "RHS  = " << mb << std::endl;
+        if(Kernel::GetInstance().GetLogLevel() > 4)
         {
             std::stringstream matrix_market_name;
             matrix_market_name << "A_"<< BaseType::GetModelPart().GetProcessInfo()[TIME] << "_" << iteration_number  << ".mm";
@@ -519,7 +492,7 @@ public:
             }
             else
             {
-                std::cout << "ATTENTION: no free DOFs!! " << std::endl;
+                KRATOS_WARNING("AdaptiveResidualBasedNewtonRaphsonStrategy") << "no free DOFs!! " << std::endl;
             }
 
             //Updating the results stored in the database
@@ -531,8 +504,6 @@ public:
 
             pScheme->FinalizeNonLinIteration(BaseType::GetModelPart(),mA,mDx,mb);
 
-//            ResidualIsUpdated = false;
-
             if (is_converged)
             {
 
@@ -541,8 +512,6 @@ public:
                     TSparseSpace::SetToZero(mb);
 
                     pBuilderAndSolver->BuildRHS(pScheme,BaseType::GetModelPart(),mb);
-//                    ResidualIsUpdated = true;
-                    //std::cout << "mb is calculated" << std::endl;
                 }
 
                 is_converged = mpConvergenceCriteria->PostCriteria(BaseType::GetModelPart(),rDofSet,mA,mDx,mb);
@@ -626,8 +595,6 @@ public:
             TSparseSpace::SetToZero(mb);
 
             mpBuilderAndSolver->BuildRHS(mpScheme,BaseType::GetModelPart(),mb);
-
-            //std::cout << "mb is calculated" << std::endl;
         }
 
         //calculate reactions if required
@@ -709,7 +676,8 @@ public:
     void Clear() override
     {
         KRATOS_TRY
-        std::cout << "Newton Raphson strategy Clear function used" << std::endl;
+
+        KRATOS_INFO("AdaptiveResidualBasedNewtonRaphsonStrategy") << "Clear function called" << std::endl;
 
         TSystemMatrixType& mA = *mpA;
         TSystemVectorType& mDx = *mpDx;
@@ -918,25 +886,25 @@ protected:
     //**********************************************************************
     void MaxIterationsExceeded(int cycle_number) const
     {
-        std::cout << "***************************************************" << std::endl;
-        std::cout << "******* ATTENTION: max iterations exceeded ********" << std::endl;
-        std::cout << "***************************************************" << std::endl;
-
-        std::cout << "*****************REDUCTION CYCLE********************" << std::endl;
-        std::cout <<                     cycle_number                       << std::endl;
-        std::cout << "***************************************************" << std::endl;
+        KRATOS_WARNING("AdaptiveResidualBasedNewtonRaphsonStrategy")
+            << "***************************************************" << std::endl
+            << "******* ATTENTION: max iterations exceeded ********" << std::endl
+            << "***************************************************" << std::endl
+            << "*****************REDUCTION CYCLE*******************" << std::endl
+            <<                     cycle_number                      << std::endl
+            << "***************************************************" << std::endl;
     }
 
     void PrintIncreaseOfDeltaTime(double old_dt , double new_dt) const
     {
-        std::cout << "***************************************************" << std::endl;
-        std::cout << "******* ATTENTION: INcreasing dt ********" << std::endl;
-        std::cout << "***************************************************" << std::endl;
-
-        std::cout << "*****************OLD DT********************" << std::endl;
-        std::cout <<                   old_dt                      << std::endl;
-        std::cout << "*****************NEW DT********************" << std::endl;
-        std::cout <<                   new_dt                      << std::endl;
+        KRATOS_WARNING("AdaptiveResidualBasedNewtonRaphsonStrategy")
+            << "***************************************************" << std::endl
+            << "******* ATTENTION: Increasing dt ********" << std::endl
+            << "***************************************************" << std::endl
+            << "*****************OLD DT********************" << std::endl
+            <<                   old_dt                      << std::endl
+            << "*****************NEW DT********************" << std::endl
+            <<                   new_dt                      << std::endl;
     }
 
     //**********************************************************************

@@ -172,10 +172,8 @@ public:
 
         Timer::Start("Build");
 
-        if ( this->GetEchoLevel() > 1 && rModelPart.GetCommunicator().MyPID() == 0)
-        {
-            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation: " << "Entering Build" << std::endl;
-        }
+        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation", Kernel::GetInstance().GetLogLevel() > 1)
+            << "Entering Build" << std::endl;
 
         if(!pScheme)
         {
@@ -259,15 +257,11 @@ public:
         }
 
         const double stop_build = OpenMPUtils::GetCurrentTime();
-        if (this->GetEchoLevel() >= 1 && rModelPart.GetCommunicator().MyPID() == 0)
-        {
-            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation: " << "Build time: " << stop_build - start_build << std::endl;
-        }
+        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation", Kernel::GetInstance().GetLogLevel() > 0)
+            << "Build time: " << stop_build - start_build << std::endl;
 
-        if (this->GetEchoLevel() > 2 && rModelPart.GetCommunicator().MyPID() == 0)
-        {
-            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation: " << "Finished parallel building" << std::endl;
-        }
+        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation", Kernel::GetInstance().GetLogLevel() > 2)
+            << "Finished parallel building" << std::endl;
 
         Timer::Stop("Build");
 
@@ -359,10 +353,8 @@ public:
         std::cout << "System Solve time: " << stop_solve - start_solve << "s" << std::endl;
 
         //prints informations about the current time
-        if (this->GetEchoLevel() > 1)
-        {
-            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation: " << *(BaseType::mpLinearSystemSolver) << std::endl;
-        }
+        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation", Kernel::GetInstance().GetLogLevel() > 1)
+            << *(BaseType::mpLinearSystemSolver) << std::endl;
 
         KRATOS_CATCH("")
     }
@@ -515,10 +507,8 @@ public:
         std::cout << "Internal-System-Solve-With-Physics time: " << stop_solve - start_solve << "s" << std::endl;
 
         // Prints informations about the current time
-        if (this->GetEchoLevel() > 1)
-        {
-            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation: " << *(BaseType::mpLinearSystemSolver) << std::endl;
-        }
+        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation", Kernel::GetInstance().GetLogLevel() > 1)
+            << *(BaseType::mpLinearSystemSolver) << std::endl;
 
         KRATOS_CATCH("")
     }
@@ -552,10 +542,8 @@ public:
 
         ApplyDirichletConditions(pScheme, rModelPart, A, Dx, b);
 
-        if ( this->GetEchoLevel() > 3)
-        {
-            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation: " << "Before the solution of the system" << "\nSystem Matrix = " << A << "\nUnknowns vector = " << Dx << "\nRHS vector = " << b << std::endl;
-        }
+        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation", Kernel::GetInstance().GetLogLevel() > 3)
+            << "Before the solution of the system" << "\nSystem Matrix = " << A << "\nUnknowns vector = " << Dx << "\nRHS vector = " << b << std::endl;
 
         const double start_solve = OpenMPUtils::GetCurrentTime();
         Timer::Start("Solve");
@@ -565,15 +553,11 @@ public:
         Timer::Stop("Solve");
         const double stop_solve = OpenMPUtils::GetCurrentTime();
 
-        if (this->GetEchoLevel() >=1 && rModelPart.GetCommunicator().MyPID() == 0)
-        {
-            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation: " << "System solve time: " << stop_solve - start_solve << std::endl;
-        }
+        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation", Kernel::GetInstance().GetLogLevel() > 0)
+            << "System solve time: " << stop_solve - start_solve << std::endl;
 
-        if ( this->GetEchoLevel() > 3)
-        {
-            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation: " << "After the solution of the system" << "\nSystem Matrix = " << A << "\nUnknowns vector = " << Dx << "\nRHS vector = " << b << std::endl;
-        }
+        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation", Kernel::GetInstance().GetLogLevel() > 3)
+            << "After the solution of the system" << "\nSystem Matrix = " << A << "\nUnknowns vector = " << Dx << "\nRHS vector = " << b << std::endl;
 
         KRATOS_CATCH("")
     }
@@ -607,10 +591,8 @@ public:
 
         ApplyDirichletConditions(pScheme, rModelPart, A, Dx, b);
 
-        if ( this->GetEchoLevel() == 3)
-        {
-            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraints: " << "Before the solution of the system" << "\nSystem Matrix = " << A << "\nUnknowns vector = " << Dx << "\nRHS vector = " << b << std::endl;
-        }
+        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation", Kernel::GetInstance().GetLogLevel() > 2)
+            << "Before the solution of the system" << "\nSystem Matrix = " << A << "\nUnknowns vector = " << Dx << "\nRHS vector = " << b << std::endl;
 
         const double start_solve = OpenMPUtils::GetCurrentTime();
         Timer::Start("Solve");
@@ -620,15 +602,11 @@ public:
         Timer::Stop("Solve");
         const double stop_solve = OpenMPUtils::GetCurrentTime();
 
-        if (this->GetEchoLevel() >=1 && rModelPart.GetCommunicator().MyPID() == 0)
-        {
-            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraints: " << "System solve time: " << stop_solve - start_solve << std::endl;
-        }
+        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation", Kernel::GetInstance().GetLogLevel() > 0)
+            << "System solve time: " << stop_solve - start_solve << std::endl;
 
-        if ( this->GetEchoLevel() == 3)
-        {
-            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraints: " << "After the solution of the system" << "\nSystem Matrix = " << A << "\nUnknowns vector = " << Dx << "\nRHS vector = " << b << std::endl;
-        }
+        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation", Kernel::GetInstance().GetLogLevel() > 2)
+            << "After the solution of the system" << "\nSystem Matrix = " << A << "\nUnknowns vector = " << Dx << "\nRHS vector = " << b << std::endl;
 
         KRATOS_CATCH("")
     }
@@ -679,10 +657,8 @@ public:
     {
         KRATOS_TRY;
 
-        if ( this->GetEchoLevel() > 1 && rModelPart.GetCommunicator().MyPID() == 0)
-        {
-            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation: " << "Setting up the dofs" << std::endl;
-        }
+        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation", Kernel::GetInstance().GetLogLevel() > 1)
+            << "Setting up the dofs" << std::endl;
 
         DofsVectorType dof_list, second_dof_list; // NOTE: The second dof list is only used on constraints to include master/slave relations
 
@@ -775,23 +751,16 @@ public:
             KRATOS_ERROR << "No degrees of freedom!";
         }
 
-        if ( this->GetEchoLevel() > 2)
-        {
-            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation: " << "Number of degrees of freedom: " << BaseType::mDofSet.size() << std::endl;
-        }
+        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation", Kernel::GetInstance().GetLogLevel() > 2)
+            << "Number of degrees of freedom: " << BaseType::mDofSet.size() << std::endl;
 
         BaseType::mDofSetIsInitialized = true;
 
-        if ( this->GetEchoLevel() > 2 && rModelPart.GetCommunicator().MyPID() == 0)
-        {
-            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation: " << "Finished setting up the dofs" << std::endl;
-        }
+        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation", Kernel::GetInstance().GetLogLevel() > 2)
+            << "Finished setting up the dofs" << std::endl;
 
-        if ( this->GetEchoLevel() > 2)
-        {
-            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation: " << "End of setup dof set\n" << std::endl;
-        }
-
+        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation", Kernel::GetInstance().GetLogLevel() > 2)
+            << "End of setup dof set\n" << std::endl;
 
 #ifdef KRATOS_DEBUG
         // If reactions are to be calculated, we check if all the dofs have reactions defined
@@ -817,10 +786,8 @@ public:
         ModelPartType& rModelPart
     ) override
     {
-        if ( this->GetEchoLevel() > 1 && rModelPart.GetCommunicator().MyPID() == 0)
-        {
-            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation: " << "Entering SetUpSystem" << std::endl;
-        }
+        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation", Kernel::GetInstance().GetLogLevel() > 1)
+            << "Entering SetUpSystem" << std::endl;
 
         // initialize the equation id for every dofs in the system. This is to avoid any untouched dofs when the elements are deactivated.
         for (typename DofsArrayType::iterator dof_iterator = mAllDofs.begin(); dof_iterator != mAllDofs.end(); ++dof_iterator)
@@ -847,10 +814,8 @@ public:
         ModelPartType& rModelPart
     ) override
     {
-        if ( this->GetEchoLevel() > 1 && rModelPart.GetCommunicator().MyPID() == 0)
-        {
-            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation: " << "Entering ResizeAndInitializeVectors" << std::endl;
-        }
+        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation", Kernel::GetInstance().GetLogLevel() > 1)
+            << "Entering ResizeAndInitializeVectors" << std::endl;
 
         KRATOS_TRY
 
@@ -1081,10 +1046,8 @@ public:
 
         const double stop_apply = OpenMPUtils::GetCurrentTime();
 
-        if (this->GetEchoLevel() >= 1 && rModelPart.GetCommunicator().MyPID() == 0)
-        {
-            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation: " << "Apply Dirichlet time: " << stop_apply - start_apply << std::endl;
-        }
+        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation", Kernel::GetInstance().GetLogLevel() > 0)
+            << "Apply Dirichlet time: " << stop_apply - start_apply << std::endl;
     }
 
     /**
@@ -1101,10 +1064,8 @@ public:
         mT.resize(0,0,false);
         mConstantVector.resize(0,false);
 
-        if (this->GetEchoLevel() > 0)
-        {
-            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation Clear Function called" << std::endl;
-        }
+        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation", Kernel::GetInstance().GetLogLevel() > 0)
+            << "Clear Function called" << std::endl;
     }
 
     /**
@@ -1184,10 +1145,8 @@ protected:
     {
         if (rModelPart.MasterSlaveConstraints().size() > 0) {
 
-            if ( this->GetEchoLevel() > 1 && rModelPart.GetCommunicator().MyPID() == 0)
-            {
-                std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation: " << "Entering ConstructMasterSlaveConstraintsStructure" << std::endl;
-            }
+            KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation", Kernel::GetInstance().GetLogLevel() > 1)
+                << "Entering ConstructMasterSlaveConstraintsStructure" << std::endl;
 
             const ProcessInfo& r_current_process_info = rModelPart.GetProcessInfo();
 
@@ -1457,13 +1416,11 @@ protected:
             time_end = OpenMPUtils::GetCurrentTime();
             time_4 = time_end - time_begin;
 
-            if (this->GetEchoLevel() >= 1 && rModelPart.GetCommunicator().MyPID() == 0)
-            {
-                std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation: " << "Apply RHS Constraints time: ("
-                          << time_1 << ", " << time_2 << ", " << time_3 << ", " << time_4 << ")"
-                          << ", total = " << time_1 + time_2 + time_3 + time_4
-                          << std::endl;
-            }
+            KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation", Kernel::GetInstance().GetLogLevel() > 0)
+                << "Apply RHS Constraints time: ("
+                << time_1 << ", " << time_2 << ", " << time_3 << ", " << time_4 << ")"
+                << ", total = " << time_1 + time_2 + time_3 + time_4
+                << std::endl;
         }
 
         KRATOS_CATCH("")
@@ -1521,10 +1478,8 @@ protected:
 
             const double stop_apply = OpenMPUtils::GetCurrentTime();
 
-            if (this->GetEchoLevel() >= 1 && rModelPart.GetCommunicator().MyPID() == 0)
-            {
-                std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation: " << "Apply Constraints time: " << stop_apply - start_apply << std::endl;
-            }
+            KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation", Kernel::GetInstance().GetLogLevel() > 0)
+                << "Apply Constraints time: " << stop_apply - start_apply << std::endl;
         }
 
         KRATOS_CATCH("")
@@ -1534,10 +1489,8 @@ protected:
         TSystemMatrixType& A,
         const ModelPartType& rModelPart) const
     {
-        if ( this->GetEchoLevel() > 1 && rModelPart.GetCommunicator().MyPID() == 0)
-        {
-            std::cout << "ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation: " << "Entering ConstructMatrixStructure" << std::endl;
-        }
+        KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraintsDeactivation", Kernel::GetInstance().GetLogLevel() > 1)
+            << "Entering ConstructMatrixStructure" << std::endl;
 
         //filling with zero the matrix (creating the structure)
         Timer::Start("MatrixStructure");

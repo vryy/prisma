@@ -136,18 +136,6 @@ public:
     */
     /*@{ */
 
-    /**level of echo for the convergence criterion
-    0 -> mute... no echo at all
-    1 -> print basic informations
-    2 -> print extra informations
-     */
-    void SetEchoLevel(int Level) override
-    {
-      BaseType::SetEchoLevel(Level);
-      mpfirst_criterion->SetEchoLevel(Level);
-      mpsecond_criterion->SetEchoLevel(Level);
-    }
-
     /*Criteria that need to be called after getting the solution */
     bool PostCriteria(
         ModelPartType& r_model_part,

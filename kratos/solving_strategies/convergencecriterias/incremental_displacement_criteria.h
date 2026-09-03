@@ -167,16 +167,14 @@ public:
 //KRATOS_WATCH(AbsoluteNorm)
 //KRATOS_WATCH(mAlwaysConvergedNorm)
 //KRATOS_WATCH(mRatioTolerance)
-            if (this->GetEchoLevel() == 1)
-                std::cout << "INCREMENTAL DISPLACEMENT CRITERIA :: Obtained tol = " << ratio << ";  Expected ratio = " << mRatioTolerance << "Absolute tol = " << AbsoluteNorm << std::endl;
+            KRATOS_INFO("ConvergenceCriteria") << "INCREMENTAL DISPLACEMENT CRITERIA :: Obtained tol = " << ratio << ";  Expected ratio = " << mRatioTolerance << "Absolute tol = " << AbsoluteNorm << std::endl;
 
             r_model_part.GetProcessInfo()[CONVERGENCE_RATIO] = ratio;
             r_model_part.GetProcessInfo()[RESIDUAL_NORM] = AbsoluteNorm;
 
             if ( ratio <= mRatioTolerance  ||  AbsoluteNorm<mAlwaysConvergedNorm )  //  || (FinalCorrectionNorm/x.size())<=1e-7)
             {
-                if (this->GetEchoLevel() == 1)
-                    KRATOS_WATCH("convergence is achieved")
+                KRATOS_INFO("ConvergenceCriteria") << "Convergence is achieved";
 
                 return true;
             }
