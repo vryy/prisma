@@ -106,7 +106,7 @@ else()
     target_compile_definitions(KratosCore PRIVATE KRATOS_CORE=EXPORT)
 endif()
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+if(MSVC)
     target_compile_options(KratosCore PRIVATE /bigobj)
     target_compile_options(KratosCore PRIVATE /permissive) # enforce stricter compliant with C++ standard
 endif()
@@ -203,7 +203,7 @@ endif(${INSTALL_PYTHON_FILES} MATCHES ON)
 if(${KRATOS_PYTHON} MATCHES TRUE)
     ## define library Kratos which defines the basic python interface
     add_library(Kratos SHARED ${KRATOS_PYTHON_SOURCES})
-    if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    if(MSVC)
         target_compile_options(Kratos PRIVATE /bigobj)
     endif()
     target_link_libraries(Kratos PRIVATE KratosCore)

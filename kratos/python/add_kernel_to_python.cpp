@@ -27,7 +27,6 @@
 #include <sstream>
 
 // Project includes
-#include "includes/define.h"
 #include "includes/kernel.h"
 #include "python/add_kernel_to_python.h"
 
