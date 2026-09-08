@@ -30,9 +30,9 @@
 
 // Project includes
 #include "includes/define.h"
-#include "includes/kratos_components.h"
 #include "includes/element.h"
 #include "includes/condition.h"
+#include "includes/kratos_components.h"
 #include "includes/periodic_condition.h"
 #include "includes/master_slave_constraint.h"
 #include "includes/linear_constraint.h"

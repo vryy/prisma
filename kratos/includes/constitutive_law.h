@@ -562,7 +562,7 @@ public:
      * @return true if the variable is defined in the constitutive law
      * @note Fixed size array of 3 DataTypes (e.g. for 2D stresses, plastic strains, ...)
      */
-    virtual bool Has(const Variable<array_1d<DataType, 3 > >& rThisVariable) const;
+    virtual bool Has(const Variable<array_1d<DataType, 3> >& rThisVariable) const;
 
     /**
      * @brief Returns whether this constitutive Law has specified variable (array of 6 components)
@@ -570,7 +570,7 @@ public:
      * @return true if the variable is defined in the constitutive law
      * @note Fixed size array of 6 DataTypes (e.g. for stresses, plastic strains, ...)
      */
-    virtual bool Has(const Variable<array_1d<DataType, 6 > >& rThisVariable) const;
+    virtual bool Has(const Variable<array_1d<DataType, 6> >& rThisVariable) const;
 
     /**
      * @brief Returns the value of a specified variable (boolean)
@@ -624,8 +624,8 @@ public:
      * @param rValue a reference to the returned value
      * @return rValue output: the value of the specified variable
      */
-    virtual array_1d<DataType, 3 > & GetValue(const Variable<array_1d<DataType, 3 > >& rThisVariable,
-                                              array_1d<DataType, 3 > & rValue);
+    virtual array_1d<DataType, 3>& GetValue(const Variable<array_1d<DataType, 3> >& rThisVariable,
+                                            array_1d<DataType, 3>& rValue);
 
     /**
      * @brief Returns the value of a specified variable (array of 6 components)
@@ -633,8 +633,8 @@ public:
      * @param rValue a reference to the returned value
      * @return the value of the specified variable
      */
-    virtual array_1d<DataType, 6 > & GetValue(const Variable<array_1d<DataType, 6 > >& rThisVariable,
-                                              array_1d<DataType, 6 > & rValue);
+    virtual array_1d<DataType, 6>& GetValue(const Variable<array_1d<DataType, 6> >& rThisVariable,
+                                            array_1d<DataType, 6>& rValue);
 
     /**
      * @brief Sets the value of a specified variable (boolean)
@@ -702,8 +702,8 @@ public:
      * @param rValue new value of the specified variable
      * @param rCurrentProcessInfo the process info
      */
-    virtual void SetValue(const Variable<array_1d<DataType, 3 > >& rVariable,
-                          const array_1d<DataType, 3 > & rValue,
+    virtual void SetValue(const Variable<array_1d<DataType, 3> >& rVariable,
+                          const array_1d<DataType, 3>& rValue,
                           const ProcessInfo& rCurrentProcessInfo);
 
     /**
@@ -712,12 +712,13 @@ public:
      * @param rValue new value of the specified variable
      * @param rCurrentProcessInfo the process info
      */
-    virtual void SetValue(const Variable<array_1d<DataType, 6 > >& rVariable,
-                          const array_1d<DataType, 6 > & rValue,
+    virtual void SetValue(const Variable<array_1d<DataType, 6> >& rVariable,
+                          const array_1d<DataType, 6>& rValue,
                           const ProcessInfo& rCurrentProcessInfo);
 
     /**
-     * @brief Sets the value of a specified variable
+     * @brief Sets the value of a specified variable (constitutive law).
+        This is useful if the constitutive law is wrapper of another one.
      * @param rVariable the variable to be returned
      * @param rValue new value of the specified variable
      * @param rCurrentProcessInfo the process info
@@ -778,8 +779,8 @@ public:
      * @param rValue a reference to the returned value
      * @param rValue output: the value of the specified variable
      */
-    virtual array_1d<DataType, 3 > & CalculateValue(Parameters& rParameterValues, const Variable<array_1d<DataType, 3 > >& rVariable,
-                          array_1d<DataType, 3 > & rValue);
+    virtual array_1d<DataType, 3>& CalculateValue(Parameters& rParameterValues, const Variable<array_1d<DataType, 3> >& rVariable,
+                          array_1d<DataType, 3>& rValue);
 
     /**
      * returns the value of a specified variable (array of 6 components)
@@ -787,8 +788,8 @@ public:
      * @param rValue a reference to the returned value
      * @return the value of the specified variable
      */
-    virtual array_1d<DataType, 6 > & CalculateValue(Parameters& rParameterValues, const Variable<array_1d<DataType, 6 > >& rVariable,
-                          array_1d<DataType, 6 > & rValue);
+    virtual array_1d<DataType, 6>& CalculateValue(Parameters& rParameterValues, const Variable<array_1d<DataType, 6> >& rVariable,
+                          array_1d<DataType, 6>& rValue);
 
     /**
      * Is called to check whether the provided material parameters in the Properties

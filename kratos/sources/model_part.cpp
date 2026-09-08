@@ -19,13 +19,11 @@
 
 
 // Project includes
-#include "includes/define.h"
 #include "includes/node.h"
 #include "includes/model_part.h"
 #include "includes/process_info_with_dofs.h"
 #include "containers/model.h"
 #include "utilities/progress.h"
-#include "boost/make_shared.hpp"
 
 namespace Kratos
 {

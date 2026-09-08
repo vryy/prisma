@@ -15,7 +15,6 @@
 
 #include "includes/constitutive_law.h"
 
-
 namespace Kratos
 {
 
@@ -276,8 +275,8 @@ std::string& ConstitutiveLawImpl<TNodeType>::GetValue(const Variable<std::string
  * @return the value of the specified variable
  */
 template<class TNodeType>
-array_1d<typename ConstitutiveLawImpl<TNodeType>::DataType, 3 >& ConstitutiveLawImpl<TNodeType>::GetValue(const Variable<array_1d<DataType, 3> >& rThisVariable,
-        array_1d<DataType, 3> & rValue)
+array_1d<typename ConstitutiveLawImpl<TNodeType>::DataType, 3>& ConstitutiveLawImpl<TNodeType>::GetValue(const Variable<array_1d<DataType, 3> >& rThisVariable,
+        array_1d<DataType, 3>& rValue)
 {
     return rValue;
 }
@@ -289,8 +288,8 @@ array_1d<typename ConstitutiveLawImpl<TNodeType>::DataType, 3 >& ConstitutiveLaw
  * @return the value of the specified variable
  */
 template<class TNodeType>
-array_1d<typename ConstitutiveLawImpl<TNodeType>::DataType, 6> & ConstitutiveLawImpl<TNodeType>::GetValue(const Variable<array_1d<DataType, 6> >& rThisVariable,
-        array_1d<DataType, 6> & rValue)
+array_1d<typename ConstitutiveLawImpl<TNodeType>::DataType, 6>& ConstitutiveLawImpl<TNodeType>::GetValue(const Variable<array_1d<DataType, 6> >& rThisVariable,
+        array_1d<DataType, 6>& rValue)
 {
     return rValue;
 }
@@ -352,7 +351,7 @@ void ConstitutiveLawImpl<TNodeType>::SetValue(const Variable<MatrixType >& rVari
  * @param rCurrentProcessInfo the process info
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::SetValue(const Variable<array_1d<DataType, 3> >& rVariable, const array_1d<DataType, 3> & rValue, const ProcessInfo& rCurrentProcessInfo)
+void ConstitutiveLawImpl<TNodeType>::SetValue(const Variable<array_1d<DataType, 3> >& rVariable, const array_1d<DataType, 3>& rValue, const ProcessInfo& rCurrentProcessInfo)
 {}
 
 /**
@@ -362,7 +361,7 @@ void ConstitutiveLawImpl<TNodeType>::SetValue(const Variable<array_1d<DataType, 
  * @param rCurrentProcessInfo the process info
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::SetValue(const Variable<array_1d<DataType, 6> >& rVariable, const array_1d<DataType, 6> & rValue, const ProcessInfo& rCurrentProcessInfo)
+void ConstitutiveLawImpl<TNodeType>::SetValue(const Variable<array_1d<DataType, 6> >& rVariable, const array_1d<DataType, 6>& rValue, const ProcessInfo& rCurrentProcessInfo)
 {}
 
 /**
@@ -458,8 +457,8 @@ typename ConstitutiveLawImpl<TNodeType>::MatrixType& ConstitutiveLawImpl<TNodeTy
  * @param rValue output: the value of the specified variable
  */
 template<class TNodeType>
-array_1d<typename ConstitutiveLawImpl<TNodeType>::DataType, 3> & ConstitutiveLawImpl<TNodeType>::CalculateValue(Parameters& rParameterValues, const Variable<array_1d<DataType, 3> >& rVariable,
-        array_1d<DataType, 3> & rValue)
+array_1d<typename ConstitutiveLawImpl<TNodeType>::DataType, 3>& ConstitutiveLawImpl<TNodeType>::CalculateValue(Parameters& rParameterValues, const Variable<array_1d<DataType, 3> >& rVariable,
+        array_1d<DataType, 3>& rValue)
 {
     return rValue;
 }
@@ -473,8 +472,8 @@ array_1d<typename ConstitutiveLawImpl<TNodeType>::DataType, 3> & ConstitutiveLaw
  * @param rValue output: the value of the specified variable
  */
 template<class TNodeType>
-array_1d<typename ConstitutiveLawImpl<TNodeType>::DataType, 6> & ConstitutiveLawImpl<TNodeType>::CalculateValue(Parameters& rParameterValues, const Variable<array_1d<DataType, 6> >& rVariable,
-        array_1d<DataType, 6> & rValue)
+array_1d<typename ConstitutiveLawImpl<TNodeType>::DataType, 6>& ConstitutiveLawImpl<TNodeType>::CalculateValue(Parameters& rParameterValues, const Variable<array_1d<DataType, 6> >& rVariable,
+        array_1d<DataType, 6>& rValue)
 {
     return rValue;
 }
@@ -1412,7 +1411,7 @@ void ConstitutiveLawImpl<TNodeType>::ConstitutiveMatrixTransformation (
         MatrixType& rConstitutiveMatrix, const MatrixType& rOriginalConstitutiveMatrix, const MatrixType&  rF ) const
 {
     unsigned int size = rOriginalConstitutiveMatrix.size1();
-    if(  size == 6 )
+    if( size == 6 )
     {
         for(unsigned int i=0; i<6; i++)
         {

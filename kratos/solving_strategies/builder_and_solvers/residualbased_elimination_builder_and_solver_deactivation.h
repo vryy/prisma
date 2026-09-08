@@ -385,9 +385,6 @@ public:
         }
         //double EndTime = GetTickCount();
 
-//std::cout << "total time " << EndTime - StartTime << std::endl;
-//std::cout << "writing in the system matrix " << ccc << std::endl;
-//std::cout << "calculating the elemental contrib " << ddd << std::endl;
         LHS_Contribution.resize(0, 0, false);
         RHS_Contribution.resize(0, false);
 
@@ -556,7 +553,6 @@ public:
 #endif
         for(int k = 0; k < number_of_threads; ++k)
         {
-//            std::cout << "thread " << k << " is spawned" << std::endl;
 
             //contributions to the system
             LocalSystemMatrixType LHS_Contribution = LocalSystemMatrixType(0, 0);
