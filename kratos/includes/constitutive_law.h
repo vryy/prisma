@@ -637,6 +637,15 @@ public:
                                             array_1d<DataType, 6>& rValue);
 
     /**
+     * @brief Returns the value of a specified variable (constitutive law)
+     * @param rThisVariable the variable to be returned
+     * @param rValue a reference to the returned value
+     * @return the value of the specified variable
+     */
+    virtual ConstitutiveLawImpl::Pointer& GetValue(const Variable<ConstitutiveLawImpl::Pointer>& rThisVariable,
+                                                   ConstitutiveLawImpl::Pointer& rValue);
+
+    /**
      * @brief Sets the value of a specified variable (boolean)
      * @param rVariable the variable to be returned
      * @param Value new value of the specified variable

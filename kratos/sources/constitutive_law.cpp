@@ -295,6 +295,19 @@ array_1d<typename ConstitutiveLawImpl<TNodeType>::DataType, 6>& ConstitutiveLawI
 }
 
 /**
+ * returns the value of a specified variable
+ * @param rThisVariable the variable to be returned
+ * @param rValue a reference to the returned value
+ * @return the value of the specified variable
+ */
+template<class TNodeType>
+typename ConstitutiveLawImpl<TNodeType>::Pointer& ConstitutiveLawImpl<TNodeType>::GetValue(const Variable<typename ConstitutiveLawImpl<TNodeType>::Pointer>& rThisVariable,
+        typename ConstitutiveLawImpl<TNodeType>::Pointer& rValue)
+{
+    return rValue;
+}
+
+/**
  * @brief Sets the value of a specified variable (bool)
  * @param rThisVariable the variable to be returned
  * @param Value new value of the specified variable

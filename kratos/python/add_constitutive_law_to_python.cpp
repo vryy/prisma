@@ -50,7 +50,7 @@ template<class TConstitutiveLawType, class TVariableType>
 bool ConstitutiveLawHas(TConstitutiveLawType& this_constitutive_law, TVariableType const& rThisVariable) { return this_constitutive_law.Has(rThisVariable); }
 
 template<class TConstitutiveLawType, class TDataType>
-const TDataType ConstitutiveLawGetValue(TConstitutiveLawType& this_constitutive_law, const Variable<TDataType>& rThisVariable )
+TDataType ConstitutiveLawGetValue(TConstitutiveLawType& this_constitutive_law, const Variable<TDataType>& rThisVariable )
 {
     TDataType tmp;
     tmp = this_constitutive_law.GetValue(rThisVariable, tmp);
@@ -170,6 +170,7 @@ void AddConstitutiveLawToPythonImpl(const std::string& Prefix)
     .def("GetValue", &ConstitutiveLawGetValue<ConstitutiveLawType, array_1d<DataType, 3> >)
     .def("GetValue", &ConstitutiveLawGetValue<ConstitutiveLawType, VectorType>)
     .def("GetValue", &ConstitutiveLawGetValue<ConstitutiveLawType, MatrixType>)
+    .def("GetValue", &ConstitutiveLawGetValue<ConstitutiveLawType, typename ConstitutiveLawType::Pointer>)
     .def("SetValue", &ConstitutiveLawSetValue<ConstitutiveLawType, bool> )
     .def("SetValue", &ConstitutiveLawSetValue<ConstitutiveLawType, int> )
     .def("SetValue", &ConstitutiveLawSetValue<ConstitutiveLawType, DataType> )
