@@ -548,7 +548,7 @@ public:
     {
         PrintInfo( rOStream );
         BaseType::PrintData( rOStream );
-        std::cout << std::endl;
+        rOStream << std::endl;
         MatrixType jacobian;
         this->Jacobian( jacobian, LocalCoordinatesArrayType() );
         rOStream << "    Jacobian in the origin\t : " << jacobian;
@@ -1090,13 +1090,10 @@ private:
         }
 
         // test all edges of triangle 1 against the edges of triangle 2 //
-        //std::cout<< "Proof One " << std::endl;
         if ( Edge_Against_Tri_Edges(i0, i1, V0,V1,U0,U1,U2)==true) return true;
 
-        //std::cout<< "Proof Two " << std::endl;
         if ( Edge_Against_Tri_Edges(i0, i1, V1,V2,U0,U1,U2)==true) return true;
 
-        //std::cout<< "Proof Three " << std::endl;
         if ( Edge_Against_Tri_Edges(i0, i1, V2,V0,U0,U1,U2)==true) return true;
 
         // finally, test if tri1 is totally contained in tri2 or vice versa //
@@ -1121,12 +1118,10 @@ private:
         DataType Ax,Ay,Bx,By,Cx,Cy,e,d,f;
         Ax=V1[i0]-V0[i0];
         Ay=V1[i1]-V0[i1];
-        // test edge U0,U1 against V0,V1 //
 
-        //std::cout<< "Proof One B " << std::endl;
+        // test edge U0,U1 against V0,V1 //
         if(Edge_Edge_Test(Ax, Ay, Bx, By, Cx, Cy, e, d, f, i0, i1, V0, U0, U1)==true) return true;
         // test edge U1,U2 against V0,V1 //
-        //std::cout<< "Proof Two B " << std::endl;
         if(Edge_Edge_Test(Ax, Ay, Bx, By, Cx, Cy, e, d, f, i0, i1, V0, U1, U2)==true) return true;
         // test edge U2,U1 against V0,V1 //
         if(Edge_Edge_Test(Ax, Ay, Bx, By, Cx, Cy, e, d, f, i0, i1, V0, U2, U0)==true) return true;
@@ -1169,7 +1164,6 @@ private:
         if((f>0.00 && d>=0.00 && d<=f) || (f<0.00 && d<=0.00 && d>=f))
         {
             e=Ax*Cy-Ay*Cx;
-            //std::cout<< "e =  "<< e << std::endl;
             if(f>0.00)
             {
                 if(e>=0.00 && e<=f) return true;

@@ -394,7 +394,7 @@ public:
     void PrintData(std::ostream& rOStream) const override
     {
         BaseType::PrintData(rOStream);
-        std::cout << std::endl;
+        rOStream << std::endl;
         MatrixType jacobian;
         Jacobian(jacobian, PointType());
         rOStream << "    Jacobian\t : " << jacobian;

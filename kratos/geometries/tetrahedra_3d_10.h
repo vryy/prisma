@@ -14,8 +14,6 @@
 //                   Josep Maria Carbonell
 //
 
-
-
 #if !defined(KRATOS_TETRAHEDRA_3D_10_H_INCLUDED )
 #define  KRATOS_TETRAHEDRA_3D_10_H_INCLUDED
 
@@ -462,7 +460,7 @@ public:
     void PrintData( std::ostream& rOStream ) const override
     {
         BaseType::PrintData( rOStream );
-        std::cout << std::endl;
+        rOStream << std::endl;
         MatrixType jacobian;
         this->Jacobian( jacobian, LocalCoordinatesArrayType() );
         rOStream << "    Jacobian in the origin\t : " << jacobian;

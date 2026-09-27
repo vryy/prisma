@@ -26,8 +26,6 @@
 #include "geometries/line_2d_2.h"
 #include "integration/quadrilateral_gauss_legendre_integration_points.h"
 
-
-
 namespace Kratos
 {
 ///@name Kratos Globals
@@ -383,7 +381,7 @@ public:
     void PrintData( std::ostream& rOStream ) const override
     {
         BaseType::PrintData( rOStream );
-        std::cout << std::endl;
+        rOStream << std::endl;
         MatrixType jacobian;
         this->Jacobian( jacobian, LocalCoordinatesArrayType() );
         rOStream << "    Jacobian in the origin\t : " << jacobian;

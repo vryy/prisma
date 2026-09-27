@@ -388,7 +388,7 @@ public:
     {
         PrintInfo( rOStream );
         BaseType::PrintData( rOStream );
-        std::cout << std::endl;
+        rOStream << std::endl;
         MatrixType jacobian;
         this->Jacobian( jacobian, LocalCoordinatesArrayType() );
         rOStream << "    Jacobian in the origin\t : " << jacobian;
