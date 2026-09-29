@@ -57,13 +57,11 @@ void WriteNodeMesh( GidIO<>& dummy, GidIO<>::MeshType& rThisMesh )
 
 void WriteSphereMesh( GidIO<>& dummy, GidIO<>::MeshType& rThisMesh )
 {
-    //KRATOS_WATCH("writing Sphere Mesh"); //should be a KRATOS_LOG not a KRATOS_WATCH
     dummy.WriteSphereMesh( rThisMesh );
 }
 
 void WriteCircleMesh( GidIO<>& dummy, GidIO<>::MeshType& rThisMesh )
 {
-    //KRATOS_WATCH("writing circle Mesh"); //should be a KRATOS_LOG not a KRATOS_WATCH
     dummy.WriteCircleMesh( rThisMesh );
 }
 
@@ -135,7 +133,6 @@ void (GidIO<>::*pointer_to_matrix_write_nodal_results_NH)(Variable<Matrix > cons
 
 void (GidIO<>::*local_axes_write_nodal_results_NH)( Variable<array_1d<DataType, 3> > const& rVariable, GidIO<>::NodesContainerType& rNodes, double SolutionTag)
     = &GidIO<>::WriteLocalAxesOnNodesNonHistorical;
-
 
 //         void (GidIO::*pointer_to_double_cond_print_on_gauss_points)(const Variable<double>& rVariable,
 //               ModelPart& r_model_part, double SolutionTag) = &GidIO::CondPrintOnGaussPoints;

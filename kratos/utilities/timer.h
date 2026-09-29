@@ -209,8 +209,6 @@ public:
 
             if(i_time_data != msTimeTable.end())
             {
-                /*    KRATOS_THROW_ERROR(std::logical_error, "Stopping a not running time interval: ", IntervalName); */
-
                 i_time_data->second.Update(stop_time);
 
                 PrintIntervalInformation(IntervalName, i_time_data->second.GetStartTime(), stop_time);

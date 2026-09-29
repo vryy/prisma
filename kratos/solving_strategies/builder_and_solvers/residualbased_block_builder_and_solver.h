@@ -312,11 +312,6 @@ public:
 
         vector<unsigned int> element_partition;
         CreatePartition(number_of_threads, pElements.size(), element_partition);
-//        if( this->GetEchoLevel() > 2 && r_model_part.GetCommunicator().MyPID() == 0)
-//        {
-//            KRATOS_WATCH(number_of_threads);
-//            KRATOS_WATCH(element_partition);
-//        }
         KRATOS_WATCH(number_of_threads);
         KRATOS_WATCH(element_partition);
 

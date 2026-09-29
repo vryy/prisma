@@ -284,43 +284,22 @@ public:
         }
         else if(number_of_intersection_points == 1)
         { // There is one point with zero distance. The distance of the nodes are their distance to this point
-//                    std::cout << "1 intersection point" << std::endl;
             array_1d<double,3> temp;
             // loop over nodes to calculate their distance to the zero distance node.
                         for(unsigned int i_node = 0; i_node < ThisGeometry.size() ; i_node++)
                         {
                 noalias(temp) = intersection_points[0] - ThisGeometry[i_node];
                 Distances[i_node] = norm_2(temp);
-//                        KRATOS_WATCH(ThisGeometry[i_node].Id());
-//                        KRATOS_WATCH(intersection_points[0]);
-//                        KRATOS_WATCH(ThisGeometry[i_node].Coordinates());
-//                        KRATOS_WATCH(Distances[i_node]);
 
             }
-//                       for(unsigned int i_node = 0; i_node < ThisGeometry.size() ; i_node++)
-//                       {
-//                           Distances[i_node] = std::abs(ThisGeometry[i_node].Z()); // To be removed. Pooyan.
-//                       }
-
         }
         else if(number_of_intersection_points == 2)
         {
-
-//                    std::cout << "2 intersection points" << std::endl;
             // loop over nodes to calculate their distance to the zero distance line.
                         for(unsigned int i_node = 0; i_node < ThisGeometry.size() ; i_node++)
                         {
                 Distances[i_node] = PointDistanceToLineSegment3D(intersection_points[0], intersection_points[1], ThisGeometry[i_node]);
-//                        KRATOS_WATCH(intersection_points[0]);
-//                        KRATOS_WATCH(intersection_points[1]);
-//                        KRATOS_WATCH(ThisGeometry[i_node]);
-//                        KRATOS_WATCH(Distances[i_node]);
             }
-//                       for(unsigned int i_node = 0; i_node < ThisGeometry.size() ; i_node++)
-//                       {
-//                           Distances[i_node] = ThisGeometry[i_node].Z(); // To be removed. Pooyan.
-//                       }
-
         }
         else if(number_of_intersection_points == 3)
         {
@@ -335,21 +314,12 @@ public:
         }
         else if(number_of_intersection_points == 4)
         {
-                    //std::cout << "4 intersection points" << std::endl;
-//                       for(unsigned int i_node = 0; i_node < ThisGeometry.size() ; i_node++)
-//                       {
-//                           Distances[i_node] = std::abs(ThisGeometry[i_node].Z()); // To be removed. Pooyan.
-//                        }
-
             // loop over nodes to calculate their distance to the each zero distance triangle.
                        for(unsigned int i_node = 0; i_node < ThisGeometry.size() ; i_node++)
                        {   // here I'm taking in account the order of edges where I'm looking for intersection
                            double d1 = PointDistanceToTriangle3D(intersection_points[0], intersection_points[1], intersection_points[3], ThisGeometry[i_node]);
                            double d2 = PointDistanceToTriangle3D(intersection_points[0], intersection_points[3], intersection_points[2], ThisGeometry[i_node]);
 
-//                           KRATOS_WATCH(d1);
-//                           KRATOS_WATCH(d2);
-//                           KRATOS_WATCH(Distances[i_node] );
 
                Distances[i_node] = (d1 > d2) ? d2 : d1;
                        }
@@ -390,17 +360,7 @@ public:
                         {
                 noalias(temp) = intersection_points[0] - ThisGeometry[i_node];
                 Distances[i_node] = norm_2(temp);
-//                        KRATOS_WATCH(ThisGeometry[i_node].Id());
-//                        KRATOS_WATCH(intersection_points[0]);
-//                        KRATOS_WATCH(ThisGeometry[i_node].Coordinates());
-//                        KRATOS_WATCH(Distances[i_node]);
-
             }
-//                       for(unsigned int i_node = 0; i_node < ThisGeometry.size() ; i_node++)
-//                       {
-//                           Distances[i_node] = std::abs(ThisGeometry[i_node].Z()); // To be removed. Pooyan.
-//                       }
-
         }
         else if(number_of_intersection_points == 2)
         {
@@ -410,16 +370,7 @@ public:
                         for(unsigned int i_node = 0; i_node < ThisGeometry.size() ; i_node++)
                         {
                 Distances[i_node] = PointDistanceToLineSegment3D(intersection_points[0], intersection_points[1], ThisGeometry[i_node]);
-//                        KRATOS_WATCH(intersection_points[0]);
-//                        KRATOS_WATCH(intersection_points[1]);
-//                        KRATOS_WATCH(ThisGeometry[i_node]);
-//                        KRATOS_WATCH(Distances[i_node]);
             }
-//                       for(unsigned int i_node = 0; i_node < ThisGeometry.size() ; i_node++)
-//                       {
-//                           Distances[i_node] = ThisGeometry[i_node].Z(); // To be removed. Pooyan.
-//                       }
-
         }
         else
         {
@@ -498,20 +449,12 @@ public:
         array_1d<double,3> v2 = LinePoint1 - ToPoint;
         array_1d<double,3> v3;
 
-//                KRATOS_WATCH(LinePoint1);
-//                KRATOS_WATCH(LinePoint2);
-//                KRATOS_WATCH(ToPoint.Coordinates());
-//
-//
-
         double square_distance = inner_prod(v1,v1);
 
         if(square_distance < epsilon) // near zero length line
             return norm_2(v2); // we return the distance to the first point of line
 
         double t = - inner_prod(v1,v2) / square_distance;
-
-//                KRATOS_WATCH(t);
 
         if(t < 0.00) // it is before point 1
         { // we return the distance to point 1
@@ -529,12 +472,8 @@ public:
 
         // The projection point is between point 1 and 2 of the line segment
         v3 = LinePoint1 * (1.00 - t) + LinePoint2 * t;
-//
-//                KRATOS_WATCH(v3);
-//                KRATOS_WATCH(v3 - ToPoint);
 
         return norm_2(v3 - ToPoint);
-
     }
 
     /**
@@ -552,7 +491,6 @@ public:
     {
         // The implementation is done using following reference:
         // http://www.geometrictools.com/Documentation/DistancePoint3Triangle3.pdf
-
 
 
         array_1d<double, 3> e0 = TrianglePoint2 - TrianglePoint1;

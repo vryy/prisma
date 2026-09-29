@@ -155,7 +155,7 @@ void BaseModelPart::RemoveSubModelPart(BaseModelPart& ThisSubModelPart)
     if (i_sub_model_part == mSubModelParts.end())
         KRATOS_ERROR << "The sub modelpart  \"" << name << "\" does not exist in the \"" << Name() << "\" model part to be removed" << std::endl;
 
-                // deallocate the sub model part
+    // deallocate the sub model part
     delete i_sub_model_part.base()->second;
 
     mSubModelParts.erase(name);

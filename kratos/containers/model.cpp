@@ -25,9 +25,7 @@ std::unique_ptr<Model> pKratosDefaultModel = std::unique_ptr<Model>(new Model("K
 
 Model::~Model()
 {
-    // std::cout << "Clearing Model " << mName << ", address: " << this << std::endl;
     mRootModelPartMap.clear();
-    // std::cout << "Model " << mName << ", address: " << this << ", is safely deleted" << std::endl;
 }
 
 void Model::GetNameWithAscendants(const BaseModelPart& rModelPart, std::vector<std::string>& rModelPartNames) const
@@ -65,7 +63,6 @@ TModelPartType& Model::CreateModelPart( const std::string& ModelPartName, Model:
             CreateRootModelPart<TModelPartType>(root_model_part_name, NewBufferSize);
             return dynamic_cast<TModelPartType&>(*(mRootModelPartMap[root_model_part_name].get()));
         } else {
-            // KRATOS_WARNING("Model") << "Trying to create a root modelpart with name " << ModelPartName << " however a ModelPart with the same name already exists. \nReturning the already existent ModelPart.\n";
             std::cout << "Model" << "Trying to create a root modelpart with name " << ModelPartName << " however a ModelPart with the same name already exists. \nReturning the already existent ModelPart.\n"; // hbui: 29/6/2022 temporary use this because KRATOS_WARNING is not defined
             return dynamic_cast<TModelPartType&>(*(mRootModelPartMap[root_model_part_name].get()));
         }
@@ -86,7 +83,6 @@ void Model::DeleteModelPart( const std::string& rModelPartName  )
     if(this->HasBaseModelPart(rModelPartName)) {
         mRootModelPartMap.erase(rModelPartName); //NOTE: the corresponding variable list should NOT be removed
     } else {
-        // KRATOS_WARNING("Model") << "Attempting to delete inexisting modelpart : " << ModelPartName << std::endl;
         std::cout << "Model" << "Attempting to delete inexisting modelpart : " << rModelPartName << std::endl; // hbui: 29/6/2022 temporary use this because KRATOS_WARNING is not defined
     }
 
