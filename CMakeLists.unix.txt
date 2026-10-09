@@ -1,6 +1,6 @@
 #set here the version number
-set (KratosMultiphysics_VERSION_MAJOR 3)
-set (KratosMultiphysics_VERSION_MINOR 3)
+set(KratosMultiphysics_VERSION_MAJOR 3)
+set(KratosMultiphysics_VERSION_MINOR 3)
 
 configure_file(
     "${PROJECT_SOURCE_DIR}/kratos_version.h.in"
@@ -90,38 +90,38 @@ endif()
 
 if(MSVC80)
   message("Using Microsoft Compiler MSVC80")
-  set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /EHsc -D_SCL_SECURE_NO_WARNINGS -D_USE_MATH_DEFINES")
-  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc -D_SCL_SECURE_NO_WARNINGS -D_USE_MATH_DEFINES")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /EHsc -D_SCL_SECURE_NO_WARNINGS -D_USE_MATH_DEFINES")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc -D_SCL_SECURE_NO_WARNINGS -D_USE_MATH_DEFINES")
 endif()
 
 if(MSVC90)
   message("Using Microsoft Compiler MSVC90")
-  set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /EHsc -D_SCL_SECURE_NO_WARNINGS -D_USE_MATH_DEFINES")
-  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc -D_SCL_SECURE_NO_WARNINGS -D_USE_MATH_DEFINES")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /EHsc -D_SCL_SECURE_NO_WARNINGS -D_USE_MATH_DEFINES")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc -D_SCL_SECURE_NO_WARNINGS -D_USE_MATH_DEFINES")
 endif()
 
 if(MSVC10)
   message("Using Microsoft Compiler MSVC10")
-  set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /EHsc -D_SCL_SECURE_NO_WARNINGS -D_USE_MATH_DEFINES")
-  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc -D_SCL_SECURE_NO_WARNINGS -D_USE_MATH_DEFINES")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /EHsc -D_SCL_SECURE_NO_WARNINGS -D_USE_MATH_DEFINES")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc -D_SCL_SECURE_NO_WARNINGS -D_USE_MATH_DEFINES")
 endif()
 
 if(MSVC11)
   message("Using Microsoft Compiler MSVC11")
-  set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /EHsc -D_SCL_SECURE_NO_WARNINGS")
-  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc -D_SCL_SECURE_NO_WARNINGS")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /EHsc -D_SCL_SECURE_NO_WARNINGS")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc -D_SCL_SECURE_NO_WARNINGS")
 endif()
 
 if(MSVC12)
   message("Using Microsoft Compiler MSVC12")
-  set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /EHsc -D_SCL_SECURE_NO_WARNINGS")
-  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc -D_SCL_SECURE_NO_WARNINGS")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /EHsc -D_SCL_SECURE_NO_WARNINGS")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc -D_SCL_SECURE_NO_WARNINGS")
 endif()
 
 if(MSVC14)
   message("Using Microsoft Compiler MSVC14")
-  set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /EHsc -D_SCL_SECURE_NO_WARNINGS")
-  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc -D_SCL_SECURE_NO_WARNINGS")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /EHsc -D_SCL_SECURE_NO_WARNINGS")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc -D_SCL_SECURE_NO_WARNINGS")
 endif()
 
 #set kratos specific module path
@@ -135,6 +135,8 @@ if(MSVC)
     # force use of /MD for linking with external libraries. This allows to use Release-built libraries
     # to link with Kratos built in Debug mode
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
+    # force use of /Zc:__cplusplus to get correct __cplusplus macro value
+    add_compile_options($<$<COMPILE_LANGUAGE:CXX>:/Zc:__cplusplus>)
 endif()
 
 ######################################################################################
