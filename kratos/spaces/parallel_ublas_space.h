@@ -10,19 +10,16 @@
 //  Main authors:    Riccardo Rossi
 //
 //
+
 #if !defined(KRATOS_PARALLEL_UBLAS_SPACE_H_INCLUDED )
 #define  KRATOS_PARALLEL_UBLAS_SPACE_H_INCLUDED
-
-
 
 // System includes
 #include <string>
 #include <iostream>
 #include <cstddef>
 
-
 // External includes
-
 
 // Project includes
 #include "includes/define.h"
@@ -403,10 +400,34 @@ public:
     ///@name Inquiry
     ///@{
 
+    /// Print the information about the matrix, using the kernel logger output and log level
+    static void PrintMatrixInfo(const Kernel& kernel, const MatrixType& rA)
+    {
+        UblasSpaceType::PrintMatrixInfo(kernel, rA);
+    }
+
+    /// Print the information about the matrix, using the kernel logger output
+    static void PrintMatrixInfo(const Kernel& kernel, const MatrixType& rA, const int level)
+    {
+        UblasSpaceType::PrintMatrixInfo(kernel, rA, level);
+    }
+
     /// Print the information about the matrix. Depending on the level, different information will be printed
     static void PrintMatrixInfo(std::ostream& rOStream, const MatrixType& rA, const int level)
     {
         UblasSpaceType::PrintMatrixInfo(rOStream, rA, level);
+    }
+
+    /// Print the information about the matrix, using the kernel logger output and log level
+    static void PrintVectorInfo(const Kernel& kernel, const VectorType& rX)
+    {
+        UblasSpaceType::PrintVectorInfo(kernel, rX);
+    }
+
+    /// Print the information about the matrix, using the kernel logger output
+    static void PrintVectorInfo(const Kernel& kernel, const VectorType& rX, const int level)
+    {
+        UblasSpaceType::PrintVectorInfo(kernel, rX, level);
     }
 
     /// Print the information about the vector. Depending on the level, different information will be printed

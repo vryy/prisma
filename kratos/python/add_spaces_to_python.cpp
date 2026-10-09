@@ -30,7 +30,7 @@
 
 
 // Project includes
-#include "includes/define.h"
+#include "includes/define_python.h"
 #include "python/add_spaces_to_python.h"
 #include "spaces/ublas_space.h"
 #ifdef _OPENMP
@@ -164,15 +164,39 @@ namespace Kratos
         }
 
         template<class SparseSpaceType>
-        void PrintMatrixInfo(SparseSpaceType& dummy, const typename SparseSpaceType::MatrixType& rA, const int level)
+        void PrintMatrixInfo1(SparseSpaceType& dummy, const typename SparseSpaceType::MatrixType& rA, const int level)
         {
             dummy.PrintMatrixInfo(std::cout, rA, level);
         }
 
         template<class SparseSpaceType>
-        void PrintVectorInfo(SparseSpaceType& dummy, const typename SparseSpaceType::VectorType& rX, const int level)
+        void PrintMatrixInfo2(SparseSpaceType& dummy, const Kernel& kernel, const typename SparseSpaceType::MatrixType& rA)
+        {
+            dummy.PrintMatrixInfo(kernel, rA);
+        }
+
+        template<class SparseSpaceType>
+        void PrintMatrixInfo3(SparseSpaceType& dummy, const Kernel& kernel, const typename SparseSpaceType::MatrixType& rA, const int level)
+        {
+            dummy.PrintMatrixInfo(kernel, rA, level);
+        }
+
+        template<class SparseSpaceType>
+        void PrintVectorInfo1(SparseSpaceType& dummy, const typename SparseSpaceType::VectorType& rX, const int level)
         {
             dummy.PrintVectorInfo(std::cout, rX, level);
+        }
+
+        template<class SparseSpaceType>
+        void PrintVectorInfo2(SparseSpaceType& dummy, const Kernel& kernel, const typename SparseSpaceType::VectorType& rX)
+        {
+            dummy.PrintVectorInfo(kernel, rX);
+        }
+
+        template<class SparseSpaceType>
+        void PrintVectorInfo3(SparseSpaceType& dummy, const Kernel& kernel, const typename SparseSpaceType::VectorType& rX, const int level)
+        {
+            dummy.PrintVectorInfo(kernel, rX, level);
         }
 
         //  boost::shared_ptr< CompressedMatrix > CreateEmptyMatrixPointer()
@@ -266,8 +290,12 @@ namespace Kratos
             .def("ScaleAndAdd", &ScaleAndAdd<TSpaceType>)
             .def("CreateEmptyMatrixPointer", &CreateEmptyMatrixPointer<TSpaceType>)
             .def("CreateEmptyVectorPointer", &CreateEmptyVectorPointer<TSpaceType>)
-            .def("PrintMatrixInfo", &PrintMatrixInfo<TSpaceType>)
-            .def("PrintVectorInfo", &PrintVectorInfo<TSpaceType>)
+            .def("PrintMatrixInfo", &PrintMatrixInfo1<TSpaceType>)
+            .def("PrintVectorInfo", &PrintVectorInfo1<TSpaceType>)
+            .def("PrintMatrixInfo", &PrintMatrixInfo2<TSpaceType>)
+            .def("PrintVectorInfo", &PrintVectorInfo2<TSpaceType>)
+            .def("PrintMatrixInfo", &PrintMatrixInfo3<TSpaceType>)
+            .def("PrintVectorInfo", &PrintVectorInfo3<TSpaceType>)
             .def(self_ns::str(self))
             ;
 

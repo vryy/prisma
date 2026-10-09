@@ -11,6 +11,7 @@
 //
 //
 
+#include "utilities/logger_message.h"
 #if !defined(KRATOS_UBLAS_SPACE_H_INCLUDED )
 #define  KRATOS_UBLAS_SPACE_H_INCLUDED
 
@@ -29,6 +30,7 @@
 
 // Project includes
 #include "includes/define.h"
+#include "includes/kernel.h"
 #include "includes/ublas_interface.h"
 #include "includes/matrix_market_interface.h"
 #include "utilities/openmp_utils.h"
@@ -698,8 +700,28 @@ public:
         return false;
     }
 
+    /// Print the information about the matrix, using the kernel logger output and log level
+    static void PrintMatrixInfo(const Kernel& kernel, const MatrixType& rA)
+    {
+        PrintMatrixInfo(kernel, rA, kernel.GetLogLevel());
+    }
+
+    /// Print the information about the matrix, using the kernel logger output
+    static void PrintMatrixInfo(const Kernel& kernel, const MatrixType& rA, const int level)
+    {
+        LoggerMessage message("UblasSpace");
+        PrintMatrixInfo(message, rA, level);
+
+        const auto& outputs = kernel.GetLoggerOutputs();
+        for (auto it_output = outputs.begin(); it_output != outputs.end(); ++it_output)
+        {
+            (*it_output)->WriteMessage(message);
+        }
+    }
+
     /// Print the information about the matrix. Depending on the level, different information will be printed
-    static void PrintMatrixInfo(std::ostream& rOStream, const MatrixType& rA, const int level)
+    template<typename TOutputStreamType>
+    static void PrintMatrixInfo(TOutputStreamType& rOStream, const MatrixType& rA, const int level)
     {
         typedef typename MatrixType::const_iterator1 t_it_1;
         typedef typename MatrixType::const_iterator2 t_it_2;
@@ -767,8 +789,28 @@ public:
         rOStream << std::endl;
     }
 
+    /// Print the information about the matrix, using the kernel logger output and log level
+    static void PrintVectorInfo(const Kernel& kernel, const VectorType& rX)
+    {
+        PrintVectorInfo(kernel, rX, kernel.GetLogLevel());
+    }
+
+    /// Print the information about the matrix, using the kernel logger output and log level
+    static void PrintVectorInfo(const Kernel& kernel, const VectorType& rX, const int level)
+    {
+        LoggerMessage message("UblasSpace");
+        PrintVectorInfo(message, rX, level);
+
+        const auto& outputs = kernel.GetLoggerOutputs();
+        for (auto it_output = outputs.begin(); it_output != outputs.end(); ++it_output)
+        {
+            (*it_output)->WriteMessage(message);
+        }
+    }
+
     /// Print the information about the vector. Depending on the level, different information will be printed
-    static void PrintVectorInfo(std::ostream& rOStream, const VectorType& rX, const int level)
+    template<typename TOutputStreamType>
+    static void PrintVectorInfo(TOutputStreamType& rOStream, const VectorType& rX, const int level)
     {
         typedef typename VectorType::const_iterator t_it;
 
