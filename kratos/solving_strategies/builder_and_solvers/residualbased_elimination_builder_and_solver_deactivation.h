@@ -414,7 +414,6 @@ public:
             }
         }
 #else
-//        KRATOS_WATCH("in Build: openmp initial");
 
         #ifdef MODIFY_INACTIVE_PART_OF_THE_MATRIX
         std::set<std::size_t> ActiveIdSet;
@@ -527,12 +526,12 @@ public:
 
         boost::numeric::ublas::vector<unsigned int> element_partition;
         OpenMPUtils::CreatePartition(number_of_threads, pElements.size(), element_partition);
-        KRATOS_WATCH( number_of_threads );
-        KRATOS_WATCH( element_partition );
+        KRATOS_INFO("BuilderAndSolver")
+            << "Number of threads: " << number_of_threads << std::endl;
+        KRATOS_INFO("BuilderAndSolver")
+            << "element_partition: " << element_partition << std::endl;
 
         double start_prod = omp_get_wtime();
-
-//        KRATOS_WATCH("in Build: before thread looping for elements");
 
         TDataType DiagonalSum = 0.0;
         unsigned int num_computed_elements = 0;
@@ -600,8 +599,6 @@ public:
                     }
                     #endif
 
-//                    KRATOS_WATCH(LHS_Contribution);
-//                    KRATOS_WATCH(RHS_Contribution);
                     #ifdef EXPORT_LOCAL_LHS_MATRIX
                     std::stringstream lhs_filename;
                     lhs_filename << "ke_" << mStepCounter << "_" << mLocalCounter << "_" << it->Id() << ".mm";
@@ -673,7 +670,8 @@ public:
 
         boost::numeric::ublas::vector<unsigned int> condition_partition;
         OpenMPUtils::CreatePartition(number_of_threads, ConditionsArray.size(), condition_partition);
-        KRATOS_WATCH( condition_partition );
+        KRATOS_INFO("BuilderAndSolver")
+            << "condition_partition: " << condition_partition << std::endl;
 
         unsigned int num_computed_conditions = 0;
         unsigned int num_assembled_conditions = 0;
@@ -786,11 +784,18 @@ public:
         // compute the modification factor: simply average of the diagonal
         TDataType DiagonalAverage = DiagonalSum / (BaseType::mEquationSystemSize - mFixedLength);
         if constexpr (std::is_arithmetic<TDataType>::value)
-            printf("DiagonalSum: %.16e, DiagonalAverage: %.16e\n", DiagonalSum, DiagonalAverage);
+        {
+            KRATOS_INFO("BuilderAndSolver")
+                << "DiagonalSum: " << std::format("{:.16e}", DiagonalSum)
+                << ", DiagonalAverage: " << std::format("{:.16e}", DiagonalAverage)
+                << std::endl;
+        }
         else
+        {
             KRATOS_INFO("BuilderAndSolver") << "DiagonalSum: " << DiagonalSum
-                      << "DiagonalAverage: " << DiagonalAverage
+                      << ", DiagonalAverage: " << DiagonalAverage
                       << std::endl;
+        }
 
         // modify the matrix as needed
         for(auto it = InactiveIdSet.begin(); it != InactiveIdSet.end(); ++it)
@@ -1523,8 +1528,9 @@ public:
             }
             #endif
         }
-        KRATOS_WATCH(pElements.size());
-        KRATOS_WATCH(num_active_elements);
+        KRATOS_INFO("BuilderAndSolver")
+            << "Number of elements: " << pElements.size()
+            << ", number of active elements: " << num_active_elements << std::endl;
 
         // taking in account conditions
         const ConditionsContainerType& pConditions = r_model_part.Conditions();
@@ -1548,19 +1554,17 @@ public:
             }
             #endif
         }
-        KRATOS_WATCH(pConditions.size());
-        KRATOS_WATCH(num_active_conditions)
+        KRATOS_INFO("BuilderAndSolver")
+            << "Number of conditions: " << pConditions.size()
+            << ", number of active conditions: " << num_active_conditions << std::endl;
 
         Doftemp.Unique();
 
         BaseType::mDofSet = Doftemp;
 
-        KRATOS_WATCH(mAllDofs.size())
-        KRATOS_WATCH(BaseType::mDofSet.size())
-
-        //throws an execption if there are no Degrees of freedom involved in the analysis
-//        if (BaseType::mDofSet.size()==0)
-//            KRATOS_ERROR << "No degrees of freedom!";
+        KRATOS_DETAIL("BuilderAndSolver")
+            << "mAllDofs: " << mAllDofs.size() << std::endl
+            << "mDofSet: " << BaseType::mDofSet.size() << std::endl;
 
         BaseType::mDofSetIsInitialized = true;
 
@@ -1611,7 +1615,8 @@ public:
         BaseType::mEquationSystemSize = fix_id;
         mFixedLength = 0;
 
-        KRATOS_WATCH(BaseType::mEquationSystemSize)
+        KRATOS_INFO("BuilderAndSolver")
+            << "mEquationSystemSize: " << BaseType::mEquationSystemSize << std::endl;
 
         #if defined(ENABLE_LOG) && defined(QUERY_DOF_EQUATION_ID)
         MY_LOG_TRACE << "SetUpSystem: try to probe equation id of all dofs of the current process" << std::endl;
@@ -1666,7 +1671,8 @@ public:
                 dof_iterator->SetEquationId(free_offset++);
         }
 
-        KRATOS_WATCH(BaseType::mEquationSystemSize)
+        KRATOS_INFO("BuilderAndSolver")
+            << "mEquationSystemSize: " << BaseType::mEquationSystemSize << std::endl;
 
         #if defined(ENABLE_LOG) && defined(QUERY_DOF_EQUATION_ID)
         MY_LOG_TRACE << "SetUpSystem: try to probe equation id of all dofs of the current process" << std::endl;
@@ -1722,7 +1728,8 @@ public:
                 dof_iterator->SetEquationId(free_offset++);
         }
 
-        KRATOS_WATCH(BaseType::mEquationSystemSize)
+        KRATOS_INFO("BuilderAndSolver")
+            << "mEquationSystemSize: " << BaseType::mEquationSystemSize << std::endl;
 
         #if defined(ENABLE_LOG) && defined(QUERY_DOF_EQUATION_ID)
         MY_LOG_TRACE << "SetUpSystem: try to probe equation id of all dofs of the current process" << std::endl;
@@ -1786,7 +1793,8 @@ public:
         {
             if(A.size1() != BaseType::mEquationSystemSize || A.size2() != BaseType::mEquationSystemSize)
             {
-                KRATOS_WATCH("it should not come here!!!!!!!! ... this is SLOW");
+                KRATOS_WARNING("BuilderAndSolver")
+                    << "it should not come here!!!!!!!! ... this is SLOW" << std::endl;
                 A.resize(BaseType::mEquationSystemSize,BaseType::mEquationSystemSize,true);
                 ConstructMatrixStructure(A,rElements,rConditions,CurrentProcessInfo);
             }
@@ -1854,8 +1862,6 @@ public:
     {
         //build RHS with reactions
         BuildRHSreactions(pScheme,r_model_part,b);
-
-//        KRATOS_WATCH(*BaseType::mpReactionsVector)
 
         int i;
         int systemsize = BaseType::mDofSet.size() - TSparseSpace::Size(*BaseType::mpReactionsVector);
@@ -2058,7 +2064,8 @@ protected:
         int number_of_threads = omp_get_max_threads();
         boost::numeric::ublas::vector<unsigned int> matrix_partition;
         OpenMPUtils::CreatePartition(number_of_threads, indices.size(), matrix_partition);
-        KRATOS_WATCH( matrix_partition );
+        KRATOS_INFO("BuilderAndSolver")
+            << "matrix_partition: " << matrix_partition << std::endl;
         for(int k = 0; k < number_of_threads; ++k)
         {
             #pragma omp parallel
