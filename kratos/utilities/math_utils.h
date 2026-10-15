@@ -545,6 +545,50 @@ public:
     }
 
     /**
+     * @brief Invert diagonal matrix in place
+     * @param rInputMatrix Is the input matrix (will be changed in place)
+     */
+    template<class TMatrix>
+    static void InvertDiagMatrix(TMatrix& rInputMatrix)
+    {
+        KRATOS_TRY;
+
+        KRATOS_DEBUG_ERROR_IF_NOT(rInputMatrix.size1() == rInputMatrix.size2()) << "Matrix provided is non-square" << std::endl;
+
+        const std::size_t size = rInputMatrix.size1();
+        for (std::size_t i = 0; i < size; ++i)
+            rInputMatrix(i, i) = 1.0 / rInputMatrix(i, i);
+
+        KRATOS_CATCH("");
+    }
+
+    /**
+     * @brief Invert diagonal matrix in place
+     * @param rInputMatrix Is the input matrix (will be changed in place)
+     */
+    template<class TMatrix1, class TMatrix2>
+    static void InvertDiagMatrix(const TMatrix1& rInputMatrix, TMatrix2& rInvertedMatrix)
+    {
+        KRATOS_TRY;
+
+        KRATOS_DEBUG_ERROR_IF_NOT(rInputMatrix.size1() == rInputMatrix.size2()) << "Matrix provided is non-square" << std::endl;
+
+        const std::size_t size = rInputMatrix.size1();
+
+        if (rInvertedMatrix.size1() != size || rInvertedMatrix.size2() != size)
+            rInvertedMatrix.resize(size, size, false);
+
+        for (std::size_t i = 0; i < size; ++i)
+        {
+            for (std::size_t j = 0; j < size; ++j)
+                rInvertedMatrix(i, j) = 0.0;
+            rInvertedMatrix(i, i) = 1.0 / rInputMatrix(i, i);
+        }
+
+        KRATOS_CATCH("");
+    }
+
+    /**
      * @brief Calculates the determinant of a matrix of dimension 2x2 (no check performed on matrix size)
      * @param rA Is the input matrix
      * @return The determinant of the 2x2 matrix
