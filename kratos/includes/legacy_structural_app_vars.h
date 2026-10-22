@@ -10,7 +10,6 @@
 //  Main authors:    Pooyan Dadvand
 //
 
-
 #if !defined(KRATOS_LEGACY_STRUCTURAL_APP_VARS_H_INCLUDED )
 #define  KRATOS_LEGACY_STRUCTURAL_APP_VARS_H_INCLUDED
 

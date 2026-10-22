@@ -15,7 +15,7 @@
 #ifndef BOOST_NUMERIC_BINDINGS_CONFIG_HPP
 #define BOOST_NUMERIC_BINDINGS_CONFIG_HPP
 
-#include <boost/config.hpp> 
+#include <boost/config.hpp>
 
 // Microsoft Visual C++
 #if defined (BOOST_MSVC)
@@ -40,19 +40,21 @@
 
 #elif defined(__sgi)
 
+#elif defined(__clang__)
+
 #else
 #error bindings do not recognize compiler
 #endif
- 
+
 
 #if defined (BOOST_NUMERIC_BINDINGS_POOR_MANS_TRAITS)
 
 // structure checks require proper traits
-#  define BOOST_NUMERIC_BINDINGS_NO_STRUCTURE_CHECK 
+#  define BOOST_NUMERIC_BINDINGS_NO_STRUCTURE_CHECK
 
-// type checks require proper traits 
-#  define BOOST_NUMERIC_BINDINGS_NO_TYPE_CHECK 
+// type checks require proper traits
+#  define BOOST_NUMERIC_BINDINGS_NO_TYPE_CHECK
 
-#endif 
+#endif
 
 #endif
