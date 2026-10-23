@@ -661,6 +661,13 @@ void kratos_watch_impl(const char* names, Args&&... args) {
   for (auto it___ = variable.begin(); it___ != variable.end(); ++it___) std::cout << it___->first << ": " << it___->second << ", "; \
   std::cout << "}" << std::endl;
 
+#define KRATOS_WATCH_IF(conditional, ...) \
+    do { \
+        if (conditional) { \
+            KRATOS_WATCH(__VA_ARGS__); \
+        } \
+    } while (0);
+
 #ifdef __FILENAME__
 #undef __FILENAME__
 #endif
