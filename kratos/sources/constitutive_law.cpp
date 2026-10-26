@@ -79,7 +79,7 @@ typename ConstitutiveLawImpl<TNodeType>::Pointer ConstitutiveLawImpl<TNodeType>:
  * @return a Pointer to the new constitutive law
  */
 template<class TNodeType>
-typename ConstitutiveLawImpl<TNodeType>::Pointer ConstitutiveLawImpl<TNodeType>::Create(Kratos::Parameters NewParameters) const
+typename ConstitutiveLawImpl<TNodeType>::Pointer ConstitutiveLawImpl<TNodeType>::Create( Kratos::Parameters NewParameters ) const
 {
     KRATOS_ERROR << "Called the virtual function for Clone";
 }
@@ -94,9 +94,9 @@ template<class TNodeType>
 typename ConstitutiveLawImpl<TNodeType>::Pointer ConstitutiveLawImpl<TNodeType>::Create(
     Kratos::Parameters NewParameters,
     const Properties& rProperties
-    ) const
+) const
 {
-    return this->Create(NewParameters);
+    return this->Create( NewParameters );
 }
 
 /**
@@ -125,7 +125,7 @@ typename ConstitutiveLawImpl<TNodeType>::SizeType ConstitutiveLawImpl<TNodeType>
  * @return true if the variable is defined in the constitutive law
  */
 template<class TNodeType>
-bool ConstitutiveLawImpl<TNodeType>::Has(const Variable<bool>& rThisVariable) const
+bool ConstitutiveLawImpl<TNodeType>::Has( const Variable<bool>& rThisVariable ) const
 {
     return false;
 }
@@ -136,7 +136,7 @@ bool ConstitutiveLawImpl<TNodeType>::Has(const Variable<bool>& rThisVariable) co
  * @return true if the variable is defined in the constitutive law
  */
 template<class TNodeType>
-bool ConstitutiveLawImpl<TNodeType>::Has(const Variable<int>& rThisVariable) const
+bool ConstitutiveLawImpl<TNodeType>::Has( const Variable<int>& rThisVariable ) const
 {
     return false;
 }
@@ -147,7 +147,7 @@ bool ConstitutiveLawImpl<TNodeType>::Has(const Variable<int>& rThisVariable) con
  * @return true if the variable is defined in the constitutive law
  */
 template<class TNodeType>
-bool ConstitutiveLawImpl<TNodeType>::Has(const Variable<DataType>& rThisVariable) const
+bool ConstitutiveLawImpl<TNodeType>::Has( const Variable<DataType>& rThisVariable ) const
 {
     return false;
 }
@@ -158,7 +158,7 @@ bool ConstitutiveLawImpl<TNodeType>::Has(const Variable<DataType>& rThisVariable
  * @return true if the variable is defined in the constitutive law
  */
 template<class TNodeType>
-bool ConstitutiveLawImpl<TNodeType>::Has(const Variable<VectorType>& rThisVariable) const
+bool ConstitutiveLawImpl<TNodeType>::Has( const Variable<VectorType>& rThisVariable ) const
 {
     return false;
 }
@@ -169,7 +169,7 @@ bool ConstitutiveLawImpl<TNodeType>::Has(const Variable<VectorType>& rThisVariab
  * @return true if the variable is defined in the constitutive law
  */
 template<class TNodeType>
-bool ConstitutiveLawImpl<TNodeType>::Has(const Variable<MatrixType>& rThisVariable) const
+bool ConstitutiveLawImpl<TNodeType>::Has( const Variable<MatrixType>& rThisVariable ) const
 {
     return false;
 }
@@ -181,7 +181,7 @@ bool ConstitutiveLawImpl<TNodeType>::Has(const Variable<MatrixType>& rThisVariab
  * NOTE: fixed size array of 3 DataTypes (e.g. for 2D stresses, plastic strains, ...)
  */
 template<class TNodeType>
-bool ConstitutiveLawImpl<TNodeType>::Has(const Variable<array_1d<DataType, 3> >& rThisVariable) const
+bool ConstitutiveLawImpl<TNodeType>::Has( const Variable<array_1d<DataType, 3> >& rThisVariable ) const
 {
     return false;
 }
@@ -193,7 +193,7 @@ bool ConstitutiveLawImpl<TNodeType>::Has(const Variable<array_1d<DataType, 3> >&
  * NOTE: fixed size array of 6 DataTypes (e.g. for stresses, plastic strains, ...)
  */
 template<class TNodeType>
-bool ConstitutiveLawImpl<TNodeType>::Has(const Variable<array_1d<DataType, 6> >& rThisVariable) const
+bool ConstitutiveLawImpl<TNodeType>::Has( const Variable<array_1d<DataType, 6> >& rThisVariable ) const
 {
     return false;
 }
@@ -205,7 +205,7 @@ bool ConstitutiveLawImpl<TNodeType>::Has(const Variable<array_1d<DataType, 6> >&
  * @param rValue output: the value of the specified variable
  */
 template<class TNodeType>
-bool& ConstitutiveLawImpl<TNodeType>::GetValue(const Variable<bool>& rThisVariable, bool& rValue)
+bool& ConstitutiveLawImpl<TNodeType>::GetValue( const Variable<bool>& rThisVariable, bool& rValue )
 {
     return rValue;
 }
@@ -217,7 +217,7 @@ bool& ConstitutiveLawImpl<TNodeType>::GetValue(const Variable<bool>& rThisVariab
  * @param rValue output: the value of the specified variable
  */
 template<class TNodeType>
-int& ConstitutiveLawImpl<TNodeType>::GetValue(const Variable<int>& rThisVariable, int& rValue)
+int& ConstitutiveLawImpl<TNodeType>::GetValue( const Variable<int>& rThisVariable, int& rValue )
 {
     return rValue;
 }
@@ -229,7 +229,7 @@ int& ConstitutiveLawImpl<TNodeType>::GetValue(const Variable<int>& rThisVariable
  * @param rValue output: the value of the specified variable
  */
 template<class TNodeType>
-typename ConstitutiveLawImpl<TNodeType>::DataType& ConstitutiveLawImpl<TNodeType>::GetValue(const Variable<DataType>& rThisVariable, DataType& rValue)
+typename ConstitutiveLawImpl<TNodeType>::DataType& ConstitutiveLawImpl<TNodeType>::GetValue( const Variable<DataType>& rThisVariable, DataType& rValue )
 {
     return rValue;
 }
@@ -241,7 +241,7 @@ typename ConstitutiveLawImpl<TNodeType>::DataType& ConstitutiveLawImpl<TNodeType
  * @return the value of the specified variable
  */
 template<class TNodeType>
-typename ConstitutiveLawImpl<TNodeType>::VectorType& ConstitutiveLawImpl<TNodeType>::GetValue(const Variable<VectorType>& rThisVariable, VectorType& rValue)
+typename ConstitutiveLawImpl<TNodeType>::VectorType& ConstitutiveLawImpl<TNodeType>::GetValue( const Variable<VectorType>& rThisVariable, VectorType& rValue )
 {
     return rValue;
 }
@@ -252,7 +252,7 @@ typename ConstitutiveLawImpl<TNodeType>::VectorType& ConstitutiveLawImpl<TNodeTy
  * @return the value of the specified variable
  */
 template<class TNodeType>
-typename ConstitutiveLawImpl<TNodeType>::MatrixType& ConstitutiveLawImpl<TNodeType>::GetValue(const Variable<MatrixType>& rThisVariable, MatrixType& rValue)
+typename ConstitutiveLawImpl<TNodeType>::MatrixType& ConstitutiveLawImpl<TNodeType>::GetValue( const Variable<MatrixType>& rThisVariable, MatrixType& rValue )
 {
     return rValue;
 }
@@ -263,20 +263,7 @@ typename ConstitutiveLawImpl<TNodeType>::MatrixType& ConstitutiveLawImpl<TNodeTy
  * @return the value of the specified variable
  */
 template<class TNodeType>
-std::string& ConstitutiveLawImpl<TNodeType>::GetValue(const Variable<std::string>& rThisVariable, std::string& rValue)
-{
-    return rValue;
-}
-
-/**
- * returns the value of a specified variable
- * @param rThisVariable the variable to be returned
- * @param rValue a reference to the returned value
- * @return the value of the specified variable
- */
-template<class TNodeType>
-array_1d<typename ConstitutiveLawImpl<TNodeType>::DataType, 3>& ConstitutiveLawImpl<TNodeType>::GetValue(const Variable<array_1d<DataType, 3> >& rThisVariable,
-        array_1d<DataType, 3>& rValue)
+std::string& ConstitutiveLawImpl<TNodeType>::GetValue( const Variable<std::string>& rThisVariable, std::string& rValue )
 {
     return rValue;
 }
@@ -288,8 +275,8 @@ array_1d<typename ConstitutiveLawImpl<TNodeType>::DataType, 3>& ConstitutiveLawI
  * @return the value of the specified variable
  */
 template<class TNodeType>
-array_1d<typename ConstitutiveLawImpl<TNodeType>::DataType, 6>& ConstitutiveLawImpl<TNodeType>::GetValue(const Variable<array_1d<DataType, 6> >& rThisVariable,
-        array_1d<DataType, 6>& rValue)
+array_1d<typename ConstitutiveLawImpl<TNodeType>::DataType, 3>& ConstitutiveLawImpl<TNodeType>::GetValue( const Variable<array_1d<DataType, 3> >& rThisVariable,
+        array_1d<DataType, 3>& rValue )
 {
     return rValue;
 }
@@ -301,8 +288,21 @@ array_1d<typename ConstitutiveLawImpl<TNodeType>::DataType, 6>& ConstitutiveLawI
  * @return the value of the specified variable
  */
 template<class TNodeType>
-typename ConstitutiveLawImpl<TNodeType>::Pointer& ConstitutiveLawImpl<TNodeType>::GetValue(const Variable<typename ConstitutiveLawImpl<TNodeType>::Pointer>& rThisVariable,
-        typename ConstitutiveLawImpl<TNodeType>::Pointer& rValue)
+array_1d<typename ConstitutiveLawImpl<TNodeType>::DataType, 6>& ConstitutiveLawImpl<TNodeType>::GetValue( const Variable<array_1d<DataType, 6> >& rThisVariable,
+        array_1d<DataType, 6>& rValue )
+{
+    return rValue;
+}
+
+/**
+ * returns the value of a specified variable
+ * @param rThisVariable the variable to be returned
+ * @param rValue a reference to the returned value
+ * @return the value of the specified variable
+ */
+template<class TNodeType>
+typename ConstitutiveLawImpl<TNodeType>::Pointer& ConstitutiveLawImpl<TNodeType>::GetValue( const Variable<typename ConstitutiveLawImpl<TNodeType>::Pointer>& rThisVariable,
+        typename ConstitutiveLawImpl<TNodeType>::Pointer& rValue )
 {
     return rValue;
 }
@@ -314,7 +314,7 @@ typename ConstitutiveLawImpl<TNodeType>::Pointer& ConstitutiveLawImpl<TNodeType>
  * @param rCurrentProcessInfo the process info
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::SetValue(const Variable<bool>& rThisVariable, const bool& Value, const ProcessInfo& rCurrentProcessInfo)
+void ConstitutiveLawImpl<TNodeType>::SetValue( const Variable<bool>& rThisVariable, const bool& Value, const ProcessInfo& rCurrentProcessInfo )
 {}
 
 /**
@@ -324,7 +324,7 @@ void ConstitutiveLawImpl<TNodeType>::SetValue(const Variable<bool>& rThisVariabl
  * @param rCurrentProcessInfo the process info
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::SetValue(const Variable<int>& rThisVariable, const int& Value, const ProcessInfo& rCurrentProcessInfo)
+void ConstitutiveLawImpl<TNodeType>::SetValue( const Variable<int>& rThisVariable, const int& Value, const ProcessInfo& rCurrentProcessInfo )
 {}
 
 /**
@@ -334,7 +334,7 @@ void ConstitutiveLawImpl<TNodeType>::SetValue(const Variable<int>& rThisVariable
  * @param rCurrentProcessInfo the process info
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::SetValue(const Variable<DataType>& rVariable, const DataType& rValue, const ProcessInfo& rCurrentProcessInfo)
+void ConstitutiveLawImpl<TNodeType>::SetValue( const Variable<DataType>& rVariable, const DataType& rValue, const ProcessInfo& rCurrentProcessInfo )
 {}
 
 /**
@@ -344,7 +344,7 @@ void ConstitutiveLawImpl<TNodeType>::SetValue(const Variable<DataType>& rVariabl
  * @param rCurrentProcessInfo the process info
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::SetValue(const Variable<VectorType >& rVariable, const VectorType& rValue, const ProcessInfo& rCurrentProcessInfo)
+void ConstitutiveLawImpl<TNodeType>::SetValue( const Variable<VectorType >& rVariable, const VectorType& rValue, const ProcessInfo& rCurrentProcessInfo )
 {}
 
 /**
@@ -354,7 +354,7 @@ void ConstitutiveLawImpl<TNodeType>::SetValue(const Variable<VectorType >& rVari
  * @param rCurrentProcessInfo the process info
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::SetValue(const Variable<MatrixType >& rVariable, const MatrixType& rValue, const ProcessInfo& rCurrentProcessInfo)
+void ConstitutiveLawImpl<TNodeType>::SetValue( const Variable<MatrixType >& rVariable, const MatrixType& rValue, const ProcessInfo& rCurrentProcessInfo )
 {}
 
 /**
@@ -364,7 +364,7 @@ void ConstitutiveLawImpl<TNodeType>::SetValue(const Variable<MatrixType >& rVari
  * @param rCurrentProcessInfo the process info
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::SetValue(const Variable<array_1d<DataType, 3> >& rVariable, const array_1d<DataType, 3>& rValue, const ProcessInfo& rCurrentProcessInfo)
+void ConstitutiveLawImpl<TNodeType>::SetValue( const Variable<array_1d<DataType, 3> >& rVariable, const array_1d<DataType, 3>& rValue, const ProcessInfo& rCurrentProcessInfo )
 {}
 
 /**
@@ -374,7 +374,7 @@ void ConstitutiveLawImpl<TNodeType>::SetValue(const Variable<array_1d<DataType, 
  * @param rCurrentProcessInfo the process info
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::SetValue(const Variable<array_1d<DataType, 6> >& rVariable, const array_1d<DataType, 6>& rValue, const ProcessInfo& rCurrentProcessInfo)
+void ConstitutiveLawImpl<TNodeType>::SetValue( const Variable<array_1d<DataType, 6> >& rVariable, const array_1d<DataType, 6>& rValue, const ProcessInfo& rCurrentProcessInfo )
 {}
 
 /**
@@ -384,7 +384,7 @@ void ConstitutiveLawImpl<TNodeType>::SetValue(const Variable<array_1d<DataType, 
  * @param rCurrentProcessInfo the process info
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::SetValue(const Variable<std::string >& rVariable, const std::string& rValue, const ProcessInfo& rCurrentProcessInfo)
+void ConstitutiveLawImpl<TNodeType>::SetValue( const Variable<std::string >& rVariable, const std::string& rValue, const ProcessInfo& rCurrentProcessInfo )
 {}
 
 /**
@@ -394,7 +394,7 @@ void ConstitutiveLawImpl<TNodeType>::SetValue(const Variable<std::string >& rVar
  * @param rCurrentProcessInfo the process info
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::SetValue(const Variable<ConstitutiveLawImpl<TNodeType>::Pointer>& rVariable, ConstitutiveLawImpl<TNodeType>::Pointer rValue, const ProcessInfo& rCurrentProcessInfo)
+void ConstitutiveLawImpl<TNodeType>::SetValue( const Variable<ConstitutiveLawImpl<TNodeType>::Pointer>& rVariable, ConstitutiveLawImpl<TNodeType>::Pointer rValue, const ProcessInfo& rCurrentProcessInfo )
 {}
 
 /**
@@ -405,7 +405,7 @@ void ConstitutiveLawImpl<TNodeType>::SetValue(const Variable<ConstitutiveLawImpl
  * @param rValue output: the value of the specified variable
  */
 template<class TNodeType>
-bool& ConstitutiveLawImpl<TNodeType>::CalculateValue(Parameters& rParameterValues, const Variable<bool>& rThisVariable, bool& rValue)
+bool& ConstitutiveLawImpl<TNodeType>::CalculateValue( Parameters& rParameterValues, const Variable<bool>& rThisVariable, bool& rValue )
 {
     return rValue;
 }
@@ -418,7 +418,7 @@ bool& ConstitutiveLawImpl<TNodeType>::CalculateValue(Parameters& rParameterValue
  * @param rValue output: the value of the specified variable
  */
 template<class TNodeType>
-int& ConstitutiveLawImpl<TNodeType>::CalculateValue(Parameters& rParameterValues, const Variable<int>& rThisVariable, int& rValue)
+int& ConstitutiveLawImpl<TNodeType>::CalculateValue( Parameters& rParameterValues, const Variable<int>& rThisVariable, int& rValue )
 {
     return rValue;
 }
@@ -431,7 +431,7 @@ int& ConstitutiveLawImpl<TNodeType>::CalculateValue(Parameters& rParameterValues
  * @param rValue output: the value of the specified variable
  */
 template<class TNodeType>
-typename ConstitutiveLawImpl<TNodeType>::DataType& ConstitutiveLawImpl<TNodeType>::CalculateValue(Parameters& rParameterValues, const Variable<DataType>& rThisVariable, DataType& rValue)
+typename ConstitutiveLawImpl<TNodeType>::DataType& ConstitutiveLawImpl<TNodeType>::CalculateValue( Parameters& rParameterValues, const Variable<DataType>& rThisVariable, DataType& rValue )
 {
     return rValue;
 }
@@ -444,7 +444,7 @@ typename ConstitutiveLawImpl<TNodeType>::DataType& ConstitutiveLawImpl<TNodeType
  * @param rValue output: the value of the specified variable
  */
 template<class TNodeType>
-typename ConstitutiveLawImpl<TNodeType>::VectorType& ConstitutiveLawImpl<TNodeType>::CalculateValue(Parameters& rParameterValues, const Variable<VectorType>& rThisVariable, VectorType& rValue)
+typename ConstitutiveLawImpl<TNodeType>::VectorType& ConstitutiveLawImpl<TNodeType>::CalculateValue( Parameters& rParameterValues, const Variable<VectorType>& rThisVariable, VectorType& rValue )
 {
     return rValue;
 }
@@ -457,7 +457,7 @@ typename ConstitutiveLawImpl<TNodeType>::VectorType& ConstitutiveLawImpl<TNodeTy
  * @param rValue output: the value of the specified variable
  */
 template<class TNodeType>
-typename ConstitutiveLawImpl<TNodeType>::MatrixType& ConstitutiveLawImpl<TNodeType>::CalculateValue(Parameters& rParameterValues, const Variable<MatrixType>& rThisVariable, MatrixType& rValue)
+typename ConstitutiveLawImpl<TNodeType>::MatrixType& ConstitutiveLawImpl<TNodeType>::CalculateValue( Parameters& rParameterValues, const Variable<MatrixType>& rThisVariable, MatrixType& rValue )
 {
     return rValue;
 }
@@ -470,23 +470,23 @@ typename ConstitutiveLawImpl<TNodeType>::MatrixType& ConstitutiveLawImpl<TNodeTy
  * @param rValue output: the value of the specified variable
  */
 template<class TNodeType>
-array_1d<typename ConstitutiveLawImpl<TNodeType>::DataType, 3>& ConstitutiveLawImpl<TNodeType>::CalculateValue(Parameters& rParameterValues, const Variable<array_1d<DataType, 3> >& rVariable,
-        array_1d<DataType, 3>& rValue)
+array_1d<typename ConstitutiveLawImpl<TNodeType>::DataType, 3>& ConstitutiveLawImpl<TNodeType>::CalculateValue( Parameters& rParameterValues, const Variable<array_1d<DataType, 3> >& rVariable,
+        array_1d<DataType, 3>& rValue )
 {
     return rValue;
 }
 
 
-  /**
- * returns the value of a specified variable (array of 6 components)
- * @param rParameterValues the needed parameters for the CL calculation
- * @param rThisVariable the variable to be returned
- * @param rValue a reference to the returned value
- * @param rValue output: the value of the specified variable
- */
+/**
+* returns the value of a specified variable (array of 6 components)
+* @param rParameterValues the needed parameters for the CL calculation
+* @param rThisVariable the variable to be returned
+* @param rValue a reference to the returned value
+* @param rValue output: the value of the specified variable
+*/
 template<class TNodeType>
-array_1d<typename ConstitutiveLawImpl<TNodeType>::DataType, 6>& ConstitutiveLawImpl<TNodeType>::CalculateValue(Parameters& rParameterValues, const Variable<array_1d<DataType, 6> >& rVariable,
-        array_1d<DataType, 6>& rValue)
+array_1d<typename ConstitutiveLawImpl<TNodeType>::DataType, 6>& ConstitutiveLawImpl<TNodeType>::CalculateValue( Parameters& rParameterValues, const Variable<array_1d<DataType, 6> >& rVariable,
+        array_1d<DataType, 6>& rValue )
 {
     return rValue;
 }
@@ -500,9 +500,9 @@ array_1d<typename ConstitutiveLawImpl<TNodeType>::DataType, 6>& ConstitutiveLawI
  * no valid implementation is contained here.
  */
 template<class TNodeType>
-bool ConstitutiveLawImpl<TNodeType>::ValidateInput(const Properties& rMaterialProperties) const
+bool ConstitutiveLawImpl<TNodeType>::ValidateInput( const Properties& rMaterialProperties ) const
 {
-  return false;
+    return false;
 }
 
 /**
@@ -545,9 +545,9 @@ bool ConstitutiveLawImpl<TNodeType>::IsIncremental() const
  * @param rShapeFunctionsValues the shape functions values in the current integration point
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::InitializeMaterial(const Properties& rMaterialProperties,
+void ConstitutiveLawImpl<TNodeType>::InitializeMaterial( const Properties& rMaterialProperties,
         const GeometryType& rElementGeometry,
-        const Vector& rShapeFunctionsValues)
+        const Vector& rShapeFunctionsValues )
 {
 }
 
@@ -560,10 +560,10 @@ void ConstitutiveLawImpl<TNodeType>::InitializeMaterial(const Properties& rMater
  * @param the current ProcessInfo instance
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::InitializeSolutionStep(const Properties& rMaterialProperties,
+void ConstitutiveLawImpl<TNodeType>::InitializeSolutionStep( const Properties& rMaterialProperties,
         const GeometryType& rElementGeometry, //this is just to give the array of nodes
         const Vector& rShapeFunctionsValues,
-        const ProcessInfo& rCurrentProcessInfo)
+        const ProcessInfo& rCurrentProcessInfo )
 {
 }
 
@@ -576,10 +576,10 @@ void ConstitutiveLawImpl<TNodeType>::InitializeSolutionStep(const Properties& rM
  * @param the current ProcessInfo instance
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::FinalizeSolutionStep(const Properties& rMaterialProperties,
+void ConstitutiveLawImpl<TNodeType>::FinalizeSolutionStep( const Properties& rMaterialProperties,
         const GeometryType& rElementGeometry,
         const Vector& rShapeFunctionsValues,
-        const ProcessInfo& rCurrentProcessInfo)
+        const ProcessInfo& rCurrentProcessInfo )
 {
 }
 
@@ -592,10 +592,10 @@ void ConstitutiveLawImpl<TNodeType>::FinalizeSolutionStep(const Properties& rMat
  * @param the current ProcessInfo instance
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::InitializeNonLinearIteration(const Properties& rMaterialProperties,
+void ConstitutiveLawImpl<TNodeType>::InitializeNonLinearIteration( const Properties& rMaterialProperties,
         const GeometryType& rElementGeometry,
         const Vector& rShapeFunctionsValues,
-        const ProcessInfo& rCurrentProcessInfo)
+        const ProcessInfo& rCurrentProcessInfo )
 {
     KRATOS_ERROR << "Calling virtual function for InitializeNonLinearIteration";
 }
@@ -609,10 +609,10 @@ void ConstitutiveLawImpl<TNodeType>::InitializeNonLinearIteration(const Properti
  * @param the current ProcessInfo instance
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::FinalizeNonLinearIteration(const Properties& rMaterialProperties,
+void ConstitutiveLawImpl<TNodeType>::FinalizeNonLinearIteration( const Properties& rMaterialProperties,
         const GeometryType& rElementGeometry,
         const Vector& rShapeFunctionsValues,
-        const ProcessInfo& rCurrentProcessInfo)
+        const ProcessInfo& rCurrentProcessInfo )
 {
     KRATOS_ERROR << "Calling virtual function for FinalizeNonLinearIteration";
 }
@@ -623,24 +623,24 @@ void ConstitutiveLawImpl<TNodeType>::FinalizeNonLinearIteration(const Properties
  * @see StressMeasures
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::CalculateMaterialResponse(Parameters& rValues,const StressMeasure& rStressMeasure)
+void ConstitutiveLawImpl<TNodeType>::CalculateMaterialResponse( Parameters& rValues, const StressMeasure& rStressMeasure )
 {
-    switch(rStressMeasure)
+    switch ( rStressMeasure )
     {
     case StressMeasure_PK1:
-        CalculateMaterialResponsePK1(rValues);
+        CalculateMaterialResponsePK1( rValues );
         break;
 
     case StressMeasure_PK2:
-        CalculateMaterialResponsePK2(rValues);
+        CalculateMaterialResponsePK2( rValues );
         break;
 
     case StressMeasure_Kirchhoff:
-        CalculateMaterialResponseKirchhoff(rValues);
+        CalculateMaterialResponseKirchhoff( rValues );
         break;
 
     case StressMeasure_Cauchy:
-        CalculateMaterialResponseCauchy(rValues);
+        CalculateMaterialResponseCauchy( rValues );
         break;
 
     default:
@@ -654,9 +654,9 @@ void ConstitutiveLawImpl<TNodeType>::CalculateMaterialResponse(Parameters& rValu
  * @see Parameters
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::CalculateMaterialResponsePK1(Parameters& rValues)
+void ConstitutiveLawImpl<TNodeType>::CalculateMaterialResponsePK1( Parameters& rValues )
 {
-  KRATOS_ERROR << "Calling virtual function for CalculateMaterialResponsePK1";
+    KRATOS_ERROR << "Calling virtual function for CalculateMaterialResponsePK1";
 }
 
 /**
@@ -664,9 +664,9 @@ void ConstitutiveLawImpl<TNodeType>::CalculateMaterialResponsePK1(Parameters& rV
  * @see Parameters
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::CalculateMaterialResponsePK2(Parameters& rValues)
+void ConstitutiveLawImpl<TNodeType>::CalculateMaterialResponsePK2( Parameters& rValues )
 {
-  KRATOS_ERROR << "Calling virtual function for CalculateMaterialResponsePK2";
+    KRATOS_ERROR << "Calling virtual function for CalculateMaterialResponsePK2";
 }
 
 /**
@@ -674,7 +674,7 @@ void ConstitutiveLawImpl<TNodeType>::CalculateMaterialResponsePK2(Parameters& rV
  * @see Parameters
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::CalculateMaterialResponseKirchhoff(Parameters& rValues)
+void ConstitutiveLawImpl<TNodeType>::CalculateMaterialResponseKirchhoff( Parameters& rValues )
 {
     KRATOS_ERROR << "Calling virtual function for CalculateMaterialResponseKirchhoff";
 }
@@ -684,7 +684,7 @@ void ConstitutiveLawImpl<TNodeType>::CalculateMaterialResponseKirchhoff(Paramete
  * @see Parameters
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::CalculateMaterialResponseCauchy(Parameters& rValues)
+void ConstitutiveLawImpl<TNodeType>::CalculateMaterialResponseCauchy( Parameters& rValues )
 {
     KRATOS_ERROR << "Calling virtual function for CalculateMaterialResponseCauchy";
 }
@@ -694,7 +694,7 @@ void ConstitutiveLawImpl<TNodeType>::CalculateMaterialResponseCauchy(Parameters&
  * @see Parameters
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::CalculateStressResponse(Parameters& rValues, VectorType& rInternalVariables)
+void ConstitutiveLawImpl<TNodeType>::CalculateStressResponse( Parameters& rValues, VectorType& rInternalVariables )
 {
     KRATOS_ERROR << "Calling virtual function for CalculateMaterialResponseCauchy";
 }
@@ -705,23 +705,23 @@ void ConstitutiveLawImpl<TNodeType>::CalculateStressResponse(Parameters& rValues
  * @see StressMeasures
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::InitializeMaterialResponse(Parameters& rValues,const StressMeasure& rStressMeasure)
+void ConstitutiveLawImpl<TNodeType>::InitializeMaterialResponse( Parameters& rValues, const StressMeasure& rStressMeasure )
 {
-    switch(rStressMeasure)
+    switch ( rStressMeasure )
     {
-        case StressMeasure_PK1:         InitializeMaterialResponsePK1(rValues);
+    case StressMeasure_PK1:         InitializeMaterialResponsePK1( rValues );
         break;
 
-        case StressMeasure_PK2:         InitializeMaterialResponsePK2(rValues);
+    case StressMeasure_PK2:         InitializeMaterialResponsePK2( rValues );
         break;
 
-        case StressMeasure_Kirchhoff: 	InitializeMaterialResponseKirchhoff(rValues);
+    case StressMeasure_Kirchhoff: 	InitializeMaterialResponseKirchhoff( rValues );
         break;
 
-        case StressMeasure_Cauchy:	    InitializeMaterialResponseCauchy(rValues);
+    case StressMeasure_Cauchy:	    InitializeMaterialResponseCauchy( rValues );
         break;
 
-        default:
+    default:
         KRATOS_ERROR << " Stress Measure not Defined ";
         break;
     }
@@ -732,11 +732,11 @@ void ConstitutiveLawImpl<TNodeType>::InitializeMaterialResponse(Parameters& rVal
  * @see Parameters
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::InitializeMaterialResponsePK1(Parameters& rValues)
+void ConstitutiveLawImpl<TNodeType>::InitializeMaterialResponsePK1( Parameters& rValues )
 {
-    if (this->RequiresInitializeMaterialResponse())
+    if ( this->RequiresInitializeMaterialResponse() )
         KRATOS_ERROR << "Calling virtual function for InitializeMaterialResponsePK1. "
-            "Please implement InitializeMaterialResponsePK1 or RequiresInitializeMaterialResponse in case this CL does not require it";
+                        "Please implement InitializeMaterialResponsePK1 or RequiresInitializeMaterialResponse in case this CL does not require it";
 }
 
 /**
@@ -744,11 +744,11 @@ void ConstitutiveLawImpl<TNodeType>::InitializeMaterialResponsePK1(Parameters& r
  * @see Parameters
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::InitializeMaterialResponsePK2(Parameters& rValues)
+void ConstitutiveLawImpl<TNodeType>::InitializeMaterialResponsePK2( Parameters& rValues )
 {
-    if (this->RequiresInitializeMaterialResponse())
+    if ( this->RequiresInitializeMaterialResponse() )
         KRATOS_ERROR << "Calling virtual function for InitializeMaterialResponsePK2. "
-            "Please implement InitializeMaterialResponsePK2 or RequiresInitializeMaterialResponse in case this CL does not require it";
+                        "Please implement InitializeMaterialResponsePK2 or RequiresInitializeMaterialResponse in case this CL does not require it";
 }
 
 /**
@@ -756,11 +756,11 @@ void ConstitutiveLawImpl<TNodeType>::InitializeMaterialResponsePK2(Parameters& r
  * @see Parameters
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::InitializeMaterialResponseKirchhoff(Parameters& rValues)
+void ConstitutiveLawImpl<TNodeType>::InitializeMaterialResponseKirchhoff( Parameters& rValues )
 {
-    if (this->RequiresInitializeMaterialResponse())
+    if ( this->RequiresInitializeMaterialResponse() )
         KRATOS_ERROR << "Calling virtual function for InitializeMaterialResponseKirchhoff. "
-            "Please implement InitializeMaterialResponseKirchhoff or RequiresInitializeMaterialResponse in case this CL does not require it";
+                        "Please implement InitializeMaterialResponseKirchhoff or RequiresInitializeMaterialResponse in case this CL does not require it";
 }
 
 /**
@@ -768,11 +768,11 @@ void ConstitutiveLawImpl<TNodeType>::InitializeMaterialResponseKirchhoff(Paramet
  * @see Parameters
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::InitializeMaterialResponseCauchy(Parameters& rValues)
+void ConstitutiveLawImpl<TNodeType>::InitializeMaterialResponseCauchy( Parameters& rValues )
 {
-    if (this->RequiresInitializeMaterialResponse())
+    if ( this->RequiresInitializeMaterialResponse() )
         KRATOS_ERROR << "Calling virtual function for InitializeMaterialResponseCauchy. "
-            "Please implement InitializeMaterialResponseCauchy or RequiresInitializeMaterialResponse in case this CL does not require it";
+                        "Please implement InitializeMaterialResponseCauchy or RequiresInitializeMaterialResponse in case this CL does not require it";
 }
 
 /**
@@ -781,24 +781,24 @@ void ConstitutiveLawImpl<TNodeType>::InitializeMaterialResponseCauchy(Parameters
  * @see StressMeasures
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::FinalizeMaterialResponse(Parameters& rValues,const StressMeasure& rStressMeasure)
+void ConstitutiveLawImpl<TNodeType>::FinalizeMaterialResponse( Parameters& rValues, const StressMeasure& rStressMeasure )
 {
-    switch(rStressMeasure)
+    switch ( rStressMeasure )
     {
     case StressMeasure_PK1:
-        FinalizeMaterialResponsePK1(rValues);
+        FinalizeMaterialResponsePK1( rValues );
         break;
 
     case StressMeasure_PK2:
-        FinalizeMaterialResponsePK2(rValues);
+        FinalizeMaterialResponsePK2( rValues );
         break;
 
     case StressMeasure_Kirchhoff:
-        FinalizeMaterialResponseKirchhoff(rValues);
+        FinalizeMaterialResponseKirchhoff( rValues );
         break;
 
     case StressMeasure_Cauchy:
-        FinalizeMaterialResponseCauchy(rValues);
+        FinalizeMaterialResponseCauchy( rValues );
         break;
 
     default:
@@ -812,9 +812,9 @@ void ConstitutiveLawImpl<TNodeType>::FinalizeMaterialResponse(Parameters& rValue
  * @see Parameters
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::FinalizeMaterialResponsePK1(Parameters& rValues)
+void ConstitutiveLawImpl<TNodeType>::FinalizeMaterialResponsePK1( Parameters& rValues )
 {
-  KRATOS_ERROR << "Calling virtual function for FinalizeMaterialResponsePK1";
+    KRATOS_ERROR << "Calling virtual function for FinalizeMaterialResponsePK1";
 }
 
 /**
@@ -822,9 +822,9 @@ void ConstitutiveLawImpl<TNodeType>::FinalizeMaterialResponsePK1(Parameters& rVa
  * @see Parameters
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::FinalizeMaterialResponsePK2(Parameters& rValues)
+void ConstitutiveLawImpl<TNodeType>::FinalizeMaterialResponsePK2( Parameters& rValues )
 {
-  KRATOS_ERROR << "Calling virtual function for FinalizeMaterialResponsePK2";
+    KRATOS_ERROR << "Calling virtual function for FinalizeMaterialResponsePK2";
 }
 
 /**
@@ -832,9 +832,9 @@ void ConstitutiveLawImpl<TNodeType>::FinalizeMaterialResponsePK2(Parameters& rVa
  * @see Parameters
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::FinalizeMaterialResponseKirchhoff(Parameters& rValues)
+void ConstitutiveLawImpl<TNodeType>::FinalizeMaterialResponseKirchhoff( Parameters& rValues )
 {
-  KRATOS_ERROR << "Calling virtual function for FinalizeMaterialResponseKirchhoff";
+    KRATOS_ERROR << "Calling virtual function for FinalizeMaterialResponseKirchhoff";
 }
 
 /**
@@ -842,9 +842,9 @@ void ConstitutiveLawImpl<TNodeType>::FinalizeMaterialResponseKirchhoff(Parameter
  * @see Parameters
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::FinalizeMaterialResponseCauchy(Parameters& rValues)
+void ConstitutiveLawImpl<TNodeType>::FinalizeMaterialResponseCauchy( Parameters& rValues )
 {
-  KRATOS_ERROR << "Calling virtual function for FinalizeMaterialResponseCauchy";
+    KRATOS_ERROR << "Calling virtual function for FinalizeMaterialResponseCauchy";
 }
 
 /**
@@ -856,9 +856,9 @@ void ConstitutiveLawImpl<TNodeType>::FinalizeMaterialResponseCauchy(Parameters& 
  * @param the current ProcessInfo instance
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::ResetMaterial(const Properties& rMaterialProperties,
-                                                   const GeometryType& rElementGeometry,
-                                                   const Vector& rShapeFunctionsValues)
+void ConstitutiveLawImpl<TNodeType>::ResetMaterial( const Properties& rMaterialProperties,
+        const GeometryType& rElementGeometry,
+        const Vector& rShapeFunctionsValues )
 {
     KRATOS_ERROR << "Calling virtual function for ResetMaterial";
 }
@@ -873,11 +873,11 @@ void ConstitutiveLawImpl<TNodeType>::ResetMaterial(const Properties& rMaterialPr
  * @param the current ProcessInfo instance
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::RewindMaterial(const Properties& rMaterialProperties,
-                                                    const GeometryType& rElementGeometry,
-                                                    const Vector& rShapeFunctionsValues)
+void ConstitutiveLawImpl<TNodeType>::RewindMaterial( const Properties& rMaterialProperties,
+        const GeometryType& rElementGeometry,
+        const Vector& rShapeFunctionsValues )
 {
-    KRATOS_ERROR << "Constitutive law " << typeid(*this).name() << " tries to call virtual function for RewindMaterial";
+    KRATOS_ERROR << "Constitutive law " << typeid( *this ).name() << " tries to call virtual function for RewindMaterial";
 }
 
 /**
@@ -890,13 +890,13 @@ void ConstitutiveLawImpl<TNodeType>::RewindMaterial(const Properties& rMaterialP
  */
 template<class TNodeType>
 typename ConstitutiveLawImpl<TNodeType>::VectorType& ConstitutiveLawImpl<TNodeType>::TransformStrains(
-        VectorType& rStrainVector, const MatrixType& rF, StrainMeasure rStrainInitial, StrainMeasure rStrainFinal) const
+    VectorType& rStrainVector, const MatrixType& rF, StrainMeasure rStrainInitial, StrainMeasure rStrainFinal ) const
 {
-    switch(rStrainInitial)
+    switch ( rStrainInitial )
     {
     case StrainMeasure_GreenLagrange:
 
-        switch(rStrainFinal)
+        switch ( rStrainFinal )
         {
         case StrainMeasure_GreenLagrange:
             break;
@@ -905,7 +905,7 @@ typename ConstitutiveLawImpl<TNodeType>::VectorType& ConstitutiveLawImpl<TNodeTy
         {
             MatrixType StrainMatrix = MathUtils<DataType>::StrainVectorToTensor( rStrainVector );
 
-            CoVariantPushForward (StrainMatrix, rF);  //Almansi
+            CoVariantPushForward( StrainMatrix, rF ); //Almansi
 
             rStrainVector = MathUtils<DataType>::StrainTensorToVector( StrainMatrix, rStrainVector.size() );
         }
@@ -928,13 +928,13 @@ typename ConstitutiveLawImpl<TNodeType>::VectorType& ConstitutiveLawImpl<TNodeTy
 
     case StrainMeasure_Almansi:
 
-        switch(rStrainFinal)
+        switch ( rStrainFinal )
         {
         case StrainMeasure_GreenLagrange:
         {
             MatrixType StrainMatrix = MathUtils<DataType>::StrainVectorToTensor( rStrainVector );
 
-            CoVariantPullBack (StrainMatrix,rF);  //GreenLagrange
+            CoVariantPullBack( StrainMatrix, rF ); //GreenLagrange
 
             rStrainVector = MathUtils<DataType>::StrainTensorToVector( StrainMatrix, rStrainVector.size() );
         }
@@ -984,13 +984,13 @@ typename ConstitutiveLawImpl<TNodeType>::VectorType& ConstitutiveLawImpl<TNodeTy
  */
 template<class TNodeType>
 typename ConstitutiveLawImpl<TNodeType>::MatrixType& ConstitutiveLawImpl<TNodeType>::TransformStresses(
-        MatrixType& rStressMatrix, const MatrixType& rF, const DataType& rdetF, StressMeasure rStressInitial, StressMeasure rStressFinal) const
+    MatrixType& rStressMatrix, const MatrixType& rF, const DataType& rdetF, StressMeasure rStressInitial, StressMeasure rStressFinal ) const
 {
     VectorType StressVector;
 
     StressVector = MathUtils<DataType>::StressTensorToVector( rStressMatrix );
 
-    StressVector=TransformStresses(StressVector,rF,rdetF,rStressInitial,rStressFinal);
+    StressVector = TransformStresses( StressVector, rF, rdetF, rStressInitial, rStressFinal );
 
     rStressMatrix = MathUtils<DataType>::StressVectorToTensor( StressVector );
 
@@ -1007,36 +1007,36 @@ typename ConstitutiveLawImpl<TNodeType>::MatrixType& ConstitutiveLawImpl<TNodeTy
  */
 template<class TNodeType>
 typename ConstitutiveLawImpl<TNodeType>::VectorType& ConstitutiveLawImpl<TNodeType>::TransformStresses(
-        VectorType& rStressVector, const MatrixType& rF, const DataType& rdetF, StressMeasure rStressInitial, StressMeasure rStressFinal) const
+    VectorType& rStressVector, const MatrixType& rF, const DataType& rdetF, StressMeasure rStressInitial, StressMeasure rStressFinal ) const
 {
-    switch(rStressInitial)
+    switch ( rStressInitial )
     {
     case StressMeasure_PK1:
 
-        TransformPK1Stresses(rStressVector,rF,rdetF,rStressFinal);
+        TransformPK1Stresses( rStressVector, rF, rdetF, rStressFinal );
 
         break;
 
     case StressMeasure_PK2:
 
-        TransformPK2Stresses(rStressVector,rF,rdetF,rStressFinal);
+        TransformPK2Stresses( rStressVector, rF, rdetF, rStressFinal );
 
         break;
 
     case StressMeasure_Kirchhoff:
 
-        TransformKirchhoffStresses(rStressVector,rF,rdetF,rStressFinal);
+        TransformKirchhoffStresses( rStressVector, rF, rdetF, rStressFinal );
 
         break;
 
     case StressMeasure_Cauchy:
 
-        TransformCauchyStresses(rStressVector,rF,rdetF,rStressFinal);
+        TransformCauchyStresses( rStressVector, rF, rdetF, rStressFinal );
 
         break;
 
     default:
-        KRATOS_ERROR <<"INITIAL STRESS NOT DEFINED in StressTransformation";
+        KRATOS_ERROR << "INITIAL STRESS NOT DEFINED in StressTransformation";
         break;
     }
 
@@ -1052,11 +1052,11 @@ typename ConstitutiveLawImpl<TNodeType>::VectorType& ConstitutiveLawImpl<TNodeTy
  */
 template<class TNodeType>
 typename ConstitutiveLawImpl<TNodeType>::VectorType& ConstitutiveLawImpl<TNodeType>::TransformPK1Stresses(
-        VectorType& rStressVector, const MatrixType& rF, const DataType& rdetF, StressMeasure rStressFinal) const
+    VectorType& rStressVector, const MatrixType& rF, const DataType& rdetF, StressMeasure rStressFinal ) const
 {
     unsigned int size = rF.size1(); //WorkingSpaceDimension();
 
-    switch(rStressFinal)
+    switch ( rStressFinal )
     {
     case StressMeasure_PK1:
         break;
@@ -1064,7 +1064,7 @@ typename ConstitutiveLawImpl<TNodeType>::VectorType& ConstitutiveLawImpl<TNodeTy
     case StressMeasure_PK2:
     {
         MatrixType StressMatrix = MathUtils<DataType>::StressVectorToTensor( rStressVector );
-        MatrixType InvF ( size, size );
+        MatrixType InvF( size, size );
         DataType J;
         MathUtils<DataType>::InvertMatrix( rF, InvF, J );
 
@@ -1077,13 +1077,13 @@ typename ConstitutiveLawImpl<TNodeType>::VectorType& ConstitutiveLawImpl<TNodeTy
     case StressMeasure_Kirchhoff:
     {
         MatrixType StressMatrix = MathUtils<DataType>::StressVectorToTensor( rStressVector );
-        MatrixType InvF ( size, size );
+        MatrixType InvF( size, size );
         DataType J;
         MathUtils<DataType>::InvertMatrix( rF, InvF, J );
 
         StressMatrix = prod( InvF, StressMatrix ); //PK2
 
-        ContraVariantPushForward (StressMatrix,rF); //Kirchhoff
+        ContraVariantPushForward( StressMatrix, rF ); //Kirchhoff
 
         rStressVector = MathUtils<DataType>::StressTensorToVector( StressMatrix, rStressVector.size() );
     }
@@ -1092,22 +1092,22 @@ typename ConstitutiveLawImpl<TNodeType>::VectorType& ConstitutiveLawImpl<TNodeTy
     case StressMeasure_Cauchy:
     {
         MatrixType StressMatrix = MathUtils<DataType>::StressVectorToTensor( rStressVector );
-        MatrixType InvF ( size, size );
+        MatrixType InvF( size, size );
         DataType J;
         MathUtils<DataType>::InvertMatrix( rF, InvF, J );
 
         StressMatrix = prod( InvF, StressMatrix ); //PK2
 
-        ContraVariantPushForward (StressMatrix,rF); //Kirchhoff
+        ContraVariantPushForward( StressMatrix, rF ); //Kirchhoff
 
-        StressMatrix/=J; //Cauchy
+        StressMatrix /= J; //Cauchy
 
         rStressVector = MathUtils<DataType>::StressTensorToVector( StressMatrix, rStressVector.size() );
     }
     break;
 
     default:
-        KRATOS_ERROR <<"FINAL STRESS NOT DEFINED in StressTransformation";
+        KRATOS_ERROR << "FINAL STRESS NOT DEFINED in StressTransformation";
         break;
     }
 
@@ -1123,9 +1123,9 @@ typename ConstitutiveLawImpl<TNodeType>::VectorType& ConstitutiveLawImpl<TNodeTy
  */
 template<class TNodeType>
 typename ConstitutiveLawImpl<TNodeType>::VectorType& ConstitutiveLawImpl<TNodeType>::TransformPK2Stresses(
-        VectorType& rStressVector, const MatrixType& rF, const DataType& rdetF, StressMeasure rStressFinal) const
+    VectorType& rStressVector, const MatrixType& rF, const DataType& rdetF, StressMeasure rStressFinal ) const
 {
-    switch(rStressFinal)
+    switch ( rStressFinal )
     {
     case StressMeasure_PK1:
     {
@@ -1144,7 +1144,7 @@ typename ConstitutiveLawImpl<TNodeType>::VectorType& ConstitutiveLawImpl<TNodeTy
     {
         MatrixType StressMatrix = MathUtils<DataType>::StressVectorToTensor( rStressVector );
 
-        ContraVariantPushForward (StressMatrix,rF); //Kirchhoff
+        ContraVariantPushForward( StressMatrix, rF ); //Kirchhoff
 
         rStressVector = MathUtils<DataType>::StressTensorToVector( StressMatrix, rStressVector.size() );
     }
@@ -1154,10 +1154,12 @@ typename ConstitutiveLawImpl<TNodeType>::VectorType& ConstitutiveLawImpl<TNodeTy
     {
         MatrixType StressMatrix = MathUtils<DataType>::StressVectorToTensor( rStressVector );
 
-        ContraVariantPushForward (StressMatrix,rF); //Kirchhoff
+        ContraVariantPushForward( StressMatrix, rF ); //Kirchhoff
 
-        if(std::abs(rdetF) != 0)
-            StressMatrix /= rdetF; //Cauchy
+        if ( std::abs( rdetF ) != 0 )
+        {
+            StressMatrix /= rdetF;    //Cauchy
+        }
 
         rStressVector = MathUtils<DataType>::StressTensorToVector( StressMatrix, rStressVector.size() );
 
@@ -1165,7 +1167,7 @@ typename ConstitutiveLawImpl<TNodeType>::VectorType& ConstitutiveLawImpl<TNodeTy
     break;
 
     default:
-        KRATOS_ERROR <<"FINAL STRESS NOT DEFINED in StressTransformation";
+        KRATOS_ERROR << "FINAL STRESS NOT DEFINED in StressTransformation";
         break;
     }
 
@@ -1181,15 +1183,15 @@ typename ConstitutiveLawImpl<TNodeType>::VectorType& ConstitutiveLawImpl<TNodeTy
  */
 template<class TNodeType>
 typename ConstitutiveLawImpl<TNodeType>::VectorType& ConstitutiveLawImpl<TNodeType>::TransformKirchhoffStresses(
-        VectorType& rStressVector, const MatrixType& rF, const DataType& rdetF, StressMeasure rStressFinal) const
+    VectorType& rStressVector, const MatrixType& rF, const DataType& rdetF, StressMeasure rStressFinal ) const
 {
-    switch(rStressFinal)
+    switch ( rStressFinal )
     {
     case StressMeasure_PK1:
     {
         MatrixType StressMatrix = MathUtils<DataType>::StressVectorToTensor( rStressVector );
 
-        ContraVariantPullBack (StressMatrix,rF);  //PK2
+        ContraVariantPullBack( StressMatrix, rF ); //PK2
 
         StressMatrix = prod( rF, StressMatrix ); //PK1
 
@@ -1201,7 +1203,7 @@ typename ConstitutiveLawImpl<TNodeType>::VectorType& ConstitutiveLawImpl<TNodeTy
     {
         MatrixType StressMatrix = MathUtils<DataType>::StressVectorToTensor( rStressVector );
 
-        ContraVariantPullBack (StressMatrix,rF);  //PK2
+        ContraVariantPullBack( StressMatrix, rF ); //PK2
 
         rStressVector = MathUtils<DataType>::StressTensorToVector( StressMatrix, rStressVector.size() );
     }
@@ -1212,13 +1214,15 @@ typename ConstitutiveLawImpl<TNodeType>::VectorType& ConstitutiveLawImpl<TNodeTy
 
     case StressMeasure_Cauchy:
     {
-        if(std::abs(rdetF) != 0)
-            rStressVector/=rdetF; //Cauchy
+        if ( std::abs( rdetF ) != 0 )
+        {
+            rStressVector /= rdetF;    //Cauchy
+        }
     }
     break;
 
     default:
-        KRATOS_ERROR <<"FINAL STRESS NOT DEFINED in StressTransformation";
+        KRATOS_ERROR << "FINAL STRESS NOT DEFINED in StressTransformation";
         break;
     }
 
@@ -1234,18 +1238,18 @@ typename ConstitutiveLawImpl<TNodeType>::VectorType& ConstitutiveLawImpl<TNodeTy
  */
 template<class TNodeType>
 typename ConstitutiveLawImpl<TNodeType>::VectorType& ConstitutiveLawImpl<TNodeType>::TransformCauchyStresses(
-        VectorType& rStressVector, const MatrixType& rF, const DataType& rdetF, StressMeasure rStressFinal) const
+    VectorType& rStressVector, const MatrixType& rF, const DataType& rdetF, StressMeasure rStressFinal ) const
 {
 
-    switch(rStressFinal)
+    switch ( rStressFinal )
     {
     case StressMeasure_PK1:
     {
-        rStressVector*=rdetF; //Kirchhoff
+        rStressVector *= rdetF; //Kirchhoff
 
         MatrixType StressMatrix = MathUtils<DataType>::StressVectorToTensor( rStressVector );
 
-        ContraVariantPullBack (StressMatrix,rF);  //PK2
+        ContraVariantPullBack( StressMatrix, rF ); //PK2
 
         StressMatrix = prod( rF, StressMatrix ); //PK1
 
@@ -1255,11 +1259,11 @@ typename ConstitutiveLawImpl<TNodeType>::VectorType& ConstitutiveLawImpl<TNodeTy
 
     case StressMeasure_PK2:
     {
-        rStressVector*=rdetF; //Kirchhoff
+        rStressVector *= rdetF; //Kirchhoff
 
         MatrixType StressMatrix = MathUtils<DataType>::StressVectorToTensor( rStressVector );
 
-        ContraVariantPullBack (StressMatrix,rF);  //PK2
+        ContraVariantPullBack( StressMatrix, rF ); //PK2
 
         rStressVector = MathUtils<DataType>::StressTensorToVector( StressMatrix, rStressVector.size() );
     }
@@ -1267,7 +1271,7 @@ typename ConstitutiveLawImpl<TNodeType>::VectorType& ConstitutiveLawImpl<TNodeTy
 
     case StressMeasure_Kirchhoff:
 
-        rStressVector*=rdetF; //Kirchhoff
+        rStressVector *= rdetF; //Kirchhoff
 
         break;
 
@@ -1275,7 +1279,7 @@ typename ConstitutiveLawImpl<TNodeType>::VectorType& ConstitutiveLawImpl<TNodeTy
         break;
 
     default:
-        KRATOS_ERROR <<"FINAL STRESS NOT DEFINED in StressTransformation";
+        KRATOS_ERROR << "FINAL STRESS NOT DEFINED in StressTransformation";
         break;
     }
 
@@ -1292,15 +1296,15 @@ typename ConstitutiveLawImpl<TNodeType>::VectorType& ConstitutiveLawImpl<TNodeTy
  * This method performs a pull-back of the constitutive matrix
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::PullBackConstitutiveMatrix ( MatrixType& rConstitutiveMatrix, const MatrixType& rF ) const
+void ConstitutiveLawImpl<TNodeType>::PullBackConstitutiveMatrix( MatrixType& rConstitutiveMatrix, const MatrixType& rF ) const
 {
     MatrixType OriginalConstitutiveMatrix = rConstitutiveMatrix;
 
     rConstitutiveMatrix.clear();
 
-    MatrixType InverseF ( 3, 3 );
+    MatrixType InverseF( 3, 3 );
     DataType detF = 0;
-    MathUtils<DataType>::InvertMatrix( rF, InverseF, detF);
+    MathUtils<DataType>::InvertMatrix( rF, InverseF, detF );
 
     ConstitutiveMatrixTransformation( rConstitutiveMatrix, OriginalConstitutiveMatrix, InverseF );
 }
@@ -1323,7 +1327,7 @@ void ConstitutiveLawImpl<TNodeType>::PushForwardConstitutiveMatrix( MatrixType& 
  * @param rFeatures
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::GetLawFeatures(Features& rFeatures) const
+void ConstitutiveLawImpl<TNodeType>::GetLawFeatures( Features& rFeatures ) const
 {
     KRATOS_ERROR << "Calling virtual function for GetConstitutiveLawFeatures";
 }
@@ -1338,14 +1342,13 @@ void ConstitutiveLawImpl<TNodeType>::GetLawFeatures(Features& rFeatures) const
  * @return
  */
 template<class TNodeType>
-int ConstitutiveLawImpl<TNodeType>::Check(const Properties& rMaterialProperties,
-                                          const GeometryType& rElementGeometry,
-                                          const ProcessInfo& rCurrentProcessInfo) const
+int ConstitutiveLawImpl<TNodeType>::Check( const Properties& rMaterialProperties,
+        const GeometryType& rElementGeometry,
+        const ProcessInfo& rCurrentProcessInfo ) const
 {
     KRATOS_TRY
-
     return 0;
-    KRATOS_CATCH("");
+    KRATOS_CATCH( "" );
 }
 
 
@@ -1356,10 +1359,10 @@ int ConstitutiveLawImpl<TNodeType>::Check(const Properties& rMaterialProperties,
  * i.e. 2nd PK stress to Kirchhoff stress
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::ContraVariantPushForward( MatrixType& rMatrix, const MatrixType& rF) const //i.e. 2nd PK stress to Kirchhoff stress
+void ConstitutiveLawImpl<TNodeType>::ContraVariantPushForward( MatrixType& rMatrix, const MatrixType& rF ) const //i.e. 2nd PK stress to Kirchhoff stress
 {
     unsigned int size = rF.size1(); //WorkingSpaceDimension();
-    MatrixType temp ( size, size );
+    MatrixType temp( size, size );
 
     noalias( temp )     = prod( rF, rMatrix );
     noalias( rMatrix )  = prod( temp, trans( rF ) );
@@ -1371,14 +1374,14 @@ void ConstitutiveLawImpl<TNodeType>::ContraVariantPushForward( MatrixType& rMatr
  * i.e. Kirchhoff stress to 2nd PK stress
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::ContraVariantPullBack( MatrixType& rMatrix, const MatrixType& rF) const //i.e. Kirchhoff stress to 2nd PK stress
+void ConstitutiveLawImpl<TNodeType>::ContraVariantPullBack( MatrixType& rMatrix, const MatrixType& rF ) const //i.e. Kirchhoff stress to 2nd PK stress
 {
     unsigned int size = rF.size1(); //WorkingSpaceDimension();
-    MatrixType InvF ( size, size );
+    MatrixType InvF( size, size );
     DataType J;
     MathUtils<DataType>::InvertMatrix( rF, InvF, J );
 
-    MatrixType temp ( size, size );
+    MatrixType temp( size, size );
 
     noalias( temp )    = prod( InvF, rMatrix );
     noalias( rMatrix ) = prod( temp, trans( InvF ) );
@@ -1389,14 +1392,14 @@ void ConstitutiveLawImpl<TNodeType>::ContraVariantPullBack( MatrixType& rMatrix,
  * i.e. Green-Lagrange strain to Almansi strain
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::CoVariantPushForward( MatrixType& rMatrix, const MatrixType& rF) const //i.e. Green-Lagrange strain to Almansi strain
+void ConstitutiveLawImpl<TNodeType>::CoVariantPushForward( MatrixType& rMatrix, const MatrixType& rF ) const //i.e. Green-Lagrange strain to Almansi strain
 {
     unsigned int size = rF.size1(); //WorkingSpaceDimension();
-    MatrixType InvF ( size, size );
+    MatrixType InvF( size, size );
     DataType J;
     MathUtils<DataType>::InvertMatrix( rF, InvF, J );
 
-    MatrixType temp ( size, size );
+    MatrixType temp( size, size );
 
     noalias( temp )     = prod( trans( InvF ), rMatrix );
     noalias( rMatrix )  = prod( temp, InvF );
@@ -1407,10 +1410,10 @@ void ConstitutiveLawImpl<TNodeType>::CoVariantPushForward( MatrixType& rMatrix, 
  * i.e. Almansi strain to Green-Lagrange strain
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::CoVariantPullBack( MatrixType& rMatrix, const MatrixType& rF) const //i.e. Almansi strain to Green-Lagrange strain
+void ConstitutiveLawImpl<TNodeType>::CoVariantPullBack( MatrixType& rMatrix, const MatrixType& rF ) const //i.e. Almansi strain to Green-Lagrange strain
 {
     unsigned int size = rF.size1(); //WorkingSpaceDimension();
-    MatrixType temp ( size, size );
+    MatrixType temp( size, size );
 
     noalias( temp )     = prod( trans( rF ), rMatrix );
     noalias( rMatrix )  = prod( temp, rF );
@@ -1420,42 +1423,42 @@ void ConstitutiveLawImpl<TNodeType>::CoVariantPullBack( MatrixType& rMatrix, con
  * This method performs a pull-back or a push-forward between two constitutive matrices
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::ConstitutiveMatrixTransformation (
-        MatrixType& rConstitutiveMatrix, const MatrixType& rOriginalConstitutiveMatrix, const MatrixType&  rF ) const
+void ConstitutiveLawImpl<TNodeType>::ConstitutiveMatrixTransformation(
+    MatrixType& rConstitutiveMatrix, const MatrixType& rOriginalConstitutiveMatrix, const MatrixType&  rF ) const
 {
     unsigned int size = rOriginalConstitutiveMatrix.size1();
-    if( size == 6 )
+    if ( size == 6 )
     {
-        for(unsigned int i=0; i<6; i++)
+        for ( unsigned int i = 0; i < 6; i++ )
         {
-            for(unsigned int j=0; j<6; j++)
+            for ( unsigned int j = 0; j < 6; j++ )
             {
-                rConstitutiveMatrix( i, j ) = TransformConstitutiveComponent(rConstitutiveMatrix( i, j ), rOriginalConstitutiveMatrix, rF,
-                                              this->msIndexVoigt3D6C[i][0], this->msIndexVoigt3D6C[i][1], this->msIndexVoigt3D6C[j][0], this->msIndexVoigt3D6C[j][1]);
+                rConstitutiveMatrix( i, j ) = TransformConstitutiveComponent( rConstitutiveMatrix( i, j ), rOriginalConstitutiveMatrix, rF,
+                    this->msIndexVoigt3D6C[i][0], this->msIndexVoigt3D6C[i][1], this->msIndexVoigt3D6C[j][0], this->msIndexVoigt3D6C[j][1] );
             }
 
         }
     }
-    else if( size == 4 )
+    else if ( size == 4 )
     {
-        for(unsigned int i=0; i<4; i++)
+        for ( unsigned int i = 0; i < 4; i++ )
         {
-            for(unsigned int j=0; j<4; j++)
+            for ( unsigned int j = 0; j < 4; j++ )
             {
-                rConstitutiveMatrix( i, j ) = TransformConstitutiveComponent(rConstitutiveMatrix( i, j ), rOriginalConstitutiveMatrix, rF,
-                                              this->msIndexVoigt2D4C[i][0], this->msIndexVoigt2D4C[i][1], this->msIndexVoigt2D4C[j][0], this->msIndexVoigt2D4C[j][1]);
+                rConstitutiveMatrix( i, j ) = TransformConstitutiveComponent( rConstitutiveMatrix( i, j ), rOriginalConstitutiveMatrix, rF,
+                    this->msIndexVoigt2D4C[i][0], this->msIndexVoigt2D4C[i][1], this->msIndexVoigt2D4C[j][0], this->msIndexVoigt2D4C[j][1] );
             }
 
         }
     }
-    else if( size == 3 )
+    else if ( size == 3 )
     {
-        for(unsigned int i=0; i<3; i++)
+        for ( unsigned int i = 0; i < 3; i++ )
         {
-            for(unsigned int j=0; j<3; j++)
+            for ( unsigned int j = 0; j < 3; j++ )
             {
-                rConstitutiveMatrix( i, j ) = TransformConstitutiveComponent(rConstitutiveMatrix( i, j ), rOriginalConstitutiveMatrix, rF,
-                                              this->msIndexVoigt2D3C[i][0], this->msIndexVoigt2D3C[i][1], this->msIndexVoigt2D3C[j][0], this->msIndexVoigt2D3C[j][1]);
+                rConstitutiveMatrix( i, j ) = TransformConstitutiveComponent( rConstitutiveMatrix( i, j ), rOriginalConstitutiveMatrix, rF,
+                    this->msIndexVoigt2D3C[i][0], this->msIndexVoigt2D3C[i][1], this->msIndexVoigt2D3C[j][0], this->msIndexVoigt2D3C[j][1] );
             }
 
         }
@@ -1467,25 +1470,25 @@ void ConstitutiveLawImpl<TNodeType>::ConstitutiveMatrixTransformation (
  */
 template<class TNodeType>
 typename ConstitutiveLawImpl<TNodeType>::DataType& ConstitutiveLawImpl<TNodeType>::TransformConstitutiveComponent(
-        DataType& rCabcd, const MatrixType& rConstitutiveMatrix, const MatrixType& rF,
-        const unsigned int a, const unsigned int b, const unsigned int c, const unsigned int d) const
+    DataType& rCabcd, const MatrixType& rConstitutiveMatrix, const MatrixType& rF,
+    const unsigned int a, const unsigned int b, const unsigned int c, const unsigned int d ) const
 {
     rCabcd = 0;
-    DataType Cijkl=0;
+    DataType Cijkl = 0;
 
     unsigned int dimension = rF.size1();
 
     //Cabcd
-    for(unsigned int j=0; j<dimension; j++)
+    for ( unsigned int j = 0; j < dimension; j++ )
     {
-        for(unsigned int l=0; l<dimension; l++)
+        for ( unsigned int l = 0; l < dimension; l++ )
         {
-            for(unsigned int k=0; k<dimension; k++)
+            for ( unsigned int k = 0; k < dimension; k++ )
             {
-                for(unsigned int i=0; i<dimension; i++)
+                for ( unsigned int i = 0; i < dimension; i++ )
                 {
                     //Cijkl
-                    rCabcd +=rF(a,i)*rF(b,j)*rF(c,k)*rF(d,l)*GetConstitutiveComponent(Cijkl,rConstitutiveMatrix,i,j,k,l);
+                    rCabcd += rF( a, i ) * rF( b, j ) * rF( c, k ) * rF( d, l ) * GetConstitutiveComponent( Cijkl, rConstitutiveMatrix, i, j, k, l );
                 }
             }
         }
@@ -1500,22 +1503,22 @@ typename ConstitutiveLawImpl<TNodeType>::DataType& ConstitutiveLawImpl<TNodeType
  */
 template<class TNodeType>
 typename ConstitutiveLawImpl<TNodeType>::DataType& ConstitutiveLawImpl<TNodeType>::GetConstitutiveComponent(
-        DataType& rCabcd, const MatrixType& rConstitutiveMatrix,
-        const unsigned int a, const unsigned int b, const unsigned int c, const unsigned int d) const
+    DataType& rCabcd, const MatrixType& rConstitutiveMatrix,
+    const unsigned int a, const unsigned int b, const unsigned int c, const unsigned int d ) const
 {
     // matrix indices
-    unsigned int k=0, l= 0;
+    unsigned int k = 0, l = 0;
 
     unsigned int size = rConstitutiveMatrix.size1();
 
-    if( size == 3 )
+    if ( size == 3 )
     {
         //index k
-        for(unsigned int i=0; i<3; i++)
+        for ( unsigned int i = 0; i < 3; i++ )
         {
-            if( a == b )
+            if ( a == b )
             {
-                if( this->msIndexVoigt2D3C[i][0] == a && this->msIndexVoigt2D3C[i][1] == b )
+                if ( this->msIndexVoigt2D3C[i][0] == a && this->msIndexVoigt2D3C[i][1] == b )
                 {
                     k = i;
                     break;
@@ -1523,8 +1526,8 @@ typename ConstitutiveLawImpl<TNodeType>::DataType& ConstitutiveLawImpl<TNodeType
             }
             else
             {
-                if( (this->msIndexVoigt2D3C[i][0] == a && this->msIndexVoigt2D3C[i][1] == b) ||
-                        (this->msIndexVoigt2D3C[i][1] == a && this->msIndexVoigt2D3C[i][0] == b) )
+                if ( ( this->msIndexVoigt2D3C[i][0] == a && this->msIndexVoigt2D3C[i][1] == b ) ||
+                        ( this->msIndexVoigt2D3C[i][1] == a && this->msIndexVoigt2D3C[i][0] == b ) )
                 {
                     k = i;
                     break;
@@ -1533,11 +1536,11 @@ typename ConstitutiveLawImpl<TNodeType>::DataType& ConstitutiveLawImpl<TNodeType
         }
 
         //index l
-        for(unsigned int i=0; i<3; i++)
+        for ( unsigned int i = 0; i < 3; i++ )
         {
-            if( c == d )
+            if ( c == d )
             {
-                if( this->msIndexVoigt2D3C[i][0] == c && this->msIndexVoigt2D3C[i][1] == d )
+                if ( this->msIndexVoigt2D3C[i][0] == c && this->msIndexVoigt2D3C[i][1] == d )
                 {
                     l = i;
                     break;
@@ -1545,8 +1548,8 @@ typename ConstitutiveLawImpl<TNodeType>::DataType& ConstitutiveLawImpl<TNodeType
             }
             else
             {
-                if( (this->msIndexVoigt2D3C[i][0] == c && this->msIndexVoigt2D3C[i][1] == d) ||
-                        (this->msIndexVoigt2D3C[i][1] == c && this->msIndexVoigt2D3C[i][0] == d) )
+                if ( ( this->msIndexVoigt2D3C[i][0] == c && this->msIndexVoigt2D3C[i][1] == d ) ||
+                        ( this->msIndexVoigt2D3C[i][1] == c && this->msIndexVoigt2D3C[i][0] == d ) )
                 {
                     l = i;
                     break;
@@ -1554,14 +1557,14 @@ typename ConstitutiveLawImpl<TNodeType>::DataType& ConstitutiveLawImpl<TNodeType
             }
         }
     }
-    else if( size == 4 )
+    else if ( size == 4 )
     {
         //index k
-        for(unsigned int i=0; i<4; i++)
+        for ( unsigned int i = 0; i < 4; i++ )
         {
-            if( a == b )
+            if ( a == b )
             {
-                if( this->msIndexVoigt2D4C[i][0] == a && this->msIndexVoigt2D4C[i][1] == b )
+                if ( this->msIndexVoigt2D4C[i][0] == a && this->msIndexVoigt2D4C[i][1] == b )
                 {
                     k = i;
                     break;
@@ -1569,8 +1572,8 @@ typename ConstitutiveLawImpl<TNodeType>::DataType& ConstitutiveLawImpl<TNodeType
             }
             else
             {
-                if( (this->msIndexVoigt2D4C[i][0] == a && this->msIndexVoigt2D4C[i][1] == b) ||
-                        (this->msIndexVoigt2D4C[i][1] == a && this->msIndexVoigt2D4C[i][0] == b) )
+                if ( ( this->msIndexVoigt2D4C[i][0] == a && this->msIndexVoigt2D4C[i][1] == b ) ||
+                        ( this->msIndexVoigt2D4C[i][1] == a && this->msIndexVoigt2D4C[i][0] == b ) )
                 {
                     k = i;
                     break;
@@ -1579,11 +1582,11 @@ typename ConstitutiveLawImpl<TNodeType>::DataType& ConstitutiveLawImpl<TNodeType
         }
 
         //index l
-        for(unsigned int i=0; i<4; i++)
+        for ( unsigned int i = 0; i < 4; i++ )
         {
-            if( c == d )
+            if ( c == d )
             {
-                if( this->msIndexVoigt2D4C[i][0] == c && this->msIndexVoigt2D4C[i][1] == d )
+                if ( this->msIndexVoigt2D4C[i][0] == c && this->msIndexVoigt2D4C[i][1] == d )
                 {
                     l = i;
                     break;
@@ -1591,8 +1594,8 @@ typename ConstitutiveLawImpl<TNodeType>::DataType& ConstitutiveLawImpl<TNodeType
             }
             else
             {
-                if( (this->msIndexVoigt2D4C[i][0] == c && this->msIndexVoigt2D4C[i][1] == d) ||
-                        (this->msIndexVoigt2D4C[i][1] == c && this->msIndexVoigt2D4C[i][0] == d) )
+                if ( ( this->msIndexVoigt2D4C[i][0] == c && this->msIndexVoigt2D4C[i][1] == d ) ||
+                        ( this->msIndexVoigt2D4C[i][1] == c && this->msIndexVoigt2D4C[i][0] == d ) )
                 {
                     l = i;
                     break;
@@ -1600,14 +1603,14 @@ typename ConstitutiveLawImpl<TNodeType>::DataType& ConstitutiveLawImpl<TNodeType
             }
         }
     }
-    else if( size == 6 )
+    else if ( size == 6 )
     {
         //index k
-        for(unsigned int i=0; i<6; i++)
+        for ( unsigned int i = 0; i < 6; i++ )
         {
-            if( a == b )
+            if ( a == b )
             {
-                if( this->msIndexVoigt3D6C[i][0] == a && this->msIndexVoigt3D6C[i][1] == b )
+                if ( this->msIndexVoigt3D6C[i][0] == a && this->msIndexVoigt3D6C[i][1] == b )
                 {
                     k = i;
                     break;
@@ -1615,8 +1618,8 @@ typename ConstitutiveLawImpl<TNodeType>::DataType& ConstitutiveLawImpl<TNodeType
             }
             else
             {
-                if( (this->msIndexVoigt3D6C[i][0] == a && this->msIndexVoigt3D6C[i][1] == b) ||
-                        (this->msIndexVoigt3D6C[i][1] == a && this->msIndexVoigt3D6C[i][0] == b) )
+                if ( ( this->msIndexVoigt3D6C[i][0] == a && this->msIndexVoigt3D6C[i][1] == b ) ||
+                        ( this->msIndexVoigt3D6C[i][1] == a && this->msIndexVoigt3D6C[i][0] == b ) )
                 {
                     k = i;
                     break;
@@ -1625,11 +1628,11 @@ typename ConstitutiveLawImpl<TNodeType>::DataType& ConstitutiveLawImpl<TNodeType
         }
 
         //index l
-        for(unsigned int i=0; i<6; i++)
+        for ( unsigned int i = 0; i < 6; i++ )
         {
-            if( c == d )
+            if ( c == d )
             {
-                if( this->msIndexVoigt3D6C[i][0] == c && this->msIndexVoigt3D6C[i][1] == d )
+                if ( this->msIndexVoigt3D6C[i][0] == c && this->msIndexVoigt3D6C[i][1] == d )
                 {
                     l = i;
                     break;
@@ -1637,8 +1640,8 @@ typename ConstitutiveLawImpl<TNodeType>::DataType& ConstitutiveLawImpl<TNodeType
             }
             else
             {
-                if( (this->msIndexVoigt3D6C[i][0] == c && this->msIndexVoigt3D6C[i][1] == d) ||
-                        (this->msIndexVoigt3D6C[i][1] == c && this->msIndexVoigt3D6C[i][0] == d) )
+                if ( ( this->msIndexVoigt3D6C[i][0] == c && this->msIndexVoigt3D6C[i][1] == d ) ||
+                        ( this->msIndexVoigt3D6C[i][1] == c && this->msIndexVoigt3D6C[i][0] == d ) )
                 {
                     l = i;
                     break;
@@ -1647,7 +1650,7 @@ typename ConstitutiveLawImpl<TNodeType>::DataType& ConstitutiveLawImpl<TNodeType
         }
     }
 
-    rCabcd = rConstitutiveMatrix(k,l);
+    rCabcd = rConstitutiveMatrix( k, l );
 
     return rCabcd;
 }
@@ -1670,17 +1673,17 @@ typename ConstitutiveLawImpl<TNodeType>::DataType& ConstitutiveLawImpl<TNodeType
  * @param SaveInternalVariables flag whether or not to store internal (history) variables
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::CalculateMaterialResponse(const VectorType& StrainVector,
-                                                               const MatrixType& DeformationGradient,
-                                                               VectorType& StressVector,
-                                                               MatrixType& AlgorithmicTangent,
-                                                               const ProcessInfo& rCurrentProcessInfo,
-                                                               const Properties& rMaterialProperties,
-                                                               const GeometryType& rElementGeometry,
-                                                               const Vector& rShapeFunctionsValues,
-                                                               bool CalculateStresses,
-                                                               int CalculateTangent,
-                                                               bool SaveInternalVariables)
+void ConstitutiveLawImpl<TNodeType>::CalculateMaterialResponse( const VectorType& StrainVector,
+        const MatrixType& DeformationGradient,
+        VectorType& StressVector,
+        MatrixType& AlgorithmicTangent,
+        const ProcessInfo& rCurrentProcessInfo,
+        const Properties& rMaterialProperties,
+        const GeometryType& rElementGeometry,
+        const Vector& rShapeFunctionsValues,
+        bool CalculateStresses,
+        int CalculateTangent,
+        bool SaveInternalVariables )
 {
     KRATOS_ERROR << "Calling virtual function for CalculateMaterialResponse";
 }
@@ -1701,17 +1704,17 @@ void ConstitutiveLawImpl<TNodeType>::CalculateMaterialResponse(const VectorType&
  * @param SaveInternalVariables flag whether or not to store internal (history) variables
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::CalculateVolumetricResponse(const DataType VolumetricStrain,
-                                                                 const MatrixType& DeformationGradient,
-                                                                 DataType& VolumetricStress,
-                                                                 DataType& AlgorithmicBulk,
-                                                                 const ProcessInfo& rCurrentProcessInfo,
-                                                                 const Properties& rMaterialProperties,
-                                                                 const GeometryType& rElementGeometry,
-                                                                 const Vector& rShapeFunctionsValues,
-                                                                 bool CalculateStresses,
-                                                                 int CalculateTangent,
-                                                                 bool SaveInternalVariables)
+void ConstitutiveLawImpl<TNodeType>::CalculateVolumetricResponse( const DataType VolumetricStrain,
+        const MatrixType& DeformationGradient,
+        DataType& VolumetricStress,
+        DataType& AlgorithmicBulk,
+        const ProcessInfo& rCurrentProcessInfo,
+        const Properties& rMaterialProperties,
+        const GeometryType& rElementGeometry,
+        const Vector& rShapeFunctionsValues,
+        bool CalculateStresses,
+        int CalculateTangent,
+        bool SaveInternalVariables )
 {
     KRATOS_ERROR << "Calling virtual function for CalculateVolumetricResponse";
 }
@@ -1727,17 +1730,17 @@ void ConstitutiveLawImpl<TNodeType>::CalculateVolumetricResponse(const DataType 
  * TODO: add proper definition for algorithmic tangent
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::CalculateDeviatoricResponse(const VectorType& StrainVector,
-                                                                 const MatrixType& DeformationGradient,
-                                                                 VectorType& StressVector,
-                                                                 MatrixType& AlgorithmicTangent,
-                                                                 const ProcessInfo& rCurrentProcessInfo,
-                                                                 const Properties& rMaterialProperties,
-                                                                 const GeometryType& rElementGeometry,
-                                                                 const Vector& rShapeFunctionsValues,
-                                                                 bool CalculateStresses,
-                                                                 int CalculateTangent,
-                                                                 bool SaveInternalVariables)
+void ConstitutiveLawImpl<TNodeType>::CalculateDeviatoricResponse( const VectorType& StrainVector,
+        const MatrixType& DeformationGradient,
+        VectorType& StressVector,
+        MatrixType& AlgorithmicTangent,
+        const ProcessInfo& rCurrentProcessInfo,
+        const Properties& rMaterialProperties,
+        const GeometryType& rElementGeometry,
+        const Vector& rShapeFunctionsValues,
+        bool CalculateStresses,
+        int CalculateTangent,
+        bool SaveInternalVariables )
 {
     KRATOS_ERROR << "Calling virtual function for CalculateDeviatoricResponse";
 }
@@ -1745,10 +1748,10 @@ void ConstitutiveLawImpl<TNodeType>::CalculateDeviatoricResponse(const VectorTyp
 
 // VM
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::CalculateCauchyStresses(VectorType& Cauchy_StressVector,
-                                                             const MatrixType& F,
-                                                             const VectorType& PK2_StressVector,
-                                                             const VectorType& GreenLagrangeStrainVector)
+void ConstitutiveLawImpl<TNodeType>::CalculateCauchyStresses( VectorType& Cauchy_StressVector,
+        const MatrixType& F,
+        const VectorType& PK2_StressVector,
+        const VectorType& GreenLagrangeStrainVector )
 {
 }
 
