@@ -372,7 +372,7 @@ public:
      * @brief Gets the size of the data container.
      * @return Size of the data container.
      */
-    SizeType Size()
+    SizeType Size() const
     {
         return mData.size();
     }
@@ -401,7 +401,7 @@ public:
      * @param rValue The value to be set for the variable.
      */
     template<class TAdaptorType>
-void SetValue(const VariableComponent<TAdaptorType>& rThisVariable, typename TAdaptorType::Type const& rValue)
+    void SetValue(const VariableComponent<TAdaptorType>& rThisVariable, typename TAdaptorType::Type const& rValue)
     {
         rThisVariable.GetValue(GetValue(rThisVariable.GetSourceVariable())) = rValue;
     }

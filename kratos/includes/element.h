@@ -1295,7 +1295,7 @@ public:
     }
 
     /**
-     * Set Data with SetValue and the Variable to set:
+     * Set Data with SetValue and the Variable to set
      */
     template<class TVariableType> void SetValue(
         const TVariableType& rThisVariable,
