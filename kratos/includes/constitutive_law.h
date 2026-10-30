@@ -241,6 +241,7 @@ public:
 
         Flags                                mOptions;
         DataType                             mDeterminantF;
+        int                                  mErrorCode;
 
         StrainVectorType*                    mpStrainVector;
         StressVectorType*                    mpStressVector;
@@ -264,6 +265,7 @@ public:
         {
             //Initialize pointers to nullptr
             mDeterminantF = 0;
+            mErrorCode = 0;
             mpStrainVector = nullptr;
             mpStressVector = nullptr;
             mpShapeFunctionsValues = nullptr;
@@ -286,6 +288,7 @@ public:
             , mpElementGeometry( &rElementGeometry )
         {
             //Initialize pointers to nullptr
+            mErrorCode = 0;
             mDeterminantF = 0;
             mpStrainVector = nullptr;
             mpStressVector = nullptr;
@@ -301,6 +304,7 @@ public:
         Parameters( const Parameters & rNewParameters )
             : mOptions( rNewParameters.mOptions )
             , mDeterminantF( rNewParameters.mDeterminantF )
+            , mErrorCode( rNewParameters.mErrorCode )
             , mpStrainVector( rNewParameters.mpStrainVector )
             , mpStressVector( rNewParameters.mpStressVector )
             , mpShapeFunctionsValues( rNewParameters.mpShapeFunctionsValues )
@@ -425,6 +429,7 @@ public:
 
         void SetOptions( const Flags&  rOptions )           {mOptions = rOptions;}
         void SetDeterminantF( const DataType DeterminantF ) {mDeterminantF = DeterminantF;}
+        void SetErrorCode( const int ErrorCode )            {mErrorCode = ErrorCode;}
 
         void SetShapeFunctionsValues( const Vector& rShapeFunctionsValues )           {mpShapeFunctionsValues = &rShapeFunctionsValues;}
         void SetShapeFunctionsDerivatives( const Matrix& rShapeFunctionsDerivatives ) {mpShapeFunctionsDerivatives = &rShapeFunctionsDerivatives;}
@@ -445,6 +450,7 @@ public:
         Flags& GetOptions() {return mOptions;}
 
         const DataType GetDeterminantF() const                               {return mDeterminantF;}
+        const int GetErrorCode() const                                       {return mErrorCode;}
         const Vector& GetShapeFunctionsValues() const                        {return *mpShapeFunctionsValues;}
         const Matrix& GetShapeFunctionsDerivatives() const                   {return *mpShapeFunctionsDerivatives;}
         const DeformationGradientMatrixType& GetDeformationGradientF() const {return *mpDeformationGradientF;}
@@ -1208,17 +1214,17 @@ public:
      * NOTE: the CalculateTangent flag is defined as int to allow for distinctive variants of the tangent
      * @param SaveInternalVariables flag whether or not to store internal (history) variables
      */
-    virtual void CalculateMaterialResponse( const VectorType& StrainVector,
-                                            const MatrixType& DeformationGradient,
-                                            VectorType& StressVector,
-                                            MatrixType& AlgorithmicTangent,
-                                            const ProcessInfo& rCurrentProcessInfo,
-                                            const Properties& rMaterialProperties,
-                                            const GeometryType& rElementGeometry,
-                                            const Vector& rShapeFunctionsValues,
-                                            bool CalculateStresses = true,
-                                            int CalculateTangent = true,
-                                            bool SaveInternalVariables = true );
+    virtual int CalculateMaterialResponse( const VectorType& StrainVector,
+                                           const MatrixType& DeformationGradient,
+                                           VectorType& StressVector,
+                                           MatrixType& AlgorithmicTangent,
+                                           const ProcessInfo& rCurrentProcessInfo,
+                                           const Properties& rMaterialProperties,
+                                           const GeometryType& rElementGeometry,
+                                           const Vector& rShapeFunctionsValues,
+                                           bool CalculateStresses = true,
+                                           int CalculateTangent = true,
+                                           bool SaveInternalVariables = true );
 
     /**
      * Computes the volumetric part of the material response in terms of stresses and algorithmic tangent
@@ -1235,17 +1241,17 @@ public:
      * NOTE: the CalculateTangent flag is defined as int to allow for distinctive variants of the tangent
      * @param SaveInternalVariables flag whether or not to store internal (history) variables
      */
-    virtual void CalculateVolumetricResponse( const DataType VolumetricStrain,
-                                              const MatrixType& DeformationGradient,
-                                              DataType& VolumetricStress,
-                                              DataType& AlgorithmicBulk,
-                                              const ProcessInfo& rCurrentProcessInfo,
-                                              const Properties& rMaterialProperties,
-                                              const GeometryType& rElementGeometry,
-                                              const Vector& rShapeFunctionsValues,
-                                              bool CalculateStresses,
-                                              int CalculateTangent,
-                                              bool SaveInternalVariables );
+    virtual int CalculateVolumetricResponse( const DataType VolumetricStrain,
+                                             const MatrixType& DeformationGradient,
+                                             DataType& VolumetricStress,
+                                             DataType& AlgorithmicBulk,
+                                             const ProcessInfo& rCurrentProcessInfo,
+                                             const Properties& rMaterialProperties,
+                                             const GeometryType& rElementGeometry,
+                                             const Vector& rShapeFunctionsValues,
+                                             bool CalculateStresses,
+                                             int CalculateTangent,
+                                             bool SaveInternalVariables );
 
     /**
      * Computes the deviatoric part of the material response in terms of stresses and algorithmic tangent
@@ -1261,20 +1267,18 @@ public:
      * @param CalculateTangent flag to determine if to compute the material tangent
      * NOTE: the CalculateTangent flag is defined as int to allow for distinctive variants of the tangent
      * @param SaveInternalVariables flag whether or not to store internal (history) variables
-
-     * TODO: add proper definition for algorithmic tangent
      */
-    virtual void CalculateDeviatoricResponse( const VectorType& StrainVector,
-                                              const MatrixType& DeformationGradient,
-                                              VectorType& StressVector,
-                                              MatrixType& AlgorithmicTangent,
-                                              const ProcessInfo& rCurrentProcessInfo,
-                                              const Properties& rMaterialProperties,
-                                              const GeometryType& rElementGeometry,
-                                              const Vector& rShapeFunctionsValues,
-                                              bool CalculateStresses = true,
-                                              int CalculateTangent = true,
-                                              bool SaveInternalVariables = true );
+    virtual int CalculateDeviatoricResponse( const VectorType& StrainVector,
+                                             const MatrixType& DeformationGradient,
+                                             VectorType& StressVector,
+                                             MatrixType& AlgorithmicTangent,
+                                             const ProcessInfo& rCurrentProcessInfo,
+                                             const Properties& rMaterialProperties,
+                                             const GeometryType& rElementGeometry,
+                                             const Vector& rShapeFunctionsValues,
+                                             bool CalculateStresses = true,
+                                             int CalculateTangent = true,
+                                             bool SaveInternalVariables = true );
 
     /**
      * @brief This method is used to check that two Constitutive Laws are the same type (references)

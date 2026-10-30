@@ -1673,7 +1673,7 @@ typename ConstitutiveLawImpl<TNodeType>::DataType& ConstitutiveLawImpl<TNodeType
  * @param SaveInternalVariables flag whether or not to store internal (history) variables
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::CalculateMaterialResponse( const VectorType& StrainVector,
+int ConstitutiveLawImpl<TNodeType>::CalculateMaterialResponse( const VectorType& StrainVector,
         const MatrixType& DeformationGradient,
         VectorType& StressVector,
         MatrixType& AlgorithmicTangent,
@@ -1686,6 +1686,7 @@ void ConstitutiveLawImpl<TNodeType>::CalculateMaterialResponse( const VectorType
         bool SaveInternalVariables )
 {
     KRATOS_ERROR << "Calling virtual function for CalculateMaterialResponse";
+    return 0;
 }
 
 /**
@@ -1704,7 +1705,7 @@ void ConstitutiveLawImpl<TNodeType>::CalculateMaterialResponse( const VectorType
  * @param SaveInternalVariables flag whether or not to store internal (history) variables
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::CalculateVolumetricResponse( const DataType VolumetricStrain,
+int ConstitutiveLawImpl<TNodeType>::CalculateVolumetricResponse( const DataType VolumetricStrain,
         const MatrixType& DeformationGradient,
         DataType& VolumetricStress,
         DataType& AlgorithmicBulk,
@@ -1717,6 +1718,7 @@ void ConstitutiveLawImpl<TNodeType>::CalculateVolumetricResponse( const DataType
         bool SaveInternalVariables )
 {
     KRATOS_ERROR << "Calling virtual function for CalculateVolumetricResponse";
+    return 0;
 }
 
 /**
@@ -1730,7 +1732,7 @@ void ConstitutiveLawImpl<TNodeType>::CalculateVolumetricResponse( const DataType
  * TODO: add proper definition for algorithmic tangent
  */
 template<class TNodeType>
-void ConstitutiveLawImpl<TNodeType>::CalculateDeviatoricResponse( const VectorType& StrainVector,
+int ConstitutiveLawImpl<TNodeType>::CalculateDeviatoricResponse( const VectorType& StrainVector,
         const MatrixType& DeformationGradient,
         VectorType& StressVector,
         MatrixType& AlgorithmicTangent,
@@ -1743,8 +1745,8 @@ void ConstitutiveLawImpl<TNodeType>::CalculateDeviatoricResponse( const VectorTy
         bool SaveInternalVariables )
 {
     KRATOS_ERROR << "Calling virtual function for CalculateDeviatoricResponse";
+    return 0;
 }
-
 
 // VM
 template<class TNodeType>
