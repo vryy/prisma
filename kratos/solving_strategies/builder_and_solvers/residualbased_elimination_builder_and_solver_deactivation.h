@@ -319,7 +319,7 @@ public:
     {
         KRATOS_TRY
 
-        int build_status = 0;
+        int build_status = static_cast<int>(KratosBuildStatus::NO_PROBLEM);
 
         double building_time_start = Timer::GetTime();
         Timer::Start("Build");
@@ -584,6 +584,9 @@ public:
                     //           << ", rhs: " << norm_2(RHS_Contribution)
                     //           << std::endl;
 
+                    if (it->Has(BUILD_STATUS))
+                        build_status = it->GetValue(BUILD_STATUS);
+
                     #ifdef DETECT_NAN_AT_BUILD
                     double norm_elem_k = norm_frobenius(LHS_Contribution);
                     double norm_elem_r = norm_2(RHS_Contribution);
@@ -594,7 +597,7 @@ public:
                                      << ", type: " << typeid((*it)).name()
                                      << ", Properties " << it->GetProperties().Id()
                                      << std::endl;
-                        build_status = -1;
+                        build_status = static_cast<int>(KratosBuildStatus::ELEMENTAL_NAN_DETECTED);
                         #pragma omp flush(build_status) // Force-push the update to all other threads
                     }
                     #endif
@@ -706,6 +709,9 @@ public:
                     pScheme->CalculateSystemContributions(*it,LHS_Contribution,RHS_Contribution,EquationId,CurrentProcessInfo);
                     // std::cout << "Condition " << it->Id() << " is computed"
 
+                    if (it->Has(BUILD_STATUS))
+                        build_status = it->GetValue(BUILD_STATUS);
+
                     #ifdef DETECT_NAN_AT_BUILD
                     double norm_cond_k = norm_frobenius(LHS_Contribution);
                     double norm_cond_r = norm_2(RHS_Contribution);
@@ -716,7 +722,7 @@ public:
                                      << ", type: " << typeid((*it)).name()
                                      << ", Properties " << it->GetProperties().Id()
                                      << std::endl;
-                        build_status = -2;
+                        build_status = static_cast<int>(KratosBuildStatus::CONDITIONAL_NAN_DETECTED);
                         #pragma omp flush(build_status) // Force-push the update to all other threads
                     }
                     #endif
@@ -1216,7 +1222,7 @@ public:
     {
         KRATOS_TRY
 
-        int build_status = 0;
+        int build_status = static_cast<int>(KratosBuildStatus::NO_PROBLEM);
 
         //Getting the Elements
         ElementsContainerType& pElements = r_model_part.Elements();
@@ -1299,6 +1305,9 @@ public:
                     //           << ", rhs: " << norm_2(RHS_Contribution)
                     //           << std::endl;
 
+                    if (it->Has(BUILD_STATUS))
+                        build_status = it->GetValue(BUILD_STATUS);
+
                     //assemble the elemental contribution
                     AssembleRHS(b,RHS_Contribution,EquationId);
 
@@ -1311,7 +1320,7 @@ public:
                                      << ", type: " << typeid((*it)).name()
                                      << ", Properties " << it->GetProperties().Id()
                                      << std::endl;
-                        build_status = -1;
+                        build_status = static_cast<int>(KratosBuildStatus::ELEMENTAL_NAN_DETECTED);
                         #pragma omp flush(build_status) // Force-push the update to all other threads
                     }
                     #endif
@@ -1362,6 +1371,9 @@ public:
                     //calculate conditional contribution
                     pScheme->CalculateRHSContribution(*it,RHS_Contribution,EquationId,CurrentProcessInfo);
 
+                    if (it->Has(BUILD_STATUS))
+                        build_status = it->GetValue(BUILD_STATUS);
+
                     //assemble the conditional contribution
                     AssembleRHS(b,RHS_Contribution,EquationId);
 
@@ -1374,7 +1386,7 @@ public:
                                      << ", type: " << typeid((*it)).name()
                                      << ", Properties " << it->GetProperties().Id()
                                      << std::endl;
-                        build_status = -2;
+                        build_status = static_cast<int>(KratosBuildStatus::CONDITIONAL_NAN_DETECTED);
                         #pragma omp flush(build_status) // Force-push the update to all other threads
                     }
                     #endif

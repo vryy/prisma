@@ -43,6 +43,20 @@ namespace Kratos
 ///@name  Enum's
 ///@{
 
+/**
+ * Enum class for build/assembly status of an element or condition.
+ * A positive status indicates a warning, meanwhile a negative number
+ * represents an error.
+ */
+enum class KratosBuildStatus : char
+{
+    NO_PROBLEM = 0,
+    ELEMENTAL_NAN_DETECTED = -1,
+    CONDITIONAL_NAN_DETECTED = -2,
+    CONSTITUTIVE_LAW_FAILURE = -3,
+    INTERFACE_LAW_FAILURE = -4
+};
+
 ///@}
 ///@name  Functions
 ///@{
