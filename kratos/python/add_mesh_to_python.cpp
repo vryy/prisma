@@ -887,6 +887,8 @@ void AddMeshToPython(const std::string& Prefix)
                     .def(SolutionStepVariableIndexingPython<ConditionType, VariableComponent<VectorComponentAdaptor<array_1d<DataType, 3> > > >())
     */
     .def("Initialize", &ConditionType::Initialize)
+    .def("ResetConstitutiveLaw", &ConditionType::ResetConstitutiveLaw)
+    .def("RewindConstitutiveLaw", &ConditionType::RewindConstitutiveLaw)
     //.def("CalculateLocalSystem", &ConditionType::CalculateLocalSystem)
     .def("Info", &ConditionType::Info)
     .def("Check", &ConditionType::Check)
