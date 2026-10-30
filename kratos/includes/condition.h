@@ -1245,6 +1245,15 @@ public:
     }
 
     /**
+     * Erase the value associated with variable
+     */
+    template<class TVariableType> void Erase(
+        const TVariableType& rThisVariable)
+    {
+        mData.Erase(rThisVariable);
+    }
+
+    /**
      * Get Data with GetValue and the Variable to get:
      */
     template<class TVariableType> typename TVariableType::Type& GetValue(
