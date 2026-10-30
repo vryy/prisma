@@ -21,7 +21,6 @@
 #include "includes/properties.h"
 #include "includes/process_info.h"
 #include "includes/geometrical_object.h"
-#include "includes/node.h"
 #include "containers/vector_map.h"
 #include "containers/weak_pointer_vector.h"
 #include "constitutive_law.h"
@@ -364,10 +363,7 @@ public:
      * method is used the method has to be overwritten within the element
      * @return default integration method of the used Geometry
      */
-    virtual IntegrationMethod GetIntegrationMethod() const
-    {
-        return this->pGetGeometry()->GetDefaultIntegrationMethod();
-    }
+    virtual IntegrationMethod GetIntegrationMethod() const;
 
     /**
      * ELEMENTS inherited from this class must implement this methods

@@ -21,7 +21,6 @@
 #include "includes/properties.h"
 #include "includes/process_info.h"
 #include "includes/geometrical_object.h"
-#include "includes/node.h"
 #include "containers/vector_map.h"
 
 
@@ -362,10 +361,7 @@ public:
      * @return default integration method of the used Geometry
      * this method is: OPTIONAL ( is recommended to reimplement it in the derived class )
      */
-    virtual IntegrationMethod GetIntegrationMethod() const
-    {
-        return this->pGetGeometry()->GetDefaultIntegrationMethod();
-    }
+    virtual IntegrationMethod GetIntegrationMethod() const;
 
     /**
      * CONDITIONS inherited from this class must implement this methods
