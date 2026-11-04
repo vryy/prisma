@@ -38,6 +38,7 @@ set( KRATOS_CORE_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/io.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/model_part_io.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/reorder_consecutive_model_part_io.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/piecewise_linear_hardening_law.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/utilities/indexed_object.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/utilities/logger.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/utilities/logger_output.cpp
@@ -64,6 +65,7 @@ if(KRATOS_PYTHON)
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_legacy_structural_app_vars_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_containers_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_constitutive_law_to_python.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/python/add_hardening_laws_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_processes_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_quadratures_to_python.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/python/add_geometries_to_python.cpp
