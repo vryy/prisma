@@ -30,7 +30,6 @@ set( KRATOS_CORE_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/periodic_condition.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/kratos_application.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/kernel.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/sources/reorder_consecutive_model_part_io.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/bounding_volume_tree.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/kratos_filesystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/kratos_parameters.cpp
