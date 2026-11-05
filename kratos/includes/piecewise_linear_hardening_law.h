@@ -64,6 +64,11 @@ public:
         mPy.push_back(y);
     }
 
+    std::size_t Size() const
+    {
+        return mPx.size();
+    }
+
     bool Has( const Variable<double>& rThisVariable ) const final;
 
     double& GetValue( const Variable<double>& rThisVariable, double& rValue ) final;
@@ -72,15 +77,25 @@ public:
                    const ProcessInfo& rCurrentProcessInfo ) final;
 
     /// Get the value of the hardening function w.r.t consistent parameter
-    double GetValue(const double phi) const final;
+    double GetValue(const double phi) const override;
 
     /// Get the derivative of the hardening function w.r.t consistent parameter
-    double GetDerivative(const double phi) const final;
+    double GetDerivative(const double phi) const override;
 
     /// Turn back information as a string.
     std::string Info() const override
     {
         return "PiecewiseLinearHardeningLaw";
+    }
+
+    /// Print object's data.
+    void PrintData(std::ostream& rOStream) const override
+    {
+        KRATOS_WATCH(mPx.size())
+        for (std::size_t i = 0; i < mPx.size(); ++i)
+        {
+            rOStream << " (" << mPx[i] << ", " << mPy[i] << ")";
+        }
     }
 
 private:
