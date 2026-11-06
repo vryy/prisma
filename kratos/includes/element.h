@@ -802,6 +802,18 @@ public:
      * Calculate(..) methods are: OPTIONAL
      */
 
+    virtual void Calculate(const Variable<int>& rVariable,
+               int& Output,
+               const ProcessInfo& rCurrentProcessInfo)
+    {
+    }
+
+    virtual void Calculate(const Variable<bool>& rVariable,
+               bool& Output,
+               const ProcessInfo& rCurrentProcessInfo)
+    {
+    }
+
     virtual void Calculate(const Variable<DataType>& rVariable,
                            DataType& Output,
                            const ProcessInfo& rCurrentProcessInfo)
