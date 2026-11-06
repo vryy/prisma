@@ -223,6 +223,7 @@ namespace Kratos
     KRATOS_CREATE_VARIABLE( bool, USE_NUMERICAL_TANGENT )
 
     KRATOS_CREATE_VARIABLE( bool, FREEZE_ACTIVE_SET_STATE )
+    KRATOS_CREATE_VARIABLE( int, YIELD_STATE )
 
     void KratosApplication::RegisterLegacyStructuralAppVariables()
     {
@@ -425,6 +426,7 @@ namespace Kratos
         KRATOS_REGISTER_VARIABLE( USE_NUMERICAL_TANGENT )
 
         KRATOS_REGISTER_VARIABLE( FREEZE_ACTIVE_SET_STATE )
+        KRATOS_REGISTER_VARIABLE( YIELD_STATE )
 
     }
 
