@@ -61,8 +61,14 @@ namespace Kratos
     template <typename TDataType> using DenseMatrix = boost::numeric::ublas::matrix<TDataType>;
     template <typename TDataType> using DenseVector = boost::numeric::ublas::vector<TDataType>;
 
+    template <typename TDataType, KRATOS_SIZE_TYPE TSize1, KRATOS_SIZE_TYPE TSize2> using FixedMatrix = boost::numeric::ublas::c_matrix<TDataType, TSize1, TSize2>;
+    template <typename TDataType, KRATOS_SIZE_TYPE TSize> using FixedVector = boost::numeric::ublas::c_vector<TDataType, TSize>;
+
     template <typename TDataType, KRATOS_SIZE_TYPE TSize1, KRATOS_SIZE_TYPE TSize2> using BoundedMatrix = boost::numeric::ublas::bounded_matrix<TDataType, TSize1, TSize2>;
     template <typename TDataType, KRATOS_SIZE_TYPE TSize> using BoundedVector = boost::numeric::ublas::bounded_vector<TDataType, TSize>;
+
+    template <typename TDataType> using IndirectArray = boost::numeric::ublas::indirect_array<TDataType>;
+    template <typename TMatrixType, typename IndirectArrayType> using MatrixIndirect = boost::numeric::ublas::matrix_indirect<TMatrixType, IndirectArrayType>;
 
     typedef boost::numeric::ublas::vector<KRATOS_DOUBLE_TYPE> Vector;
     typedef boost::numeric::ublas::unit_vector<KRATOS_DOUBLE_TYPE> UnitVector;
@@ -86,6 +92,7 @@ namespace Kratos
     typedef boost::numeric::ublas::mapped_matrix<KRATOS_DOUBLE_TYPE> SparseMatrix;
     typedef boost::numeric::ublas::coordinate_matrix<KRATOS_DOUBLE_TYPE> CoordinateMatrix;
     typedef boost::numeric::ublas::compressed_matrix<KRATOS_DOUBLE_TYPE> CompressedMatrix;
+    typedef boost::numeric::ublas::permutation_matrix<KRATOS_SIZE_TYPE> PermutationMatrix;
     typedef boost::numeric::ublas::matrix_column<Matrix> MatrixColumn;
     typedef boost::numeric::ublas::matrix_vector_range<Matrix> MatrixVectorRange;
     typedef boost::numeric::ublas::matrix_vector_slice<Matrix> MatrixVectorSlice;
@@ -135,6 +142,7 @@ namespace Kratos
         using IdentityMatrixType = boost::numeric::ublas::identity_matrix<TDataType>;
         using SymmetricMatrixType = boost::numeric::ublas::symmetric_matrix<TDataType>;
         using CompressedMatrixType = boost::numeric::ublas::compressed_matrix<TDataType>;
+        using PermutationMatrixType = boost::numeric::ublas::permutation_matrix<TDataType>;
     };
 
     // more specialization for DataTypeToString
@@ -151,6 +159,27 @@ namespace Kratos
 ///@}
 ///@name  Functions
 ///@{
+
+namespace Internals
+{
+
+    /// Proxy function for boost::numeric::ublas::lu_substitute
+    template <typename... Args>
+    auto LUSubstitute(Args&&... args)
+        -> decltype(boost::numeric::ublas::lu_substitute(std::forward<Args>(args)...))
+    {
+        return boost::numeric::ublas::lu_substitute(std::forward<Args>(args)...);
+    }
+
+    /// Proxy function for boost::numeric::ublas::lu_factorize
+    template <typename... Args>
+    auto LUFactorize(Args&&... args)
+        -> decltype(boost::numeric::ublas::lu_factorize(std::forward<Args>(args)...))
+    {
+        return boost::numeric::ublas::lu_factorize(std::forward<Args>(args)...);
+    }
+
+} // namespace Internals
 
 ///@}
 ///@name Kratos Classes

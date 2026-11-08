@@ -131,7 +131,7 @@ public:
                         if(mDomainSize == 3)
                         {
                             array_1d<DataType,4> aux,aux1;
-                            boost::numeric::ublas::bounded_matrix<DataType,4,4> rRot;
+                            BoundedMatrix<DataType,4,4> rRot;
                             LocalRotationOperator(rRot,rGeometry[j]);
 
                             for(unsigned int k=0; k<4; k++)
@@ -145,7 +145,7 @@ public:
                         else
                         {
                             array_1d<DataType,3> aux,aux1;
-                            boost::numeric::ublas::bounded_matrix<DataType,3,3> rRot;
+                            BoundedMatrix<DataType,3,3> rRot;
                             LocalRotationOperator(rRot,rGeometry[j]);
 
                             for(unsigned int k=0; k<3; k++)
@@ -174,7 +174,7 @@ public:
                         if(mDomainSize == 3)
                         {
                             array_1d<DataType,3> aux,aux1;
-                            boost::numeric::ublas::bounded_matrix<DataType,3,3> rRot;
+                            BoundedMatrix<DataType,3,3> rRot;
                             LocalRotationOperatorPure(rRot,rGeometry[j]);
 
                             for(unsigned int k=0; k<3; k++)
@@ -188,7 +188,7 @@ public:
                         else
                         {
                             array_1d<DataType,2> aux,aux1;
-                            boost::numeric::ublas::bounded_matrix<DataType,2,2> rRot;
+                            BoundedMatrix<DataType,2,2> rRot;
                             LocalRotationOperatorPure(rRot,rGeometry[j]);
 
                             for(unsigned int k=0; k<2; k++)
@@ -303,7 +303,7 @@ public:
                 //this->RotationOperator<TLocalMatrixType>(Rotation,);
                 if(mDomainSize == 3)
                 {
-                    boost::numeric::ublas::bounded_matrix<DataType,3,3> rRot;
+                    BoundedMatrix<DataType,3,3> rRot;
                     LocalRotationOperatorPure(rRot,*itNode);
 
                     auto& rVelocity = itNode->FastGetSolutionStepValue(VARSEL(DataType, VELOCITY));
@@ -313,7 +313,7 @@ public:
                 }
                 else
                 {
-                    boost::numeric::ublas::bounded_matrix<DataType,2,2> rRot;
+                    BoundedMatrix<DataType,2,2> rRot;
                     LocalRotationOperatorPure(rRot,*itNode);
 
                     auto& rVelocity = itNode->FastGetSolutionStepValue(VARSEL(DataType, VELOCITY));
@@ -341,7 +341,7 @@ public:
             {
                 if(mDomainSize == 3)
                 {
-                    boost::numeric::ublas::bounded_matrix<DataType,3,3> rRot;
+                    BoundedMatrix<DataType,3,3> rRot;
                     LocalRotationOperatorPure(rRot,*itNode);
 
                     auto& rVelocity = itNode->FastGetSolutionStepValue(VARSEL(DataType, VELOCITY));
@@ -351,7 +351,7 @@ public:
                 }
                 else
                 {
-                    boost::numeric::ublas::bounded_matrix<DataType,2,2> rRot;
+                    BoundedMatrix<DataType,2,2> rRot;
                     LocalRotationOperatorPure(rRot,*itNode);
 
                     auto& rVelocity = itNode->FastGetSolutionStepValue(VARSEL(DataType, VELOCITY));
@@ -592,7 +592,7 @@ private:
 
     //auxiliary functions
     template< unsigned int TBlockSize >
-    void ReadBlockMatrix( boost::numeric::ublas::bounded_matrix<DataType, TBlockSize, TBlockSize>& block, const TLocalMatrixType& origin, const unsigned int Ibegin, const unsigned int Jbegin) const
+    void ReadBlockMatrix( BoundedMatrix<DataType, TBlockSize, TBlockSize>& block, const TLocalMatrixType& origin, const unsigned int Ibegin, const unsigned int Jbegin) const
     {
         for(unsigned int i=0; i<TBlockSize; i++)
         {
@@ -604,7 +604,7 @@ private:
     }
 
     template< unsigned int TBlockSize >
-    void WriteBlockMatrix( const boost::numeric::ublas::bounded_matrix<DataType, TBlockSize, TBlockSize>& block, TLocalMatrixType& destination, const unsigned int Ibegin, const unsigned int Jbegin) const
+    void WriteBlockMatrix( const BoundedMatrix<DataType, TBlockSize, TBlockSize>& block, TLocalMatrixType& destination, const unsigned int Ibegin, const unsigned int Jbegin) const
     {
         for(unsigned int i=0; i<TBlockSize; i++)
         {
@@ -615,7 +615,7 @@ private:
         }
     }
 
-    void LocalRotationOperator(boost::numeric::ublas::bounded_matrix<DataType,4,4>& rRot,
+    void LocalRotationOperator(BoundedMatrix<DataType,4,4>& rRot,
             typename GeometryType::PointType& rThisPoint) const
     {
         noalias(rRot) = IdentityMatrix(4,4);
@@ -663,7 +663,7 @@ private:
         rRot(2,2) = rRot(0,0)*rT1[1] - rRot(0,1)*rT1[0];
     }
 
-    void LocalRotationOperator(boost::numeric::ublas::bounded_matrix<DataType,3,3>& rRot,
+    void LocalRotationOperator(BoundedMatrix<DataType,3,3>& rRot,
             typename GeometryType::PointType& rThisPoint) const
     {
         noalias(rRot) = IdentityMatrix(3,3);
@@ -681,7 +681,7 @@ private:
 
     }
 
-    void LocalRotationOperatorPure(boost::numeric::ublas::bounded_matrix<DataType,3,3>& rRot,
+    void LocalRotationOperatorPure(BoundedMatrix<DataType,3,3>& rRot,
             typename GeometryType::PointType& rThisPoint) const
     {
 
@@ -728,7 +728,7 @@ private:
         rRot(2,2) = rRot(0,0)*rT1[1] - rRot(0,1)*rT1[0];
     }
 
-    void LocalRotationOperatorPure(boost::numeric::ublas::bounded_matrix<DataType,2,2>& rRot,
+    void LocalRotationOperatorPure(BoundedMatrix<DataType,2,2>& rRot,
             typename GeometryType::PointType& rThisPoint) const
     {
         // Get the normal evaluated at the node
@@ -755,7 +755,7 @@ private:
         const unsigned int NumBlocks = LocalSize / mBlockSize;
         boost::numeric::ublas::vector<bool> NeedRotation( NumBlocks, false);
 
-        std::vector< boost::numeric::ublas::bounded_matrix<DataType,TDim+1,TDim+1> > rRot(NumBlocks);
+        std::vector< BoundedMatrix<DataType,TDim+1,TDim+1> > rRot(NumBlocks);
         for(unsigned int j = 0; j < NumBlocks; ++j)
         {
             const NodeType& rNode = rGeometry[j];
@@ -773,7 +773,7 @@ private:
 
         if(rotations_needed > 0)
         {
-            boost::numeric::ublas::bounded_matrix<DataType,TDim+1,TDim+1> mat_block, tmp;
+            BoundedMatrix<DataType,TDim+1,TDim+1> mat_block, tmp;
             array_1d<DataType,TDim+1> aux, aux1;
 
             for(unsigned int i=0; i<NumBlocks; i++)
@@ -836,7 +836,7 @@ private:
         const unsigned int NumBlocks = LocalSize / mBlockSize;
         boost::numeric::ublas::vector<bool> NeedRotation( NumBlocks, false);
 
-        std::vector< boost::numeric::ublas::bounded_matrix<DataType,TDim,TDim> > rRot(NumBlocks);
+        std::vector< BoundedMatrix<DataType,TDim,TDim> > rRot(NumBlocks);
         for(unsigned int j = 0; j < NumBlocks; ++j)
         {
             const NodeType& rNode = rGeometry[j];
@@ -854,7 +854,7 @@ private:
 
         if(rotations_needed > 0)
         {
-            boost::numeric::ublas::bounded_matrix<DataType,TDim,TDim> mat_block, tmp;
+            BoundedMatrix<DataType,TDim,TDim> mat_block, tmp;
             array_1d<DataType,TDim> aux, aux1;
 
             for(unsigned int i=0; i<NumBlocks; i++)

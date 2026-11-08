@@ -77,7 +77,7 @@ public:
 
     typedef BaseCondition<NodeType> ConditionType;
 
-    typedef boost::numeric::ublas::vector<int> NeighbourIndicesContainerType;
+    typedef DenseVector<int> NeighbourIndicesContainerType;
 
     typedef Mesh<NodeType, PropertiesType, ElementType, ConditionType> MeshType;
 

@@ -10,7 +10,6 @@
 //  Date:            16 Aug 2026
 //
 
-
 #if !defined(KRATOS_LAWSON_NNLS_SOLVER_H_INCLUDED )
 #define  KRATOS_LAWSON_NNLS_SOLVER_H_INCLUDED
 
@@ -22,7 +21,7 @@
 
 // Project includes
 #include "includes/define.h"
-#include "includes/ublas_interface.h"
+#include "includes/matrix_vector_adapter.h"
 #include "utilities/logger.h"
 
 namespace Kratos

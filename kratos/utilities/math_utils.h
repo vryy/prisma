@@ -92,7 +92,7 @@ public:
     using IndexType = KRATOS_INDEX_TYPE;
 
     /// The indirect array type
-    using IndirectArrayType = boost::numeric::ublas::indirect_array<DenseVector<SizeType>>;
+    using IndirectArrayType = IndirectArray<DenseVector<SizeType>>;
 
     ///@}
     ///@name Life Cycle
@@ -176,7 +176,7 @@ public:
             if (k != j)
                 ia2(j_sub++) = k;
 
-        boost::numeric::ublas::matrix_indirect<const TMatrixType, IndirectArrayType> sub_mat(rMat, ia1, ia2);
+        MatrixIndirect<const TMatrixType, IndirectArrayType> sub_mat(rMat, ia1, ia2);
         const TDataType first_minor = Det(sub_mat);
         return ((i + j) % 2) ? -first_minor : first_minor;
     }

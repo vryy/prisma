@@ -524,7 +524,7 @@ public:
         //create a partition of the element array
         int number_of_threads = omp_get_max_threads();
 
-        boost::numeric::ublas::vector<unsigned int> element_partition;
+        DenseVector<unsigned int> element_partition;
         OpenMPUtils::CreatePartition(number_of_threads, pElements.size(), element_partition);
         KRATOS_INFO("BuilderAndSolver")
             << "Number of threads: " << number_of_threads << std::endl;
@@ -671,7 +671,7 @@ public:
                   << ", computed: " << num_computed_elements
                   << ", assembled: " << num_assembled_elements << std::endl;
 
-        boost::numeric::ublas::vector<unsigned int> condition_partition;
+        DenseVector<unsigned int> condition_partition;
         OpenMPUtils::CreatePartition(number_of_threads, ConditionsArray.size(), condition_partition);
         KRATOS_INFO("BuilderAndSolver")
             << "condition_partition: " << condition_partition << std::endl;
@@ -1273,7 +1273,7 @@ public:
         //create a partition of the element array
         int number_of_threads = omp_get_max_threads();
 
-        boost::numeric::ublas::vector<unsigned int> element_partition;
+        DenseVector<unsigned int> element_partition;
         OpenMPUtils::CreatePartition(number_of_threads, pElements.size(), element_partition);
 
         unsigned int num_assembled_elements = 0;
@@ -1343,7 +1343,7 @@ public:
                   << ", computed: " << num_computed_elements
                   << ", assembled: " << num_assembled_elements << std::endl;
 
-        boost::numeric::ublas::vector<unsigned int> condition_partition;
+        DenseVector<unsigned int> condition_partition;
         OpenMPUtils::CreatePartition(number_of_threads, ConditionsArray.size(), condition_partition);
 
         unsigned int num_assembled_conditions = 0;
@@ -1459,7 +1459,7 @@ public:
             }
         #else
             int number_of_threads = omp_get_max_threads();
-            boost::numeric::ublas::vector<unsigned int> element_partition;
+            DenseVector<unsigned int> element_partition;
             OpenMPUtils::CreatePartition(number_of_threads, pElements.size(), element_partition);
             KRATOS_INFO("BuilderAndSolver") << "number_of_threads for BuildRHSreactions: " << number_of_threads << std::endl;
 
@@ -2007,7 +2007,7 @@ protected:
 
         if(CurrentProcessInfo.Has(SYSTEM_PERMUTATION_VECTOR))
         {
-            boost::numeric::ublas::vector<int> PermutedSystemIds = CurrentProcessInfo[SYSTEM_PERMUTATION_VECTOR];
+            DenseVector<int> PermutedSystemIds = CurrentProcessInfo[SYSTEM_PERMUTATION_VECTOR];
             for (typename DofsArrayType::iterator dof_iterator = BaseType::mDofSet.begin(); dof_iterator != BaseType::mDofSet.end(); ++dof_iterator)
             {
                 int id = dof_iterator->EquationId();
@@ -2074,7 +2074,7 @@ protected:
         }
 #else
         int number_of_threads = omp_get_max_threads();
-        boost::numeric::ublas::vector<unsigned int> matrix_partition;
+        DenseVector<unsigned int> matrix_partition;
         OpenMPUtils::CreatePartition(number_of_threads, indices.size(), matrix_partition);
         KRATOS_INFO("BuilderAndSolver")
             << "matrix_partition: " << matrix_partition << std::endl;
