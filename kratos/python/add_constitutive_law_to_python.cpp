@@ -50,7 +50,7 @@ template<class TConstitutiveLawType, class TVariableType>
 bool ConstitutiveLawHas(TConstitutiveLawType& this_constitutive_law, TVariableType const& rThisVariable) { return this_constitutive_law.Has(rThisVariable); }
 
 template<class TConstitutiveLawType, class TDataType>
-TDataType ConstitutiveLawGetValue(TConstitutiveLawType& this_constitutive_law, const Variable<TDataType>& rThisVariable )
+TDataType ConstitutiveLawGetValue(TConstitutiveLawType& this_constitutive_law, const Variable<TDataType>& rThisVariable)
 {
     TDataType tmp;
     tmp = this_constitutive_law.GetValue(rThisVariable, tmp);
@@ -113,8 +113,8 @@ void AddConstitutiveLawToPythonImpl(const std::string& Prefix)
     typedef typename ConstitutiveLawType::MatrixType MatrixType;
 
     class_< ParametersType, typename ParametersType::Pointer, boost::noncopyable>
-    ((Prefix+"ConstitutiveLawParameters").c_str(), init<>() )
-        .def(init< const typename ConstitutiveLawType::GeometryType&, const Properties&, const typename ConstitutiveLawType::ProcessInfoType& >() )
+    ((Prefix+"ConstitutiveLawParameters").c_str(), init<>())
+        .def(init< const typename ConstitutiveLawType::GeometryType&, const Properties&, const typename ConstitutiveLawType::ProcessInfoType& >())
         .def("CheckAllParameters", &ParametersType::CheckAllParameters)
         .def("CheckMechanicalVariables", &ParametersType::CheckMechanicalVariables)
         .def("CheckShapeFunctions", &ParametersType::CheckShapeFunctions)
@@ -150,7 +150,7 @@ void AddConstitutiveLawToPythonImpl(const std::string& Prefix)
     ;
 
     class_< ConstitutiveLawType, typename ConstitutiveLawType::Pointer, bases<BaseConstitutiveLaw>, boost::noncopyable >
-    ((Prefix+"ConstitutiveLaw").c_str(), init<>() )
+    ((Prefix+"ConstitutiveLaw").c_str(), init<>())
     .def("Clone", &ConstitutiveLawType::Clone)
     .def("WorkingSpaceDimension",& ConstitutiveLawType::WorkingSpaceDimension)
     .def("GetStrainSize", &ConstitutiveLawType::GetStrainSize)
@@ -164,20 +164,20 @@ void AddConstitutiveLawToPythonImpl(const std::string& Prefix)
     .def("Has", &ConstitutiveLawHas<ConstitutiveLawType, Variable<array_1d<DataType, 3> > >)
     .def("Has", &ConstitutiveLawHas<ConstitutiveLawType, Variable<VectorType> >)
     .def("Has", &ConstitutiveLawHas<ConstitutiveLawType, Variable<MatrixType> >)
-    .def("GetValue", &ConstitutiveLawGetValue<ConstitutiveLawType, bool> )
-    .def("GetValue", &ConstitutiveLawGetValue<ConstitutiveLawType, int> )
-    .def("GetValue", &ConstitutiveLawGetValue<ConstitutiveLawType, DataType> )
+    .def("GetValue", &ConstitutiveLawGetValue<ConstitutiveLawType, bool>)
+    .def("GetValue", &ConstitutiveLawGetValue<ConstitutiveLawType, int>)
+    .def("GetValue", &ConstitutiveLawGetValue<ConstitutiveLawType, DataType>)
     .def("GetValue", &ConstitutiveLawGetValue<ConstitutiveLawType, array_1d<DataType, 3> >)
     .def("GetValue", &ConstitutiveLawGetValue<ConstitutiveLawType, VectorType>)
     .def("GetValue", &ConstitutiveLawGetValue<ConstitutiveLawType, MatrixType>)
     .def("GetValue", &ConstitutiveLawGetValue<ConstitutiveLawType, typename ConstitutiveLawType::Pointer>)
-    .def("SetValue", &ConstitutiveLawSetValue<ConstitutiveLawType, bool> )
-    .def("SetValue", &ConstitutiveLawSetValue<ConstitutiveLawType, int> )
-    .def("SetValue", &ConstitutiveLawSetValue<ConstitutiveLawType, DataType> )
+    .def("SetValue", &ConstitutiveLawSetValue<ConstitutiveLawType, bool>)
+    .def("SetValue", &ConstitutiveLawSetValue<ConstitutiveLawType, int>)
+    .def("SetValue", &ConstitutiveLawSetValue<ConstitutiveLawType, DataType>)
     .def("SetValue", &ConstitutiveLawSetValue<ConstitutiveLawType, array_1d<DataType, 3> >)
     .def("SetValue", &ConstitutiveLawSetValue<ConstitutiveLawType, VectorType>)
     .def("SetValue", &ConstitutiveLawSetValue<ConstitutiveLawType, MatrixType>)
-    .def("SetValue", &ConstitutiveLawSetValue<ConstitutiveLawType, std::string >)
+    .def("SetValue", &ConstitutiveLawSetValue<ConstitutiveLawType, std::string>)
     .def("SetValue", &ConstitutiveLawSetValueConstitutiveLaw<ConstitutiveLawType>)
     .def("CalculateMaterialResponse", &NewInterfaceCalculateMaterialResponse<ConstitutiveLawType>)
     .def("CalculateMaterialResponsePK1", &ConstitutiveLawType::CalculateMaterialResponsePK1)
@@ -227,7 +227,7 @@ void AddConstitutiveLawToPython()
     ;
 
     class_< BaseConstitutiveLaw, BaseConstitutiveLaw::Pointer, bases<Flags>, boost::noncopyable >
-    ("BaseConstitutiveLaw", init<>() )
+    ("BaseConstitutiveLaw", init<>())
     .def_readonly("COMPUTE_STRAIN", &BaseConstitutiveLaw::COMPUTE_STRAIN)
     .def_readonly("COMPUTE_STRESS", &BaseConstitutiveLaw::COMPUTE_STRESS)
     .def_readonly("COMPUTE_CONSTITUTIVE_TENSOR", &BaseConstitutiveLaw::COMPUTE_CONSTITUTIVE_TENSOR)
@@ -246,7 +246,7 @@ void AddConstitutiveLawToPython()
     .def_readonly("ANISOTROPIC", &BaseConstitutiveLaw::ANISOTROPIC)
     .def("Load", &Serializer_load_wrapper<BaseConstitutiveLaw>)
     .def("Save", &Serializer_save_wrapper<BaseConstitutiveLaw>)
-    .def( self_ns::str( self ) )
+    .def(self_ns::str(self))
     ;
 
     AddConstitutiveLawToPythonImpl<ConstitutiveLaw>("");
