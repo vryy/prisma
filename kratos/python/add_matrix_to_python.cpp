@@ -41,6 +41,39 @@ namespace Kratos
 namespace Python
 {
 
+/**
+ * Export the CSR triad to Python. This can be used to construct the compressed
+ * matrix in Scipy quickly.
+    from scipy.sparse import csr_matrix
+    data, indices, indptr = A.GetCSR()
+    E = csr_matrix(
+            (data, indices, indptr),
+            shape=(dual_size, primal_size)
+        )
+ */
+template<typename TMatrixType>
+boost::python::tuple GetCSR(const TMatrixType& rA)
+{
+    boost::python::list data;
+    boost::python::list indices;
+    boost::python::list indptr;
+
+    indptr.append(0);
+
+    for (auto it1 = rA.begin1(); it1 != rA.end1(); ++it1)
+    {
+        for (auto it2 = it1.begin(); it2 != it1.end(); ++it2)
+        {
+            data.append(*it2);
+            indices.append(it2.index2());
+        }
+
+        indptr.append(boost::python::len(data));
+    }
+
+    return boost::python::make_tuple(data, indices, indptr);
+}
+
 using namespace boost::python;
 
 template<typename TDataType>
@@ -86,6 +119,7 @@ void AddMatrixToPythonImpl(const std::string& Prefix)
     #if defined KRATOS_ADD_COORDINATE_MATRIX_INTERFACE
                 .def(MatrixMatrixOperatorPython<compressed_matrix<TDataType>, coordinate_matrix<TDataType>, compressed_matrix<TDataType> >())
     #endif*/
+    .def("GetCSR", &GetCSR<compressed_matrix<TDataType> >)
     ;
 
     #if defined KRATOS_ADD_COORDINATE_MATRIX_INTERFACE
