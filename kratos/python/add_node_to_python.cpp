@@ -48,74 +48,97 @@ namespace Python
 
 using namespace boost::python;
 
-template<class TNodeType, class TVariableType> inline
-void NodeFix(TNodeType& rThisNode, TVariableType const& rThisVariable)
+template<class TNodeType, class TVariableType>
+inline void NodeFix(TNodeType& rThisNode, TVariableType const& rThisVariable)
 {
     rThisNode.Fix(rThisVariable);
 }
 
-template<class TNodeType, class TVariableType> inline
-void NodeFree(TNodeType& rThisNode, TVariableType const& rThisVariable)
+template<class TNodeType, class TVariableType>
+inline void NodeFree(TNodeType& rThisNode, TVariableType const& rThisVariable)
 {
     rThisNode.Free(rThisVariable);
 }
 
-template<class TNodeType, class TVariableType> inline
-bool NodeIsFixed(TNodeType& rThisNode, TVariableType const& rThisVariable)
+template<class TNodeType, class TVariableType>
+inline bool NodeIsFixed(TNodeType& rThisNode, TVariableType const& rThisVariable)
 {
     return rThisNode.IsFixed(rThisVariable);
 }
 
-template<class TNodeType, class TVariableType> inline
-bool NodeHasDofFor(TNodeType& rThisNode, TVariableType const& rThisVariable)
+template<class TNodeType, class TVariableType>
+inline bool NodeHasDofFor(TNodeType& rThisNode, TVariableType const& rThisVariable)
 {
     return rThisNode.HasDofFor(rThisVariable);
 }
 
-template<class TNodeType, class TVariableType> inline
-void NodeAddDof(TNodeType& rThisNode, TVariableType const& rThisVariable)
+template<class TNodeType, class TVariableType>
+inline void NodeAddDof(TNodeType& rThisNode, TVariableType const& rThisVariable)
 {
     rThisNode.pAddDof(rThisVariable);
 }
 
-template<class TNodeType, class TVariableType> inline
-void NodeAddDofwithReaction(TNodeType& rThisNode, TVariableType const& rThisVariable,  TVariableType const& rReactionVariable)
+template<class TNodeType, class TVariableType>
+inline void NodeAddDofwithReaction(TNodeType& rThisNode, TVariableType const& rThisVariable,  TVariableType const& rReactionVariable)
 {
     rThisNode.pAddDof(rThisVariable, rReactionVariable);
 }
 
 template<class TNodeType, class TVariableType>
-bool NodeSolutionStepsDataHas(TNodeType& rThisNode, const TVariableType& rThisVariable)
+inline bool NodeSolutionStepsDataHas(TNodeType& rThisNode, const TVariableType& rThisVariable)
 {
     return rThisNode.SolutionStepsDataHas(rThisVariable);
 }
 
 template<class TNodeType>
-typename TNodeType::CoordinateType PointGetX0(TNodeType& ThisPoint)
+inline typename TNodeType::CoordinateType PointGetX0(TNodeType& ThisPoint)
 {
     return ThisPoint.X0();
 }
 
 template<class TNodeType>
-typename TNodeType::CoordinateType PointGetY0(TNodeType& ThisPoint)
+inline typename TNodeType::CoordinateType PointGetY0(TNodeType& ThisPoint)
 {
     return ThisPoint.Y0();
 }
 
 template<class TNodeType>
-typename TNodeType::CoordinateType PointGetZ0(TNodeType& ThisPoint)
+inline typename TNodeType::CoordinateType PointGetZ0(TNodeType& ThisPoint)
 {
     return ThisPoint.Z0();
 }
 
-template<class TNodeType> inline
-void NodeSetPosition(TNodeType& rThisNode, typename TNodeType::CoordinateType NewX,
+template<class TNodeType>
+inline void NodeSetPosition(TNodeType& rThisNode, typename TNodeType::CoordinateType NewX,
     typename TNodeType::CoordinateType NewY, typename TNodeType::CoordinateType NewZ)
 {
     rThisNode.X() = NewX;
     rThisNode.Y() = NewY;
     rThisNode.Z() = NewZ;
 }
+
+template<class TNodeType, class TVariableType>
+inline typename TNodeType::IndexType NodeGetEquationId(TNodeType& rThisNode, const TVariableType& rThisVariable)
+{
+    auto dof = rThisNode.pGetDof(rThisVariable);
+    return dof->EquationId();
+}
+
+#ifdef KRATOS_NONSQUARE_SUPPORT
+template<class TNodeType, class TVariableType>
+inline typename TNodeType::IndexType NodeGetRowEquationId(TNodeType& rThisNode, const TVariableType& rThisVariable)
+{
+    auto dof = rThisNode.pGetDof(rThisVariable);
+    return dof->RowEquationId();
+}
+
+template<class TNodeType, class TVariableType>
+inline typename TNodeType::IndexType NodeGetColumnEquationId(TNodeType& rThisNode, const TVariableType& rThisVariable)
+{
+    auto dof = rThisNode.pGetDof(rThisVariable);
+    return dof->ColumnEquationId();
+}
+#endif
 
 template<class TDofType>
 void AddDofToPythonImpl(const std::string& Name)
@@ -138,6 +161,10 @@ void AddDofToPythonImpl(const std::string& Name)
     //.def("HasSecondTimeDerivative", &Dof::HasSecondTimeDerivative)
     //.def(self_ns::str(self))
     //      ;
+
+    typedef std::vector<typename TDofType::Pointer> DofPointerVectorType;
+    class_<DofPointerVectorType>((Name+"Vector").c_str(), no_init)
+    ;
 }
 
 template<class TNodeType>
@@ -194,6 +221,14 @@ void AddNodeToPythonImpl(const std::string& Name)
     .def("OverwriteSolutionStepData", &NodeType::OverwriteSolutionStepData)
     .def("SetPosition", NodeSetPosition<NodeType>)
     .def("SetInitialPosition", pointer_to_SetInitialPosition)
+    .def("GetEquationId", &NodeGetEquationId<NodeType, Variable<DataType> >)
+    .def("GetEquationId", &NodeGetEquationId<NodeType, VariableComponent<VectorComponentAdaptor<array_1d<DataType, 3> > > >)
+#ifdef KRATOS_NONSQUARE_SUPPORT
+    .def("GetRowEquationId", &NodeGetRowEquationId<NodeType, Variable<DataType> >)
+    .def("GetRowEquationId", &NodeGetRowEquationId<NodeType, VariableComponent<VectorComponentAdaptor<array_1d<DataType, 3> > > >)
+    .def("GetColumnEquationId", &NodeGetColumnEquationId<NodeType, Variable<DataType> >)
+    .def("GetColumnEquationId", &NodeGetColumnEquationId<NodeType, VariableComponent<VectorComponentAdaptor<array_1d<DataType, 3> > > >)
+#endif
     .add_property("X0", PointGetX0<NodeType>)
     .add_property("Y0", PointGetY0<NodeType>)
     .add_property("Z0", PointGetZ0<NodeType>)
