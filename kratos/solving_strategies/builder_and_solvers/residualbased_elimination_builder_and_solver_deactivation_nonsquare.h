@@ -513,8 +513,7 @@ public:
 
         std::vector< omp_lock_t > lock_array(A.size1());
 
-        int A_size = A.size1();
-        for(int i = 0; i < A_size; ++i)
+        for(std::size_t i = 0; i < A.size1(); ++i)
             omp_init_lock(&lock_array[i]);
 
         //create a partition of the element array
@@ -557,7 +556,10 @@ public:
             //vector containing the localization in the system of the different
             //terms
             typename ElementType::EquationIdVectorType RowEquationId;
+            typename ElementType::EquationIdVectorType ColEquationId;
+
             const ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
+
             typename ElementsContainerType::iterator it_begin = pElements.ptr_begin() + element_partition[k];
             typename ElementsContainerType::iterator it_end = pElements.ptr_begin() + element_partition[k+1];
 
@@ -631,7 +633,8 @@ public:
 
                     //compute sum of the diagonal
                     TDataType LocalDiagonalSum = 0.0;
-                    for(unsigned int i = 0; i < RowEquationId.size(); ++i)
+                    SizeType min_size = std::min(RowEquationId.size(), ColEquationId.size());
+                    for(unsigned int i = 0; i < min_size; ++i)
                     {
                         if(RowEquationId[i] < BaseType::mEquationSystemSize)
                             LocalDiagonalSum += LHS_Contribution(i, i);
@@ -686,6 +689,7 @@ public:
             LocalSystemVectorType RHS_Contribution = LocalSystemVectorType(0);
 
             Condition::EquationIdVectorType RowEquationId;
+            Condition::EquationIdVectorType ColEquationId;
 
             const ProcessInfo& CurrentProcessInfo = r_model_part.GetProcessInfo();
 
@@ -736,7 +740,8 @@ public:
 
                     //compute sum of the diagonal
                     TDataType LocalDiagonalSum = 0.0;
-                    for(unsigned int i = 0; i < RowEquationId.size(); ++i)
+                    SizeType min_size = std::min(RowEquationId.size(), ColEquationId.size());
+                    for(unsigned int i = 0; i < min_size; ++i)
                     {
                         if(RowEquationId[i] < BaseType::mEquationSystemSize)
                             LocalDiagonalSum += LHS_Contribution(i, i);
@@ -776,7 +781,7 @@ public:
         KRATOS_WATCH(mEquationSystemSize2)
 
         double stop_prod = omp_get_wtime();
-        for(int i = 0; i < A_size; ++i)
+        for(std::size_t i = 0; i < A.size1(); ++i)
             omp_destroy_lock(&lock_array[i]);
 
         #ifdef MODIFY_INACTIVE_PART_OF_THE_MATRIX
@@ -973,11 +978,14 @@ public:
         {
             if( !it->GetValue( IS_INACTIVE ) || it->Is( ACTIVE ) )
             {
-                //calculate elemental contribution
+                //calculate conditional contribution
                 pScheme->CalculateLHSContribution(*it,LHS_Contribution,RowEquationId,ColEquationId,CurrentProcessInfo);
 
-                //assemble the elemental contribution
+                //assemble the conditional contribution
                 AssembleLHS(A,LHS_Contribution,RowEquationId,ColEquationId);
+
+                // clean local conditional memory
+                pScheme->CleanMemory(*it);
             }
         }
 
@@ -1934,7 +1942,8 @@ protected:
         std::cout << "Warning: ConstructMatrixStructure is called." << std::endl;
         double start_time = OpenMPUtils::GetCurrentTime();
 
-        std::size_t equation_size = A.size1();
+        std::size_t equation_size1 = A.size1();
+        std::size_t equation_size2 = A.size2();
         typename ElementType::EquationIdVectorType ids1, ids2;
 
         #ifdef ENABLE_SYSTEM_REORDERING
@@ -1963,19 +1972,19 @@ protected:
             std::cout << "SYSTEM_PERMUTATION_VECTOR is not set for ProcessInfo. The system reordering will not be performed" << std::endl;
         #endif
 
-        std::vector<std::vector<std::size_t> > indices(equation_size);
+        std::vector<std::vector<std::size_t> > indices(equation_size1);
         for(typename ElementsContainerType::iterator i_element = rElements.begin(); i_element != rElements.end(); ++i_element)
         {
             (i_element)->RowEquationIdVector(ids1, CurrentProcessInfo);
             (i_element)->ColumnEquationIdVector(ids2, CurrentProcessInfo);
             for(std::size_t i = 0; i < ids1.size(); ++i)
             {
-                if(ids1[i] < equation_size)
+                if(ids1[i] < equation_size1)
                 {
                     std::vector<std::size_t>& row_indices = indices[ids1[i]];
                     for(std::size_t j = 0; j < ids2.size(); ++j)
                     {
-                        if(ids2[j] < equation_size)
+                        if(ids2[j] < equation_size2)
                             AddUnique(row_indices, ids2[j]);
                     }
                 }
@@ -1988,12 +1997,12 @@ protected:
             (i_condition)->ColumnEquationIdVector(ids2, CurrentProcessInfo);
             for(std::size_t i = 0; i < ids1.size(); ++i)
             {
-                if(ids1[i] < equation_size)
+                if(ids1[i] < equation_size1)
                 {
                     std::vector<std::size_t>& row_indices = indices[ids1[i]];
                     for(std::size_t j = 0; j < ids2.size(); ++j)
                     {
-                        if(ids2[j] < equation_size)
+                        if(ids2[j] < equation_size2)
                             AddUnique(row_indices, ids2[j]);
                     }
                 }
@@ -2014,8 +2023,8 @@ protected:
             std::vector<std::size_t>& row_indices = indices[i];
             std::sort(row_indices.begin(), row_indices.end());
 
-            for(std::vector<std::size_t>::iterator it = row_indices.begin(); it != row_indices.end(); ++it)
-                A.push_back(i,*it,0.00);
+            for(auto it = row_indices.begin(); it != row_indices.end(); ++it)
+                A.push_back(i, *it, 0.00);
             row_indices.clear();
         }
 #else
@@ -2033,7 +2042,7 @@ protected:
                     std::vector<std::size_t>& row_indices = indices[i];
                     std::sort(row_indices.begin(), row_indices.end());
 
-                    for(std::vector<std::size_t>::iterator it = row_indices.begin(); it != row_indices.end(); ++it)
+                    for(auto it = row_indices.begin(); it != row_indices.end(); ++it)
                         A.push_back(i, *it, 0.00);
                     row_indices.clear();
                 }
@@ -2257,16 +2266,17 @@ private:
             {
                 for (unsigned int j_local = 0; j_local < local_size; ++j_local)
                 {
-                    int j_global = EquationId[j_local];
+                    unsigned int j_global = EquationId[j_local];
 
-                    A(i_global, j_global) += LHS_Contribution(i_local, j_local);
+                    if ( j_global < mEquationSystemSize2 )
+                        A(i_global, j_global) += LHS_Contribution(i_local, j_local);
                 }
             }
         }
     }
 
     //******************************************************************************************
-    inline void AddUnique(std::vector<std::size_t>& v, const std::size_t& candidate) const
+    inline void AddUnique(std::vector<std::size_t>& v, const std::size_t candidate) const
     {
         std::vector<std::size_t>::iterator i = v.begin();
         std::vector<std::size_t>::iterator endit = v.end();
