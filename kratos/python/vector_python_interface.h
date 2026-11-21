@@ -298,6 +298,32 @@ public:
         return result;
     }
 
+    static TContainerType concatenate_from_list(boost::python::list const& rValues)
+    {
+        std::size_t total_size = 0;
+
+        for (int i = 0; i < len(rValues); ++i)
+        {
+            TContainerType vec = extract<TContainerType>(rValues[i]);
+            total_size += vec.size();
+        }
+
+        TContainerType result(total_size);
+        std::size_t current_index = 0;
+
+        for (int i = 0; i < len(rValues); ++i)
+        {
+            TContainerType vec = extract<TContainerType>(rValues[i]);
+            for (std::size_t j = 0; j < vec.size(); ++j)
+            {
+                result(current_index + j) = vec(j);
+            }
+            current_index += vec.size();
+        }
+
+        return result;
+    }
+
     static class_<TContainerType> CreateInterface(std::string const& Name)
     {
         boost::python::converter::registry::push_back(
@@ -322,6 +348,7 @@ public:
                //.def(VectorVectorAssignmentOperatorPython<TContainerType, compressed_vector<data_type> >())
                //.def(VectorVectorAssignmentOperatorPython<TContainerType, coordinate_vector<data_type> >())
                .def("FromList", &create_from_list)
+               .def("ConcatenateFromList", &concatenate_from_list)
                .def(self_ns::str(self))
                ;
     }

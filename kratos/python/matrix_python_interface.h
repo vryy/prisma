@@ -204,6 +204,7 @@ public:
         fill_row(ThisMatrix, i, Value, TFunctorType());
     }
 
+    // static typename TMatrixType::value_type frobenius_norm(TMatrixType const& container)
     static double frobenius_norm(TMatrixType const& container)
     {
         return norm_frobenius(container);
@@ -256,6 +257,81 @@ public:
         return result;
     }
 
+    /// Create a matrix from list of small matrices
+    /// Option dir = "row" means the small matrices are concatenated in row direction,
+    /// while dir = "col" means the small matrices are concatenated in column direction.
+    static TMatrixType concatenate_from_list(boost::python::list const& rValues, const std::string& dir)
+    {
+        if (dir == "col")
+        {
+            std::size_t total_rows = 0;
+            std::size_t total_cols = 0;
+
+            for (int i = 0; i < len(rValues); ++i)
+            {
+                TMatrixType mat = extract<TMatrixType>(rValues[i]);
+                total_rows += mat.size1();
+                if (i == 0)
+                    total_cols = mat.size2();
+                else if (mat.size2() != total_cols)
+                    KRATOS_ERROR << "Inconsistent number of columns in input matrices";
+            }
+
+            TMatrixType result(total_rows, total_cols);
+            std::size_t current_row = 0;
+
+            for (int i = 0; i < len(rValues); ++i)
+            {
+                TMatrixType mat = extract<TMatrixType>(rValues[i]);
+                for (std::size_t r = 0; r < mat.size1(); ++r)
+                {
+                    for (std::size_t c = 0; c < mat.size2(); ++c)
+                    {
+                        result(current_row + r, c) = mat(r, c);
+                    }
+                }
+                current_row += mat.size1();
+            }
+
+            return result;
+        }
+        else if (dir == "row")
+        {
+            std::size_t total_rows = 0;
+            std::size_t total_cols = 0;
+
+            for (int i = 0; i < len(rValues); ++i)
+            {
+                TMatrixType mat = extract<TMatrixType>(rValues[i]);
+                total_cols += mat.size2();
+                if (i == 0)
+                    total_rows = mat.size1();
+                else if (mat.size1() != total_rows)
+                    KRATOS_ERROR << "Inconsistent number of rows in input matrices";
+            }
+
+            TMatrixType result(total_rows, total_cols);
+            std::size_t current_col = 0;
+
+            for (int i = 0; i < len(rValues); ++i)
+            {
+                TMatrixType mat = extract<TMatrixType>(rValues[i]);
+                for (std::size_t r = 0; r < mat.size1(); ++r)
+                {
+                    for (std::size_t c = 0; c < mat.size2(); ++c)
+                    {
+                        result(r, current_col + c) = mat(r, c);
+                    }
+                }
+                current_col += mat.size2();
+            }
+
+            return result;
+        }
+        else
+            KRATOS_ERROR << "Invalid dir " << dir;
+    }
+
     static class_<TMatrixType> CreateInterface(std::string const& Name)
     {
         return class_<TMatrixType>(Name.c_str())
@@ -269,6 +345,7 @@ public:
                .def(MatrixMatrixOperatorPython<TMatrixType, TMatrixType, TMatrixType>())
                .def("FromDoubleList", &create_from_double_list)
                .def("FromList", &create_from_list)
+               .def("ConcatenateFromList", &concatenate_from_list)
                .def(self_ns::str(self))
                ;
     }
