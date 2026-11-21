@@ -57,6 +57,19 @@ enum class KratosBuildStatus : char
     INTERFACE_LAW_FAILURE = -4
 };
 
+inline std::ostream& operator<<(std::ostream& rOStream, KratosBuildStatus status)
+{
+    switch (status)
+    {
+        case KratosBuildStatus::NO_PROBLEM:               return rOStream << "NO_PROBLEM";
+        case KratosBuildStatus::ELEMENTAL_NAN_DETECTED:   return rOStream << "ELEMENTAL_NAN_DETECTED";
+        case KratosBuildStatus::CONDITIONAL_NAN_DETECTED: return rOStream << "CONDITIONAL_NAN_DETECTED";
+        case KratosBuildStatus::CONSTITUTIVE_LAW_FAILURE: return rOStream << "CONSTITUTIVE_LAW_FAILURE";
+        case KratosBuildStatus::INTERFACE_LAW_FAILURE:    return rOStream << "INTERFACE_LAW_FAILURE";
+    }
+    return rOStream << "Unknown(" << static_cast<int>(status) << ")";
+}
+
 ///@}
 ///@name  Functions
 ///@{
