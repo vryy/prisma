@@ -1144,6 +1144,15 @@ public:
         KRATOS_INFO("BuilderAndSolver") << "Exported " << fn.str() << std::endl;
         #endif
 
+        if (r_model_part.GetProcessInfo()[BUILD_STATUS] < 0)
+        {
+            KRATOS_WARNING("BuilderAndSolver")
+                << "Build failed at time step " << r_model_part.GetProcessInfo()[TIME]
+                << ", error code = " << r_model_part.GetProcessInfo()[BUILD_STATUS]
+                << std::endl;
+            return;
+        }
+
 //          ApplyPointLoads(pScheme,r_model_part,b);
 
         //does nothing...dirichlet conditions are naturally dealt with in defining the residual

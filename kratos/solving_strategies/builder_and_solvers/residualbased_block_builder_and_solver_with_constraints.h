@@ -26,6 +26,7 @@
 #include "includes/kratos_flags.h"
 #include "utilities/sparse_matrix_multiplication_utility.h"
 
+#define DETECT_NAN_AT_BUILD
 
 namespace Kratos
 {
@@ -181,10 +182,12 @@ public:
         // Getting the array of the conditions
         const SizeType nconditions = rModelPart.Conditions().size();
 
-        std::cout << "Total number of elements in assembly: " << nelements << std::endl;
-        std::cout << "Total number of conditions in assembly: " << nconditions << std::endl;
-        std::cout << "Total number of constraints in assembly: " << rModelPart.NumberOfMasterSlaveConstraints() << std::endl;
-        std::cout << "Number of threads: " << OpenMPUtils::GetNumThreads() << std::endl;
+        int build_status = static_cast<int>(KratosBuildStatus::NO_PROBLEM);
+
+        KRATOS_INFO("BuilderAndSolver") << "Total number of elements in assembly: " << nelements << std::endl;
+        KRATOS_INFO("BuilderAndSolver") << "Total number of conditions in assembly: " << nconditions << std::endl;
+        KRATOS_INFO("BuilderAndSolver") << "Total number of constraints in assembly: " << rModelPart.NumberOfMasterSlaveConstraints() << std::endl;
+        KRATOS_INFO("BuilderAndSolver") << "Number of threads: " << OpenMPUtils::GetNumThreads() << std::endl;
 
         const ProcessInfo& CurrentProcessInfo = rModelPart.GetProcessInfo();
         auto el_begin = rModelPart.ElementsBegin();
@@ -200,11 +203,13 @@ public:
         // assemble all elements and conditions
         double start_build = OpenMPUtils::GetCurrentTime();
 
-        #pragma omp parallel firstprivate(nelements, nconditions, LHS_Contribution, RHS_Contribution, EquationId)
+        #pragma omp parallel firstprivate(nelements, nconditions, LHS_Contribution, RHS_Contribution, EquationId) shared(build_status)
         {
             # pragma omp for schedule(guided, 512) nowait
             for (IndexType k = 0; k < nelements; k++)
             {
+                if (build_status < 0) continue; // do not do anything further if failure is detected
+
                 auto it = el_begin + k;
 
                 // detect if the element is active or not. If the user did not make any choice the element
@@ -217,6 +222,27 @@ public:
                 {
                     pScheme->CalculateSystemContributions(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
 
+                    if (it->Has(BUILD_STATUS))
+                    {
+                        build_status = it->GetValue(BUILD_STATUS);
+                    }
+
+                    #ifdef DETECT_NAN_AT_BUILD
+                    double norm_cond_k = norm_frobenius(LHS_Contribution);
+                    double norm_cond_r = norm_2(RHS_Contribution);
+
+                    if (std::isnan(norm_cond_k) || std::isnan(norm_cond_r))
+                    {
+                        KRATOS_WARNING("BuilderAndSolver") << "NaN is detected at condition " << it->Id() << " at " << __FUNCTION__
+                                     << ", type: " << typeid((*it)).name()
+                                     << ", Properties " << it->GetProperties().Id()
+                                     << std::endl;
+                        build_status = static_cast<int>(KratosBuildStatus::ELEMENTAL_NAN_DETECTED);
+                    }
+                    #endif
+
+                    #pragma omp flush(build_status) // Force-push the update to all other threads
+
                     // assemble the elemental contribution
                     Assemble(A, b, LHS_Contribution, RHS_Contribution, EquationId);
 
@@ -228,6 +254,8 @@ public:
             #pragma omp for schedule(guided, 512)
             for (IndexType k = 0; k < nconditions; k++)
             {
+                if (build_status < 0) continue; // do not do anything further if failure is detected
+
                 auto it = cond_begin + k;
 
                 // detect if the condition is active or not. If the user did not make any choice the condition
@@ -241,6 +269,27 @@ public:
                     // calculate elemental contribution
                     pScheme->CalculateSystemContributions(*it, LHS_Contribution, RHS_Contribution, EquationId, CurrentProcessInfo);
 
+                    if (it->Has(BUILD_STATUS))
+                    {
+                        build_status = it->GetValue(BUILD_STATUS);
+                    }
+
+                    #ifdef DETECT_NAN_AT_BUILD
+                    double norm_cond_k = norm_frobenius(LHS_Contribution);
+                    double norm_cond_r = norm_2(RHS_Contribution);
+
+                    if (std::isnan(norm_cond_k) || std::isnan(norm_cond_r))
+                    {
+                        KRATOS_WARNING("BuilderAndSolver") << "NaN is detected at condition " << it->Id() << " at " << __FUNCTION__
+                                     << ", type: " << typeid((*it)).name()
+                                     << ", Properties " << it->GetProperties().Id()
+                                     << std::endl;
+                        build_status = static_cast<int>(KratosBuildStatus::CONDITIONAL_NAN_DETECTED);
+                    }
+                    #endif
+
+                    #pragma omp flush(build_status) // Force-push the update to all other threads
+
                     // assemble the elemental contribution
                     Assemble(A, b, LHS_Contribution, RHS_Contribution, EquationId);
 
@@ -249,6 +298,9 @@ public:
                 }
             }
         }
+
+        // set the build status flag
+        rModelPart.GetProcessInfo()[BUILD_STATUS] = build_status;
 
         const double stop_build = OpenMPUtils::GetCurrentTime();
         KRATOS_INFO_IF("ResidualBasedBlockBuilderAndSolverWithConstraints", Kernel::GetInstance().GetLogLevel() > 0)
@@ -452,6 +504,15 @@ public:
         KRATOS_TRY
 
         Build(pScheme, rModelPart, A, b);
+
+        if (rModelPart.GetProcessInfo()[BUILD_STATUS] < 0)
+        {
+            KRATOS_WARNING("BuilderAndSolver")
+                << "Build failed at time step " << rModelPart.GetProcessInfo()[TIME]
+                << ", error code = " << rModelPart.GetProcessInfo()[BUILD_STATUS]
+                << std::endl;
+            return;
+        }
 
         if(rModelPart.MasterSlaveConstraints().size() != 0) {
             Timer::Start("ApplyConstraints");
